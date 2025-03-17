@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { 
   FaUser, 
   FaEnvelope, 
@@ -15,61 +18,137 @@ import {
   FaCheck,
   FaFileUpload
 } from "react-icons/fa";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    gender: '',
-    birthDate: '',
-    address: '',
-    address2: '',
-    phoneNumber1: '',
-    phoneNumber2: '',
-    portfolioLink: '',
-    linkedInLink: '',
-    facebookLink: '',
-    profileDescription: '',
-    cv: null,
-    photo: null
-  });
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [gender, setGender] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [address, setAddress] = useState('');
+  const [address2, setAddress2] = useState('');
+  const [phoneNumber1, setPhoneNumber1] = useState('');
+  const [phoneNumber2, setPhoneNumber2] = useState('');
+  const [portfolioLink, setPortfolioLink] = useState('');
+  const [linkedInLink, setLinkedInLink] = useState('');
+  const [facebookLink, setFacebookLink] = useState('');
+  const [cv, setCV] = useState(null);
+  const [photo, setPhoto] = useState(null);
+  const [profileDescription, setProfileDescription] = useState('');
+
+  const navigate = useNavigate();
+  // const [formData, setFormData] = useState({
+  //   firstName: '',
+  //   lastName: '',
+  //   email: '',
+  //   password: '',
+  //   confirmPassword: '',
+  //   gender: '',
+  //   birthDate: '',
+  //   address: '',
+  //   address2: '',
+  //   phoneNumber1: '',
+  //   phoneNumber2: '',
+  //   portfolioLink: '',
+  //   linkedInLink: '',
+  //   facebookLink: '',
+  //   profileDescription: '',
+  //   cv: null,
+  //   photo: null
+  // });
 
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
   const [passwordError, setPasswordError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
+    
+    if(!firstName || !lastName || !email || !password || !confirmPassword || !birthDate || !gender || !cv || !profileDescription) {
+      toast.error('Please fill the required fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
       setPasswordError('Passwords do not match');
       return;
     }
+
+    const formData = new FormData();
+
+    formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
+    formData.append('email', email);
+    formData.append('gender', gender);
+    formData.append('birthDate', birthDate);
+    formData.append('password', password);
+    formData.append('address', address);
+    formData.append('address2', address2);
+    formData.append('phoneNumber1', phoneNumber1);
+    formData.append('phoneNumber2', phoneNumber2);
+    formData.append('portfolioLink', portfolioLink);
+    formData.append('linkedInLink', linkedInLink);
+    formData.append('facebookLink', facebookLink);
+    formData.append('profileDescription', profileDescription);
+    formData.append('cv', cv);
+    formData.append('photo', photo);
+
     console.log("Signing up", formData);
+
+    try {
+      const signupResponse = await axios.post('http://localhost:5000/register', formData);
+      console.log(signupResponse);
+      if(signupResponse.status == 201) {
+        toast.success('User Registration Successfull');
+        navigate('/login');
+      } else {
+        toast.error('User Registration Failed');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   };
 
-  const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.files[0]
-    });
+  // const handleFileChange = (e) => {
+  //   console.log(e.target.files);
+  //   setFormData({
+  //     ...formData,
+  //     [e.target.name]: e.target.files[0]
+  //   });
+  // };
+
+  const handleCVChange = (e) => {
+    console.log(e.target.files[0]);
+    setCV(e.target.files[0]);
+  };
+
+  const handlePhotoChange = (e) => {
+    console.log(e.target.files[0]);
+    setPhoto(e.target.files[0]);
   };
 
   const handleInputChange = (e) => {
     if (e.target.name === 'confirmPassword' || e.target.name === 'password') {
       setPasswordError('');
     }
+
+    setConfirmPassword(e.target.value);
     
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    // setFormData({
+    //   ...formData,
+    //   [e.target.name]: e.target.value
+    // });
   };
 
   const nextStep = () => {
-    if (currentStep === 4 && formData.password !== formData.confirmPassword) {
+    if (currentStep === 4 && password !== confirmPassword) {
       setPasswordError('Passwords do not match');
       return;
     }
@@ -82,7 +161,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 via-indigo-800 to-purple-200">
-    
+    <ToastContainer/>
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
@@ -145,7 +224,7 @@ export default function SignupPage() {
                         placeholder="John"
                         className="w-full outline-none border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         required
-                        onChange={handleInputChange}
+                        onChange={(e) => setFirstName(e.target.value)}
                       />
                     </div>
                   </div>
@@ -161,7 +240,7 @@ export default function SignupPage() {
                         placeholder="Doe"
                         className="w-full outline-none border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         required
-                        onChange={handleInputChange}
+                        onChange={(e) => setLastName(e.target.value)}
                       />
                     </div>
                   </div>
@@ -174,7 +253,7 @@ export default function SignupPage() {
                       name="gender"
                       className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
                       required
-                      onChange={handleInputChange}
+                      onChange={(e) => setGender(e.target.value)}
                     >
                       <option value="">Select Gender</option>
                       <option value="male">Male</option>
@@ -194,7 +273,7 @@ export default function SignupPage() {
                         name="birthDate"
                         className="w-full outline-none"
                         required
-                        onChange={handleInputChange}
+                        onChange={(e) => setBirthDate(e.target.value)}
                       />
                     </div>
                   </div>
@@ -232,7 +311,7 @@ export default function SignupPage() {
                         placeholder="Street Address"
                         className="w-full outline-none"
                         required
-                        onChange={handleInputChange}
+                        onChange={(e) => setAddress(e.target.value)}
                       />
                     </div>
                   </div>
@@ -247,7 +326,7 @@ export default function SignupPage() {
                         name="address2"
                         placeholder="Apartment, Suite, etc."
                         className="w-full outline-none"
-                        onChange={handleInputChange}
+                        onChange={(e) => setAddress2(e.target.value)}
                       />
                     </div>
                   </div>
@@ -265,7 +344,7 @@ export default function SignupPage() {
                           placeholder="+94 77 123 4567"
                           className="w-full outline-none"
                           required
-                          onChange={handleInputChange}
+                          onChange={(e) => setPhoneNumber1(e.target.value)}
                         />
                       </div>
                     </div>
@@ -281,7 +360,7 @@ export default function SignupPage() {
                           name="phoneNumber2"
                           placeholder="+94 76 765 4321"
                           className="w-full outline-none"
-                          onChange={handleInputChange}
+                          onChange={(e) => setPhoneNumber2(e.target.value)}
                         />
                       </div>
                     </div>
@@ -327,7 +406,7 @@ export default function SignupPage() {
                         name="linkedInLink"
                         placeholder="https://linkedin.com/in/yourprofile"
                         className="w-full outline-none"
-                        onChange={handleInputChange}
+                        onChange={(e) => setLinkedInLink(e.target.value)}
                       />
                     </div>
                   </div>
@@ -343,7 +422,7 @@ export default function SignupPage() {
                         name="facebookLink"
                         placeholder="https://facebook.com/yourprofile"
                         className="w-full outline-none"
-                        onChange={handleInputChange}
+                        onChange={(e) => setFacebookLink(e.target.value)}
                       />
                     </div>
                   </div>
@@ -359,7 +438,7 @@ export default function SignupPage() {
                         name="portfolioLink"
                         placeholder="https://yourportfolio.com"
                         className="w-full outline-none"
-                        onChange={handleInputChange}
+                        onChange={(e) => setPortfolioLink(e.target.value)}
                       />
                     </div>
                   </div>
@@ -405,7 +484,7 @@ export default function SignupPage() {
                         placeholder="john.doe@example.com"
                         className="w-full outline-none"
                         required
-                        onChange={handleInputChange}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                   </div>
@@ -422,7 +501,7 @@ export default function SignupPage() {
                         placeholder="••••••••"
                         className="w-full outline-none"
                         required
-                        onChange={handleInputChange}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
                   </div>
@@ -491,7 +570,7 @@ export default function SignupPage() {
                         className="hidden"
                         id="cv-upload"
                         required
-                        onChange={handleFileChange}
+                        onChange={handleCVChange}
                       />
                       <label htmlFor="cv-upload" className="cursor-pointer">
                         <FaFileUpload className="mx-auto text-gray-400 text-3xl mb-2" />
@@ -514,7 +593,7 @@ export default function SignupPage() {
                         accept="image/*"
                         className="hidden"
                         id="photo-upload"
-                        onChange={handleFileChange}
+                        onChange={handlePhotoChange}
                       />
                       <label htmlFor="photo-upload" className="cursor-pointer">
                         <FaPortrait className="mx-auto text-gray-400 text-3xl mb-2" />
@@ -538,7 +617,7 @@ export default function SignupPage() {
                     placeholder="Describe your professional background, skills, and career achievements..."
                     className="w-full border border-gray-300 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all h-40"
                     required
-                    onChange={handleInputChange}
+                    onChange={(e) => setProfileDescription(e.target.value)}
                   />
                   <p className="text-xs text-gray-500 mt-2">
                     This description will be visible to recruiters and helps them understand your qualifications.

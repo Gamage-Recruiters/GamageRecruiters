@@ -1,28 +1,45 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify"
+import axios from "axios";
 import { AtSign, Lock, ArrowRight } from "lucide-react";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); // 👈 Hook for navigation
   
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    
+    if(!email || !password) {
+      toast.error('Both Email & Password cannot be empty');
+      return;
+    }
+
     console.log("Logging in", { email, password });
 
-    // Simulate login validation (replace with actual authentication logic)
-    if (email && password) {
-      navigate("/dashboard"); // 👈 Redirect to dashboard on successful login
-    } else {
-      alert("Please enter valid credentials!");
+    try {
+      const loginResponse = await axios.post('http://localhost:5000/login', { email: email, password: password });
+      console.log(loginResponse);
+      if(loginResponse.status == 200) {
+        toast.success('User Login Successfull');
+        navigate('/dashboard')
+      } else {
+        toast.error('User Login Failed');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
     }
   };
   
   return (
     
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 via-indigo-800 to-purple-200">
-      
+      <ToastContainer/>
       <div className="relative w-full max-w-md p-10 overflow-hidden bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl">
       
         {/* Decorative elements */}
