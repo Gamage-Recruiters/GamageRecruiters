@@ -1,0 +1,101 @@
+
+const { pool } = require('../config/dbConnection');
+
+async function sendInquiry(req, res) {
+
+    const { address, phoneNumber, email, name, company, designation } = req.body;
+
+    if (!address || !phoneNumber || !email || !name || !company || !designation) {
+        return res.status(400).json({ message: 'All fields required' });
+    }
+
+    try {
+        pool.query('INSERT INTO contacttable (address,phoneNumber,email,name,company,designation) VALUES (?,?,?,?,?,?)',
+            [address, phoneNumber, email, name, company, designation],
+            (err, results) => {
+
+                if (err) {
+                    return res.status(500).json({ message: 'Error adding details', error: err.message });
+                }
+                res.status(201).json({ message: 'Data Saved Successfuly !' });
+
+            })
+    } catch (error) {
+        return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+
+
+
+}
+
+async function getInquiry(req, res) {
+
+    const id = req.params.id;   // url like this :  /api/contact/getinquiry/1
+
+    try {
+
+        if (id) {
+
+            const [results] = await pool.promise().query('SELECT * FROM contacttable where id = ?', [id]);
+
+            if (results.length === 0) {
+                return res.status(500).json({ message: 'requested inquiry not found or invalid id' });
+            }
+
+            return res.status(200).json({ results });
+
+        }
+        else {
+
+            const [results] = await pool.promise().query('SELECT * FROM contacttable');
+
+            if (results.length === 0) {
+                return res.status(500).json({ message: 'No any inquiries to show'});
+            }
+
+            return res.status(200).json({ results });
+
+        }
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+
+}
+
+async function deleteInquiry(req, res) {
+
+    const id = req.params.id;
+    try {
+
+
+        if (id) {
+            const [results] = await pool.promise().query('SELECT * FROM contacttable where id = ?', [id]);
+
+            if (results.length === 0) {
+                return res.status(404).json({ message: 'requested inquiry not found or invalid id to delete' });
+            }
+
+            await pool.promise().query('DELETE FROM contacttable where id = ?', [id])
+
+            return res.status(200).json({ message: 'Delete Succesfull' });
+        }
+        else{
+            return res.status(500).json({ message: 'Please provide id to delete', });
+        }
+
+
+
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+
+}
+
+
+
+
+
+
+module.exports = { sendInquiry, getInquiry, deleteInquiry };
