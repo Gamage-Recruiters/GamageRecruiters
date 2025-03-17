@@ -35,9 +35,9 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/application" element={<Application />} />
-            <Route path="/trusted-partners" element={<TrustedPartners />} />  
+            <Route path="/trusted-partners" element={<TrustedPartners />} />
             <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:blogid" element={<BlogDetailsPage/>} />
+            <Route path="/blog/:blogid" element={<BlogDetailsPage />} />
             <Route path="/workshop" element={<WorkshopsAndSeminarsPage />} />
           </Routes>
         </main>
