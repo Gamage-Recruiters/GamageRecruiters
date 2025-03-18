@@ -24,7 +24,7 @@ router.get('/google/callback',
             
             console.log("User stored in session:", req.session.user);
 
-            const sql = 'INSERT INTO LoginsThroughPlatforms (gmailId, photo, name, email, loggedAt, platform) VALUES (?, ?, ?, ?, ?, ?)';
+            const sql = 'INSERT INTO LoginsThroughPlatforms (accountId, photo, name, email, loggedAt, platform) VALUES (?, ?, ?, ?, ?, ?)';
             const values = [req.session.user.id, req.session.user.photo, req.session.user.name, req.session.user.email, new Date(), 'Google'];
             pool.query(sql, values, (error, data) => {
                 if(error) {
