@@ -13,7 +13,7 @@ if (!fs.existsSync(cvPath)) fs.mkdirSync(cvPath, { recursive: true });
 // Define storage logic
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
-        if (file.fieldname === 'image') {
+        if (file.fieldname === 'photo') {
             callback(null, imagePath);
         } else if (file.fieldname === 'cv') {
             callback(null, cvPath);
@@ -34,7 +34,7 @@ const fileFilter = (req, file, callback) => {
     const extName = path.extname(file.originalname).toLowerCase();
     const mimeType = file.mimetype.toLowerCase();
 
-    if (file.fieldname === 'image' && imageTypes.test(extName) && imageTypes.test(mimeType)) {
+    if (file.fieldname === 'photo' && imageTypes.test(extName) && imageTypes.test(mimeType)) {
         callback(null, true);
     } else if (file.fieldname === 'cv' && cvTypes.test(extName) && cvTypes.test(mimeType)) {
         callback(null, true);
@@ -49,7 +49,7 @@ const upload = multer({
     fileFilter,
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 }).fields([
-    { name: 'image', maxCount: 1 },
+    { name: 'photo', maxCount: 1 },
     { name: 'cv', maxCount: 1 }
 ]);
 
