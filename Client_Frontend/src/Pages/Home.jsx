@@ -120,7 +120,7 @@ const TrustedPartners = () => {
 export default function Home() {
   // State for animating counter statistics
   const [counters, setCounters] = useState(statistics.map(() => 0));
-
+  const [readmore, setReadmore] = useState(false);
 
   // State for currently visible featured job
   const [activeJobIndex, setActiveJobIndex] = useState(0);
@@ -161,14 +161,6 @@ export default function Home() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
-
-
-
-
-  const toggleReadMore = (index) => {
-    setExpanded((prev) => prev.map((state, i) => (i === index ? !state : state)));
-  };
-
 
   const partners = [
     { id: 1, name: "CBL", logo: "https://d1l8km4g5s76x5.cloudfront.net/Production/exb_doc/2015/16038/thumb_2015_16038_15864_4687.png", category: "Food & Beverage" },
@@ -440,10 +432,23 @@ export default function Home() {
                       <p className="text-sm text-indigo-600">{testimonial.role} at {testimonial.company}</p>
                     </div>
                   </div>
-                  <p className="text-gray-600 italic">"{testimonial.quote}"</p>
-                  <div className="flex items-center text-indigo-600 font-medium">
-                    Read more ...
-                  </div>
+
+                  {readmore === false ? (
+                    <p className="text-gray-600 italic line-clamp-4">"{testimonial.quote}"</p>
+                  ) :
+                    (<p className="text-gray-600 italic">"{testimonial.quote}"</p>
+
+                    )}
+                  {readmore === false ? (
+                    <div className="flex items-center text-indigo-600 font-medium" onClick={() => setReadmore(true)} style={{ cursor: 'pointer' }} >
+                      Read more ...
+                    </div>
+                  ) : (
+                    <div className="flex items-center text-indigo-600 font-medium" onClick={() => setReadmore(false)} style={{ cursor: 'pointer' }} >
+                      Read less ...
+                    </div>
+                  )}
+
                 </div>
               ))}
           </div>
@@ -534,6 +539,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

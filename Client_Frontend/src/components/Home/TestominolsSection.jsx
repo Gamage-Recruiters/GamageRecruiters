@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const TestominolsSection = () => {
     const leftScrollRef = useRef(null);
+    const [readmore, setReadmore] = useState(false);
 
     useEffect(() => {
         const animateLeftScroll = () => {
@@ -93,10 +94,10 @@ const TestominolsSection = () => {
     const duplicatedTestominols = [...testimonials, ...testimonials, ...testimonials];
 
     return (
-        <div className="bg-gradient-to-b from-gray-50 to-white py-24">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+        <div className="bg-gradient-to-b from-gray-50 to-white py-24 scrollbar-none">
+            <div className="mx-auto max-w-7xl px-6 lg:px-8 scrollbar-none">
+                <div className="text-center mb-16 scrollbar-none">
+                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl scrollbar-none">
                         Success Stories
                     </h2>
                     <p className="mt-4 text-xl leading-8 text-gray-600">
@@ -107,10 +108,14 @@ const TestominolsSection = () => {
                     ref={leftScrollRef}
                     className="flex overflow-x-auto py-4 scrollbar-none" // Updated this line for scroll behavior
                 >
-                    <div className="flex space-x-8 scrollbar-none">
+                    <div className="flex space-x-8 ">
                         {
                             testimonials.map((testimonial, index) => (
-                                <div key={index} className="bg-white rounded-xl shadow-md p-8 transform transition duration-500 hover:-translate-y-2 hover:shadow-xl border border-gray-100 w-[500px] h-[400px]">
+                                <div className={`bg-white rounded-xl shadow-md p-8 transform transition duration-500 hover:-translate-y-2 hover:shadow-xl border border-gray-100
+                                    w-full sm:w-[400px] md:w-[400px] lg:w-[500px]
+                                    ${readmore ? 'h-auto' : 'sm:h-[300px] md:h-[300px] lg:h-[300px]'}
+                                  `}
+                                >
                                     <div className="flex items-center mb-6">
                                         <img
                                             src={testimonial.image}
@@ -122,17 +127,28 @@ const TestominolsSection = () => {
                                             <p className="text-sm text-indigo-600">{testimonial.role} at {testimonial.company}</p>
                                         </div>
                                     </div>
-                                    <p className="text-gray-600 italic break-words">"{testimonial.quote}"</p> {/* Added break-words */}
-                                    <div className="flex items-center text-indigo-600 font-medium">
-                                        Read more ...
-                                    </div>
+                                    {readmore === false ? (
+                                        <p className="text-gray-600 italic line-clamp-4">"{testimonial.quote}"</p>
+                                    ) :
+                                        (<p className="text-gray-600 italic">"{testimonial.quote}"</p>
+
+                                        )}
+                                    {readmore === false ? (
+                                        <div className="flex items-center text-indigo-600 font-medium" onClick={() => setReadmore(true)} style={{ cursor: 'pointer' }} >
+                                            Read more ...
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center text-indigo-600 font-medium" onClick={() => setReadmore(false)} style={{ cursor: 'pointer' }} >
+                                            Read less ...
+                                        </div>
+                                    )}
                                 </div>
                             ))
                         }
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
 
 
     );
