@@ -17,8 +17,9 @@ router.post('/register', upload, async (req, res) => {
             return res.status(400).send('Please fill all the required fields');
         }
 
+        // If existing, access the file names of the cv and image ...
         const cvName = req.files?.cv?.[0]?.filename || null;
-        const imageName = req.files?.image?.[0]?.filename || null;
+        const imageName = req.files?.photo?.[0]?.filename || null;
 
         console.log('cvName:', cvName);
         console.log('imageName:', imageName);
@@ -59,8 +60,6 @@ router.post('/login', async (req, res) => {
                 return res.status(404).send('User Not Found');
             } 
 
-            console.log(result);
-
             // Verify the password ...
             const verifyPasswordResult = await bcrypt.compare(password, result[0].password);
 
@@ -72,6 +71,14 @@ router.post('/login', async (req, res) => {
             const token = jwt.sign({
                 id: result[0].userId,
             }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            // Pass a Cookie to frontend ...
+            res.cookie('token', token, {
+                httpOnly: true,
+                sameSite: 'none',
+                secure: true,
+                maxAge: 100 * 60 * 60, // 1 hour ...
+            });
 
             // Store User Data in the database Session ...
             const sessionQuery = 'INSERT INTO sessions (userId, token, createdAt, status) VALUES (?, ?, ?, ?)';
