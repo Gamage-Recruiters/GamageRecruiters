@@ -50,7 +50,7 @@ async function getInquiry(req, res) {
             const [results] = await pool.promise().query('SELECT * FROM contacttable');
 
             if (results.length === 0) {
-                return res.status(500).json({ message: 'No any inquiries to show'});
+                return res.status(500).json({ message: 'No any inquiries to show' });
             }
 
             return res.status(200).json({ results });
@@ -80,7 +80,7 @@ async function deleteInquiry(req, res) {
 
             return res.status(200).json({ message: 'Delete Succesfull' });
         }
-        else{
+        else {
             return res.status(500).json({ message: 'Please provide id to delete', });
         }
 

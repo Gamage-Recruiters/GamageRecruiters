@@ -196,28 +196,9 @@ export default function Dashboard() {
   
   const [showTerminate, setShowTerminate] = useState(false);
   const [formData, setFormData] = useState({...user}); 
-
-  // // Function to store the platform login data in the table ...
-  // const callDataInsertion = async () => {
-  //   try {
-  //     const response = await axios.get('http://localhost:5000/protected');
-  //     console.log(response.data);
-  //     if(response.status == 200) {
-  //       console.log('Data Insertion Successfull');
-  //     } else {
-  //       console.log('Data Insertion Failed');
-  //       return;
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     return;
-  //   }
-  // }
   
   // Simulate first visit welcome
   useEffect(() => {
-    // callDataInsertion();
-
     if (isFirstVisit) {
       setTimeout(() => {
         setIsFirstVisit(false);
