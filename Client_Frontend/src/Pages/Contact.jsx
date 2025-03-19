@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { af } from "date-fns/locale";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
+
     name: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     subject: "",
     message: "",
+
   });
-  
+
   const [formStatus, setFormStatus] = useState({
     submitted: false,
     loading: false,
@@ -23,48 +27,78 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormStatus({ ...formStatus, loading: true });
-    
+
+
     // Simulate API call
+
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log("Form Submitted:", formData);
-      setFormStatus({ submitted: true, loading: false, error: null });
+
+
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}contact/addinquiry`, formData).then((results) => {
+
+        console.log(results);
+
+        if (results.status === 201) {
+          setFormStatus({ submitted: true, loading: false, error: null });
+
+
+          // Reset form after successful submission
+          setTimeout(() => {
+
+            setFormData({
+        
+              name: "",
+              email: "",
+              phoneNumber: "",
+              subject: "",
+              message: "",
+            });
+
+
+            setFormStatus({ submitted: false, loading: false, error: null });
+
+
+          }, 3000);
+
+        }
       
-      // Reset form after successful submission
-      setTimeout(() => {
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          subject: "",
-          message: "",
-        });
-        setFormStatus({ submitted: false, loading: false, error: null });
-      }, 3000);
+
+      }).catch((error) => {
+
+        console.log(error.response.data.message);
+
+
+          setFormStatus({ submitted: false, loading: false, error:  error.response.data.message });
+        
+      });
+
+
     } catch (error) {
       setFormStatus({ submitted: false, loading: false, error: "Failed to submit form. Please try again." });
+      console.log("error from try catch ", error);
     }
   };
 
   return (
-    
+
     <div className="min-h-screen bg-gradient-to-br from-blue-950 to-black py-16 px-4 sm:px-6 lg:px-8">
-      
+
       <div className="max-w-7xl mx-auto">
 
-      
+
         {/* Page Header */}
         <div className="text-center mb-16">
-        
-          <motion.h1 
+
+          <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }} 
+            transition={{ duration: 0.5 }}
             className="text-5xl font-extrabold text-white tracking-tight"
           >
             Let's Connect
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -72,7 +106,7 @@ export default function Contact() {
           >
             We're here to help and answer any questions you might have
           </motion.p>
-          </div>
+        </div>
 
         {/* Main Content */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -83,7 +117,7 @@ export default function Contact() {
                 <div>
                   <h2 className="text-3xl font-bold mb-6">Contact Information</h2>
                   <p className="max-w-sm text-blue-100 mb-12">
-                    Reach out to us with any questions, inquiries, or collaboration ideas. 
+                    Reach out to us with any questions, inquiries, or collaboration ideas.
                     Our team is ready to assist you.
                   </p>
 
@@ -154,12 +188,14 @@ export default function Contact() {
               </div>
             </div>
 
+
+
             {/* Contact Form */}
             <div className="p-8 lg:p-12">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a message</h3>
-              
+
               {formStatus.submitted ? (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-green-50 border-l-4 border-green-500 p-4 rounded"
@@ -176,10 +212,11 @@ export default function Contact() {
                   </div>
                 </motion.div>
               ) : (
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full name</label>
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">Your name</label>
                       <input
                         type="text"
                         name="name"
@@ -191,6 +228,7 @@ export default function Contact() {
                         placeholder="John Doe"
                       />
                     </div>
+
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                       <input
@@ -204,32 +242,39 @@ export default function Contact() {
                         placeholder="john@example.com"
                       />
                     </div>
+
+
+
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number (optional)</label>
+                      <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Phone Number (optional)</label>
                       <input
                         type="tel"
-                        name="phone"
-                        id="phone"
-                        value={formData.phone}
+                        name="phoneNumber"
+                        id="phoneNumber"
+                        value={formData.phoneNumber}
                         onChange={handleChange}
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="+94 76 123 4567"
                       />
                     </div>
+
+
                     <div>
-                      <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
-                      <input
-                        type="text"
-                        name="subject"
-                        id="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="How can we help you?"
-                      />
-                    </div>
+                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
+                    <input
+                      type="text"
+                      name="subject"
+                      id="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="How can we help you?"
+                    />
                   </div>
+                </div>
+         
+
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
                     <textarea
@@ -281,6 +326,17 @@ export default function Contact() {
             </div>
           </div>
         </div>
+
+
+
+
+
+
+
+
+
+
+
 
         {/* Map Section */}
         <div className="mt-16 bg-white rounded-2xl shadow-xl overflow-hidden">
