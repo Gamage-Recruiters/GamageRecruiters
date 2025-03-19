@@ -54,6 +54,25 @@ export default function LoginPage() {
       return;
     }
   };
+
+  const loginViaFacebook = async (e) => {
+    e.preventDefault();
+    console.log("Logging in via Facebook");
+
+    try {
+      const loginViaGmailResponse = await axios.get('http://localhost:5000/facebook/login');
+      console.log(loginViaGmailResponse);
+      if(loginViaGmailResponse.status == 200) {
+        console.log(loginViaGmailResponse.data);
+        window.location.href = loginViaGmailResponse.data.data; // Redirect to Google OAuth ...
+      } else {
+        toast.error('Something Went Wrong');
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
   
   return (
     
@@ -127,7 +146,7 @@ export default function LoginPage() {
           {/* Social login options could be added here */}
           <div className="flex justify-center gap-6 mt-6">
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
-              <span className="text-lg font-bold text-blue-600">f</span>
+              <span className="text-lg font-bold text-blue-600" onClick={loginViaFacebook}>f</span>
             </div>
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
               <span className="text-lg font-bold text-blue-400">t</span>

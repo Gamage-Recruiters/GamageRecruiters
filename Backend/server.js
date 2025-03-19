@@ -9,9 +9,11 @@ const session = require('express-session');
 const { dbconnect } = require('./config/dbConnection');
 const userRoute = require('./Routers/userRoute');
 const googleAuthRoute = require('./Routers/googleAuthRoute');
+const facebookAuthRoute = require('./Routers/facebookAuthRoute');
 
 require('dotenv').config();
-require('./middlewares/passportAuth');
+require('./middlewares/passportAuthGoogle');
+require('./middlewares/passportAuthFacebook');
 
 const app = express();
 
@@ -48,6 +50,7 @@ const contactRouter = require('./Routers/contactRouter');
 app.use("/api/contact",contactRouter);
 app.use('/', userRoute);
 app.use('/', googleAuthRoute);
+app.use('/', facebookAuthRoute);
 
 const testimonialsRouter = require('./Routers/testimonialsRouter');
 app.use("/api/testimonials",testimonialsRouter);
