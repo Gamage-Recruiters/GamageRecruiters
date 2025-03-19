@@ -8,21 +8,23 @@ const router = express.Router();
 
 dotenv.config();
 
-router.get('/facebook/login', (req, res) => {
-    const url = process.env.FACEBOOK_AUTH_URL;
+router.get('/linkedin/login', (req, res) => {
+    const url = process.env.LINKEDIN_AUTH_URL;
     console.log(url);
     return res.status(200).json({ message: 'redirect url', data: url });
 });
 
-router.get('/auth/facebook',
-    passport.authenticate('facebook', { 
+router.get('/auth/linkedin',
+    passport.authenticate('linkedin', { 
+        // state: true  
         scope: ['email', 'public_profile']
     })
 );
 
-router.get('/auth/facebook/callback',
-    passport.authenticate('facebook', { 
-        failureRedirect: process.env.FAILURE_REDIRECT_URL 
+router.get('/auth/linkedin/callback',
+    passport.authenticate('linkedin', { 
+        failureRedirect: process.env.FAILURE_REDIRECT_URL,
+        session: false 
     }), (req, res) => {
         try {
             // Store user in session
@@ -31,7 +33,7 @@ router.get('/auth/facebook/callback',
             console.log("User stored in session:", req.session.user);
 
             const sql = 'INSERT INTO LoginsThroughPlatforms (accountId, photo, name, email, loggedAt, platform) VALUES (?, ?, ?, ?, ?, ?)';
-            const values = [req.session.user.id, req.session.user.photo, req.session.user.name, req.session.user.email, new Date(), 'Facebook'];
+            const values = [req.session.user.id, req.session.user.photo, req.session.user.name, req.session.user.email, new Date(), 'LinkedIn'];
             pool.query(sql, values, (error, data) => {
                 if(error) {
                     return res.status(400).send('Error Saving Data');

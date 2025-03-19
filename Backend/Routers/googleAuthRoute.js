@@ -1,12 +1,16 @@
 const express = require('express');
 const passport = require('passport');
+const dotenv = require('dotenv');
 
 const { pool } = require('../config/dbConnection');
 
 const router = express.Router();
 
+dotenv.config();
+
 router.get('/google/login', (req, res) => {
-    const url = 'http://localhost:5000/auth/google';
+    const url = process.env.GOOGLE_AUTH_URL;
+    console.log(url);
     return res.status(200).json({ message: 'redirect url', data: url });
 });
 
@@ -16,7 +20,7 @@ router.get('/auth/google',
 
 router.get('/google/callback',
     passport.authenticate('google', {
-        failureRedirect: 'http://localhost:5173/login'
+        failureRedirect: process.env.FAILURE_REDIRECT_URL
     }), (req, res) => {
         try {
             // Store user in session
@@ -33,7 +37,7 @@ router.get('/google/callback',
     
                 console.log('Data Saved Successfully', data);
                 // Redirect to frontend after setting session and save data ...
-                res.redirect('http://localhost:5173/dashboard');
+                res.redirect(process.env.SUCCESS_REDIRECT_URL);
             });
         } catch (error) {
             console.log(error);

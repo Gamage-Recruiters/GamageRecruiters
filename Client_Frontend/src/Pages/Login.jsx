@@ -60,11 +60,30 @@ export default function LoginPage() {
     console.log("Logging in via Facebook");
 
     try {
-      const loginViaGmailResponse = await axios.get('http://localhost:5000/facebook/login');
-      console.log(loginViaGmailResponse);
-      if(loginViaGmailResponse.status == 200) {
-        console.log(loginViaGmailResponse.data);
-        window.location.href = loginViaGmailResponse.data.data; // Redirect to Google OAuth ...
+      const loginViaFacebookResponse = await axios.get('http://localhost:5000/facebook/login');
+      console.log(loginViaFacebookResponse);
+      if(loginViaFacebookResponse.status == 200) {
+        console.log(loginViaFacebookResponse.data);
+        window.location.href = loginViaFacebookResponse.data.data; // Redirect to Facebook OAuth ...
+      } else {
+        toast.error('Something Went Wrong');
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  } 
+
+  const loginViaLinkedIn = async (e) => {
+    e.preventDefault();
+    console.log("Logging in via LinkedIn");
+
+    try {
+      const loginViaLinkedInResponse = await axios.get('http://localhost:5000/linkedin/login');
+      console.log(loginViaLinkedInResponse);
+      if(loginViaLinkedInResponse.status == 200) {
+        console.log(loginViaLinkedInResponse.data);
+        window.location.href = loginViaLinkedInResponse.data.data; // Redirect to Google OAuth ...
       } else {
         toast.error('Something Went Wrong');
       }
@@ -146,13 +165,13 @@ export default function LoginPage() {
           {/* Social login options could be added here */}
           <div className="flex justify-center gap-6 mt-6">
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
-              <span className="text-lg font-bold text-blue-600" onClick={loginViaFacebook}>f</span>
+              <span className="text-lg font-bold text-blue-600" onClick={loginViaFacebook}>F</span>
             </div>
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
-              <span className="text-lg font-bold text-blue-400">t</span>
+              <span className="text-lg font-bold text-blue-400" onClick={loginViaLinkedIn}>L</span>
             </div>
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
-              <span className="text-lg font-bold text-red-500" onClick={loginViaGmail}>g</span>
+              <span className="text-lg font-bold text-red-500" onClick={loginViaGmail}>G</span>
             </div>
           </div>
         </div>
