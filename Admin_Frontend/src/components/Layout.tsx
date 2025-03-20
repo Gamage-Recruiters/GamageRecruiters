@@ -16,20 +16,19 @@ function Layout() {
       <div className="flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out">
         <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
         
-        <main className="flex-1 overflow-x-hidden overflow-y-auto backdrop-blur-sm bg-white/40 dark:bg-gray-900/40">
-          <div className="h-full">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="container mx-auto px-6 py-8 h-full"
-            >
-              {/* Glass card effect for content */}
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-lg rounded-2xl p-6 h-full border border-gray-100 dark:border-gray-700">
-                <Outlet />
-              </div>
-            </motion.div>
+        <main className="flex-1 h-full overflow-y-auto bg-white/40 dark:bg-gray-900/40">
+<div className="h-full">
+          <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, y: 20 }}
+  transition={{ duration: 0.4, ease: "easeOut" }}
+  className="w-full h-full px-6 py-8 overflow-y-auto"
+>
+  <Outlet />
+</motion.div>
+
+
           </div>
         </main>
         

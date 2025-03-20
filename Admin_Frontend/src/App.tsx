@@ -15,6 +15,7 @@ import ClientDetailsPage from './pages/Client/ClientView';
 import ViewAllJobs from './components/Jobs/ViewAllJobs';
 import AddJob from './components/Jobs/AddJob';
 import EditJob from './components/Jobs/EditJob';
+import CandidateDetailsView from './components/Jobs/CandidateDetailsView';
 
 function App() {
   // TODO: Implement actual auth logic
@@ -39,6 +40,7 @@ function App() {
               <Route path="/workshops" element={<Workshops />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/partners" element={<Partners />} />
+              <Route path="/candidate" element={<CandidateDetailsView />} />
               <Route path="/clients/:clientId" element={<ClientDetailsPage />} />
             </Route>
           ) : (
