@@ -12,6 +12,9 @@ import Workshops from './pages/Workshops';
 import Blog from './pages/Blog';
 import Partners from './pages/Partners';
 import ClientDetailsPage from './pages/Client/ClientView';
+import ViewAllJobs from './components/Jobs/ViewAllJobs';
+import AddJob from './components/Jobs/AddJob';
+import EditJob from './components/Jobs/EditJob';
 
 function App() {
   // TODO: Implement actual auth logic
@@ -29,6 +32,9 @@ function App() {
               <Route path="/clients" element={<ClientUsers />} />
               <Route path="/admins" element={<AdminUsers />} />
               <Route path="/jobs" element={<Jobs />} />
+              <Route path="/jobss" element={<ViewAllJobs />} />
+              <Route path="/jobss/add" element={<AddJob />} />
+              <Route path="/jobss/edit/:jobid" element={<EditJob />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="/workshops" element={<Workshops />} />
               <Route path="/blog" element={<Blog />} />

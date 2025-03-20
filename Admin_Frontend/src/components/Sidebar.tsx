@@ -27,7 +27,7 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/clients', icon: Users, label: 'Clients' },
     { path: '/admins', icon: Users, label: 'Admins' },
-    { path: '/jobs', icon: Briefcase, label: 'Jobs' },
+    { path: '/jobss', icon: Briefcase, label: 'Jobs' },
     { path: '/applications', icon: FileText, label: 'Applications' },
     { path: '/workshops', icon: Calendar, label: 'Workshops' },
     { path: '/blog', icon: BookOpen, label: 'Blog' },
