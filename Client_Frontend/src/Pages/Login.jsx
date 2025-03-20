@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify"
+import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { AtSign, Lock, ArrowRight } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,7 +21,7 @@ export default function LoginPage() {
     console.log("Logging in", { email, password });
 
     try {
-      const loginResponse = await axios.post('http://localhost:5000/login', { email: email, password: password });
+      const loginResponse = await axios.post('http://localhost:5000/user/login', { email: email, password: password });
       console.log(loginResponse);
       if(loginResponse.status == 200) {
         toast.success('User Login Successfull');

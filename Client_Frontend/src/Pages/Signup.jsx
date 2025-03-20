@@ -19,10 +19,12 @@ import {
   FaFileUpload
 } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
+import VerifyEmail from "./VerifyEmail";
 
 
 export default function SignupPage() {
 
+  const [loadUI, setLoadUI] = useState(true);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [gender, setGender] = useState('');
@@ -40,6 +42,9 @@ export default function SignupPage() {
   const [cv, setCV] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [profileDescription, setProfileDescription] = useState('');
+  const [loadVerifyOTP, setLoadVerifyOTP] = useState(false);
+
+  const emailValue = 'dummy@gmail.com';
 
   const navigate = useNavigate();
   // const [formData, setFormData] = useState({
@@ -83,7 +88,7 @@ export default function SignupPage() {
 
     formData.append('firstName', firstName);
     formData.append('lastName', lastName);
-    formData.append('email', email);
+    formData.append('email', emailValue);
     formData.append('gender', gender);
     formData.append('birthDate', birthDate);
     formData.append('password', password);
@@ -101,11 +106,19 @@ export default function SignupPage() {
     console.log("Signing up", formData);
 
     try {
-      const signupResponse = await axios.post('http://localhost:5000/register', formData);
+      const signupResponse = await axios.post('http://localhost:5000/user/register', formData);
       console.log(signupResponse);
       if(signupResponse.status == 201) {
-        toast.success('User Registration Successfull');
-        navigate('/login');
+        const sendOTPResponse = await axios.post('http://localhost:5000/user/sendOTP', { email: email });
+        console.log(sendOTPResponse);
+        if(sendOTPResponse.status == 200) {
+          toast.success('An OTP has been sent to your email');
+          setLoadUI(false);
+          setLoadVerifyOTP(true);
+        } else {
+          toast.error('Error Sending OTP');
+          return;
+        }
       } else {
         toast.error('User Registration Failed');
         return;
@@ -161,10 +174,10 @@ export default function SignupPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 via-indigo-800 to-purple-200">
-    <ToastContainer/>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+      <ToastContainer/>
+      { loadUI == true && (
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-6xl mx-auto">
           {/* Progress indicator */}
           <div className="mb-10">
             <h1 className="text-3xl md:text-4xl font-bold text-center text-white mb-6">
@@ -660,6 +673,9 @@ export default function SignupPage() {
           </form>
         </div>
       </div>
+      ) }
+
+      { !loadUI && loadVerifyOTP && (<VerifyEmail email={email} dummyEmail={emailValue}/>) }
     </div>
   );
 }
