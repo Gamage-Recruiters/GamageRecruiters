@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { 
   FaUser, 
@@ -20,6 +19,7 @@ import {
 } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyEmail from "./VerifyEmail";
+import { verifyEmail, verifyFacebookURL, verifyLinkedInURL, verifyPassword, verifyPhoneNumber } from "../scripts/verifyData";
 
 
 export default function SignupPage() {
@@ -46,27 +46,6 @@ export default function SignupPage() {
 
   const emailValue = 'dummy@gmail.com';
 
-  const navigate = useNavigate();
-  // const [formData, setFormData] = useState({
-  //   firstName: '',
-  //   lastName: '',
-  //   email: '',
-  //   password: '',
-  //   confirmPassword: '',
-  //   gender: '',
-  //   birthDate: '',
-  //   address: '',
-  //   address2: '',
-  //   phoneNumber1: '',
-  //   phoneNumber2: '',
-  //   portfolioLink: '',
-  //   linkedInLink: '',
-  //   facebookLink: '',
-  //   profileDescription: '',
-  //   cv: null,
-  //   photo: null
-  // });
-
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
   const [passwordError, setPasswordError] = useState('');
@@ -79,10 +58,44 @@ export default function SignupPage() {
       return;
     }
 
+    if(!verifyEmail(email)) {
+      toast.error('Invalid Email');
+    }
+
+    if(password.length <= 5 || password.length >= 10) {
+      toast.error('Password Length must be in between 5 and 10');
+      return;
+    }
+
+    if(!verifyPassword(password)) {
+      toast.error('Password must contain atleast one uppercase, one lowercase, one number and one special character');
+      return;
+    }
+
+    if(!verifyPhoneNumber(phoneNumber1)) {
+      toast.error('Invalid Phone Number');
+    } 
+
+    if(linkedInLink || facebookLink || phoneNumber2) {
+      if(!verifyFacebookURL(facebookLink)) {
+        toast.error('Invalid Facebook URL');
+        return;
+      }
+  
+      if(!verifyLinkedInURL(linkedInLink)) {
+        toast.error('Invalid LinkedIn URL');
+        return;
+      } 
+      
+      if(!verifyPhoneNumber(phoneNumber2)) {
+        toast.error('Invalid Phone Number');
+      }
+    }
+
     if (password !== confirmPassword) {
       setPasswordError('Passwords do not match');
       return;
-    }
+    } 
 
     const formData = new FormData();
 
@@ -103,14 +116,10 @@ export default function SignupPage() {
     formData.append('cv', cv);
     formData.append('photo', photo);
 
-    console.log("Signing up", formData);
-
     try {
       const signupResponse = await axios.post('http://localhost:5000/user/register', formData);
-      console.log(signupResponse);
       if(signupResponse.status == 201) {
         const sendOTPResponse = await axios.post('http://localhost:5000/user/sendOTP', { email: email });
-        console.log(sendOTPResponse);
         if(sendOTPResponse.status == 200) {
           toast.success('An OTP has been sent to your email');
           setLoadUI(false);

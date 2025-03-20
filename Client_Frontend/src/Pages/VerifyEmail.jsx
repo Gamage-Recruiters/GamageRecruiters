@@ -21,22 +21,16 @@ const VerifyEmail = ({ email, dummyEmail }) => {
 
     const resendOTP = async (e) => {
         e.preventDefault();
-
-        console.log(userEmail, dummy);
-
         if(!otp) {
             toast.error('OTP Must be entered');
             return;
         }
 
-        console.log(otp);
-
         try {
             const sendOTPResponse = await axios.post('http://localhost:5000/user/sendOTP', { email: userEmail });
-            console.log(sendOTPResponse);
             if(sendOTPResponse.status == 200) {
+                toast.success('An OTP has been sent to your email');
                 const verifyOTPResponse = await axios.post('http://localhost:5000/user/verifyOTP', { otp: otp, oldEmail: dummy, email: userEmail });
-                console.log(verifyOTPResponse);
                 if(verifyOTPResponse.status == 200) {
                     toast.success('User Registration Successful');
                     navigate('/login');
@@ -57,18 +51,13 @@ const VerifyEmail = ({ email, dummyEmail }) => {
     const verifyOTP = async (e) => {
         e.preventDefault(); 
 
-        console.log(userEmail, dummy);
-
         if(!otp) {
             toast.error('OTP Must be entered');
             return;
         }
 
-        console.log(otp);
-
         try {
             const verifyOTPResponse = await axios.post('http://localhost:5000/user/verifyOTP', { otp: otp, oldEmail: dummy, email: userEmail });
-            console.log(verifyOTPResponse);
             if(verifyOTPResponse.status == 200) {
                 toast.success('User Registration Successfull');
                 navigate('/login');
@@ -91,13 +80,13 @@ const VerifyEmail = ({ email, dummyEmail }) => {
             <div className="absolute top-0 left-0 w-40 h-40 bg-indigo-500 rounded-full -translate-x-16 -translate-y-16 opacity-20"></div>
             <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-600 rounded-full translate-x-10 translate-y-10 opacity-20"></div>
             
-            {/* Login header */}
+            {/* Email Verification header */}
             <div className="relative mb-8 text-center">
             <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Email Verification</h2>
             <p className="mt-2 text-gray-500">Verify Your Email To Proceed</p>
             </div>
             
-            {/* Login form */}
+            {/* Email Verification form */}
             <form className="relative z-10 space-y-6">
             <div className="group">
                 <div className="flex items-center border-b-2 border-gray-300 group-focus-within:border-indigo-600 transition-colors pb-2">

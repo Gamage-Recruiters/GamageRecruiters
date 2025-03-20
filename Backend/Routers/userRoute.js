@@ -38,11 +38,10 @@ router.post('/register', upload, async (req, res) => {
                 return res.status(400).send('Error registering user');
             } 
 
-            console.log(data);
             return res.status(201).json({ message: 'User registered nearly complete. Waiting for Email Verification', data: data});
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).send(error);
     }
 });
@@ -88,7 +87,7 @@ router.post('/login', async (req, res) => {
             const values = [ result[0].userId, token, new Date(), 'Active', 'User' ];
             pool.query(sessionQuery, values, (error, data) => {
                 if(error) {
-                    console.log(error);
+                    // console.log(error);
                     return res.status(400).send('Error creating session');
                 } 
 
@@ -150,7 +149,27 @@ router.post('/verifyOTP', (req, res) => {
     }
 });
 
-// Router for reset password ...
+// Route for check email ...
+router.post('/email-check', (req, res) => {
+    try {
+        const { email } = req.body;
+        // Check a user data related to email ....
+        const sql = 'SELECT * FROM users WHERE email = ?';
+        pool.query(sql, [email], (error, result) => {
+            if(error) {
+                // console.log(error);
+                return res.status(404).send('User Not Found');
+            } 
+
+            return res.status(200).json({ message: 'Data Found', data: result });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+});
+
+// Route for reset password ...
 router.post('/reset-password', async (req, res) => {
     try {
         const { email, newPassword } = req.body;

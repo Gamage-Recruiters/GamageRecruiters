@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 const randomstring = require('randomstring');
 const dotenv = require('dotenv');
-const { text } = require('body-parser');
 
 dotenv.config();
 
