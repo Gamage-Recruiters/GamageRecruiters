@@ -346,10 +346,12 @@ export default function Contact() {
               <iframe
                 title="Google Map"
                 className="w-full h-full"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168.5834686196353!2d79.86124321531878!3d6.927079795017655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2594271b6a89f%3A0x8c24d3d3685eddae!2sColombo!5e0!3m2!1sen!2slk!4v1644386366921!5m2!1sen!2slk"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5603.914264009148!2d79.90912786290613!3d6.700575460934763!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae247aae3eee7af%3A0x7ca4758b2ae23b70!2sGamage%20Recruiters%20(Pvt)%20Ltd!5e0!3m2!1sen!2slk!4v1742484636058!5m2!1sen!2slk"
                 allowFullScreen=""
                 loading="lazy"
               ></iframe>
+                
+
             </div>
           </div>
         </div>
@@ -377,13 +379,14 @@ export default function Contact() {
               </svg>
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">Live Chat</h3>
-            <p className="text-gray-600 mb-4">Get instant help from our customer service team through live chat.</p>
-            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <p className="text-gray-600 mb-4">Get instant help from our customer service team through whatsapp chat.</p>
+            <a href="https://wa.link/l1ewon" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               Start Chat
               <svg className="ml-2 -mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
-            </button>
+            </a>
+
           </div>
 
           <div className="bg-white p-8 rounded-2xl shadow-lg">
