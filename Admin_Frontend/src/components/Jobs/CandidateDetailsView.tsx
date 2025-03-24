@@ -180,8 +180,9 @@ export default function CandidateDetailsView() {
 
   return (
     <div className="h-full flex flex-col">
+      {/* Header section */}
       <motion.div 
-        className="mb-6"
+        className="mb-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -205,7 +206,7 @@ export default function CandidateDetailsView() {
 
       {/* Filters and Search */}
       <motion.div 
-        className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6"
+        className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
@@ -259,17 +260,17 @@ export default function CandidateDetailsView() {
         </div>
       </motion.div>
 
-      {/* Main content grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-hidden">
+      {/* Main content grid - Using flex-1 and max-h to ensure proper scrolling */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
         {/* Candidate List */}
         <motion.div 
-          className="lg:col-span-1 flex flex-col"
+          className="lg:col-span-1 flex flex-col min-h-0"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col flex-1 overflow-hidden">
-            <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col h-full">
+            <div className="p-3 border-b border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center">
                 <h2 className="font-semibold text-gray-700 dark:text-gray-200">Candidates</h2>
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
@@ -293,11 +294,13 @@ export default function CandidateDetailsView() {
                 </div>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto">
+            {/* Improved scrolling container with custom scrollbar */}
+            <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
               <motion.div 
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
+                className="h-full"
               >
                 {filteredCandidates.length === 0 ? (
                   <div className="p-6 text-center text-gray-500 dark:text-gray-400">
@@ -308,7 +311,7 @@ export default function CandidateDetailsView() {
                     <motion.div 
                       key={candidate.id}
                       variants={itemVariants}
-                      className={`p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-white/40 dark:hover:bg-gray-700/40 transition duration-150 ${selectedCandidate?.id === candidate.id ? 'bg-purple-50/70 dark:bg-purple-900/30' : ''}`}
+                      className={`p-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-white/40 dark:hover:bg-gray-700/40 transition duration-150 ${selectedCandidate?.id === candidate.id ? 'bg-purple-50/70 dark:bg-purple-900/30 border-l-4 border-l-purple-500' : ''}`}
                       onClick={() => setSelectedCandidate(candidate)}
                     >
                       <div className="flex items-center justify-between">
@@ -322,18 +325,11 @@ export default function CandidateDetailsView() {
                           </div>
                         </div>
                         <div>
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            candidate.status === "New" ? "bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200" :
-                            candidate.status === "Shortlisted" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200" :
-                            candidate.status === "Interviewing" ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200" :
-                            "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200"
-                          }`}>
-                            {candidate.status}
-                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">ID: {candidate.id}</span>
                         </div>
                       </div>
                       <div className="mt-2 flex items-center justify-between text-sm">
-                        <span className="text-gray-500 dark:text-gray-400">{getJobTitle(candidate.jobId)}</span>
+                        <span className="text-gray-500 dark:text-gray-400">{candidate.phone}</span>
                         <span className="text-gray-500 dark:text-gray-400 flex items-center">
                           <Calendar size={14} className="mr-1" />
                           {candidate.appliedDate}
@@ -349,15 +345,15 @@ export default function CandidateDetailsView() {
 
         {/* Candidate Details */}
         <motion.div 
-          className="lg:col-span-2"
+          className="lg:col-span-2 flex flex-col min-h-0"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.3 }}
         >
           {selectedCandidate ? (
-            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 h-full overflow-y-auto">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Candidate Profile</h2>
+            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col h-full">
+              <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Candidate Details</h2>
                 <button 
                   onClick={() => setSelectedCandidate(null)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
@@ -365,107 +361,72 @@ export default function CandidateDetailsView() {
                   <X size={18} className="text-gray-500 dark:text-gray-400" />
                 </button>
               </div>
-
-              <div className="flex flex-col md:flex-row gap-6 mb-6">
-                <div className="flex-shrink-0">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white text-xl shadow-md">
-                    {selectedCandidate.firstName.charAt(0)}{selectedCandidate.lastName.charAt(0)}
-                  </div>
-                </div>
-                <div className="flex-grow">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">{selectedCandidate.firstName} {selectedCandidate.lastName}</h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-300">{selectedCandidate.education}</p>
-                  <p className="text-gray-500 dark:text-gray-400 mt-1">{selectedCandidate.experience} of experience</p>
-                  
-                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-y-3">
-                    <div className="flex items-center">
-                      <Mail size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
-                      <a href={`mailto:${selectedCandidate.email}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                        {selectedCandidate.email}
-                      </a>
-                    </div>
-                    <div className="flex items-center">
-                      <Phone size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
-                      <a href={`tel:${selectedCandidate.phone}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                        {selectedCandidate.phone}
-                      </a>
-                    </div>
-                    <div className="flex items-center">
-                      <Briefcase size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
-                      <span className="text-gray-700 dark:text-gray-300">{getJobTitle(selectedCandidate.jobId)}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
-                      <span className="text-gray-700 dark:text-gray-300">Applied on: {selectedCandidate.appliedDate}</span>
+              
+              {/* Simplified candidate details */}
+              <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                <div className="flex flex-col md:flex-row gap-6 mb-6">
+                  <div className="flex-shrink-0">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white text-xl shadow-md">
+                      {selectedCandidate.firstName.charAt(0)}{selectedCandidate.lastName.charAt(0)}
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Status and Actions */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50/60 dark:bg-gray-700/40 rounded-lg mb-6 backdrop-blur-sm">
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Application Status:</p>
-                  <div className="mt-2">
-                    <span className={`px-3 py-1 text-sm rounded-full font-medium ${
-                      selectedCandidate.status === "New" ? "bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-100" :
-                      selectedCandidate.status === "Shortlisted" ? "bg-blue-200 text-blue-800 dark:bg-blue-900/60 dark:text-blue-100" :
-                      selectedCandidate.status === "Interviewing" ? "bg-green-200 text-green-800 dark:bg-green-900/60 dark:text-green-100" :
-                      "bg-red-200 text-red-800 dark:bg-red-900/60 dark:text-red-100"
-                    }`}>
-                      {selectedCandidate.status}
-                    </span>
+                  <div className="flex-grow">
+                    <div className="mb-4 inline-block px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-gray-600 dark:text-gray-300 text-sm">
+                      Candidate ID: {selectedCandidate.id}
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{selectedCandidate.firstName} {selectedCandidate.lastName}</h3>
+                    
+                    <div className="grid grid-cols-1 gap-4 mt-2">
+                      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div className="grid grid-cols-1 gap-y-4">
+                          <div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</p>
+                            <div className="flex items-center">
+                              <Mail size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
+                              <a href={`mailto:${selectedCandidate.email}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                {selectedCandidate.email}
+                              </a>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Phone</p>
+                            <div className="flex items-center">
+                              <Phone size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
+                              <a href={`tel:${selectedCandidate.phone}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                {selectedCandidate.phone}
+                              </a>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Applied Date</p>
+                            <div className="flex items-center">
+                              <Calendar size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
+                              <span className="text-gray-700 dark:text-gray-300">{selectedCandidate.appliedDate}</span>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Resume/CV</p>
+                            <div className="flex items-center">
+                              <a
+                                href={selectedCandidate.resumeUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition duration-300 shadow-sm"
+                              >
+                                <Download size={16} className="mr-2" />
+                                Download CV
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-4 sm:mt-0 flex flex-wrap gap-2">
-                  <select
-                    className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition-all"
-                    value={selectedCandidate.status}
-                    onChange={(e) => {
-                      // Update candidate status logic would go here
-                      console.log("Status changed to: ", e.target.value);
-                    }}
-                  >
-                    {statusOptions.filter(status => status !== "All").map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
-                  <a
-                    href={selectedCandidate.resumeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition duration-300 shadow-sm"
-                  >
-                    <Download size={16} className="mr-2" />
-                    Download Resume
-                  </a>
-                </div>
-              </div>
-
-              {/* Skills */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Skills</h3>
-                <div className="flex flex-wrap gap-2">
-                  {selectedCandidate.skills.map((skill, index) => (
-                    <span key={index} className="px-3 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 rounded-full text-sm border border-purple-100 dark:border-purple-800/50">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Additional Actions */}
-              <div className="mt-8 flex flex-wrap justify-end gap-3">
-                <button
-                  className="px-4 py-2 border border-gray-200 dark:border-gray-600 bg-white/80 dark:bg-gray-700/80 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition duration-300 text-gray-700 dark:text-gray-200"
-                >
-                  Schedule Interview
-                </button>
-                <button
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition duration-300 shadow-sm"
-                >
-                  Send Message
-                </button>
               </div>
             </div>
           ) : (
