@@ -47,7 +47,6 @@ export default function Contact() {
           setTimeout(() => {
 
             setFormData({
-        
               name: "",
               email: "",
               phoneNumber: "",
