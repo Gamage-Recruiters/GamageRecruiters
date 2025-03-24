@@ -1,33 +1,32 @@
 
 const { pool } = require('../config/dbConnection');
 
+const sendEmail = require('../config/nodemailerConfig');
+
+
+
 async function sendInquiry(req, res) {
 
-    const {  phoneNumber, email, name,subject,message } = req.body;
+    const { address, phoneNumber, email, name, company, designation,subject,message } = req.body;
 
-    if ( !phoneNumber || !email || !name   || !subject ||  !message) {
+    if (!address || !phoneNumber || !email || !name || !company || !designation || !subject ||  !message) {
         return res.status(400).json({ message: 'All fields required.' });
     }
 
     try {
-        pool.query('INSERT INTO contacttable (phoneNumber,email,name,subject,message) VALUES (?,?,?,?,?)',
-            [ phoneNumber, email, name, subject,message],
+        pool.query('INSERT INTO contacttable (address,phoneNumber,email,name,company,designation,subject,message) VALUES (?,?,?,?,?,?,?,?)',
+            [address, phoneNumber, email, name, company, designation,subject,message],
             async (err, results) => {
 
                 if (err) {
                     return res.status(500).json({ message: 'Error adding details', error: err.message });
                 }
 
-
                 // sending Email
                 
-               await sendEmail(email,"Inquiry Received",name,subject,message,"+94 11 234 5678","#");
+               await sendEmail(email,"Inquiry Received",name,subject,message,"+94 77 479 5371 || +94 201 4386","#");
 
-               return res.status(201).json({ message: 'Data Saved Successfuly !' });
-
-
-
-
+               return res.status(201).json({ message: 'Data Saved Successfuly and Email Sent !' });
 
             })
     } catch (error) {

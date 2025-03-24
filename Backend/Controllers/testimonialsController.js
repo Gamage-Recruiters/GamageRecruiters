@@ -1,6 +1,7 @@
 const { pool } = require('../config/dbConnection');
 const path = require('path');
-const fs  =  require('fs');
+const fs = require('fs');
+
 async function addTestimonials(req, res) {
 
     console.log(req.body);
@@ -58,18 +59,37 @@ async function deleteTestimonials(req, res) {
                 return res.status(404).json({ message: 'requested details not found or invalid id to delete' });
             }
 
+            const imgName = path.basename(results[0].companyLogoPath);
+
+            const imgPath = path.join('uploads/testimonials/', imgName)
+
+            try {
+
+                if (fs.existsSync(imgPath)) {
+
+                    fs.unlink(imgPath, (error) => {
+
+                        if (error) {
+                            return res.status(500).json({ message: 'Error deleting file from Server', error });
+                        }
+                    })
+
+                    await pool.promise().query('DELETE FROM testimonials where id = ?', [id]);
+                }
+
+                return res.status(200).json({ message: 'Delete Succesfull' });
+
+            } catch (error) {
+                console.log(error)
+
+            }
 
 
 
 
 
-            await pool.promise().query('DELETE FROM testimonials where id = ?', [id])
 
 
-
-
-
-            return res.status(200).json({ message: 'Delete Succesfull' });
         }
         else {
             return res.status(500).json({ message: 'Please provide id to delete', });
@@ -81,12 +101,8 @@ async function deleteTestimonials(req, res) {
 
 }
 
-
-
 // this function for add imgSrc in images  
 function formatingResponse(req, results) {
-
-
 
     const formattedResponse = results.map(item => {
 
@@ -106,8 +122,6 @@ function formatingResponse(req, results) {
 
 
 }
-
-
 
 async function getTestimonials(req, res) {
 
@@ -162,7 +176,6 @@ async function getTestimonials(req, res) {
 
 
 }
-
 
 
 
