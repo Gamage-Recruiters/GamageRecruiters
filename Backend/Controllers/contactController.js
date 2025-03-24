@@ -7,17 +7,19 @@ const sendEmail = require('../config/nodemailerConfig');
 
 async function sendInquiry(req, res) {
 
-    const {  phoneNumber, email, name,subject,message } = req.body;
+    const { phoneNumber, email, name,subject,message } = req.body;
 
-    if (  !phoneNumber || !email || !name || !subject ||  !message) {
+    if ( !phoneNumber || !email || !name  || !subject ||  !message) {
 
         return res.status(400).json({ message: 'All fields required.' });
     }
 
     try {
         pool.query('INSERT INTO contacttable (phoneNumber,email,name,subject,message) VALUES (?,?,?,?,?)',
-            [ phoneNumber, email, name, subject,message],
+            
+            [ phoneNumber, email, name,subject,message],
 
+  
 
             async (err, results) => {
 
