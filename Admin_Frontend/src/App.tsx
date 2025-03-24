@@ -9,13 +9,14 @@ import AdminUsers from './pages/AdminUsers';
 import Jobs from './pages/Jobs';
 import Applications from './pages/Applications';
 import Workshops from './pages/Workshops';
-import Blog from './pages/Blog';
+import Blog from './pages/BlogManagement';
 import Partners from './pages/Partners';
 import ClientDetailsPage from './pages/Client/ClientView';
 import ViewAllJobs from './components/Jobs/ViewAllJobs';
 import AddJob from './components/Jobs/AddJob';
 import EditJob from './components/Jobs/EditJob';
 import CandidateDetailsView from './components/Jobs/CandidateDetailsView';
+import AddNewBlog from './pages/Blog/AddNewBlog';
 
 function App() {
   // TODO: Implement actual auth logic
@@ -42,6 +43,7 @@ function App() {
               <Route path="/partners" element={<Partners />} />
               <Route path="/candidate" element={<CandidateDetailsView />} />
               <Route path="/clients/:clientId" element={<ClientDetailsPage />} />
+              <Route path="/blog/add" element={<AddNewBlog />} />
             </Route>
           ) : (
             <Route path="*" element={<Navigate to="/login" replace />} />
