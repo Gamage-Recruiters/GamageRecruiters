@@ -5,7 +5,11 @@ import {
   ChevronUp, ChevronDown, Filter, MoreHorizontal,
   Download, RefreshCw, Share2, Calendar, FileText
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
+
+
+    
 // Mock blog post data based on the structure provided
 const mockBlogPosts = [
   {
@@ -101,6 +105,7 @@ const mockBlogPosts = [
 ];
 
 function BlogManagement() {
+    const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
@@ -162,10 +167,12 @@ function BlogManagement() {
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </button>
-          <button className="flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg">
-            <PlusCircle className="h-4 w-4 mr-2" />
-            Add New Post
-          </button>
+          <button className="flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+                    onClick={() => navigate("/blog/add")}
+                    >
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Add New Post
+         </button>
         </div>
       </div>
 
@@ -427,9 +434,11 @@ function BlogManagement() {
                       <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                         <Eye className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                       </button>
-                      <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                      <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                        onClick={() => navigate(`/blog/edit/1`)}
+                        >
                         <Edit2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      </button>
+                        </button>
                       <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                         <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                       </button>

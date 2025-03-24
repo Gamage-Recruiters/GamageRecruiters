@@ -7,8 +7,10 @@ import {
   Download, RefreshCw, Share2, Calendar
 } from 'lucide-react';
 import { mockUsers } from '../data/mockData';
+import { useNavigate } from 'react-router-dom';
 
 function ClientUsers() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
@@ -70,10 +72,7 @@ function ClientUsers() {
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </button>
-          <button className="flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg">
-            <UserPlus className="h-4 w-4 mr-2" />
-            Add New Client
-          </button>
+          
         </div>
       </div>
 
@@ -290,12 +289,10 @@ function ClientUsers() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end items-center space-x-3">
-                      <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                      <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" onClick={() => navigate("/clients/1")} >
                         <Eye className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                       </button>
-                      <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                        <Edit2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      </button>
+                      
                       <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                         <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                       </button>

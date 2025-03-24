@@ -1,29 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   ArrowLeft, Image, Calendar, Clock, Tag, Save, 
-  Send, X, Plus, HelpCircle, ChevronDown
+  Send, X, Plus, HelpCircle, ChevronDown, Trash2
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
-function AddNewBlog() {
+function EditBlog() {
+  const { blogId } = useParams();
+  const navigate = useNavigate();
+  
+  // State for form data
   const [formData, setFormData] = useState({
     title: '',
     category: '',
-    readTime: '5 min read',
+    readTime: '',
     content: '',
     tags: [],
-    status: 'draft'
+    status: 'draft',
+    author: {
+      name: '',
+      title: '',
+      image: ''
+    },
+    date: '',
+    featuredImage: ''
   });
   
   const [currentTag, setCurrentTag] = useState('');
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [originalPublishDate, setOriginalPublishDate] = useState('');
+  const [scheduleDate, setScheduleDate] = useState('');
+  const [allowComments, setAllowComments] = useState(true);
+  const [featureOnHomepage, setFeatureOnHomepage] = useState(false);
   
   const categories = [
     'Industry Trends', 'Technology', 'Tourism', 
     'Finance', 'Culture', 'Business', 'Health'
   ];
+
+  // Fetch existing blog data
+  useEffect(() => {
+    // This would be replaced with an actual API call
+    const fetchBlogData = async () => {
+      setIsLoading(true);
+      try {
+        // Mock data for demonstration
+        const mockData = {
+          id: blogId,
+          title: 'How AI is Transforming HR Practices in 2025',
+          category: 'Technology',
+          readTime: '7 min read',
+          content: 'In the rapidly evolving landscape of human resources, artificial intelligence has emerged as a game-changer...\n\nOrganizations are increasingly adopting AI-powered tools to streamline recruitment processes, enhance employee experience, and make data-driven decisions. This shift is not just about automation but about reimagining the entire HR function.\n\nIn this article, we explore how AI is revolutionizing HR practices in 2025 and beyond, with real-world examples and practical insights for HR professionals.',
+          tags: ['AI', 'Human Resources', 'Future of Work', 'Technology'],
+          status: 'published',
+          author: {
+            name: 'Amara Fernando',
+            title: 'Senior HR Consultant',
+            image: 'https://source.unsplash.com/random/100x100?portrait'
+          },
+          date: 'January 15, 2025',
+          featuredImage: 'https://source.unsplash.com/random/1200x600?technology',
+          allowComments: true,
+          featureOnHomepage: false,
+          publishedDate: '2025-01-15'
+        };
+        
+        // Set the form data from fetched data
+        setFormData(mockData);
+        setPreviewImage(mockData.featuredImage);
+        setAllowComments(mockData.allowComments);
+        setFeatureOnHomepage(mockData.featureOnHomepage);
+        setOriginalPublishDate(mockData.publishedDate);
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching blog data:', error);
+        setIsLoading(false);
+      }
+    };
+    
+    fetchBlogData();
+  }, [blogId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -56,6 +116,10 @@ function AddNewBlog() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result);
+        setFormData({
+          ...formData,
+          featuredImage: reader.result
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -64,14 +128,36 @@ function AddNewBlog() {
   const handleSubmit = (e, status) => {
     e.preventDefault();
     // Implement your submission logic here
-    console.log({
+    const updatedBlogData = {
       ...formData,
       status,
-      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-    });
+      allowComments,
+      featureOnHomepage,
+      scheduledDate: scheduleDate || null
+    };
+    
+    console.log('Updated blog data:', updatedBlogData);
     // You would typically send this data to your backend here
     alert(`Blog post ${status === 'published' ? 'published' : 'saved as draft'} successfully!`);
+    navigate('/blog');
   };
+  
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) {
+      // Implement delete logic here
+      console.log(`Deleting blog post with ID: ${blogId}`);
+      alert('Blog post deleted successfully!');
+      navigate('/blog');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -86,11 +172,22 @@ function AddNewBlog() {
             <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Blog Post</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Create and publish a new article</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Blog Post</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {formData.status === 'published' 
+                ? `Published on ${formData.date}` 
+                : 'Currently saved as draft'}
+            </p>
           </div>
         </div>
         <div className="flex space-x-3">
+          <button 
+            onClick={handleDelete} 
+            className="flex items-center px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete
+          </button>
           <button 
             onClick={(e) => handleSubmit(e, 'draft')} 
             className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -103,7 +200,7 @@ function AddNewBlog() {
             className="flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
           >
             <Send className="h-4 w-4 mr-2" />
-            Publish
+            Update & Publish
           </button>
         </div>
       </div>
@@ -336,7 +433,7 @@ function AddNewBlog() {
             <div className="flex items-center">
               <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-800">
                 <img 
-                  src="https://source.unsplash.com/random/100x100?portrait" 
+                  src={formData.author.image || "https://source.unsplash.com/random/100x100?portrait"}
                   alt="Author" 
                   className="w-full h-full object-cover"
                 />
@@ -349,10 +446,10 @@ function AddNewBlog() {
                   Using your profile:
                 </div>
                 <div className="text-base font-medium text-gray-800 dark:text-gray-200">
-                  Amara Fernando
+                  {formData.author.name}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Senior HR Consultant
+                  {formData.author.title}
                 </div>
               </div>
             </div>
@@ -364,6 +461,15 @@ function AddNewBlog() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Publishing Options</h3>
         <div className="space-y-4">
+          {/* Original publish date display if previously published */}
+          {originalPublishDate && (
+            <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg mb-4">
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Originally published on: <span className="font-medium">{formData.date}</span>
+              </div>
+            </div>
+          )}
+          
           <div className="flex items-center justify-between">
             <div>
               <div className="font-medium text-gray-800 dark:text-gray-200">Schedule Publication</div>
@@ -373,6 +479,8 @@ function AddNewBlog() {
               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="date"
+                value={scheduleDate}
+                onChange={(e) => setScheduleDate(e.target.value)}
                 className="pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
               />
             </div>
@@ -384,7 +492,12 @@ function AddNewBlog() {
               <div className="text-sm text-gray-500 dark:text-gray-400">Let readers engage with your content</div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
+              <input 
+                type="checkbox" 
+                className="sr-only peer" 
+                checked={allowComments}
+                onChange={() => setAllowComments(!allowComments)}
+              />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
             </label>
           </div>
@@ -395,14 +508,50 @@ function AddNewBlog() {
               <div className="text-sm text-gray-500 dark:text-gray-400">Highlight this post on the main page</div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" />
+              <input 
+                type="checkbox" 
+                className="sr-only peer"
+                checked={featureOnHomepage}
+                onChange={() => setFeatureOnHomepage(!featureOnHomepage)}
+              />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
             </label>
           </div>
+          
+          {/* Last updated information */}
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Revision History Section (New) */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Revision History</h3>
+        <div className="space-y-3">
+          {[
+            { date: 'March 18, 2025', user: 'Amara Fernando', action: 'Updated content and added new section' },
+            { date: 'February 5, 2025', user: 'Amara Fernando', action: 'Minor edits to improve readability' },
+            { date: 'January 15, 2025', user: 'Amara Fernando', action: 'Initial publication' }
+          ].map((revision, index) => (
+            <div key={index} className="flex items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-800 dark:text-gray-200">{revision.date}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  {revision.user} - {revision.action}
+                </div>
+              </div>
+              <button className="text-indigo-600 dark:text-indigo-400 text-sm hover:underline">
+                View
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </motion.div>
   );
 }
 
-export default AddNewBlog;
+export default EditBlog;

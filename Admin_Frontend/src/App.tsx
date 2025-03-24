@@ -17,7 +17,9 @@ import AddJob from './components/Jobs/AddJob';
 import EditJob from './components/Jobs/EditJob';
 import CandidateDetailsView from './components/Jobs/CandidateDetailsView';
 import AddNewBlog from './pages/Blog/AddNewBlog';
-
+import EditBlog from './pages/Blog/EditBlog';
+import AddAdmin from './pages/Admin/AddAdmin';
+import EditAdmin from './pages/Admin/EditAdmin';
 function App() {
   // TODO: Implement actual auth logic
   const isAuthenticated = true;
@@ -44,6 +46,10 @@ function App() {
               <Route path="/candidate" element={<CandidateDetailsView />} />
               <Route path="/clients/:clientId" element={<ClientDetailsPage />} />
               <Route path="/blog/add" element={<AddNewBlog />} />
+              <Route path="/blog/edit/:blogId" element={<EditBlog />} />
+              <Route path="/admins/add" element={<AddAdmin />} />
+              <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
+
             </Route>
           ) : (
             <Route path="*" element={<Navigate to="/login" replace />} />
