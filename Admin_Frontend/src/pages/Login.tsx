@@ -45,7 +45,7 @@ function Login() {
         className="bg-white rounded-xl shadow-xl w-full max-w-md p-8"
       >
         <div className="text-center mb-8">
-          <div className="inline-block p-3 rounded-full bg-indigo-100 mb-4">
+          <div className="inline-block p-3 rounded-full bg-indigo-100 mb-4" onClick={() => navigate("/Dashboard")}>
             <Lock className="h-8 w-8 text-indigo-600" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">GAMAGE RECRUITERS</h2>
