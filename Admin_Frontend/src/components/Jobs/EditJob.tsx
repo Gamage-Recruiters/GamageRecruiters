@@ -2,18 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Minus, AlertTriangle } from 'lucide-react';
 
-const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
-  const { id } = useParams();
+// Define interface for Job with proper typing
+interface Job {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  jobType: string;
+  salaryRange: string;
+  Status: string;
+  description: string;
+  responsibilities: string[];
+  requirements: string[];
+  benefits: string[];
+  companyDescription: string;
+  postedDate: string;
+}
+
+// Define props interface
+interface EditJobProps {
+  jobs?: Job[];
+  onUpdateJob?: (job: Job) => void;
+}
+
+const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<Job>({
+    id: 1,
     title: '',
     company: '',
     location: '',
-    jobType: '',
+    jobType: 'Full-time',
     salaryRange: '',
-    Status: '',
+    Status: 'Active',
     description: '',
     responsibilities: [''],
     requirements: [''],
@@ -24,7 +48,7 @@ const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
 
   useEffect(() => {
     // Find the job with the matching id
-    const jobId = parseInt(id);
+    const jobId = id ? parseInt(id) : 1;
     const job = jobs.find(job => job.id === jobId);
     
     if (job) {
@@ -41,12 +65,13 @@ const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
       });
       setLoading(false);
     } else {
+      // Use type-safe error setting
       setError('Job not found');
       setLoading(false);
     }
   }, [id, jobs]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -54,7 +79,7 @@ const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
     }));
   };
 
-  const handleListChange = (e, index, field) => {
+  const handleListChange = (e: React.ChangeEvent<HTMLInputElement>, index: number, field: keyof Pick<Job, 'responsibilities' | 'requirements' | 'benefits'>) => {
     const { value } = e.target;
     setFormData(prev => {
       const updatedList = [...prev[field]];
@@ -66,29 +91,29 @@ const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
     });
   };
 
-  const addListItem = (field) => {
+  const addListItem = (field: keyof Pick<Job, 'responsibilities' | 'requirements' | 'benefits'>) => {
     setFormData(prev => ({
       ...prev,
       [field]: [...prev[field], '']
     }));
   };
 
-  const removeListItem = (index, field) => {
+  const removeListItem = (index: number, field: keyof Pick<Job, 'responsibilities' | 'requirements' | 'benefits'>) => {
     setFormData(prev => {
       const updatedList = [...prev[field]];
       updatedList.splice(index, 1);
       return {
         ...prev,
-        [field]: updatedList
+        [field]: updatedList.length > 0 ? updatedList : ['']
       };
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Create updated job object
-    const updatedJob = {
+    const updatedJob: Job = {
       ...formData,
       // Filter out empty list items
       responsibilities: formData.responsibilities.filter(item => item.trim() !== ''),
@@ -110,23 +135,27 @@ const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-    </div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="flex flex-col items-center justify-center h-64 text-center">
-      <AlertTriangle size={48} className="text-red-500 mb-4" />
-      <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{error}</h2>
-      <p className="text-gray-600 dark:text-gray-400 mb-4">The job you're looking for could not be found.</p>
-      <button 
-        onClick={() => navigate('/jobs')}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-      >
-        Back to Jobs
-      </button>
-    </div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <AlertTriangle size={48} className="text-red-500 mb-4" />
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{error}</h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">The job you're looking for could not be found.</p>
+        <button 
+          onClick={() => navigate('/jobss')}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          Back to Jobs
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -276,12 +305,12 @@ const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
             required
             value={formData.description}
             onChange={handleChange}
-            rows="4"
+            rows={4}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
           ></textarea>
         </div>
 
-        {/* Responsibilities */}
+       
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -319,102 +348,14 @@ const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
           </div>
         </div>
 
-        {/* Requirements */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Requirements
-            </label>
-            <button
-              type="button"
-              onClick={() => addListItem('requirements')}
-              className="flex items-center gap-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
-            >
-              <Plus size={16} />
-              <span>Add</span>
-            </button>
-          </div>
-          <div className="space-y-2">
-            {formData.requirements.map((item, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={item}
-                  onChange={(e) => handleListChange(e, index, 'requirements')}
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                />
-                {formData.requirements.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeListItem(index, 'requirements')}
-                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                  >
-                    <Minus size={16} />
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Benefits */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Benefits
-            </label>
-            <button
-              type="button"
-              onClick={() => addListItem('benefits')}
-              className="flex items-center gap-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
-            >
-              <Plus size={16} />
-              <span>Add</span>
-            </button>
-          </div>
-          <div className="space-y-2">
-            {formData.benefits.map((item, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={item}
-                  onChange={(e) => handleListChange(e, index, 'benefits')}
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                />
-                {formData.benefits.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeListItem(index, 'benefits')}
-                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                  >
-                    <Minus size={16} />
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Company Description */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Company Description
-          </label>
-          <textarea
-            name="companyDescription"
-            value={formData.companyDescription}
-            onChange={handleChange}
-            rows="3"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-          ></textarea>
-        </div>
+      
       </form>
     </div>
   );
 };
 
 // Default job data for testing
-const defaultJobs = [
+const defaultJobs: Job[] = [
   {
     id: 1,
     title: "Software Engineer",
