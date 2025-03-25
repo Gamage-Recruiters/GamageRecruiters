@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import TestominolsSection from '../components/Home/TestominolsSection';
 
 const team = [
   {
@@ -43,7 +44,7 @@ export default function About() {
           <div className="mx-auto max-w-2xl lg:mx-0">
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">About Us</h1>
             <p className="mt-6 text-lg leading-8 text-gray-300">
-              Gamage Recruiters has been bridging the gap between talented professionals and leading companies since 2013. 
+              Gamage Recruiters has been bridging the gap between talented professionals and leading companies since 2013.
               Our deep understanding of the Sri Lankan job market and commitment to excellence has made us a trusted name in recruitment.
             </p>
           </div>
@@ -56,7 +57,7 @@ export default function About() {
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Our Mission</h2>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              To revolutionize the recruitment industry in Sri Lanka by providing innovative solutions that connect the right talent 
+              To revolutionize the recruitment industry in Sri Lanka by providing innovative solutions that connect the right talent
               with the right opportunities, while fostering growth and success for both candidates and employers.
             </p>
           </div>
@@ -109,6 +110,7 @@ export default function About() {
         </div>
       </div>
 
+      <TestominolsSection />
       {/* CTA Section */}
       <div className="bg-black">
         <div className="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">

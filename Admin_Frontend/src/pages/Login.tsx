@@ -1,28 +1,51 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast, ToastContainer } from "react-toastify";
 import { Lock } from 'lucide-react';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement actual login logic
-    navigate('/Dashboard');
+    if(email === '' || password === '') {
+        toast.error("Please fill in all fields");
+        return;
+    }
+
+    try {
+       const adminLoginResponse = await axios.post('http://localhost:5000/admin/login', { email: email, password: password });
+       if (adminLoginResponse.status === 200) {
+          toast.success("Login successful!");
+          setEmail('');
+          setPassword('');
+          navigate('/dashboard');
+       } else {
+          toast.error("Login failed. Please check your credentials.");
+          return;
+       }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center p-4">
+      <ToastContainer />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-xl shadow-xl w-full max-w-md p-8"
       >
         <div className="text-center mb-8">
-          <div className="inline-block p-3 rounded-full bg-indigo-100 mb-4">
+          <div className="inline-block p-3 rounded-full bg-indigo-100 mb-4" onClick={() => navigate("/Dashboard")}>
             <Lock className="h-8 w-8 text-indigo-600" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">GAMAGE RECRUITERS</h2>

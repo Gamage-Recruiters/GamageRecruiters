@@ -11,6 +11,7 @@ import ProfileOverview from "../components/dashboard/ProfileOverview";
 import AppliedJobs from "../components/dashboard/AppliedJobs";
 import EditProfileForm from "../components/dashboard/EditProfileForm";
 import AccountSettings from "../components/dashboard/AccountSettings";
+import axios from "axios";
 
 // Animated Tab Context
 const TabContext = ({ children, defaultTab }) => {
@@ -194,7 +195,7 @@ export default function Dashboard() {
   });
   
   const [showTerminate, setShowTerminate] = useState(false);
-  const [formData, setFormData] = useState({...user});
+  const [formData, setFormData] = useState({...user}); 
   
   // Simulate first visit welcome
   useEffect(() => {
