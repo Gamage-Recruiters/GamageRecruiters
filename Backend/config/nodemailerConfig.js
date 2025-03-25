@@ -23,8 +23,6 @@ async function sendEmail(to, subject, clientName, clientSubject, clientMassage, 
             to: to,
             subject: subject,
             html: await setConfirmEmailBody(clientName, clientSubject, clientMassage, companyNumber, websiteLink),
-        
-        
         };
 
         transpoter.sendMail(mailDetails, (error) => {
