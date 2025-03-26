@@ -60,6 +60,9 @@ app.use('/', linkedInAuthRoute)
 const testimonialsRouter = require('./Routers/testimonialsRouter');
 app.use("/api/testimonials",testimonialsRouter);
 
+const blogRoutes = require('./Routers/blogRoutes');
+app.use('/api/blogs', blogRoutes);
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 })
