@@ -43,7 +43,7 @@ const TrustedPartnersSection = () => {
     { id: 4, name: "Edu Alliance", logo: "https://upload.wikimedia.org/wikipedia/en/0/0a/Union_Assurance_logo.png", category: "Education" },
     { id: 5, name: "Build Masters", logo: "https://i.ibb.co/pvn864CX/image.png", category: "Construction" }
   ];
-  
+
   // Duplicate partners array for smooth infinite scrolling
   const duplicatedPartners = [...partners, ...partners, ...partners];
 
@@ -63,26 +63,26 @@ const TrustedPartnersSection = () => {
             We collaborate with industry leaders to bring you the best opportunities across Sri Lanka
           </p>
         </div>
-        
+
         {/* First row - Left to Right */}
         <div className="mb-8 relative">
           <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-indigo-50 to-transparent z-10"></div>
           <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-blue-50 to-transparent z-10"></div>
-          
-          <div 
+
+          <div
             ref={leftScrollRef}
             className="flex overflow-x-hidden whitespace-nowrap py-4"
           >
             <div className="flex space-x-8 inline-block">
               {duplicatedPartners.map((partner, index) => (
-                <div 
-                  key={`left-${partner.id}-${index}`} 
+                <div
+                  key={`left-${partner.id}-${index}`}
                   className="bg-white p-6 rounded-lg shadow-md w-56 inline-block transform transition duration-500 hover:-translate-y-2 hover:shadow-xl group"
                 >
                   <div className="mb-4 overflow-hidden rounded-md flex items-center justify-center h-20">
-                    <img 
-                      src={partner.logo} 
-                      alt={partner.name} 
+                    <img
+                      src={partner.logo}
+                      alt={partner.name}
                       className="object-contain max-w-full max-h-full transition-transform duration-300 group-hover:scale-110"
                     />
                   </div>
@@ -95,26 +95,26 @@ const TrustedPartnersSection = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Second row - Right to Left */}
         <div className="relative">
           <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-indigo-50 to-transparent z-10"></div>
           <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-blue-50 to-transparent z-10"></div>
-          
-          <div 
+
+          <div
             ref={rightScrollRef}
             className="flex overflow-x-hidden whitespace-nowrap py-4"
           >
             <div className="flex space-x-8 inline-block">
               {duplicatedPartners.reverse().map((partner, index) => (
-                <div 
-                  key={`right-${partner.id}-${index}`} 
+                <div
+                  key={`right-${partner.id}-${index}`}
                   className="bg-white p-6 rounded-lg shadow-md w-56 inline-block transform transition duration-500 hover:-translate-y-2 hover:shadow-xl group"
                 >
                   <div className="mb-4 overflow-hidden rounded-md flex items-center justify-center h-20">
-                    <img 
-                      src={partner.logo} 
-                      alt={partner.name} 
+                    <img
+                      src={partner.logo}
+                      alt={partner.name}
                       className="object-contain max-w-full max-h-full transition-transform duration-300 group-hover:scale-110"
                     />
                   </div>
@@ -127,10 +127,10 @@ const TrustedPartnersSection = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="text-center mt-16">
-          <Link 
-            to="/trusted-partners" 
+          <Link
+            to="/trusted-partners"
             className="inline-flex items-center justify-center px-6 py-3 border border-indigo-600 text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 transition-all duration-300 shadow-md"
           >
             View All Partners <ArrowRight size={16} className="ml-2" />
