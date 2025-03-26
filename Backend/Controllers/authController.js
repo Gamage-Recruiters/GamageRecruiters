@@ -1,60 +1,54 @@
-const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-
 const { pool } = require('../config/dbConnection');
 const { otpCache, generateOTP, sendOTP } = require('../middlewares/OTP');
-const upload = require('../middlewares/fileUploading');
 
 dotenv.config();
-const router = express.Router();
 
-// Route for user registration ...
-router.post('/register', upload, async (req, res) => {
+async function register (req, res) {
+    const { firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, profileDescription } = req.body;
+    
+    if(!firstName || !lastName || !gender || !birthDate || !email || !password) {
+        return res.status(400).send('Please fill all the required fields');
+    }
+
     try {
-        const { firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, profileDescription } = req.body;
-
-        if(!firstName || !lastName || !gender || !birthDate || !email || !password) {
-            return res.status(400).send('Please fill all the required fields');
-        }
-
         // If existing, access the file names of the cv and image ...
         const cvName = req.files?.cv?.[0]?.filename || null;
         const imageName = req.files?.photo?.[0]?.filename || null;
-
+    
         console.log('cvName:', cvName);
         console.log('imageName:', imageName);
-
+    
         // Encrypt the password ...
         const hashedPassword = await bcrypt.hash(password, 10);
-
+    
         const values = [ firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, hashedPassword, cvName, imageName, profileDescription, new Date() ];
-
+    
         // Register the user by saving details in the database ...
         const sql = 'INSERT INTO users (firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, cv, photo, profileDescription, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'; 
         pool.query(sql, values, (error, data) => {
             if(error) {
                 return res.status(400).send('Error registering user');
             } 
-
+    
             return res.status(201).json({ message: 'User registered nearly complete. Waiting for Email Verification', data: data});
         });
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         return res.status(500).send(error);
     }
-});
+} 
 
-// Route for user login ...
-router.post('/login', async (req, res) => {
+async function login (req, res) {
+    const { email, password } = req.body;
+
+    if(!email || !password) {
+        return res.status(400).send('Email and Password cannot be empty');
+    }
+    
     try {
-        const { email, password } = req.body;
-
-        if(!email || !password) {
-            return res.status(400).send('Email and Password cannot be empty');
-        }
-
         // Check if the user exists ...
         const userQuery = 'SELECT * FROM users WHERE email = ?';
         pool.query(userQuery, [email], async (error, result) => {
@@ -98,12 +92,16 @@ router.post('/login', async (req, res) => {
         console.log(error);
         res.status(500).send(error);
     }
-}); 
+}
 
-// Route for requesting OTP ...
-router.post('/sendOTP', (req, res) => {
+async function sendEmailVerificationOTP (req, res) {
+    const { email } = req.body;
+
+    if(!email) {
+        return res.status(400).send('Email is required');
+    }
+
     try {
-        const { email } = req.body;
         const otp = generateOTP();
         otpCache[email] = otp;
 
@@ -115,12 +113,16 @@ router.post('/sendOTP', (req, res) => {
         console.log(error);
         return res.status(500).send(error);
     }
-}); 
+}
 
-// Route for verifying OTP ...
-router.post('/verifyOTP', (req, res) => {
+async function verifyEmailVerificationOTP (req, res) {
+    const { otp, oldEmail, email } = req.body;
+
+    if(!otp || !oldEmail || !email) {
+        return res.status(400).send('Something went wrong with required data');
+    }
+ 
     try {
-        const { otp, oldEmail, email } = req.body;
         // Check if email exists in the cache ...
         if(!otpCache.hasOwnProperty(email)) {
             return res.status(404).send("Email not found");
@@ -147,12 +149,16 @@ router.post('/verifyOTP', (req, res) => {
         console.log(error);
         return res.status(500).send(error);
     }
-});
+}
 
-// Route for check email ...
-router.post('/email-check', (req, res) => {
+async function emailCheck (req, res) {
+    const { email } = req.body;
+
+    if(!email) {
+        return res.status(400).send('Something went wrong with email');
+    }
+
     try {
-        const { email } = req.body;
         // Check a user data related to email ....
         const sql = 'SELECT * FROM users WHERE email = ?';
         pool.query(sql, [email], (error, result) => {
@@ -167,10 +173,15 @@ router.post('/email-check', (req, res) => {
         console.log(error);
         return res.status(500).send(error);
     }
-});
+}
 
-// Route for reset password ...
-router.post('/reset-password', async (req, res) => {
+async function resetPassword (req, res) {
+    const { email, newPassword } = req.body;
+
+    if(!email || !newPassword) {
+        return res.status(400).send('Something went wrong.');
+    }
+
     try {
         const { email, newPassword } = req.body;
 
@@ -202,32 +213,7 @@ router.post('/reset-password', async (req, res) => {
         console.log(error);
         return res.status(500).send(error);
     }
-});
+}
 
-router.get('/profile-data', async (req, res) => {
-    try {
-        // get the logged user data from session ...
-        const sessionSQL = 'SELECT * sessions ORDER BY createdAt DESC LIMIT 1';
-        const userSQL = 'SELECT * FROM users WHERE userId = ?';
-        pool.query(sessionSQL, (error, result) => {
-            if(error) {
-                return res.status(404).send('Session Not Found');
-            } 
+module.exports = { register, login, sendEmailVerificationOTP, verifyEmailVerificationOTP, emailCheck, resetPassword }
 
-            const userId = result[0].Id;
-
-            pool.query(userSQL, [userId], (error, data) => {
-                if(error) {
-                    return res.status(404).send('User Not Found');
-                }
-                
-                return res.status(200).json({ message: 'User Data Retrieved', data: data });
-            });
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send(error);
-    }
-});
-
-module.exports = router;

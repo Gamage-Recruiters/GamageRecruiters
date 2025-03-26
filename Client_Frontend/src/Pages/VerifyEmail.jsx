@@ -57,7 +57,7 @@ const VerifyEmail = ({ email, dummyEmail }) => {
         }
 
         try {
-            const verifyOTPResponse = await axios.post('http://localhost:5000/user/verifyOTP', { otp: otp, oldEmail: dummy, email: userEmail });
+            const verifyOTPResponse = await axios.post('http://localhost:5000/auth/verifyOTP', { otp: otp, oldEmail: dummy, email: userEmail });
             if(verifyOTPResponse.status == 200) {
                 toast.success('User Registration Successfull');
                 navigate('/login');
@@ -103,7 +103,7 @@ const VerifyEmail = ({ email, dummyEmail }) => {
             <div className='flex items-center justify-center gap-2'>
             <button
                 type="submit"
-                className="flex items-center justify-center w-full px-6 py-3 text-white transition-all bg-gradient-to-r from-indigo-700 to-purple-700 rounded-lg hover:shadow-lg hover:shadow-indigo-900/20 transform hover:-translate-y-1"
+                className="flex items-center justify-center w-full px-6 py-3 text-white transition-all bg-gradient-to-r from-indigo-700 to-purple-700 rounded-lg hover:shadow-lg hover:shadow-indigo-900/20 transform hover:-translate-y-1 test-sm"
             onClick={resendOTP}>
                 <span>Send OTP Again</span>
             </button>
