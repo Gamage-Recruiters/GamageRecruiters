@@ -1,53 +1,15 @@
-const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-
 const { pool } = require('../config/dbConnection');
 
-const router = express.Router();
+async function register (req, res) {
+    const { email, password } = req.body;
 
-dotenv.config();
-
-// Route for admin registration ...
-router.post('/register', async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-
-        if(!name || !email || !password) {
-            return res.status(400).send('Please fill all the required fields');
-        }
-
-        // Encrypt the password ...
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const values = [ name, email, hashedPassword, new Date() ];
-
-        // Register the admin user by saving details in the database ...
-        const sql = 'INSERT INTO admin (name, email, password, createdAt) VALUES (?, ?, ?, ?)'; 
-        pool.query(sql, values, (error, data) => {
-            if(error) {
-                return res.status(400).send('Error registering admin user');
-            } 
-
-            console.log(data);
-            return res.status(201).json({ message: 'Admin User registered successfully', data: data});
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send(error);
+    if(!email || !password) {
+        return res.status(400).send('Email or Password cannot be empty!');
     }
-});
 
-// Route for admin login ...
-router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
-
-        if(!email || !password) {
-            return res.status(400).send('Email or Password cannot be empty!');
-        }
-
         // Check a data related to email, exists in the database ...
         const sql = 'SELECT * FROM admin WHERE email = ?';
         pool.query(sql, [email], async (error, result) => {
@@ -91,6 +53,35 @@ router.post('/login', async (req, res) => {
         console.log(error);
         return res.status(500).send(error);
     }
-});
+}
 
-module.exports = router;
+async function login (req, res) {
+    const { name, email, password } = req.body;
+
+    if(!name || !email || !password) {
+        return res.status(400).send('Please fill all the required fields');
+    }
+
+    try {
+        // Encrypt the password ...
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const values = [ name, email, hashedPassword, new Date() ];
+
+        // Register the admin user by saving details in the database ...
+        const sql = 'INSERT INTO admin (name, email, password, createdAt) VALUES (?, ?, ?, ?)'; 
+        pool.query(sql, values, (error, data) => {
+            if(error) {
+                return res.status(400).send('Error registering admin user');
+            } 
+
+            console.log(data);
+            return res.status(201).json({ message: 'Admin User registered successfully', data: data});
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
+
+module.exports = { register, login }

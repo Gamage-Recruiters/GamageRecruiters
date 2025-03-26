@@ -117,9 +117,9 @@ export default function SignupPage() {
     formData.append('photo', photo);
 
     try {
-      const signupResponse = await axios.post('http://localhost:5000/user/register', formData);
+      const signupResponse = await axios.post('http://localhost:5000/auth/register', formData);
       if(signupResponse.status == 201) {
-        const sendOTPResponse = await axios.post('http://localhost:5000/user/sendOTP', { email: email });
+        const sendOTPResponse = await axios.post('http://localhost:5000/auth/sendOTP', { email: email });
         if(sendOTPResponse.status == 200) {
           toast.success('An OTP has been sent to your email');
           setLoadUI(false);

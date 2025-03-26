@@ -21,7 +21,7 @@ export default function LoginPage() {
     console.log("Logging in", { email, password });
 
     try {
-      const loginResponse = await axios.post('http://localhost:5000/user/login', { email: email, password: password });
+      const loginResponse = await axios.post('http://localhost:5000/auth/login', { email: email, password: password });
       console.log(loginResponse);
       if(loginResponse.status == 200) {
         toast.success('User Login Successfull');
