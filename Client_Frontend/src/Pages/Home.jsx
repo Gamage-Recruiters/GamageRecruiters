@@ -175,24 +175,24 @@ export default function Home() {
 
   const testimonials = [
     {
-      name: "H.P.Malith Kalinga",
-      role: "Team Lead Intern",
+      name: "Damayantha Surampika",
+      role: "Senior Marketing Executive",
       company: "Gamage Recruiters",
-      quote: "My six-month internship as a Software Team Lead Intern at Gamage Recruiters was truly an unforgettable experience. I had the privilege of working with an incredible team, tackling real-world challenges, and growing both technically and personally. Every project we built, every problem we solved together, and every late-night debugging session shaped me into a more confident and skilled developer. The support and collaboration made it feel like more than just an internship—it felt like family. Grateful for every moment!",
+      quote: "I am beyond grateful to Gamage Recruiters for connecting me with the perfect career opportunity. Their guidance and support helped me secure a role as a Senior Marketing Executive at a reputed firm, where I can truly showcase my skills. The recruitment team understood my strengths and aspirations, making the entire process smooth and stress-free. Thank you for paving the way for my professional growth!",
       image: "/api/placeholder/100/100"
     },
     {
-      name: "Sonali Nipunika",
-      role: "HR Coordinator ",
+      name: "Nehara Sampath",
+      role: "Business Analyst",
       company: "Gamage Recruiters",
-      quote: "My full time opportunity at Gamage Recruiters was a turning point in my career. I gained hands-on experience in recruitment, employee engagement, and HR operations, which helped me secure a full-time Senior HR Executive. The mentorship and real-world exposure I received were invaluable. I am truly grateful for the opportunity!",
+      quote: "Gamage Recruiters played a crucial role in my career transition by helping me secure a position as a Business Analyst. Their recruitment process was seamless, and they took the time to understand my career goals. I am now working at a company that challenges and excites me every day. Thank you for making this possible!",
       image: "/api/placeholder/100/100"
     },
     {
-      name: "Kasun Jayasekara",
-      role: "SE Intern",
+      name: "Isuru Dananjaya",
+      role: "Operations Manager",
       company: "Gamage Recruiters",
-      quote: "Gamage Recruiters provided me with an incredible platform to enhance my technical and problem-solving skills. During my time here, I worked on real-world projects that strengthened my knowledge of the MERN stack. Today, I am a Full-Stack Developer and I owe a huge part of my success to the amazing learning experience I had at Gamage Recruiters!",
+      quote: "I sincerely appreciate Gamage Recruiters for helping me take a major step forward in my career. With their assistance, I secured an Operations Manager role at a leading company, and I couldn’t be happier with the growth opportunities. Their professionalism and commitment to job seekers are truly commendable. Thank you for making a difference in my career!",
       image: "/api/placeholder/100/100"
     },
   ]
