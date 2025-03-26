@@ -18,7 +18,7 @@ const EmailCheck = () => {
         }
 
         try {
-            const emailCheckResponse = await axios.post('http://localhost:5000/user/email-check', { email: email });
+            const emailCheckResponse = await axios.post('http://localhost:5000/auth/email-check', { email: email });
             console.log(emailCheckResponse);
             if(emailCheckResponse.status == 200) {
                 toast.success('Email Noted');

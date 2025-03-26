@@ -26,6 +26,55 @@ const TestominolsSection = () => {
 
     const testimonials = [
         {
+            name: "Damayantha Surampika",
+            role: "Senior Marketing Executive",
+            company: "Gamage Recruiters",
+            quote: "I am beyond grateful to Gamage Recruiters for connecting me with the perfect career opportunity. Their guidance and support helped me secure a role as a Senior Marketing Executive at a reputed firm, where I can truly showcase my skills. The recruitment team understood my strengths and aspirations, making the entire process smooth and stress-free. Thank you for paving the way for my professional growth!",
+            image: "/api/placeholder/100/100"
+        },
+        {
+            name: "Sapthika Sandaruwani",
+            role: "HR Coordinator",
+            company: "Gamage Recruiters",
+            quote: "Finding a job that aligns with my passion was made possible by Gamage Recruiters. They not only provided me with an opportunity but also mentored me throughout the selection process. Today, I am excelling as an HR Coordinator, thanks to their continuous support and encouragement. I truly appreciate their efforts in shaping my career!",
+            image: "/api/placeholder/100/100"
+        },
+        {
+            name: "Rasika",
+            role: "Software Engineer",
+            company: "Gamage Recruiters",
+            quote: "I had been searching for the right job for months, but it was Gamage Recruiters that finally helped me land my dream job as a Software Engineer. Their dedication and professionalism ensured I was matched with a company that values my expertise. I highly recommend them to anyone seeking a fulfilling career path. Thank you for making this journey so rewarding!",
+            image: "/api/placeholder/100/100"
+        },
+        {
+            name: "Nehara Sampath",
+            role: "Business Analyst",
+            company: "Gamage Recruiters",
+            quote: "Gamage Recruiters played a crucial role in my career transition by helping me secure a position as a Business Analyst. Their recruitment process was seamless, and they took the time to understand my career goals. I am now working at a company that challenges and excites me every day. Thank you for making this possible!",
+            image: "/api/placeholder/100/100"
+        },
+        {
+            name: "Isuru Dananjaya",
+            role: "Operations Manager",
+            company: "Gamage Recruiters",
+            quote: "I sincerely appreciate Gamage Recruiters for helping me take a major step forward in my career. With their assistance, I secured an Operations Manager role at a leading company, and I couldn’t be happier with the growth opportunities. Their professionalism and commitment to job seekers are truly commendable. Thank you for making a difference in my career!",
+            image: "/api/placeholder/100/100"
+        },
+        {
+            name: "Nimsara Hettiarachchi",
+            role: "Digital Marketing Specialist",
+            company: "Gamage Recruiters",
+            quote: "Thanks to Gamage Recruiters, I found a position that perfectly matches my skills and ambitions. Today, I am thriving as a Digital Marketing Specialist, working on projects I love and growing professionally every day. Their team was supportive, transparent, and always available to guide me. I couldn’t have done it without them!",
+            image: "/api/placeholder/100/100"
+        },
+        {
+            name: "Saman Kumara",
+            role: "Logistics Supervisor",
+            company: "Gamage Recruiters",
+            quote: "Gamage Recruiters helped me secure a stable and rewarding position as a Logistics Supervisor. Their support, from resume building to interview preparation, made all the difference in my job search. I am now part of a great team, and I owe my success to their exceptional recruitment services. Thank you for your unwavering support!",
+            image: "/api/placeholder/100/100"
+        },
+        {
             name: "H.P.Malith Kalinga",
             role: "Team Lead Intern",
             company: "Gamage Recruiters",
