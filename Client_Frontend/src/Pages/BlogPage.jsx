@@ -9,7 +9,7 @@ const blogPosts = [
     category: "Industry Trends",
     date: "March 15, 2024",
     readTime: "5 min read",
-    image: "https://source.unsplash.com/random/800x600?office"
+    image: "https://www.activtrak.com/wp-content/uploads/2023/09/blog-header-7-steps-productive-remote-work-environment.jpg"
   },
   {
     id: 2,
@@ -18,7 +18,7 @@ const blogPosts = [
     category: "Career Advice",
     date: "March 12, 2024",
     readTime: "4 min read",
-    image: "https://source.unsplash.com/random/800x600?technology"
+    image: "https://lmic-cimt.ca/wp-content/uploads/2024/02/LMIC-Blog-RemoteWork-HeaderImg.jpg"
   },
   {
     id: 3,
@@ -27,7 +27,7 @@ const blogPosts = [
     category: "HR Insights",
     date: "March 10, 2024",
     readTime: "6 min read",
-    image: "https://source.unsplash.com/random/800x600?teamwork"
+    image: "https://www.zdnet.com/a/img/resize/05a31ea7c81fe137fd6e986943774def719abd95/2022/05/31/3caae7fa-5d4a-46ae-b483-a60b03540913/remote-working-from-home-man-professional-zoom-teams-video-call.jpg?auto=webp&width=1280"
   },
 ];
 

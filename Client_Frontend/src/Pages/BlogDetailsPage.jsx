@@ -24,9 +24,9 @@ export default function BlogDetailsPage() {
         author: {
           name: "Amara Fernando",
           role: "Senior HR Consultant",
-          image: "https://source.unsplash.com/random/100x100?portrait"
+          image: "https://miro.medium.com/v2/resize:fit:1400/1*NeRvhd48SzhZhQoyLwDsog.jpeg"
         },
-        image: "https://source.unsplash.com/random/1200x600?office",
+        image: "https://miro.medium.com/v2/resize:fit:1400/1*NeRvhd48SzhZhQoyLwDsog.jpeg",
         content: `
           <p class="mb-4">The landscape of work in Sri Lanka is undergoing a significant transformation, accelerated by global events and technological advancements. As we navigate through 2024, remote and hybrid work models continue to reshape how organizations operate and how professionals approach their careers.</p>
           
@@ -83,7 +83,7 @@ export default function BlogDetailsPage() {
           category: "Career Advice",
           date: "March 12, 2024",
           readTime: "4 min read",
-          image: "https://source.unsplash.com/random/800x600?technology"
+          image: "https://www.activtrak.com/wp-content/uploads/2023/09/blog-header-7-steps-productive-remote-work-environment.jpg"
         },
         {
           id: 3,
@@ -130,24 +130,7 @@ export default function BlogDetailsPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Back Button Bar */}
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/blog" className="flex items-center text-gray-700 hover:text-black transition-colors">
-              <ArrowLeft size={20} className="mr-2" />
-              <span className="font-medium">Back to Blog</span>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                <Share2 size={20} className="text-gray-600" />
-              </button>
-              <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                <Bookmark size={20} className="text-gray-600" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      
       
       {/* Hero Section */}
       <div className="relative h-96 md:h-[500px] overflow-hidden">
