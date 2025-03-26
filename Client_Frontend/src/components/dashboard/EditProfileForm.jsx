@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import Swal from 'sweetalert2';
+import { useChangeDateFormat } from "../../hooks/customHooks";
 
 const EditProfileForm = ({ user, setUser }) => {
   const [formData, setFormData] = useState({ ...user });
@@ -17,12 +21,59 @@ const EditProfileForm = ({ user, setUser }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setUser(formData);
-    alert("Profile updated successfully!");
+    console.log(formData);
+    Swal.fire({
+          title: 'Confirmation About Changing User Password',
+          text: 'Are you sure you want to change the password ?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Update'
+        }).then(async (result) => {
+          if(result.isConfirmed) {
+            try {
+              const updateResponse = await axios.put('http://localhost:5000/user/update-user-data', {
+                userId: formData.userId, 
+                firstName: formData.firstName, 
+                lastName: formData.lastName, 
+                gender: formData.gender, 
+                birthDate: useChangeDateFormat(formData.birthDate), 
+                address: formData.address, 
+                address2: formData.address2, 
+                phoneNumber1: formData.phoneNumber1, 
+                phoneNumber2: formData.phoneNumber2, 
+                photo: formData.photo, 
+                cv: formData.cv, 
+                linkedInLink: formData.linkedInLink, 
+                facebookLink: formData.facebookLink, 
+                portfolioLink: formData.portfolioLink, 
+                profileDescription: formData.profileDescription
+              });
+              console.log(updateResponse);
+              if(updateResponse.status == 200) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'User Data Updated!',
+                  text: 'User Password Updated Successfully!',
+                  confirmButtonColor: '#3085d6',
+                });
+              } else {
+                toast.error('Update Failed');
+                return;
+              }
+            } catch (error) {
+              console.log(error);
+              return;
+            }
+          }
+        });
+    // alert("Profile updated successfully!");
   };
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
+      <ToastContainer/>
       <h2 className="text-xl font-bold text-gray-900 mb-6">Edit Profile Information</h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -35,6 +86,7 @@ const EditProfileForm = ({ user, setUser }) => {
               type="text"
               name="firstName"
               value={formData.firstName}
+              placeholder="Enter Your First Name"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required
@@ -49,6 +101,7 @@ const EditProfileForm = ({ user, setUser }) => {
               type="text"
               name="lastName"
               value={formData.lastName}
+              placeholder="Enter Your Last Name"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required
@@ -63,6 +116,7 @@ const EditProfileForm = ({ user, setUser }) => {
               type="email"
               name="email"
               value={formData.email}
+              placeholder="Enter Your Email"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required
@@ -76,6 +130,7 @@ const EditProfileForm = ({ user, setUser }) => {
               id="phoneNumber1"
               type="tel"
               name="phoneNumber1"
+              placeholder="Enter Your Phone Number"
               value={formData.phoneNumber1}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -91,6 +146,7 @@ const EditProfileForm = ({ user, setUser }) => {
               type="tel"
               name="phoneNumber2"
               value={formData.phoneNumber2}
+              placeholder="Enter Your Secondary Phone Number"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
@@ -103,7 +159,7 @@ const EditProfileForm = ({ user, setUser }) => {
               id="birthDate"
               type="date"
               name="birthDate"
-              value={formData.birthDate}
+              value={useChangeDateFormat(formData.birthDate)}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
@@ -116,6 +172,7 @@ const EditProfileForm = ({ user, setUser }) => {
               id="gender"
               name="gender"
               value={formData.gender}
+              placeholder="Enter Your Gender"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
@@ -134,6 +191,7 @@ const EditProfileForm = ({ user, setUser }) => {
               type="text"
               name="address"
               value={formData.address}
+              placeholder="Enter Your Address"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
@@ -146,6 +204,7 @@ const EditProfileForm = ({ user, setUser }) => {
               id="address2"
               type="text"
               name="address2"
+              placeholder="Enter Your Secondary Address"
               value={formData.address2}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -160,6 +219,7 @@ const EditProfileForm = ({ user, setUser }) => {
             id="profileDescription"
             name="profileDescription"
             value={formData.profileDescription}
+            placeholder="Enter Your Profile Description"
             onChange={handleChange}
             rows="3"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -178,6 +238,7 @@ const EditProfileForm = ({ user, setUser }) => {
                 type="url"
                 name={field}
                 value={formData[field]}
+                placeholder="Enter Your Profile Link"
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
