@@ -235,7 +235,7 @@ const categories = [
           <div className={`text-center mb-16 transition-all duration-1000 ${isLoaded ? 'opacity-100 transform-none' : 'opacity-0 translate-y-10'}`}>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-4">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
-                Featured Events
+                Events
               </span>
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto mb-6 rounded-full"></div>

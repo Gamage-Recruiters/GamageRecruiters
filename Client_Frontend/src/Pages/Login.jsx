@@ -105,7 +105,8 @@ export default function LoginPage() {
         
         {/* Login header */}
         <div className="relative mb-8 text-center">
-          <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Welcome Back</h2>
+        <Link to="/dashboard">
+          <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600" >Welcome Back</h2></Link>
           <p className="mt-2 text-gray-500">Sign in to your account to continue</p>
         </div>
         

@@ -7,7 +7,7 @@ const navigation = [
   { name: 'About', href: '/about' },
   { name: 'Services', href: '/services' },
   { name: 'Jobs', href: '/jobs' },
-  { name: 'Event', href: '/workshop' },
+  { name: 'Workshops & Seminars', href: '/workshop' },
   { name: 'Blog', href: '/blog' },
   { name: 'Trusted Partners', href: '/trusted-partners' },
   { name: 'Contact', href: '/contact' },
