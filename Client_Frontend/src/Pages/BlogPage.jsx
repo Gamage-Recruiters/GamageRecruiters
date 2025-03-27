@@ -9,7 +9,7 @@ const blogPosts = [
     category: "Industry Trends",
     date: "March 15, 2024",
     readTime: "5 min read",
-    image: "https://source.unsplash.com/random/800x600?office"
+    image: "https://www.activtrak.com/wp-content/uploads/2023/09/blog-header-7-steps-productive-remote-work-environment.jpg"
   },
   {
     id: 2,
@@ -18,7 +18,7 @@ const blogPosts = [
     category: "Career Advice",
     date: "March 12, 2024",
     readTime: "4 min read",
-    image: "https://source.unsplash.com/random/800x600?technology"
+    image: "https://lmic-cimt.ca/wp-content/uploads/2024/02/LMIC-Blog-RemoteWork-HeaderImg.jpg"
   },
   {
     id: 3,
@@ -27,7 +27,7 @@ const blogPosts = [
     category: "HR Insights",
     date: "March 10, 2024",
     readTime: "6 min read",
-    image: "https://source.unsplash.com/random/800x600?teamwork"
+    image: "https://www.zdnet.com/a/img/resize/05a31ea7c81fe137fd6e986943774def719abd95/2022/05/31/3caae7fa-5d4a-46ae-b483-a60b03540913/remote-working-from-home-man-professional-zoom-teams-video-call.jpg?auto=webp&width=1280"
   },
 ];
 
@@ -151,45 +151,7 @@ export default function BlogPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-black text-white">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-bold mb-4">Gamage Recruiters</h3>
-              <p className="text-gray-400 text-sm">
-                Connecting talent with opportunity across Sri Lanka
-              </p>
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold uppercase mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/about" className="hover:text-white">About Us</Link></li>
-                <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
-                <li><Link to="/careers" className="hover:text-white">Careers</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold uppercase mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/blog" className="hover:text-white">Blog</Link></li>
-                <li><Link to="/faq" className="hover:text-white">FAQ</Link></li>
-                <li><Link to="/tools" className="hover:text-white">Career Tools</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold uppercase mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/privacy" className="hover:text-white">Privacy</Link></li>
-                <li><Link to="/terms" className="hover:text-white">Terms</Link></li>
-                <li><Link to="/cookies" className="hover:text-white">Cookies</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm text-gray-400">
-            © 2024 Gamage Recruiters. All rights reserved.
-          </div>
-        </div>
-      </footer>
+      
     </div>
   );
 }

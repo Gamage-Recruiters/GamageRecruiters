@@ -5,12 +5,14 @@ import {
   Calendar, MapPin, Phone, Mail, Link, 
   Linkedin, Facebook, FileText, Eye
 } from "lucide-react";
+import axios from "axios";
 
 // Import the components
 import ProfileOverview from "../components/dashboard/ProfileOverview";
 import AppliedJobs from "../components/dashboard/AppliedJobs";
 import EditProfileForm from "../components/dashboard/EditProfileForm";
 import AccountSettings from "../components/dashboard/AccountSettings";
+import { useConCatName, useChangeDateFormat, useSetUserProfileCompletion } from "../hooks/customHooks";
 
 // Animated Tab Context
 const TabContext = ({ children, defaultTab }) => {
@@ -98,31 +100,33 @@ export default function Dashboard() {
   const [userStatus, setUserStatus] = useState("Active");
   const [notifications, setNotifications] = useState(3);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
-  
-  const [user, setUser] = useState({
-    userId: "001",
-    fullName: "John Doe",
-    firstName: "John",
-    lastName: "Doe",
-    gender: "Male",
-    birthDate: "1995-06-15",
-    age: 29,
-    address: "123 Main Street, Colombo",
-    address2: "Apartment 4B",
-    phoneNumber1: "0771234567",
-    phoneNumber2: "0112233445",
-    portfolioLink: "https://johndoe.dev",
-    linkedInLink: "https://linkedin.com/in/johndoe",
-    facebookLink: "https://facebook.com/johndoe",
-    profileDescription: "Experienced Software Engineer with expertise in full-stack development.",
-    cv: "johndoe_cv.pdf",
-    photo: "https://via.placeholder.com/150",
-    email: "johndoe@example.com",
-    password: "********",
-    profileCompletion: 85,
-    memberSince: "January 2023",
-    lastActive: "Today at 10:30 AM"
-  });
+  const [user, setUser] = useState({});
+  const [profileCompletionPercentage, setProfileCompletionPercentage] = useState('');
+
+  // const [user, setUser] = useState({
+  //   userId: "001",
+  //   fullName: "John Doe",
+  //   firstName: "John",
+  //   lastName: "Doe",
+  //   gender: "Male",
+  //   birthDate: "1995-06-15",
+  //   age: 29,
+  //   address: "123 Main Street, Colombo",
+  //   address2: "Apartment 4B",
+  //   phoneNumber1: "0771234567",
+  //   phoneNumber2: "0112233445",
+  //   portfolioLink: "https://johndoe.dev",
+  //   linkedInLink: "https://linkedin.com/in/johndoe",
+  //   facebookLink: "https://facebook.com/johndoe",
+  //   profileDescription: "Experienced Software Engineer with expertise in full-stack development.",
+  //   cv: "johndoe_cv.pdf",
+  //   photo: "https://via.placeholder.com/150",
+  //   email: "johndoe@example.com",
+  //   password: "********",
+  //   profileCompletion: 85,
+  //   memberSince: "January 2023",
+  //   lastActive: "Today at 10:30 AM"
+  // });
   
   // Enhanced applied jobs data
   const [appliedJobs, setAppliedJobs] = useState([
@@ -194,10 +198,31 @@ export default function Dashboard() {
   });
   
   const [showTerminate, setShowTerminate] = useState(false);
-  const [formData, setFormData] = useState({...user});
+  const [formData, setFormData] = useState({...user}); 
   
+  const [cvLink, setCVLink] = useState('');
+  const [imageLink, setImageLink] = useState('');
+
   // Simulate first visit welcome
   useEffect(() => {
+    fetchUserProfileData();
+
+    if(user.cv) {
+      const cvURL = `http://localhost:5000/uploads/cvs/${user.cv}`;
+      console.log('cv-url', cvURL);
+      setCVLink(cvURL);
+    } else {
+      setCVLink('');
+    }
+
+    if(user.photo) {
+      const photoURL = `http://localhost:5000/uploads/images/${user.photo}`;
+      console.log('image-url', photoURL);
+      setImageLink(photoURL);
+    } else {
+      setImageLink('');
+    }
+    
     if (isFirstVisit) {
       setTimeout(() => {
         setIsFirstVisit(false);
@@ -332,6 +357,25 @@ export default function Dashboard() {
       </div>
     );
   };
+
+  const fetchUserProfileData = async () => {
+    try {
+      const loggedUserResponse = await axios.get('http://localhost:5000/session/profile-data');
+      console.log(loggedUserResponse.data.data);
+      if(loggedUserResponse.status == 200) {
+        setUser(loggedUserResponse.data.data[0]);
+        const profileCompletion = useSetUserProfileCompletion(loggedUserResponse.data.data[0]);
+        setProfileCompletionPercentage(profileCompletion);
+        console.log('Percentage', profileCompletionPercentage);
+      } else {
+        console.log('Error fetching user data');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
   
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 min-h-screen p-4 md:p-6 transition-all duration-300">
@@ -351,7 +395,7 @@ export default function Dashboard() {
             <div className="flex space-x-4 mb-4">
               <div className="text-center p-3 bg-indigo-50 rounded-lg">
                 <Award className="w-8 h-8 text-indigo-600 mx-auto mb-2" />
-                <span className="text-sm font-medium">Profile 85% complete</span>
+                <span className="text-sm font-medium">Profile {profileCompletionPercentage} complete</span>
               </div>
               <div className="text-center p-3 bg-green-50 rounded-lg">
                 <Briefcase className="w-8 h-8 text-green-600 mx-auto mb-2" />
@@ -385,8 +429,8 @@ export default function Dashboard() {
               </div>
               <div className="relative">
                 <img 
-                  src={user.photo} 
-                  alt={user.fullName} 
+                  src={imageLink || null} 
+                  alt={useConCatName(user.firstName, user.lastName)} 
                   className="w-16 h-16 rounded-full border-4 border-white border-opacity-20"
                 />
                 <div className="absolute bottom-0 right-0 bg-green-500 rounded-full w-4 h-4 border-2 border-white"></div>
@@ -396,7 +440,7 @@ export default function Dashboard() {
             <div className="relative z-10">
               <div className="flex flex-wrap items-center text-sm opacity-90 gap-4">
                 <div className="flex items-center">
-                  <Calendar size={16} className="mr-1" /> Member since {user.memberSince}
+                  <Calendar size={16} className="mr-1" /> Member since {useChangeDateFormat(user.createdAt)}
                 </div>
                 <div className="flex items-center">
                   <MapPin size={16} className="mr-1" /> {user.address}
@@ -493,12 +537,12 @@ export default function Dashboard() {
                   <div className="bg-indigo-50 rounded-lg p-3">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm text-gray-600">Profile Completion</span>
-                      <span className="text-sm font-medium">{user.profileCompletion}%</span>
+                      <span className="text-sm font-medium">{profileCompletionPercentage}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
                         className="bg-indigo-600 h-2 rounded-full" 
-                        style={{ width: `${user.profileCompletion}%` }}
+                        style={{ width: `${profileCompletionPercentage}` }}
                       ></div>
                     </div>
                   </div>

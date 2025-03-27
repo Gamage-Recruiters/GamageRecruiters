@@ -9,10 +9,17 @@ import AdminUsers from './pages/AdminUsers';
 import Jobs from './pages/Jobs';
 import Applications from './pages/Applications';
 import Workshops from './pages/Workshops';
-import Blog from './pages/Blog';
+import Blog from './pages/BlogManagement';
 import Partners from './pages/Partners';
 import ClientDetailsPage from './pages/Client/ClientView';
-
+import ViewAllJobs from './components/Jobs/ViewAllJobs';
+import AddJob from './components/Jobs/AddJob';
+import EditJob from './components/Jobs/EditJob';
+import CandidateDetailsView from './components/Jobs/CandidateDetailsView';
+import AddNewBlog from './pages/Blog/AddNewBlog';
+import EditBlog from './pages/Blog/EditBlog';
+import AddAdmin from './pages/Admin/AddAdmin';
+import EditAdmin from './pages/Admin/EditAdmin';
 function App() {
   // TODO: Implement actual auth logic
   const isAuthenticated = true;
@@ -29,11 +36,20 @@ function App() {
               <Route path="/clients" element={<ClientUsers />} />
               <Route path="/admins" element={<AdminUsers />} />
               <Route path="/jobs" element={<Jobs />} />
+              <Route path="/jobss" element={<ViewAllJobs />} />
+              <Route path="/jobss/add" element={<AddJob />} />
+              <Route path="/jobss/edit/:jobid" element={<EditJob />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="/workshops" element={<Workshops />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/partners" element={<Partners />} />
+              <Route path="/candidate" element={<CandidateDetailsView />} />
               <Route path="/clients/:clientId" element={<ClientDetailsPage />} />
+              <Route path="/blog/add" element={<AddNewBlog />} />
+              <Route path="/blog/edit/:blogId" element={<EditBlog />} />
+              <Route path="/admins/add" element={<AddAdmin />} />
+              <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
+
             </Route>
           ) : (
             <Route path="*" element={<Navigate to="/login" replace />} />

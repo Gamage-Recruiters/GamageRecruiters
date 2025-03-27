@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { af } from "date-fns/locale";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
+
     name: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     subject: "",
     message: "",
+
   });
-  
+
   const [formStatus, setFormStatus] = useState({
     submitted: false,
     loading: false,
@@ -23,48 +27,77 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormStatus({ ...formStatus, loading: true });
-    
+
+
     // Simulate API call
+
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log("Form Submitted:", formData);
-      setFormStatus({ submitted: true, loading: false, error: null });
+
+
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}contact/addinquiry`, formData).then((results) => {
+
+        console.log(results);
+
+        if (results.status === 201) {
+          setFormStatus({ submitted: true, loading: false, error: null });
+
+
+          // Reset form after successful submission
+          setTimeout(() => {
+
+            setFormData({
+              name: "",
+              email: "",
+              phoneNumber: "",
+              subject: "",
+              message: "",
+            });
+
+
+            setFormStatus({ submitted: false, loading: false, error: null });
+
+
+          }, 3000);
+
+        }
       
-      // Reset form after successful submission
-      setTimeout(() => {
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          subject: "",
-          message: "",
-        });
-        setFormStatus({ submitted: false, loading: false, error: null });
-      }, 3000);
+
+      }).catch((error) => {
+
+        console.log(error.response.data.message);
+
+
+          setFormStatus({ submitted: false, loading: false, error:  error.response.data.message });
+        
+      });
+
+
     } catch (error) {
       setFormStatus({ submitted: false, loading: false, error: "Failed to submit form. Please try again." });
+      console.log("error from try catch ", error);
     }
   };
 
   return (
-    
+
     <div className="min-h-screen bg-gradient-to-br from-blue-950 to-black py-16 px-4 sm:px-6 lg:px-8">
-      
+
       <div className="max-w-7xl mx-auto">
 
-      
+
         {/* Page Header */}
         <div className="text-center mb-16">
-        
-          <motion.h1 
+
+          <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }} 
+            transition={{ duration: 0.5 }}
             className="text-5xl font-extrabold text-white tracking-tight"
           >
             Let's Connect
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -72,7 +105,7 @@ export default function Contact() {
           >
             We're here to help and answer any questions you might have
           </motion.p>
-          </div>
+        </div>
 
         {/* Main Content */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -83,7 +116,7 @@ export default function Contact() {
                 <div>
                   <h2 className="text-3xl font-bold mb-6">Contact Information</h2>
                   <p className="max-w-sm text-blue-100 mb-12">
-                    Reach out to us with any questions, inquiries, or collaboration ideas. 
+                    Reach out to us with any questions, inquiries, or collaboration ideas.
                     Our team is ready to assist you.
                   </p>
 
@@ -154,12 +187,14 @@ export default function Contact() {
               </div>
             </div>
 
+
+
             {/* Contact Form */}
             <div className="p-8 lg:p-12">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a message</h3>
-              
+
               {formStatus.submitted ? (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-green-50 border-l-4 border-green-500 p-4 rounded"
@@ -176,10 +211,11 @@ export default function Contact() {
                   </div>
                 </motion.div>
               ) : (
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full name</label>
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">Your name</label>
                       <input
                         type="text"
                         name="name"
@@ -191,6 +227,7 @@ export default function Contact() {
                         placeholder="John Doe"
                       />
                     </div>
+
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                       <input
@@ -204,32 +241,39 @@ export default function Contact() {
                         placeholder="john@example.com"
                       />
                     </div>
+
+
+
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number (optional)</label>
+                      <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Phone Number (optional)</label>
                       <input
                         type="tel"
-                        name="phone"
-                        id="phone"
-                        value={formData.phone}
+                        name="phoneNumber"
+                        id="phoneNumber"
+                        value={formData.phoneNumber}
                         onChange={handleChange}
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="+94 76 123 4567"
                       />
                     </div>
+
+
                     <div>
-                      <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
-                      <input
-                        type="text"
-                        name="subject"
-                        id="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="How can we help you?"
-                      />
-                    </div>
+                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
+                    <input
+                      type="text"
+                      name="subject"
+                      id="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="How can we help you?"
+                    />
                   </div>
+                </div>
+         
+
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
                     <textarea
@@ -282,6 +326,17 @@ export default function Contact() {
           </div>
         </div>
 
+
+
+
+
+
+
+
+
+
+
+
         {/* Map Section */}
         <div className="mt-16 bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="p-8">
@@ -290,10 +345,12 @@ export default function Contact() {
               <iframe
                 title="Google Map"
                 className="w-full h-full"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168.5834686196353!2d79.86124321531878!3d6.927079795017655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2594271b6a89f%3A0x8c24d3d3685eddae!2sColombo!5e0!3m2!1sen!2slk!4v1644386366921!5m2!1sen!2slk"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5603.914264009148!2d79.90912786290613!3d6.700575460934763!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae247aae3eee7af%3A0x7ca4758b2ae23b70!2sGamage%20Recruiters%20(Pvt)%20Ltd!5e0!3m2!1sen!2slk!4v1742484636058!5m2!1sen!2slk"
                 allowFullScreen=""
                 loading="lazy"
               ></iframe>
+                
+
             </div>
           </div>
         </div>
@@ -321,13 +378,14 @@ export default function Contact() {
               </svg>
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">Live Chat</h3>
-            <p className="text-gray-600 mb-4">Get instant help from our customer service team through live chat.</p>
-            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <p className="text-gray-600 mb-4">Get instant help from our customer service team through whatsapp chat.</p>
+            <a href="https://wa.link/l1ewon" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               Start Chat
               <svg className="ml-2 -mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
-            </button>
+            </a>
+
           </div>
 
           <div className="bg-white p-8 rounded-2xl shadow-lg">

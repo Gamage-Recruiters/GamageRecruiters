@@ -184,6 +184,14 @@ export default function JobDetails() {
                 />
               </div>
               <div>
+                <label htmlFor="Phone" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input 
+                  type="Phone" 
+                  id="Phone" 
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                />
+              </div>
+              <div>
                 <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-1">Upload Resume</label>
                 <div className="border border-dashed border-gray-300 rounded-md p-8 text-center">
                   <p className="text-gray-500 mb-2">Drag and drop your resume here, or click to browse</p>

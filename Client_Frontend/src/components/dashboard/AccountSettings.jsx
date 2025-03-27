@@ -1,7 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Key, AlertTriangle } from "lucide-react";
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import Swal from 'sweetalert2';
+import 'react-toastify/dist/ReactToastify.css';
 
-const AccountSettings = () => {
+const AccountSettings = ({ user }) => {
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -10,13 +15,14 @@ const AccountSettings = () => {
 
   const [showTerminate, setShowTerminate] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswordData({ ...passwordData, [name]: value });
   };
 
-  const handlePasswordSubmit = (e) => {
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
 
     if (passwordData.newPassword.length < 6) {
@@ -27,25 +33,86 @@ const AccountSettings = () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setError("New passwords don't match!");
       return;
-    }
+    } 
 
-    setError("");
-    alert("Password changed successfully!"); // Replace with actual logic
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: ""
+    Swal.fire({
+      title: 'Confirmation About Changing User Password',
+      text: 'Are you sure you want to change the password ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Update'
+    }).then(async (result) => {
+      if(result.isConfirmed) {
+        try {
+          const changePasswordResponse = await axios.post('http://localhost:5000/user/change-password', { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
+          console.log(changePasswordResponse.data);
+          if(changePasswordResponse.status == 200) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Password Changed!',
+              text: 'User Password Changed Successfully!',
+              confirmButtonColor: '#3085d6',
+            });
+            setError("");
+            // alert("Password changed successfully!"); // Replace with actual logic
+            setPasswordData({
+              currentPassword: "",
+              newPassword: "",
+              confirmPassword: ""
+            });
+            navigate('/dashboard');
+          } else {
+            setError('Password Change Failed');
+            return;
+          }
+        } catch (error) {
+          console.log(error);
+          return;
+        }
+      }
     });
+
   };
 
   const handleTerminateAccount = () => {
-    if (window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
-      alert("Account terminated successfully."); // Replace with API call
-    }
+    Swal.fire({
+      title: 'Confirmation About Terminate Account',
+      text: 'Are you sure you want to terminate your account?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d63030',
+      cancelButtonColor: '#333cdd',
+      confirmButtonText: 'Terminate'
+    }).then(async (result) => {
+      if(result.isConfirmed) {
+        try {
+          const changePasswordResponse = await axios.post('http://localhost:5000/user/change-password', { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
+          console.log(changePasswordResponse.data);
+          if(changePasswordResponse.status == 200) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Account Terminated!',
+              text: 'User Account Terminated!',
+              confirmButtonColor: '#3085d6',
+            });
+            navigate('/');
+          } else {
+            setError('Password Change Failed');
+            return;
+          }
+        } catch (error) {
+          console.log(error);
+          return;
+        }
+      }
+    });
   };
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
+      <ToastContainer/>
       {/* Change Password Section */}
       <div className="mb-8">
         <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">

@@ -1,28 +1,102 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import axios from "axios";
 import { AtSign, Lock, ArrowRight } from "lucide-react";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); // 👈 Hook for navigation
   
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    
+    if(!email || !password) {
+      toast.error('Both Email & Password cannot be empty');
+      return;
+    }
+
     console.log("Logging in", { email, password });
 
-    // Simulate login validation (replace with actual authentication logic)
-    if (email && password) {
-      navigate("/dashboard"); // 👈 Redirect to dashboard on successful login
-    } else {
-      alert("Please enter valid credentials!");
+    try {
+      const loginResponse = await axios.post('http://localhost:5000/auth/login', { email: email, password: password });
+      console.log(loginResponse);
+      if(loginResponse.status == 200) {
+        toast.success('User Login Successfull');
+        navigate('/dashboard')
+      } else {
+        toast.error('User Login Failed');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
     }
   };
+
+  const loginViaGmail = async (e) => {
+    e.preventDefault();
+    console.log("Logging in via Gmail");
+
+    try {
+      const loginViaGmailResponse = await axios.get('http://localhost:5000/google/login');
+      console.log(loginViaGmailResponse);
+      if(loginViaGmailResponse.status == 200) {
+        console.log(loginViaGmailResponse.data);
+        window.location.href = loginViaGmailResponse.data.data; // Redirect to Google OAuth ...
+      } else {
+        toast.error('Something Went Wrong');
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  };
+
+  const loginViaFacebook = async (e) => {
+    e.preventDefault();
+    console.log("Logging in via Facebook");
+
+    try {
+      const loginViaFacebookResponse = await axios.get('http://localhost:5000/facebook/login');
+      console.log(loginViaFacebookResponse);
+      if(loginViaFacebookResponse.status == 200) {
+        console.log(loginViaFacebookResponse.data);
+        window.location.href = loginViaFacebookResponse.data.data; // Redirect to Facebook OAuth ...
+      } else {
+        toast.error('Something Went Wrong');
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  } 
+
+  const loginViaLinkedIn = async (e) => {
+    e.preventDefault();
+    console.log("Logging in via LinkedIn");
+
+    try {
+      const loginViaLinkedInResponse = await axios.get('http://localhost:5000/linkedin/login');
+      console.log(loginViaLinkedInResponse);
+      if(loginViaLinkedInResponse.status == 200) {
+        console.log(loginViaLinkedInResponse.data);
+        window.location.href = loginViaLinkedInResponse.data.data; // Redirect to Google OAuth ...
+      } else {
+        toast.error('Something Went Wrong');
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
   
   return (
     
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 via-indigo-800 to-purple-200">
-      
+      <ToastContainer/>
       <div className="relative w-full max-w-md p-10 overflow-hidden bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl">
       
         {/* Decorative elements */}
@@ -31,7 +105,8 @@ export default function LoginPage() {
         
         {/* Login header */}
         <div className="relative mb-8 text-center">
-          <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Welcome Back</h2>
+        <Link to="/dashboard">
+          <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600" >Welcome Back</h2></Link>
           <p className="mt-2 text-gray-500">Sign in to your account to continue</p>
         </div>
         
@@ -64,7 +139,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="flex justify-end mt-2">
-              <Link to="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-800">
+              <Link to="/emailCheck" className="text-sm text-indigo-600 hover:text-indigo-800">
                 Forgot password?
               </Link>
             </div>
@@ -91,13 +166,13 @@ export default function LoginPage() {
           {/* Social login options could be added here */}
           <div className="flex justify-center gap-6 mt-6">
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
-              <span className="text-lg font-bold text-blue-600">f</span>
+              <span className="text-lg font-bold text-blue-600" onClick={loginViaFacebook}>F</span>
             </div>
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
-              <span className="text-lg font-bold text-blue-400">t</span>
+              <span className="text-lg font-bold text-blue-400" onClick={loginViaLinkedIn}>L</span>
             </div>
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
-              <span className="text-lg font-bold text-red-500">g</span>
+              <span className="text-lg font-bold text-red-500" onClick={loginViaGmail}>G</span>
             </div>
           </div>
         </div>
