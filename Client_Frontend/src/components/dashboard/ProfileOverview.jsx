@@ -207,10 +207,10 @@ const ProfileOverview = ({ user }) => {
           </h3>
           <div className="space-y-2 text-gray-700">
             <p className="flex items-center gap-2">
-              <span className="font-medium">Email:</span> {user.email}
+              <span className="font-medium">Email:</span> {user.email || 'Not Provided'}
             </p>
             <p className="flex items-center gap-2">
-              <span className="font-medium">Primary Phone:</span> {user.phoneNumber1}
+              <span className="font-medium">Primary Phone:</span> {user.phoneNumber1 || 'Not Provided'}
             </p>
             <p className="flex items-center gap-2">
               <span className="font-medium">Secondary:</span> {user.phoneNumber2 || 'Not Provided'}
@@ -225,13 +225,13 @@ const ProfileOverview = ({ user }) => {
           </h3>
           <div className="space-y-2 text-gray-700">
             <p className="flex items-center gap-2">
-              <span className="font-medium">Address:</span> {user.address}
+              <span className="font-medium">Address:</span> {user.address || 'Not Provided'}
             </p>
             <p className="flex items-center gap-2">
-              <span className="font-medium">Birth Date:</span> {useChangeDateFormat(user.birthDate)}
+              <span className="font-medium">Birth Date:</span> {useChangeDateFormat(user.birthDate) || 'Not Provided'}
             </p>
             <p className="flex items-center gap-2">
-              <span className="font-medium">Age:</span> {useCalculateAge(useChangeDateFormat(user.birthDate))}
+              <span className="font-medium">Age:</span> {user.birthDate ? useCalculateAge(useChangeDateFormat(user.birthDate)) : 'Not Provided'}
             </p>
           </div>
         </div>
