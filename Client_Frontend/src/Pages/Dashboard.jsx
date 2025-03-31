@@ -2,10 +2,14 @@ import { useState, useEffect } from "react";
 import { 
   User, Briefcase, Edit3, Settings,
   ChevronRight, Shield, Award, Bell, 
-  Calendar, MapPin, Phone, Mail, Link, 
+  Calendar,LogOut, MapPin, Phone, Mail, Link, 
   Linkedin, Facebook, FileText, Eye
 } from "lucide-react";
 import axios from "axios";
+
+
+
+
 
 // Import the components
 import ProfileOverview from "../components/dashboard/ProfileOverview";
@@ -653,17 +657,15 @@ export default function Dashboard() {
       </div>
       
       {/* Fixed Position Notification Bell */}
-      <div className="fixed bottom-6 right-6">
-        <button className="w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 relative">
-          <Bell size={20} />
-          {notifications > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-              {notifications}
-            </span>
-          )}
-        </button>
-      </div>
       
+      
+      <div className="fixed bottom-6 right-6">
+      <button className="w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200">
+        <LogOut size={20} />
+      </button>
+    </div>
+
+
       {/* Add CSS animations */}
       <style jsx>{`
         .fade-in {
