@@ -2,32 +2,6 @@ import { Link } from 'react-router-dom';
 import TestominolsSection from '../components/Home/TestominolsSection';
 import TeamMembers from '../components/Home/TeamSection';
 
-const team = [
-  {
-    name: 'Rajitha Gamage',
-    role: 'Founder & CEO',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80',
-    bio: 'With over 15 years of experience in recruitment and HR consulting, Rajitha founded Gamage Recruiters with a vision to transform the recruitment landscape in Sri Lanka.'
-  },
-  {
-    name: 'Malini Fernando',
-    role: 'Head of Operations',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80',
-    bio: 'Malini brings 10 years of operational excellence and a deep understanding of HR processes to ensure smooth recruitment operations.'
-  },
-  {
-    name: 'Ashan Perera',
-    role: 'Senior Recruitment Consultant',
-    image: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80',
-    bio: 'Specializing in IT and engineering recruitment, Ashan has successfully placed over 500 professionals in leading companies.'
-  },
-  {
-    name: 'Priya Mendis',
-    role: 'HR Consultant',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80',
-    bio: 'Priya focuses on helping companies build strong HR practices and creating effective recruitment strategies.'
-  }
-];
 
 const stats = [
   { label: 'Years in Business', value: '10+' },
