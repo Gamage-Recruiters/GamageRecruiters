@@ -8,7 +8,7 @@ const teamMembers = [
         image: 'https://example.com/harshana.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/harshanagamage',
-          email: 'harshana@gamagerecruiters.com'
+          email: 'gamagerecruiters@gmail.com'
         }
       },
       {
@@ -18,7 +18,7 @@ const teamMembers = [
         image: 'https://example.com/jayani.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/jayanibandara',
-          email: 'jayani@gamagerecruiters.com'
+          email: 'gamagerecruiters@gmail.com'
         }
       },
       {
@@ -28,7 +28,7 @@ const teamMembers = [
         image: 'https://example.com/rasika.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/rasikahemanthi',
-          email: 'rasika@gamagerecruiters.com'
+          email: 'gamagerecruiters@gmail.com'
         }
       },
       {
@@ -38,7 +38,7 @@ const teamMembers = [
         image: 'https://example.com/theekshana.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/theekshanadeegayu',
-          email: 'theekshana@gamagerecruiters.com'
+          email: 'gamagerecruiters@gmail.com'
         }
       },
       {
@@ -48,7 +48,7 @@ const teamMembers = [
         image: 'https://example.com/nirmani.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/nirmanibhagya',
-          email: 'nirmani@gamagerecruiters.com'
+          email: 'gamagerecruiters@gmail.com'
         }
       },
       {
@@ -58,29 +58,29 @@ const teamMembers = [
         image: 'https://example.com/sayurie.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/sayurienimesha',
-          email: 'sayurie@gamagerecruiters.com'
+          email: 'gamagerecruiters@gmail.com'
+        }
+      },
+      {
+        name: 'Imasha Rassanjalee',
+        role: 'Project Management Intern',
+        bio: 'Imasha Rassanjalee, as a Project Management Intern, plays a vital role in supporting the team with planning, coordination, and execution of key projects. Her dedication, analytical mindset, and problem-solving skills contribute to smooth project workflows and efficient task management. Her keen attention to detail ensure project milestones are met, making her an integral part of the team’s success.',
+        image: 'https://example.com/imesha.jpg',
+        socialLinks: {
+          linkedin: 'https://linkedin.com/in/imesha',
+          email: 'gamagerecruiters@gmail.com'
         }
       },
       {
         name: 'Sasindu Dilurnga',
-        role: 'Your Role Here',
-        bio: 'Your bio here',
-        image: 'https://example.com/sasindu.jpg',
+        role: 'Team Lead , Dev ',
+        bio: 'Sasindu Diluranga, as Team Leader of the Developer Team and Software Engineer Intern, oversees the development process, ensuring efficient collaboration and innovative solutions. His expertise in software engineering and team leadership drives the success of projects, fostering a productive and forward-thinking development environment.',
+        image: 'https://i.ibb.co/M7CTKHH/Whats-App-Image-2024-10-07-at-9-58-55-PM-removebg-preview.png',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/sasindudilurnga',
-          email: 'your-email@gamagerecruiters.com'
+          email: 'sasindu.diluranga@gmail.com'
         }
       },
-      {
-        name: 'Imesha [Last Name]',
-        role: 'Her Role Here',
-        bio: 'Her bio here',
-        image: 'https://example.com/imesha.jpg',
-        socialLinks: {
-          linkedin: 'https://linkedin.com/in/imesha',
-          email: 'imesha@gamagerecruiters.com'
-        }
-  }
 ];
 
 export default teamMembers;
