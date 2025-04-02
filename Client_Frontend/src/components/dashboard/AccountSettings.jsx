@@ -46,7 +46,7 @@ const AccountSettings = ({ user }) => {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const changePasswordResponse = await axios.post('http://localhost:5000/user/change-password', { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
+          const changePasswordResponse = await axios.post('http://localhost:8000/user/change-password', { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
           console.log(changePasswordResponse.data);
           if(changePasswordResponse.status == 200) {
             Swal.fire({
@@ -88,7 +88,7 @@ const AccountSettings = ({ user }) => {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const changePasswordResponse = await axios.post('http://localhost:5000/user/change-password', { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
+          const changePasswordResponse = await axios.post('http://localhost:8000/user/change-password', { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
           console.log(changePasswordResponse.data);
           if(changePasswordResponse.status == 200) {
             Swal.fire({

@@ -124,4 +124,10 @@ const useCheckValidImageFile = (file) => {
     return true;
 }
 
-export { useConCatName, useChangeDateFormat, useCalculateAge, useSetUserProfileCompletion, useCheckValidImageFile, useCheckValidCVFile };
+const useSetDateToTimeStamp = (timeStamp) => {
+    const date = new Date(timeStamp * 1000); // Convert seconds to milliseconds ...
+    console.log(date);
+    return date.toISOString(); // Return the date in ISO format ...
+}
+
+export { useConCatName, useChangeDateFormat, useCalculateAge, useSetUserProfileCompletion, useCheckValidImageFile, useCheckValidCVFile, useSetDateToTimeStamp };

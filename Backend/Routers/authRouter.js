@@ -23,4 +23,7 @@ router.route('/email-check').post(authController.emailCheck);
 // Route for Resetting Password ...
 router.route('/reset-password').post(authController.resetPassword); 
 
+// Route for logout ...
+router.route('/logout').get(authController.logout);
+
 module.exports = router;

@@ -1,13 +1,14 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const pool = require("../../config/dbConnection");
+const { pool } = require("../../config/dbConnection");
 const { localStorage, decryptData } = require('../../utils/localStorage');
 
 dotenv.config();
 
 async function authenticateToken(req, res, next) {
-    const authHeader = req.headers['auth'];
+    const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
+    // console.log(token);
 
     if(!token) {
         return res.status(401).json({ message: 'Access Denied. No Token' });
@@ -15,12 +16,7 @@ async function authenticateToken(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        if(!decoded) {
-            return res.status(403).send('Invalid JWT token');
-        }
-
-        console.log(decoded);
+        // console.log(decoded);
 
         const key = 'Saved User Data';
 
@@ -28,17 +24,17 @@ async function authenticateToken(req, res, next) {
         const storedData = localStorage.getItem(key);
 
         if(!storedData) {
-            console.log(`No data found for key: ${key}`);
+            // console.log(`No data found for key: ${key}`);
             return res.status(404).send('No Logged User data found. Error Occured.');
         } 
 
         const { encryptedData, iv } = JSON.parse(storedData); // Parse stored JSON ...
         const decryptedData = decryptData(encryptedData, iv); // Decrypt data ...
         const retrievedArray = JSON.parse(decryptedData); // Convert string back to array ...
-        console.log("Decrypted Array:", retrievedArray);
+        // console.log("Decrypted Array:", retrievedArray);
         const id = retrievedArray[0];
 
-        const query = 'SELECT * FROM sessions WHERE token = ? AND Id = ? AND endedAt = NULL';
+        const query = 'SELECT * FROM sessions WHERE token = ? AND Id = ? AND endedAt IS NULL';
         pool.query(query, [token, id], (error, result) => {
             if(error) {
                 console.log(error);
@@ -53,6 +49,7 @@ async function authenticateToken(req, res, next) {
         });
 
     } catch (error) {
+        console.log(error);
         return res.status(403).json({ message: 'Invalid token.' });
     }
 }

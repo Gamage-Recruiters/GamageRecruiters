@@ -29,20 +29,29 @@ async function getLoggedUserData (req, res) {
 } 
 
 async function generateNewAccessToken (req, res) {
-    const { token, tokenExpirationDate } = req.body;
+    const { token } = req.body;
 
-    if(!token || !tokenExpirationDate) {
-        return res.status(400).send('Token and Expiration Date are required');
+    if(!token) {
+        return res.status(400).send('Token is required');
     }
 
     try {
-        const response = await generateNewToken(token, tokenExpirationDate);
-
-        if(!response) {
-            return res.status(401).send('Invalid Token or Expiration Date');
+        const newToken = await generateNewToken(token);
+        
+        if (!newToken || newToken === 'Invalid Token' || newToken === 'Session Data Not Found') {
+            return res.status(401).send('Invalid or Expired Token');
         }
 
-        return res.status(200).json({ message: 'Token generated successfully', token: response });
+        return res.status(200).json({ message: 'Token generated successfully', token: newToken });
+        
+        // const response = await generateNewToken(token);
+        // console.log(response);
+
+        // if(!response) {
+        //     return res.status(401).send('Invalid Token or Expiration Date');
+        // }
+
+        // return res.status(200).json({ message: 'Token generated successfully', token: response });
 
     } catch (error) {
         console.log(error);

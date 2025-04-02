@@ -26,7 +26,7 @@ require('./auth/passportAuthLinkedIn');
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 dbconnect();  ///database Connecting 
 
@@ -85,11 +85,14 @@ app.use("/api/contact",contactRouter);
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
 app.use('/auth', authRouter);
+
 app.use('/session', sessionRouter);
+
 app.use('/', googleAuthRouter);
 app.use('/', facebookAuthRouter);
 app.use('/', linkedInAuthRouter);
-app.use('/api/jobapplications', jobApplicationRouter);
+
+app.use('/api/jobapplications', jobapplicationRouter);
 app.use('/api/jobs', JobsManagement); 
 
 

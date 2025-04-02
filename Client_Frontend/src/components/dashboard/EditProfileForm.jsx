@@ -33,7 +33,7 @@ const EditProfileForm = ({ user, setUser }) => {
         }).then(async (result) => {
           if(result.isConfirmed) {
             try {
-              const updateResponse = await axios.put('http://localhost:5000/user/update-user-data', {
+              const updateResponse = await axios.put('http://localhost:8000/user/update-user-data', {
                 userId: formData.userId, 
                 firstName: formData.firstName, 
                 lastName: formData.lastName, 

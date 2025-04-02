@@ -42,7 +42,7 @@ const ResetPassword = ({ email }) => {
         }
 
         try {
-            const resetPasswordResponse = await axios.post('http://localhost:5000/auth/reset-password', { email: userEmail, newPassword: password });
+            const resetPasswordResponse = await axios.post('http://localhost:8000/auth/reset-password', { email: userEmail, newPassword: password });
             console.log(resetPasswordResponse);
             if(resetPasswordResponse.status == 200) {
                 toast.success('Password Reset Successfull');
