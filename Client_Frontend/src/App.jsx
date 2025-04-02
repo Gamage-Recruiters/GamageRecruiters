@@ -19,6 +19,7 @@ import WorkshopsAndSeminarsPage from './Pages/WorkshopsAndSeminarsPage';
 import VerifyEmail from './Pages/VerifyEmail';
 import EmailCheck from './Pages/EmailCheck';
 import ResetPassword from './Pages/ResetPassword';
+import TestimonialsSection from './Pages/TestimonialsSection';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:blogid" element={<BlogDetailsPage />} />
             <Route path="/workshop" element={<WorkshopsAndSeminarsPage />} />
+            <Route path="/testimonials" element={<TestimonialsSection />} />
           </Routes>
         </main>
         <Footer />
