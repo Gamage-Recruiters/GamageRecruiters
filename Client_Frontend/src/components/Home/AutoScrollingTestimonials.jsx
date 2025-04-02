@@ -146,11 +146,11 @@ const AutoScrollingTestimonials = () => {
     if (scrollWidth <= clientWidth) return;
     
     let scrollPosition = 0;
-    const scrollSpeed = 0.5; // pixels per frame
-    const scrollPause = 3000; // pause at each end in milliseconds
+    const scrollSpeed = 0.5; 
+    const scrollPause = 3000; 
     let isPaused = false;
     let pauseTimeout = null;
-    let direction = 1; // 1 for right, -1 for left
+    let direction = 1; 
 
     
 
