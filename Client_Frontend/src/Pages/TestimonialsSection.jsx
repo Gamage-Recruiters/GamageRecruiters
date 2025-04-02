@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Quote, Star } from 'lucide-react';
 
 const TestimonialsSection = () => {
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const testimonialsPerPage = 3;
+  const navigate = useNavigate();
 
   const testimonials = [
     {
@@ -135,8 +137,8 @@ const TestimonialsSection = () => {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Back Button */}
         <div className="mb-12">
-          <button 
-            onClick={goBack}
+        <button
+            onClick={() => navigate('/')}
             className="flex items-center text-indigo-400 hover:text-indigo-300 transition-colors duration-300 font-medium"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
