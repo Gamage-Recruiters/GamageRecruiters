@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, MapPin, Briefcase, DollarSign, Calendar, Clock } from 'lucide-react';
 import TrustedPartnersSection from '../components/Home/TrustedPartnersSection';
+import AutoScrollingTestimonials from '../components/Home/AutoScrollingTestimonials';
 const featuredJobs = [
   {
     id: 1,
@@ -164,38 +165,146 @@ export default function Home() {
 
   const partners = [
     { id: 1, name: "CBL", logo: "https://d1l8km4g5s76x5.cloudfront.net/Production/exb_doc/2015/16038/thumb_2015_16038_15864_4687.png", category: "Food & Beverage" },
-    { id: 2, name: "Global Finance", logo: "data:image/png;base64,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", category: "Finance" },
-    { id: 3, name: "Health Plus", logo: "https://www.hac.lk/uploads/brand/pelwatte-LSrs5cqkat.png", category: "Healthcare" },
-    { id: 4, name: "Edu Alliance", logo: "https://upload.wikimedia.org/wikipedia/en/0/0a/Union_Assurance_logo.png", category: "Education" },
-    { id: 5, name: "Build Masters", logo: "https://i.ibb.co/pvn864CX/image.png", category: "Construction" },
-    { id: 6, name: "Tech Innovate", logo: "https://d1l8km4g5s76x5.cloudfront.net/Production/exb_doc/2015/16038/thumb_2015_16038_15864_4687.png", category: "Technology" },
-    { id: 7, name: "Green Energy", logo: "https://www.hac.lk/uploads/brand/pelwatte-LSrs5cqkat.png", category: "Energy" },
-    { id: 8, name: "Urban Living", logo: "https://upload.wikimedia.org/wikipedia/en/0/0a/Union_Assurance_logo.png", category: "Real Estate" }
+    { id: 2, name: "Abans", logo: "data:image/png;base64,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", category: "Finance" },
+    { id: 3, name: "Palawatte", logo: "https://www.hac.lk/uploads/brand/pelwatte-LSrs5cqkat.png", category: "Healthcare" },
+    { id: 4, name: "Union Assurance", logo: "https://upload.wikimedia.org/wikipedia/en/0/0a/Union_Assurance_logo.png", category: "Education" },
+    { id: 5, name: "Cambridege College", logo: "https://i.ibb.co/pvn864CX/image.png", category: "Education" },
+    { id: 6, name: "Solex Group", logo: "https://i.ibb.co/cKLM6TLR/solex.jpg", category: "Enginnering" },
+    { id: 7, name: "Fits Retail", logo: "https://i.ibb.co/RTNXvLjB/fits.png", category: "Retail" },
+    { id: 8, name: "GentXT", logo: "https://i.ibb.co/RmKtrf2/genxt.jpg", category: "Accessories" },
+    { id: 9, name: "Candy Factory", logo: "https://i.ibb.co/84GHSY1H/cfactory.png", category: "Candy" },
+    { id: 10, name: "Transnational Group", logo: "https://i.ibb.co/gZzKDChF/transn.jpg", category: "IT & Software" },
+    { id: 11, name: "BCAS Campus", logo: "https://i.ibb.co/NqKnHMr/bcas.png", category: "Education" },
+    { id: 12, name: "DPR", logo: "https://i.ibb.co/NdcdmnmT/dpr.png", category: "Business Consultant" },
+    { id: 13, name: "Anverally Tea", logo: "https://i.ibb.co/Xk6bw5xF/anverelytea.jpg", category: "Tea Store" },
+    { id: 14, name: "Lalan Engineering", logo: "https://i.ibb.co/4g8wymL7/lalan.jpg", category: "Enginnering" },
+    { id: 15, name: "TukTuk", logo: "https://i.ibb.co/wN6xNrsS/tuktuk.png", category: "Travel" },
+    { id: 16, name: "Captial One", logo: "https://i.ibb.co/YTQTpfNW/capitalone.png", category: "Finance" },
+    { id: 17, name: "LLP Rodrigo & Sons", logo: "https://i.ibb.co/YTLvKkC6/llp.jpg", category: "Plastic" },
+    { id: 18, name: "Gajma", logo: "https://i.ibb.co/0R0VHqBx/gajma.jpg", category: "Tax Consultant" },
+    { id: 19, name: "Lumala", logo: "https://i.ibb.co/prxYCMfx/LUMALA.jpg", category: "Bicycle" },
+    { id: 20, name: "Trident Corporation", logo: "https://i.ibb.co/KxQR7zmT/trident.png", category: "IT" },
+    { id: 21, name: "Transocean Duty Free", logo: "https://i.ibb.co/mFHfsjFg/Trans-Ocean.png", category: "Shopping" },
+    { id: 22, name: "Stalione Lanka", logo: "https://i.ibb.co/WWwpdM0p/stallion.jpg", category: "Business management" },
+    { id: 23, name: "Prime Group", logo: "https://i.ibb.co/GvsdH7ms/primegroup.png", category: "Residencies" },
+    { id: 24, name: "SriTrims Limited", logo: "https://i.ibb.co/v6zVsVwL/sritrims.png", category: "Garment Exporter" },
+    { id: 25, name: "Antler Group", logo: "https://i.ibb.co/0pbkzPgj/antler.jpg", category: "Fabric" }
   ];
 
   const testimonials = [
     {
-      name: "Damayantha Surampika",
-      role: "Senior Marketing Executive",
-      company: "Gamage Recruiters",
-      quote: "I am beyond grateful to Gamage Recruiters for connecting me with the perfect career opportunity. Their guidance and support helped me secure a role as a Senior Marketing Executive at a reputed firm, where I can truly showcase my skills. The recruitment team understood my strengths and aspirations, making the entire process smooth and stress-free. Thank you for paving the way for my professional growth!",
-      image: "/api/placeholder/100/100"
+        name: "Damayantha Surampika",
+        role: "Senior Marketing Executive",
+        company: "Gamage Recruiters",
+        quote: "I am beyond grateful to Gamage Recruiters for connecting me with the perfect career opportunity. Their guidance and support helped me secure a role as a Senior Marketing Executive at a reputed firm, where I can truly showcase my skills. The recruitment team understood my strengths and aspirations, making the entire process smooth and stress-free. Thank you for paving the way for my professional growth!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
     },
     {
-      name: "Nehara Sampath",
-      role: "Business Analyst",
-      company: "Gamage Recruiters",
-      quote: "Gamage Recruiters played a crucial role in my career transition by helping me secure a position as a Business Analyst. Their recruitment process was seamless, and they took the time to understand my career goals. I am now working at a company that challenges and excites me every day. Thank you for making this possible!",
-      image: "/api/placeholder/100/100"
+        name: "Sapthika Sandaruwani",
+        role: "HR Coordinator",
+        company: "Gamage Recruiters",
+        quote: "Finding a job that aligns with my passion was made possible by Gamage Recruiters. They not only provided me with an opportunity but also mentored me throughout the selection process. Today, I am excelling as an HR Coordinator, thanks to their continuous support and encouragement. I truly appreciate their efforts in shaping my career!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
     },
     {
-      name: "Isuru Dananjaya",
-      role: "Operations Manager",
-      company: "Gamage Recruiters",
-      quote: "I sincerely appreciate Gamage Recruiters for helping me take a major step forward in my career. With their assistance, I secured an Operations Manager role at a leading company, and I couldn’t be happier with the growth opportunities. Their professionalism and commitment to job seekers are truly commendable. Thank you for making a difference in my career!",
-      image: "/api/placeholder/100/100"
+        name: "Rasika",
+        role: "Software Engineer",
+        company: "Gamage Recruiters",
+        quote: "I had been searching for the right job for months, but it was Gamage Recruiters that finally helped me land my dream job as a Software Engineer. Their dedication and professionalism ensured I was matched with a company that values my expertise. I highly recommend them to anyone seeking a fulfilling career path. Thank you for making this journey so rewarding!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
     },
-  ]
+    {
+        name: "Nehara Sampath",
+        role: "Business Analyst",
+        company: "Gamage Recruiters",
+        quote: "Gamage Recruiters played a crucial role in my career transition by helping me secure a position as a Business Analyst. Their recruitment process was seamless, and they took the time to understand my career goals. I am now working at a company that challenges and excites me every day. Thank you for making this possible!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Isuru Dananjaya",
+        role: "Operations Manager",
+        company: "Gamage Recruiters",
+        quote: "I sincerely appreciate Gamage Recruiters for helping me take a major step forward in my career. With their assistance, I secured an Operations Manager role at a leading company, and I couldn’t be happier with the growth opportunities. Their professionalism and commitment to job seekers are truly commendable. Thank you for making a difference in my career!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Nimsara Hettiarachchi",
+        role: "Digital Marketing Specialist",
+        company: "Gamage Recruiters",
+        quote: "Thanks to Gamage Recruiters, I found a position that perfectly matches my skills and ambitions. Today, I am thriving as a Digital Marketing Specialist, working on projects I love and growing professionally every day. Their team was supportive, transparent, and always available to guide me. I couldn’t have done it without them!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Saman Kumara",
+        role: "Logistics Supervisor",
+        company: "Gamage Recruiters",
+        quote: "Gamage Recruiters helped me secure a stable and rewarding position as a Logistics Supervisor. Their support, from resume building to interview preparation, made all the difference in my job search. I am now part of a great team, and I owe my success to their exceptional recruitment services. Thank you for your unwavering support!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "H.P.Malith Kalinga",
+        role: "Team Lead Intern",
+        company: "Gamage Recruiters",
+        quote: "My six-month internship as a Software Team Lead Intern at Gamage Recruiters was truly an unforgettable experience. I had the privilege of working with an incredible team, tackling real-world challenges, and growing both technically and personally. Every project we built, every problem we solved together, and every late-night debugging session shaped me into a more confident and skilled developer. The support and collaboration made it feel like more than just an internship—it felt like family. Grateful for every moment!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Sonali Nipunika",
+        role: "HR Coordinator ",
+        company: "Gamage Recruiters",
+        quote: "My full time opportunity at Gamage Recruiters was a turning point in my career. I gained hands-on experience in recruitment, employee engagement, and HR operations, which helped me secure a full-time Senior HR Executive. The mentorship and real-world exposure I received were invaluable. I am truly grateful for the opportunity!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Kasun Jayasekara",
+        role: "SE Intern",
+        company: "Gamage Recruiters",
+        quote: "Gamage Recruiters provided me with an incredible platform to enhance my technical and problem-solving skills. During my time here, I worked on real-world projects that strengthened my knowledge of the MERN stack. Today, I am a Full-Stack Developer and I owe a huge part of my success to the amazing learning experience I had at Gamage Recruiters!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Nadeesha Wijesinghe",
+        role: "BA Intern",
+        company: "Gamage Recruiters",
+        quote: "I started as a Business Analyst Intern at Gamage Recruiters, where I learned data analytics, market research, and business optimization strategies. The practical experience and guidance I received helped me land a role as a Data Analyst",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "P.Jenojan",
+        role: "SE Intern",
+        company: "Gamage Recruiters",
+        quote: "Gamage Recruiters gave me the perfect platform to develop my skills and gain industry exposure.",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Sadun Madusanka",
+        role: "Social Media Marketing Intern",
+        company: "Gamage Recruiters",
+        quote: "Gamage Recruiters gave me the confidence to pursue a career in digital marketing. From managing LinkedIn and YouTube to developing content strategies, I gained valuable skills that helped me secure a full-time role as a Social Media Strategist.",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Rashmika Fernando",
+        role: "UI/UX Intern",
+        company: "Gamage Recruiters",
+        quote: "Working as a Creative Designer for one year at Gamage Recruiters was an enriching experience. I had the opportunity to work on website and mobile UI/UX projects, which strengthened my design skills.",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Nashreen Kadeeja Liyanage",
+        role: "HR Intern",
+        company: "Gamage Recruiters",
+        quote: "The first ever corporate experience was at Gamage Recruiters. For a period of 6 months, I received hands on quality experience regarding all HR operations and management. This gave me a head start and I'm currently pursuing a very valuable position because of them. If they hadn't given me a chance I don't know who would have! Forever grateful for all the support my team and I had. I wish nothing but success to the organization. Thank you once again❤️",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    },
+    {
+        name: "Ravindu Yasith",
+        role: "Creative Designer Intern",
+        company: "Gamage Recruiters",
+        quote: "My internship at Gamage Recruiters was an incredible learning experience that helped me develop both my creative and leadership skills. As a Team Lead in the Creative Design team, I had the opportunity to oversee projects, manage tasks, and collaborate with a talented group of individuals. This experience sharpened my ability to think strategically, communicate effectively, and deliver compelling visual content. The fast-paced and dynamic environment at Gamage Recruiters prepared me for future roles and gave me the confidence to take on bigger responsibilities in my career. I’m grateful for the mentorship and hands-on experience I gained during my time there!",
+        image: "https://i.ibb.co/PvCfxjd9/gamage.png"
+    }
+]
 
   const duplicatedPartners = [...partners, ...partners, ...partners];
 
@@ -405,55 +514,10 @@ export default function Home() {
       </div>
 
 
+      <AutoScrollingTestimonials/>
+
       {/* Testimonials Section (New) */}
-      <div className="bg-gradient-to-b from-gray-50 to-white py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-              Success Stories
-            </h2>
-            <p className="mt-4 text-xl leading-8 text-gray-600">
-              Hear from professionals who found their dream careers through our platform
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {
-              testimonials.map((testimonial, index) => (
-                <div key={index} className="bg-white rounded-xl shadow-md p-8 transform transition duration-500 hover:-translate-y-2 hover:shadow-xl border border-gray-100">
-                  <div className="flex items-center mb-6">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full mr-4 object-cover"
-                    />
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900">{testimonial.name}</h4>
-                      <p className="text-sm text-indigo-600">{testimonial.role} at {testimonial.company}</p>
-                    </div>
-                  </div>
-
-                  {readmore === false ? (
-                    <p className="text-gray-600 italic line-clamp-4">"{testimonial.quote}"</p>
-                  ) :
-                    (<p className="text-gray-600 italic">"{testimonial.quote}"</p>
-
-                    )}
-                  {readmore === false ? (
-                    <div className="flex items-center text-indigo-600 font-medium" onClick={() => setReadmore(true)} style={{ cursor: 'pointer' }} >
-                      Read more ...
-                    </div>
-                  ) : (
-                    <div className="flex items-center text-indigo-600 font-medium" onClick={() => setReadmore(false)} style={{ cursor: 'pointer' }} >
-                      Read less ...
-                    </div>
-                  )}
-
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
+      
 
       {/* CTA Section with Parallax and Animation */}
       <div className="relative bg-indigo-900 overflow-hidden">
