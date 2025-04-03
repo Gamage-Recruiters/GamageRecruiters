@@ -65,7 +65,6 @@ export default function JobDetails() {
   }, [jobId])
 
   const fetchJobData = async (id) => {
-    console.log(id);
 
     if(!id) {
       toast.error('Error Occured');
@@ -73,10 +72,9 @@ export default function JobDetails() {
 
     try {
       const fetchDataByIdResponse = await axios.get(`http://localhost:8000/api/jobs/${jobId}`);
-      console.log(fetchDataByIdResponse.data);
+      // console.log(fetchDataByIdResponse.data);
       if(fetchDataByIdResponse.status == 200) {
-        setJob(fetchDataByIdResponse.data.data[0]);
-        console.log(job);
+        setJob(fetchDataByIdResponse.data.data);
       } else {
         toast.error('Error Loading Job');
         console.log(fetchDataByIdResponse.statusText);
@@ -122,7 +120,7 @@ export default function JobDetails() {
     formData.append("lastName", lastName);
     formData.append("email", email);
     formData.append("phoneNumber", phoneNumber);
-    formData.append("job", job.title);
+    formData.append("job", job.jobName);
     formData.append("company", job.company);
     formData.append("resume", cv);
 
@@ -146,6 +144,10 @@ export default function JobDetails() {
     }
   }
 
+  const moveBack = () => {
+    navigate('/jobs');
+  }
+
   if (!job) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
@@ -153,7 +155,7 @@ export default function JobDetails() {
           <h2 className="text-2xl font-bold text-red-600 mb-4">Job Not Found</h2>
           <p className="text-gray-600 mb-6">The job listing you're looking for doesn't exist or has been removed.</p>
           <button 
-            onClick={window.history.back()} 
+            onClick={moveBack} 
             className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition duration-300"
           >
             <ArrowLeft size={16} />
@@ -207,7 +209,8 @@ export default function JobDetails() {
               <span className="bg-blue-600 h-6 w-1 rounded-full mr-3"></span>
               Key Responsibilities
             </h3>
-            <ul className="mt-4 space-y-2">
+            <p>{job.responsibilities}</p>
+            {/* <ul className="mt-4 space-y-2">
               {job.responsibilities.map((resp, index) => (
                 <li key={index} className="flex">
                   <span className="bg-blue-100 text-blue-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
@@ -216,7 +219,7 @@ export default function JobDetails() {
                   <span className="text-gray-700">{resp}</span>
                 </li>
               ))}
-            </ul>
+            </ul> */}
           </div>
 
           <div className="mt-8">
@@ -224,7 +227,8 @@ export default function JobDetails() {
               <span className="bg-green-600 h-6 w-1 rounded-full mr-3"></span>
               Requirements
             </h3>
-            <ul className="mt-4 space-y-2">
+            <p>{job.requirements}</p>
+            {/* <ul className="mt-4 space-y-2">
               {job.requirements.map((req, index) => (
                 <li key={index} className="flex">
                   <span className="bg-green-100 text-green-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
@@ -233,7 +237,7 @@ export default function JobDetails() {
                   <span className="text-gray-700">{req}</span>
                 </li>
               ))}
-            </ul>
+            </ul> */}
           </div>
 
           <div className="mt-8">
@@ -241,13 +245,14 @@ export default function JobDetails() {
               <span className="bg-purple-600 h-6 w-1 rounded-full mr-3"></span>
               Benefits & Perks
             </h3>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <p>{job.benefits}</p>
+            {/* <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
               {job.benefits.map((benefit, index) => (
                 <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
                   <div className="text-gray-700">{benefit}</div>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
 

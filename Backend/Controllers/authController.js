@@ -233,7 +233,7 @@ async function logout(req, res) {
     if(req.session.user) {
         req.session.destroy((err) => {
             if(err) {
-                console.log(err);
+                // console.log(err);
                 return res.status(500).send('Error destroying session');
             }
             res.clearCookie('token');
@@ -261,27 +261,31 @@ async function logout(req, res) {
     let values;
 
     if(loginMethod === 'Email & Password') {
+        console.log('Logout1');
         sql = 'UPDATE sessions SET endedAt = ?, status = ? WHERE Id = ? AND endedAt IS NULL ORDER BY createdAt DESC LIMIT 1';
         values = [ new Date(), 'Ended', id ];
     } else if(loginMethod === 'Google') {
+        console.log('Logout2');
         sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
         values = [ new Date(), id, 'Google' ];
     } else if(loginMethod === 'Facebook') {
+        console.log('Logout3');
         sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
         values = [ new Date(), id, 'Facebook' ];
     } else if(loginMethod === 'LinkedIn') {
+        console.log('Logout4');
         sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
         values = [ new Date(), id, 'LinkedIn' ];
     } else {
-        console.log('Invalid login method Stored');
+        // console.log('Invalid login method Stored');
         return res.status(400).send('Invalid login method');
     }
 
     try {
-        console.log(loginMethod, values);
+        // console.log(loginMethod, values);
         pool.query(sql, values, (error, result) => {
             if(error) {
-                console.log(error);
+                // console.log(error);
                 return res.status(400).send('Error updating session data');
             } 
 
@@ -291,7 +295,7 @@ async function logout(req, res) {
             return res.status(200).json({ message: 'Logged out successfully', data: result });
         })
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).send(error);
     }
 }

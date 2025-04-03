@@ -15,9 +15,9 @@ export default function LoginPage() {
 
     console.log(authToken);
 
-    if(authToken) {
-      navigate('/dashboard');
-    } 
+    // if(authToken) {
+    //   navigate('/dashboard');
+    // } 
 
   }, [])
   

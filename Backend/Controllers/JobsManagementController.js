@@ -1,5 +1,6 @@
 const { pool } = require("../config/dbConnection");
 
+// View All Jobs
 async function viewJobs(req, res) {
   try {
     const sql = "SELECT * FROM jobs";
@@ -42,6 +43,34 @@ async function viewJob (req, res) {
 
       const jobData = result[0];
       return res.status(200).json({ message: 'Data Found for Id', data: jobData });
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error);
+  }
+} 
+
+// View Jobs applied by a user ...
+async function viewJobsByUser(req, res) {
+  const { userId } = req.params;
+
+  if(!userId) {
+    return res.status(400).send("User ID is required");
+  }
+
+  try {
+    const fetchAppliedJobsQuery = 'SELECT * FROM jobapplications WHERE userId = ?';
+    pool.query(fetchAppliedJobsQuery, [userId], (error, results) => {
+      if (error) {
+        console.log("Error fetching applied jobs:", error);
+        return res.status(500).send(error);
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send("No jobs found for this user");
+      }
+
+      return res.status(200).json({ message: 'Jobs Found for user', data: results });
     });
   } catch (error) {
     console.log(error);
@@ -179,4 +208,4 @@ async function deleteJob(req, res) {
   }
 }
 
-module.exports = { viewJobs, viewJob, addJob, updateJob, deleteJob };
+module.exports = { viewJobs, viewJob, addJob, updateJob, deleteJob, viewJobsByUser };

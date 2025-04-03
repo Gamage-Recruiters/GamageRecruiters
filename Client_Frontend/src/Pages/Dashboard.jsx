@@ -334,6 +334,7 @@ export default function Dashboard() {
           return <AppliedJobs 
                    appliedJobs={appliedJobs}
                    setAppliedJobs={setAppliedJobs}
+                   user={user}
                  />;
         case "edit": 
           return <EditProfileForm 

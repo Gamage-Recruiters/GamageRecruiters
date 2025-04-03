@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const { pool } = require('../config/dbConnection');
+const { localStorage, encryptData } = require('../utils/localStorage');
 
 dotenv.config();
 
@@ -29,6 +30,16 @@ async function loginGoogleCallback (req, res) {
             } 
 
             console.log('Data Saved Successfully', data);
+
+            const key = "Saved User Data";
+            const userData = [req.session.user.id, 'Google'];
+                                    
+            // Encrypt the array (convert it to a JSON string first) ...
+            const { encryptedData, iv } = encryptData(JSON.stringify(userData));
+                                    
+            // Store encrypted data and IV in localStorage ...
+            localStorage.setItem(key, JSON.stringify({ encryptedData, iv }));
+            
             // Redirect to frontend after setting session and save data ...
             res.redirect(process.env.SUCCESS_REDIRECT_URL);
         });
