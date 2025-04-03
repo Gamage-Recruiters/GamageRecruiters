@@ -16,7 +16,8 @@ import ProfileOverview from "../components/dashboard/ProfileOverview";
 import AppliedJobs from "../components/dashboard/AppliedJobs";
 import EditProfileForm from "../components/dashboard/EditProfileForm";
 import AccountSettings from "../components/dashboard/AccountSettings";
-import { useConCatName, useChangeDateFormat, useSetUserProfileCompletion } from "../hooks/customHooks";
+import { useConCatName, useChangeDateFormat, useSetUserProfileCompletion, useSetDateToTimeStamp } from "../hooks/customHooks";
+import handleToken from "../scripts/handleToken";
 
 // Animated Tab Context
 const TabContext = ({ children, defaultTab }) => {
@@ -106,6 +107,7 @@ export default function Dashboard() {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
   const [user, setUser] = useState({});
   const [profileCompletionPercentage, setProfileCompletionPercentage] = useState('');
+  const [accessToken, setAccessToken] = useState('');
 
   // const [user, setUser] = useState({
   //   userId: "001",
@@ -209,10 +211,25 @@ export default function Dashboard() {
 
   // Simulate first visit welcome
   useEffect(() => {
+    const token = localStorage.getItem('User Auth Token');
+    // const expirationTimeStamp = localStorage.getItem('Token Expires At');
+    // const expirationTime = useSetDateToTimeStamp(expirationTimeStamp);
+    // const curentDate = new Date().toISOString();
+    // console.log(token, expirationTime, curentDate);
+    
+    setAccessToken(token);
+    
+    // if(accessToken && expirationTime <= curentDate) {
+    //   console.log('Token Expired');
+    //   const newToken = handleToken(token, expirationTime);
+    //   console.log(newToken);
+    //   return;
+    // }
+
     fetchUserProfileData();
 
     if(user.cv) {
-      const cvURL = `http://localhost:5000/uploads/cvs/${user.cv}`;
+      const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;
       console.log('cv-url', cvURL);
       setCVLink(cvURL);
     } else {
@@ -220,7 +237,7 @@ export default function Dashboard() {
     }
 
     if(user.photo) {
-      const photoURL = `http://localhost:5000/uploads/images/${user.photo}`;
+      const photoURL = `http://localhost:8000/uploads/images/${user.photo}`;
       console.log('image-url', photoURL);
       setImageLink(photoURL);
     } else {
@@ -364,15 +381,17 @@ export default function Dashboard() {
 
   const fetchUserProfileData = async () => {
     try {
-      const loggedUserResponse = await axios.get('http://localhost:5000/session/profile-data');
+      // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
+      const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data');
       console.log(loggedUserResponse.data.data);
-      if(loggedUserResponse.status == 200) {
+      if(loggedUserResponse.status === 200) {
         setUser(loggedUserResponse.data.data[0]);
         const profileCompletion = useSetUserProfileCompletion(loggedUserResponse.data.data[0]);
         setProfileCompletionPercentage(profileCompletion);
         console.log('Percentage', profileCompletionPercentage);
       } else {
-        console.log('Error fetching user data');
+        // console.log('Error fetching user data');
+        toast.error('Failed To Load User Data');
         return;
       }
     } catch (error) {
@@ -424,7 +443,7 @@ export default function Dashboard() {
             
             <div className="flex items-start justify-between mb-6 relative z-10">
               <div>
-                <h1 className="text-3xl sm:text-4xl font-bold">Welcome back, {user.firstName}!</h1>
+                <h1 className="text-3xl sm:text-4xl font-bold">Welcome back, {user.firstName ? user.firstName : ''}!</h1>
                 <div className="mt-2 flex items-center">
                   <StatusIndicator status={userStatus} />
                   <span className="mx-2">•</span>
@@ -444,13 +463,13 @@ export default function Dashboard() {
             <div className="relative z-10">
               <div className="flex flex-wrap items-center text-sm opacity-90 gap-4">
                 <div className="flex items-center">
-                  <Calendar size={16} className="mr-1" /> Member since {useChangeDateFormat(user.createdAt)}
+                  <Calendar size={16} className="mr-1" /> Member since {user.createdAt ? useChangeDateFormat(user.createdAt) : ''}
                 </div>
                 <div className="flex items-center">
-                  <MapPin size={16} className="mr-1" /> {user.address}
+                  <MapPin size={16} className="mr-1" /> {user.address ? user.address : ''}
                 </div>
                 <div className="flex items-center">
-                  <Mail size={16} className="mr-1" /> {user.email}
+                  <Mail size={16} className="mr-1" /> {user.email ? user.email : ''}
                 </div>
               </div>
             </div>

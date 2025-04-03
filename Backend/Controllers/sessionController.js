@@ -1,4 +1,5 @@
 const { pool } = require('../config/dbConnection');
+const generateNewToken = require('../auth/token/generateNewToken');
 const { localStorage, decryptData } = require('../utils/localStorage');
 
 async function getLoggedUserData (req, res) {
@@ -26,6 +27,37 @@ async function getLoggedUserData (req, res) {
         return res.status(500).send(error);
     }
 } 
+
+async function generateNewAccessToken (req, res) {
+    const { token } = req.body;
+
+    if(!token) {
+        return res.status(400).send('Token is required');
+    }
+
+    try {
+        const newToken = await generateNewToken(token);
+        
+        if (!newToken || newToken === 'Invalid Token' || newToken === 'Session Data Not Found') {
+            return res.status(401).send('Invalid or Expired Token');
+        }
+
+        return res.status(200).json({ message: 'Token generated successfully', token: newToken });
+        
+        // const response = await generateNewToken(token);
+        // console.log(response);
+
+        // if(!response) {
+        //     return res.status(401).send('Invalid Token or Expiration Date');
+        // }
+
+        // return res.status(200).json({ message: 'Token generated successfully', token: response });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
 
 
 // async function getLoggedUserData (req, res) {
@@ -277,4 +309,4 @@ async function getLoggedUserData (req, res) {
 //     });
 // }
 
-module.exports = { getLoggedUserData };
+module.exports = { getLoggedUserData, generateNewAccessToken };

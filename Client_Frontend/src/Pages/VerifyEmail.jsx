@@ -27,10 +27,10 @@ const VerifyEmail = ({ email, dummyEmail }) => {
         }
 
         try {
-            const sendOTPResponse = await axios.post('http://localhost:5000/user/sendOTP', { email: userEmail });
+            const sendOTPResponse = await axios.post('http://localhost:8000/user/sendOTP', { email: userEmail });
             if(sendOTPResponse.status == 200) {
                 toast.success('An OTP has been sent to your email');
-                const verifyOTPResponse = await axios.post('http://localhost:5000/user/verifyOTP', { otp: otp, oldEmail: dummy, email: userEmail });
+                const verifyOTPResponse = await axios.post('http://localhost:8000/user/verifyOTP', { otp: otp, oldEmail: dummy, email: userEmail });
                 if(verifyOTPResponse.status == 200) {
                     toast.success('User Registration Successful');
                     navigate('/login');

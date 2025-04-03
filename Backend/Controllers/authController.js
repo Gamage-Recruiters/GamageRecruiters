@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { pool } = require('../config/dbConnection');
 const { otpCache, generateOTP, sendOTP } = require('../middlewares/OTP');
-const { localStorage, encryptData } = require('../utils/localStorage');
+const { localStorage, encryptData, decryptData } = require('../utils/localStorage');
 
 dotenv.config();
 
@@ -64,10 +64,14 @@ async function login (req, res) {
                 return res.status(401).send('Invalid Password');
             } 
 
+            // Set expiration time manually ...
+            const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour ...
+
             // Generate Token ...
             const token = jwt.sign({
                 id: result[0].userId,
-            }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                exp: expTime,
+            }, process.env.JWT_SECRET);
 
             // Pass a Cookie to frontend ...
             res.cookie('token', token, {
@@ -95,7 +99,7 @@ async function login (req, res) {
                 // Store encrypted data and IV in localStorage ...
                 localStorage.setItem(key, JSON.stringify({ encryptedData, iv }));
 
-                return res.status(200).json({ message: 'Login Successful', token: token, data: data });
+                return res.status(200).json({ message: 'Login Successful', token: token, data: data, tokenExpiresAt: expTime });
             });
         });
     } catch (error) {
@@ -223,7 +227,74 @@ async function resetPassword (req, res) {
         console.log(error);
         return res.status(500).send(error);
     }
+} 
+
+async function logout(req, res) {
+    if(req.session.user) {
+        req.session.destroy((err) => {
+            if(err) {
+                console.log(err);
+                return res.status(500).send('Error destroying session');
+            }
+            res.clearCookie('token');
+            res.status(200).send('Logged out successfully');
+        });
+    }
+
+    const key = 'Saved User Data';
+
+    // Retrieve encrypted data from localStorage ...
+    const storedData = localStorage.getItem(key);
+
+    if(!storedData) {
+        // console.log(`No data found for key: ${key}`);
+        return res.status(404).send('No Logged User data found. Error Occured.');
+    } 
+
+    const { encryptedData, iv } = JSON.parse(storedData); // Parse stored JSON ...
+    const decryptedData = decryptData(encryptedData, iv); // Decrypt data ...
+    const retrievedArray = JSON.parse(decryptedData); // Convert string back to array ...
+    // console.log("Decrypted Array:", retrievedArray);
+    const id = retrievedArray[0];
+    const loginMethod = retrievedArray[1];
+    let sql;
+    let values;
+
+    if(loginMethod === 'Email & Password') {
+        sql = 'UPDATE sessions SET endedAt = ?, status = ? WHERE Id = ? AND endedAt IS NULL ORDER BY createdAt DESC LIMIT 1';
+        values = [ new Date(), 'Ended', id ];
+    } else if(loginMethod === 'Google') {
+        sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
+        values = [ new Date(), id, 'Google' ];
+    } else if(loginMethod === 'Facebook') {
+        sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
+        values = [ new Date(), id, 'Facebook' ];
+    } else if(loginMethod === 'LinkedIn') {
+        sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
+        values = [ new Date(), id, 'LinkedIn' ];
+    } else {
+        console.log('Invalid login method Stored');
+        return res.status(400).send('Invalid login method');
+    }
+
+    try {
+        console.log(loginMethod, values);
+        pool.query(sql, values, (error, result) => {
+            if(error) {
+                console.log(error);
+                return res.status(400).send('Error updating session data');
+            } 
+
+            // Clear the localStorage ...
+            localStorage.removeItem(key);
+
+            return res.status(200).json({ message: 'Logged out successfully', data: result });
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
 }
 
-module.exports = { register, login, sendEmailVerificationOTP, verifyEmailVerificationOTP, emailCheck, resetPassword }
+module.exports = { register, login, sendEmailVerificationOTP, verifyEmailVerificationOTP, emailCheck, resetPassword, logout }
 

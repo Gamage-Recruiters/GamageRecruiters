@@ -15,9 +15,9 @@ export default function LoginPage() {
 
     console.log(authToken);
 
-    // if(authToken) {
-    //   navigate('/dashboard');
-    // } 
+    if(authToken) {
+      navigate('/dashboard');
+    } 
 
   }, [])
   
@@ -32,13 +32,14 @@ export default function LoginPage() {
     console.log("Logging in", { email, password });
 
     try {
-      const loginResponse = await axios.post('http://localhost:5000/auth/login', { email: email, password: password }, { withCredentials: true });
-      console.log(loginResponse);
+      const loginResponse = await axios.post('http://localhost:8000/auth/login', { email: email, password: password }, { withCredentials: true });
+      // console.log(loginResponse);
       if(loginResponse.status == 200) {
         toast.success('User Login Successfull');
-        console.log(loginResponse.data.token);
+        // console.log(loginResponse.data.token);
         localStorage.setItem('User Auth Token', loginResponse.data.token);
         localStorage.setItem('Login Method', 'email & password');
+        localStorage.setItem('Token Expires At', loginResponse.data.tokenExpiresAt);
         navigate('/dashboard');
       } else {
         toast.error('User Login Failed');
@@ -53,7 +54,7 @@ export default function LoginPage() {
   const loginViaGmail = async (e) => {
     e.preventDefault();
     try {
-      const loginViaGmailResponse = await axios.get('http://localhost:5000/google/login');
+      const loginViaGmailResponse = await axios.get('http://localhost:8000/google/login');
       console.log(loginViaGmailResponse);
       if(loginViaGmailResponse.status == 200) {
         console.log(loginViaGmailResponse.data);
@@ -72,7 +73,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const loginViaFacebookResponse = await axios.get('http://localhost:5000/facebook/login');
+      const loginViaFacebookResponse = await axios.get('http://localhost:8000/facebook/login');
       console.log(loginViaFacebookResponse);
       if(loginViaFacebookResponse.status == 200) {
         console.log(loginViaFacebookResponse.data);
@@ -91,7 +92,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const loginViaLinkedInResponse = await axios.get('http://localhost:5000/linkedin/login');
+      const loginViaLinkedInResponse = await axios.get('http://localhost:8000/linkedin/login');
       console.log(loginViaLinkedInResponse);
       if(loginViaLinkedInResponse.status == 200) {
         console.log(loginViaLinkedInResponse.data);

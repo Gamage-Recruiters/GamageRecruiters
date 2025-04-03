@@ -1,6 +1,8 @@
 import { Edit3, User, ExternalLink, Pointer } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import { toast, ToastContainer } from 'react-toastify';
 import { useCalculateAge, useChangeDateFormat, useCheckValidCVFile, useCheckValidImageFile, useConCatName } from "../../hooks/customHooks";
 
@@ -12,16 +14,18 @@ const ProfileOverview = ({ user }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [cvSelected, setCVSelected] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if(user.cv) {
-      const cvURL = `http://localhost:5000/uploads/cvs/${user.cv}`;
+      const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;
       setCVLink(cvURL);
     } else {
       setCVLink('');
     }
 
     if(user.photo) {
-      const photoURL = `http://localhost:5000/uploads/images/${user.photo}`;
+      const photoURL = `http://localhost:8000/uploads/images/${user.photo}`;
       setImageLink(photoURL);
     } else {
       setImageLink('');
@@ -65,7 +69,7 @@ const ProfileOverview = ({ user }) => {
     }
 
     try {
-      const updateUserImageResponse = await axios.put('http://localhost:5000/user/upload-user-image', formData);
+      const updateUserImageResponse = await axios.put('http://localhost:8000/user/upload-user-image', formData);
       console.log(updateUserImageResponse);
       if(updateUserImageResponse.status == 200) {
         toast.success('User Image Uploaded Successfully');
@@ -101,12 +105,12 @@ const ProfileOverview = ({ user }) => {
     }
 
     try {
-      const updateUserCVResponse = await axios.put('http://localhost:5000/user/update-user-cv', formData);
+      const updateUserCVResponse = await axios.put('http://localhost:8000/user/update-user-cv', formData);
       console.log(updateUserCVResponse);
       if(updateUserCVResponse.status == 200) {
         toast.success('User CV Uploaded Successfully');
         console.log(updateUserCVResponse.data.cv);
-        const userImageLink = `http://localhost:5000/uploads/images/${updateUserCVResponse.data.cv}`;
+        const userImageLink = `http://localhost:8000/uploads/images/${updateUserCVResponse.data.cv}`;
         setImageLink(userImageLink);
         window.location.reload;
       } else {
@@ -117,6 +121,48 @@ const ProfileOverview = ({ user }) => {
       console.log(error);
       return;
     }
+  } 
+
+  const handleLogout = async () => {
+    Swal.fire({
+      title: 'Confirmation About Logout',
+      text: 'Are you sure you want to Logout from the system ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Logout'
+    }).then(async (result) => {
+        if(result.isConfirmed) {
+          try {
+            const logoutResponse = await axios.get('http://localhost:8000/auth/logout');
+            console.log(logoutResponse);
+            if(logoutResponse.status == 200) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Logout Successful!',
+                text: 'You have been logged out successfully!',
+                confirmButtonColor: '#3085d6',
+              });
+              localStorage.removeItem('User Auth Token');
+              localStorage.removeItem('Login Method');
+              localStorage.removeItem('Token Expires At');
+              navigate('/');
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Logout Failed!',
+                text: 'Your Logout attempt has failed to proceed!',
+                confirmButtonColor: '#d63030',
+              });
+              console.log('Logout attempt failed with status:', logoutResponse.status);
+              return;
+            }
+          } catch (error) {
+            console.log(error);
+            return;
+          }
+        }});
   }
 
   return (
@@ -137,7 +183,7 @@ const ProfileOverview = ({ user }) => {
 
         {/* User Info */}
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-gray-900">{useConCatName(user.firstName, user.lastName)}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{user.firstName && user.lastName ? useConCatName(user.firstName, user.lastName) : ''}</h2>
           <p className="text-gray-600 mt-1">{user.profileDescription}</p>
           <input type="file" name="image" onChange={handleImageChange} className="cursor-pointer"/>
           {/* Social Links */}
@@ -173,6 +219,7 @@ const ProfileOverview = ({ user }) => {
               </a>
             )}
           </div>
+          <button className="bg-red-500 text-white rounded-md pl-2 pr-2 pt-1 pb-1 mt-2" onClick={handleLogout}>Logout</button>
         </div>
 
         {/* User Meta Info */}
@@ -195,7 +242,7 @@ const ProfileOverview = ({ user }) => {
       </div>
       <div className="flex items-start gap-2">
         <input type="file" name="image" onChange={handleCVChange} className="cursor-pointer ml-auto mt-2"/>
-        <button className="bg-purple-400 rounded-md text-white pl-7 pr-7 pt-2 pb-2 cursor-pointer text-sm" disabled={!cvSelected} onClick={handleCVUpdate}>Update CV</button>
+        <button className={`bg-purple-400 rounded-md text-white pl-7 pr-7 pt-2 pb-2 text-sm ${cvSelected ? 'cursor-pointer' : ''} ${!cvSelected ? 'opacity-50' : '' }`} disabled={!cvSelected} onClick={handleCVUpdate}>Update CV</button>
       </div>
 
       {/* Contact & Personal Details */}
