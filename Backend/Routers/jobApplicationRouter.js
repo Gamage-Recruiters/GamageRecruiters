@@ -6,7 +6,7 @@ const jobApplicationController = require('../Controllers/jobApplicationControlle
 
 // Set up file storage engine for multer
 const storage = multer.diskStorage({
-  destination: './uploads/resumes/', // Folder to store resumes
+  destination: './uploads/appliedJobs/resumes', // Folder to store resumes
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname)); // Set filename to avoid duplication
   },

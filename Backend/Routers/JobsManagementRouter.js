@@ -1,14 +1,18 @@
 const express = require("express");
 const {
   viewJobs,
+  viewJob,
   addJob,
   updateJob,
   deleteJob,
-} = require("../Controllers/JobsManagement");
+} = require("../Controllers/JobsManagementController");
 const router = express.Router();
 
 // View all Jobs
 router.get("/", viewJobs);
+
+// View a Job by id ...
+router.get("/:jobId", viewJob);
 
 // Add a New Job
 router.post("/addjob", addJob);

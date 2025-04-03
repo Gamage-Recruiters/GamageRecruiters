@@ -1,76 +1,78 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import axios from "axios";
 import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon, ChevronRightIcon, BuildingOfficeIcon, MapPinIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import JobCard from '../components/JobCard';
 
 // Mock data - will be replaced with actual API calls
-const jobs = [
-  {
-    id: 1,
-    title: "Senior Software Engineer",
-    company: "Tech Solutions Ltd",
-    location: "Colombo",
-    jobType: "Full-time",
-    salaryRange: "$3000-$5000",
-    description: "Looking for an experienced software engineer to lead our development team.",
-    qualifications: ["5+ years experience", "Bachelor's degree", "Strong leadership skills"],
-    postedDate: "2023-09-15",
-    featured: true,
-    logo: "https://placehold.co/400"
-  },
-  {
-    id: 2,
-    title: "HR Manager",
-    company: "Global Enterprises",
-    location: "Kandy",
-    jobType: "Full-time",
-    salaryRange: "$2500-$3500",
-    description: "Seeking an experienced HR professional to manage our growing team.",
-    qualifications: ["4+ years HR experience", "Master's degree preferred"],
-    postedDate: "2023-09-14",
-    featured: false,
-    logo: "https://placehold.co/400"
-  },
-  {
-    id: 3,
-    title: "Marketing Specialist",
-    company: "Digital Marketing Pro",
-    location: "Galle",
-    jobType: "Remote",
-    salaryRange: "$2000-$3000",
-    description: "Join our dynamic marketing team and help grow our digital presence.",
-    qualifications: ["3+ years marketing experience", "Digital marketing certification"],
-    postedDate: "2023-09-13",
-    featured: false,
-    logo: "https://placehold.co/400"
-  },
-  {
-    id: 4,
-    title: "Frontend Developer",
-    company: "WebTech Solutions",
-    location: "Colombo",
-    jobType: "Contract",
-    salaryRange: "$2500-$4000",
-    description: "Frontend developer needed for exciting web projects.",
-    qualifications: ["React expertise", "3+ years experience"],
-    postedDate: "2023-09-12",
-    featured: true,
-    logo: "https://placehold.co/400"
-  },
-  {
-    id: 5,
-    title: "Business Analyst",
-    company: "Finance Corp",
-    location: "Colombo",
-    jobType: "Full-time",
-    salaryRange: "$2800-$3800",
-    description: "Business analyst needed for our expanding finance team.",
-    qualifications: ["Finance background", "Strong analytical skills"],
-    postedDate: "2023-09-11",
-    featured: false,
-    logo: "https://placehold.co/400"
-  }
-];
+// const jobs = [
+//   {
+//     id: 1,
+//     title: "Senior Software Engineer",
+//     company: "Tech Solutions Ltd",
+//     location: "Colombo",
+//     jobType: "Full-time",
+//     salaryRange: "$3000-$5000",
+//     description: "Looking for an experienced software engineer to lead our development team.",
+//     qualifications: ["5+ years experience", "Bachelor's degree", "Strong leadership skills"],
+//     postedDate: "2023-09-15",
+//     featured: true,
+//     logo: "https://placehold.co/400"
+//   },
+//   {
+//     id: 2,
+//     title: "HR Manager",
+//     company: "Global Enterprises",
+//     location: "Kandy",
+//     jobType: "Full-time",
+//     salaryRange: "$2500-$3500",
+//     description: "Seeking an experienced HR professional to manage our growing team.",
+//     qualifications: ["4+ years HR experience", "Master's degree preferred"],
+//     postedDate: "2023-09-14",
+//     featured: false,
+//     logo: "https://placehold.co/400"
+//   },
+//   {
+//     id: 3,
+//     title: "Marketing Specialist",
+//     company: "Digital Marketing Pro",
+//     location: "Galle",
+//     jobType: "Remote",
+//     salaryRange: "$2000-$3000",
+//     description: "Join our dynamic marketing team and help grow our digital presence.",
+//     qualifications: ["3+ years marketing experience", "Digital marketing certification"],
+//     postedDate: "2023-09-13",
+//     featured: false,
+//     logo: "https://placehold.co/400"
+//   },
+//   {
+//     id: 4,
+//     title: "Frontend Developer",
+//     company: "WebTech Solutions",
+//     location: "Colombo",
+//     jobType: "Contract",
+//     salaryRange: "$2500-$4000",
+//     description: "Frontend developer needed for exciting web projects.",
+//     qualifications: ["React expertise", "3+ years experience"],
+//     postedDate: "2023-09-12",
+//     featured: true,
+//     logo: "https://placehold.co/400"
+//   },
+//   {
+//     id: 5,
+//     title: "Business Analyst",
+//     company: "Finance Corp",
+//     location: "Colombo",
+//     jobType: "Full-time",
+//     salaryRange: "$2800-$3800",
+//     description: "Business analyst needed for our expanding finance team.",
+//     qualifications: ["Finance background", "Strong analytical skills"],
+//     postedDate: "2023-09-11",
+//     featured: false,
+//     logo: "https://placehold.co/400"
+//   }
+// ];
 
 const locations = ["All Locations", "Colombo", "Kandy", "Galle", "Remote"];
 const jobTypes = ["All Types", "Full-time", "Part-time", "Contract", "Remote"];
@@ -106,8 +108,10 @@ export default function JobListings() {
   const [featuredJobs, setFeaturedJobs] = useState([]);
   const [displayMode, setDisplayMode] = useState('grid');
   const [isLoading, setIsLoading] = useState(true);
-
+  const [jobs, setJobs] = useState([]);
+  
   useEffect(() => {
+    loadJobs();
     // Simulate API loading
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -117,12 +121,31 @@ export default function JobListings() {
     return () => clearTimeout(timer);
   }, []);
 
+  const loadJobs = async () => {
+      try {
+        const loadJobsResponse = await axios.get('http://localhost:8000/api/jobs');
+        console.log(loadJobsResponse.data);
+        if(loadJobsResponse.status == 200) {
+          console.log('Jobs loaded successfully');
+          console.log(loadJobsResponse.data.jobs);
+          setJobs(loadJobsResponse.data.jobs);
+        } else {
+          toast.error('Error Loading Jobs');
+          console.log(loadJobsResponse.statusText);
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    }
+  
   // Filter jobs based on search and filter criteria
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = 
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.jobName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.description.toLowerCase().includes(searchTerm.toLowerCase());
+      job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesLocation = selectedLocation === 'All Locations' || job.location === selectedLocation;
     const matchesJobType = selectedJobType === 'All Types' || job.jobType === selectedJobType;
@@ -175,6 +198,17 @@ export default function JobListings() {
 
   // Enhanced JobCard component with animation
   const EnhancedJobCard = ({ job }) => {
+
+    const navigate = useNavigate();
+
+    const viewJob = (id) => {
+      console.log(id);
+
+      if(id) {
+        navigate(`/jobs/${id}`, { replace: true });
+      }
+    }
+
     return (
       <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 border border-gray-100 relative group">
         {job.featured && (
@@ -183,7 +217,7 @@ export default function JobListings() {
           </div>
         )}
         
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 cursor-pointer" onClick={() => viewJob(job.jobId)}>
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center">
               <BuildingOfficeIcon className="w-6 h-6 text-gray-400" />
@@ -191,7 +225,7 @@ export default function JobListings() {
           </div>
           
           <div className="flex-grow">
-            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-black transition-colors duration-300">{job.title}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-black transition-colors duration-300">{job.jobName}</h3>
             <p className="text-sm font-medium text-gray-600">{job.company}</p>
             
             <div className="mt-2 flex flex-wrap gap-2">
@@ -356,13 +390,13 @@ export default function JobListings() {
           </p>
           
           <select
-            className="text-sm border-0 py-1 pl-2 pr-8 text-gray-900 focus:ring-0"
+            className="text-sm border-0 py-1 pl-2 pr-8 text-gray-900 focus:ring-0 cursor-pointer"
             defaultValue="newest"
           >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="salary-high">Highest Salary</option>
-            <option value="salary-low">Lowest Salary</option>
+            <option value="newest" className='cursor-pointer'>Newest First</option>
+            <option value="oldest" className='cursor-pointer'>Oldest First</option>
+            <option value="salary-high" className='cursor-pointer'>Highest Salary</option>
+            <option value="salary-low" className='cursor-pointer'>Lowest Salary</option>
           </select>
         </div>
 
@@ -374,10 +408,11 @@ export default function JobListings() {
         ) : (
           <>
             <div className={`grid ${displayMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
-              {filteredJobs.map(job => (
-                <Link key={job.id} to={`/jobs/${job.id}`} className="block">
-                  <EnhancedJobCard job={job} />
-                </Link>
+              {filteredJobs.map((job) => (
+                <EnhancedJobCard job={job} key={job.jobId}/>
+                // <Link key={job.jobId} to={`/jobs/:${job.jobId}`} className="block">
+                //   <EnhancedJobCard job={job} />
+                // </Link>
               ))}
             </div>
 

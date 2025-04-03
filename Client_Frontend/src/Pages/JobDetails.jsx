@@ -1,48 +1,150 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast, ToastContainer } from 'react-toastify';
 import { Briefcase, MapPin, Clock, DollarSign, Calendar, ArrowLeft } from "lucide-react";
+import { verifyEmail, verifyPhoneNumber } from "../scripts/verifyData";
 
-const jobData = [
-  {
-    id: 1,
-    title: "Senior Software Engineer",
-    company: "Tech Solutions Ltd",
-    location: "Colombo",
-    jobType: "Full-time",
-    salaryRange: "$3000-$5000",
-    postedDate: "March 5, 2025",
-    description:
-      "Looking for an experienced software engineer to lead our development team. Join our innovative company to create cutting-edge solutions that transform the way businesses operate in the digital space.",
-    responsibilities: [
-      "Develop and maintain software applications",
-      "Lead a team of junior developers",
-      "Ensure best coding practices are followed",
-      "Collaborate with product managers to define feature requirements",
-      "Participate in code reviews and architectural decisions"
-    ],
-    requirements: [
-      "5+ years of experience in software development",
-      "Proficiency in React, Node.js, and TypeScript",
-      "Strong problem-solving skills",
-      "Experience with cloud platforms (AWS/Azure/GCP)",
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    benefits: [
-      "Competitive salary and performance bonuses",
-      "Flexible work arrangements",
-      "Health insurance and wellness programs",
-      "Professional development opportunities",
-      "Modern office with great facilities"
-    ],
-    companyDescription: "Tech Solutions Ltd is a leading software development company specializing in enterprise solutions. With over 10 years in the industry, we've helped hundreds of businesses transform their digital presence."
-  },
-  // Add more job listings as needed
-];
+// const jobData = [
+//   {
+//     id: 1,
+//     title: "Senior Software Engineer",
+//     company: "Tech Solutions Ltd",
+//     location: "Colombo",
+//     jobType: "Full-time",
+//     salaryRange: "$3000-$5000",
+//     postedDate: "March 5, 2025",
+//     description:
+//       "Looking for an experienced software engineer to lead our development team. Join our innovative company to create cutting-edge solutions that transform the way businesses operate in the digital space.",
+//     responsibilities: [
+//       "Develop and maintain software applications",
+//       "Lead a team of junior developers",
+//       "Ensure best coding practices are followed",
+//       "Collaborate with product managers to define feature requirements",
+//       "Participate in code reviews and architectural decisions"
+//     ],
+//     requirements: [
+//       "5+ years of experience in software development",
+//       "Proficiency in React, Node.js, and TypeScript",
+//       "Strong problem-solving skills",
+//       "Experience with cloud platforms (AWS/Azure/GCP)",
+//       "Bachelor's degree in Computer Science or related field"
+//     ],
+//     benefits: [
+//       "Competitive salary and performance bonuses",
+//       "Flexible work arrangements",
+//       "Health insurance and wellness programs",
+//       "Professional development opportunities",
+//       "Modern office with great facilities"
+//     ],
+//     companyDescription: "Tech Solutions Ltd is a leading software development company specializing in enterprise solutions. With over 10 years in the industry, we've helped hundreds of businesses transform their digital presence."
+//   },
+//   // Add more job listings as needed
+// ];
 
 export default function JobDetails() {
   const { jobId } = useParams();
-  const job = jobData.find((job) => job.id === parseInt(jobId));
+  const [job, setJob] = useState(null);
+  // const job = jobs.find((job) => job.id === parseInt(jobId));
   const [isApplying, setIsApplying] = useState(false);
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [cv, setCV] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect (() => {
+    if(!jobId) {
+      toast.error('Error Loading Job .. Id is missing.');
+    } 
+
+    fetchJobData(jobId);
+  }, [jobId])
+
+  const fetchJobData = async (id) => {
+    console.log(id);
+
+    if(!id) {
+      toast.error('Error Occured');
+    }
+
+    try {
+      const fetchDataByIdResponse = await axios.get(`http://localhost:8000/api/jobs/${jobId}`);
+      console.log(fetchDataByIdResponse.data);
+      if(fetchDataByIdResponse.status == 200) {
+        setJob(fetchDataByIdResponse.data.data[0]);
+        console.log(job);
+      } else {
+        toast.error('Error Loading Job');
+        console.log(fetchDataByIdResponse.statusText);
+        return;
+      }
+    } catch (error) {
+      console.log(error.message);
+      return;
+    }
+  }
+
+  const handleCVChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      console.log("Selected CV:", selectedFile);
+      setCV(selectedFile);
+    }
+  } 
+  
+  const handleApplyJob = async (e) => {
+    if(!firstName || !lastName || !email || !phoneNumber) {
+      toast.error('Please All the required fields');
+      return;
+    }
+
+    if(!verifyEmail(email)) {
+      toast.error('Please Enter a valid Email Address');
+      return;
+    }
+
+    if(!verifyPhoneNumber(phoneNumber)) {
+      toast.error('Please Enter a valid Phone Number');
+      return;
+    }
+
+    if(!cv) {
+      toast.error('Please Upload your CV');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("email", email);
+    formData.append("phoneNumber", phoneNumber);
+    formData.append("job", job.title);
+    formData.append("company", job.company);
+    formData.append("resume", cv);
+
+    console.log(formData);
+
+    try {
+      const submitApplicationResponse = await axios.post('http://localhost:8000/api/jobapplications/apply', formData);
+      console.log(submitApplicationResponse);
+      if(submitApplicationResponse.status == 200) {
+        toast.success('Job Application Submitted Successfully');
+        setIsApplying(false);
+        // navigate('/jobs');
+      } else {
+        toast.error('Job Application Submitted Error');
+        console.log(submitApplicationResponse.statusText);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
 
   if (!job) {
     return (
@@ -51,7 +153,7 @@ export default function JobDetails() {
           <h2 className="text-2xl font-bold text-red-600 mb-4">Job Not Found</h2>
           <p className="text-gray-600 mb-6">The job listing you're looking for doesn't exist or has been removed.</p>
           <button 
-            onClick={() => window.history.back()} 
+            onClick={window.history.back()} 
             className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition duration-300"
           >
             <ArrowLeft size={16} />
@@ -64,6 +166,7 @@ export default function JobDetails() {
 
   return (
     <div className="bg-gray-50 min-h-screen pb-16">
+      <ToastContainer />
       {/* Header Section */}
       <div className="bg-gradient-to-r from-black to-indigo-800 text-white py-12">
         <div className="mx-auto max-w-4xl  px-6 pt-10">
@@ -163,6 +266,8 @@ export default function JobDetails() {
                   <input 
                     type="text" 
                     id="firstName" 
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                   />
                 </div>
@@ -171,6 +276,8 @@ export default function JobDetails() {
                   <input 
                     type="text" 
                     id="lastName" 
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                   />
                 </div>
@@ -180,6 +287,8 @@ export default function JobDetails() {
                 <input 
                   type="email" 
                   id="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 />
               </div>
@@ -188,6 +297,8 @@ export default function JobDetails() {
                 <input 
                   type="Phone" 
                   id="Phone" 
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 />
               </div>
@@ -195,7 +306,8 @@ export default function JobDetails() {
                 <label htmlFor="resume" className="block text-sm font-medium text-gray-700 mb-1">Upload Resume</label>
                 <div className="border border-dashed border-gray-300 rounded-md p-8 text-center">
                   <p className="text-gray-500 mb-2">Drag and drop your resume here, or click to browse</p>
-                  <button type="button" className="text-blue-600 hover:text-blue-800">Browse Files</button>
+                  <input type="file" className="text-blue-600 hover:text-blue-800 cursor-pointer" onChange={handleCVChange}/>
+                  {/* <button type="button" className="text-blue-600 hover:text-blue-800">Browse Files</button> */}
                 </div>
               </div>
               <div className="flex items-center justify-between pt-4">
@@ -209,6 +321,7 @@ export default function JobDetails() {
                 <button
                   type="submit"
                   className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
+                  onClick={handleApplyJob}
                 >
                   Submit Application
                 </button>

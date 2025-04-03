@@ -16,7 +16,7 @@ const googleAuthRouter = require('./Routers/googleAuthRouter');
 const facebookAuthRouter = require('./Routers/facebookAuthRouter');
 const linkedInAuthRouter = require('./Routers/linkedInAuthRouter');
 const jobapplicationRouter = require('./Routers/jobApplicationRouter'); 
-const JobsManagement = require('./Routers/JobsManagement')
+const JobsManagementRouter = require('./Routers/JobsManagementRouter')
 
 
 require('dotenv').config();
@@ -45,6 +45,7 @@ app.use(cors({
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/images', express.static(path.join(__dirname, '/uploads/images')));
 app.use('/uploads/cv', express.static(path.join(__dirname, '/uploads/cvs')));
+app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/uploads/appliedJonobs/resumes')));
 
 app.use(session({ 
     key: "GamageRecruiters",
@@ -93,7 +94,7 @@ app.use('/', facebookAuthRouter);
 app.use('/', linkedInAuthRouter);
 
 app.use('/api/jobapplications', jobapplicationRouter);
-app.use('/api/jobs', JobsManagement); 
+app.use('/api/jobs', JobsManagementRouter); 
 
 
 const testimonialsRouter = require('./Routers/testimonialsRouter');
