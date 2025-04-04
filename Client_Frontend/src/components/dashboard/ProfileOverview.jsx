@@ -55,10 +55,10 @@ const ProfileOverview = ({ user }) => {
       return;
     }
 
-    if(!useCheckValidImageFile(image)) {
-      toast.error('Invalid File Type');
-      return;
-    }
+    // if(!useCheckValidImageFile(image)) {
+    //   toast.error('Invalid File Type');
+    //   return;
+    // }
 
     const formData = new FormData();
 
@@ -68,9 +68,11 @@ const ProfileOverview = ({ user }) => {
       formData.append('photo', selectedImage);
     }
 
+    console.log(formData);
+
     try {
       const updateUserImageResponse = await axios.put('http://localhost:8000/user/upload-user-image', formData);
-      console.log(updateUserImageResponse);
+      console.log(updateUserImageResponse.data);
       if(updateUserImageResponse.status == 200) {
         toast.success('User Image Uploaded Successfully');
         console.log(updateUserImageResponse.data.image);

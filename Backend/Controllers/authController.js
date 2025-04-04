@@ -259,23 +259,43 @@ async function logout(req, res) {
     const loginMethod = retrievedArray[1];
     let sql;
     let values;
+    let userId;
 
     if(loginMethod === 'Email & Password') {
-        console.log('Logout1');
         sql = 'UPDATE sessions SET endedAt = ?, status = ? WHERE Id = ? AND endedAt IS NULL ORDER BY createdAt DESC LIMIT 1';
         values = [ new Date(), 'Ended', id ];
     } else if(loginMethod === 'Google') {
-        console.log('Logout2');
         sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
         values = [ new Date(), id, 'Google' ];
     } else if(loginMethod === 'Facebook') {
-        console.log('Logout3');
         sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
         values = [ new Date(), id, 'Facebook' ];
     } else if(loginMethod === 'LinkedIn') {
-        console.log('Logout4');
         sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
         values = [ new Date(), id, 'LinkedIn' ];
+    } else {
+        // console.log('Invalid login method Stored');
+        return res.status(400).send('Invalid login method');
+    } 
+
+    if(loginMethod === 'Email & Password') {
+        userId = id;
+    } else if(loginMethod === 'Google' || loginMethod === 'Facebook' || loginMethod === 'LinkedIn') {
+        const idKey = 'Saved User Id';
+
+        // Retrieve encrypted data from localStorage ...
+        const storeduserId = localStorage.getItem(key);
+
+        if(!storedData) {
+            console.log(`No data found for key: ${key}`);
+            return res.status(404).send('No data found. Error Occured.');
+        } 
+
+        const { encryptedData, iv } = JSON.parse(storeduserId); // Parse stored JSON ...
+        const decryptedData = decryptData(encryptedData, iv); // Decrypt data ...
+        const retrieveduserId = JSON.parse(decryptedData); // Convert string back to array ...
+        // console.log("Decrypted Array:", retrievedArray);
+        userId = retrieveduserId;
     } else {
         // console.log('Invalid login method Stored');
         return res.status(400).send('Invalid login method');
@@ -286,11 +306,26 @@ async function logout(req, res) {
         pool.query(sql, values, (error, result) => {
             if(error) {
                 // console.log(error);
-                return res.status(400).send('Error updating session data');
+                return res.status(400).send(error);
             } 
 
             // Clear the localStorage ...
             localStorage.removeItem(key);
+            
+            if(loginMethod === 'Google' || loginMethod === 'Facebook' || loginMethod === 'LinkedIn') {
+                const endSessionQuery = 'UPDATE sessions SET endedAt = ? WHERE Id = ? AND endedAt IS NULL ORDER BY createdAt DESC LIMIT 1';
+                pool.query(endSessionQuery, [new Date(), userId], (error, result) => {
+                    if(error) {
+                        // console.log(error);
+                        return res.status(400).send(error);
+                    } 
+
+                    // Clear the localStorage ...
+                    localStorage.removeItem(idKey);
+
+                    return res.status(200).json({ message: 'Logged out successfully', data: result });
+                });
+            }
 
             return res.status(200).json({ message: 'Logged out successfully', data: result });
         })

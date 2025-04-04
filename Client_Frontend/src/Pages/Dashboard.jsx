@@ -384,12 +384,21 @@ export default function Dashboard() {
     try {
       // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
       const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data');
-      console.log(loggedUserResponse.data.data);
+      console.log(loggedUserResponse.data);
+      console.log(loggedUserResponse.data.data[0]);
       if(loggedUserResponse.status === 200) {
         setUser(loggedUserResponse.data.data[0]);
         const profileCompletion = useSetUserProfileCompletion(loggedUserResponse.data.data[0]);
         setProfileCompletionPercentage(profileCompletion);
-        console.log('Percentage', profileCompletionPercentage);
+        console.log('Percentage', profileCompletionPercentage); 
+
+        // If there is no token stored, then store the newly created token in the localStorage ...
+        const token = localStorage.getItem('User Auth Token');
+        if(token) {
+          return 'Token Exists';
+        } else {
+          localStorage.setItem('User Auth Token', loggedUserResponse.data.token);
+        }
       } else {
         // console.log('Error fetching user data');
         toast.error('Failed To Load User Data');

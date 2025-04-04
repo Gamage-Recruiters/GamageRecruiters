@@ -112,7 +112,8 @@ const useCheckValidImageFile = (file) => {
         "image/jpeg", 
         "image/jpg", 
         "image/gif", 
-        "image/webp"
+        "image/webp",
+        "image/svg+xml"
     ]; 
 
     if(!allowedImageTypes.includes(file.type)) {

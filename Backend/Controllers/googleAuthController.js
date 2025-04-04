@@ -29,7 +29,7 @@ async function loginGoogleCallback (req, res) {
                 return res.status(400).send('Error Saving Data');
             } 
 
-            console.log('Data Saved Successfully', data);
+            // console.log('Data Saved Successfully', data);
 
             const key = "Saved User Data";
             const userData = [req.session.user.id, 'Google'];

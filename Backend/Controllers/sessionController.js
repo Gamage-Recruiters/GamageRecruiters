@@ -2,9 +2,8 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { pool } = require('../config/dbConnection');
 const generateNewToken = require('../auth/token/generateNewToken');
-const { localStorage, decryptData } = require('../utils/localStorage');
+const { localStorage, encryptData, decryptData } = require('../utils/localStorage');
 const splitString = require('../utils/splitStrings');
-const { session } = require('passport');
 
 dotenv.config();
 
@@ -81,7 +80,7 @@ async function getLoggedUserData (req, res) {
     const { encryptedData, iv } = JSON.parse(storedData); // Parse stored JSON ...
     const decryptedData = decryptData(encryptedData, iv); // Decrypt data ...
     const retrievedArray = JSON.parse(decryptedData); // Convert string back to array ...
-    console.log("Decrypted Array:", retrievedArray);
+    // console.log("Decrypted Array:", retrievedArray);
     const id = retrievedArray[0];
     const loginMethod = retrievedArray[1];
 
@@ -104,9 +103,12 @@ async function getLoggedUserData (req, res) {
             const userData = await getLoggedUserDataThroughGoogle(id);
             // console.log('User Data Retrieved:', userData);
 
-            return res.status(200).json({ message: 'User Data Retrieved', data: userData });
+            const accesstoken = await generateNewTokenForPlatformLogins(userData[0].userId);
+            console.log(accesstoken);
+
+            return res.status(200).json({ message: 'User Data Retrieved', data: userData, token: accesstoken });
         } catch (error) {
-            // console.error(error);
+            console.error(error);
             return res.status(404).send(error);
         }
     }
@@ -115,8 +117,10 @@ async function getLoggedUserData (req, res) {
         try {
             const userData = await getLoggedUserDataThroughFacebook(id);
             // console.log('User Data Retrieved:', userData);
+            const accesstoken = await generateNewTokenForPlatformLogins(userData[0].userId);
+            console.log(accesstoken);
 
-            return res.status(200).json({ message: 'User Data Retrieved', data: userData });
+            return res.status(200).json({ message: 'User Data Retrieved', data: userData, token: accesstoken });
         } catch (error) {
             // console.error(error);
             return res.status(404).send(error);
@@ -128,7 +132,10 @@ async function getLoggedUserData (req, res) {
             const userData = await getLoggedUserDataThroughLinkedIn(id);
             // console.log('User Data Retrieved:', userData);
 
-            return res.status(200).json({ message: 'User Data Retrieved', data: userData });
+            const accesstoken = await generateNewTokenForPlatformLogins(userData[0].userId);
+            console.log(accesstoken);
+
+            return res.status(200).json({ message: 'User Data Retrieved', data: userData, token: accesstoken });
         } catch (error) {
             // console.error(error);
             return res.status(404).send(error);
@@ -141,7 +148,7 @@ async function getLoggedUserData (req, res) {
 // Functions to retrieve the logged user details according to login ...
 
 async function getLoggedUserDataThroughEmailPassword(id) {
-    console.log('Logged Through Email & Password');
+    // console.log('Logged Through Email & Password');
 
     if(!id) {
         return 'Id error';
@@ -173,8 +180,8 @@ async function getLoggedUserDataThroughEmailPassword(id) {
                 
                 if (user.length === 0) {
                     return reject('User Not Found');
-                }
-
+                } 
+                
                 // console.log('User Data:', user);
                 resolve(user);  // Return the fetched user data ...
             });
@@ -184,7 +191,7 @@ async function getLoggedUserDataThroughEmailPassword(id) {
 }
 
 async function getLoggedUserDataThroughGoogle(id) {
-    console.log('Logged Through Google');
+    // console.log('Logged Through Google');
 
     if(!id) {
         return 'Id error';
@@ -215,14 +222,14 @@ async function getLoggedUserDataThroughGoogle(id) {
                 
                 if (user.length === 0) {
                     const userName = splitString(session[0].name);
-                    console.log(userName);
+                    // console.log(userName);
                     try {
                         const userData = await addNewUserIfSessionUserNotFound(userName[0], userName[1], loggedUserEmail);
                         if(!userData) {
                             return reject('User Not Found');
                         } 
 
-                        console.log('User Data:', userData);
+                        // console.log('User Data:', userData);
                         resolve(userData);
                     } catch (error) {
                         // console.error("Error creating new user:", error);
@@ -230,7 +237,7 @@ async function getLoggedUserDataThroughGoogle(id) {
                     }
                 }
 
-                console.log('User Data:', user);
+                // console.log('User Data:', user);
                 resolve(user);  // Return the fetched user data ...
             });
         });
@@ -238,7 +245,7 @@ async function getLoggedUserDataThroughGoogle(id) {
 }
 
 async function getLoggedUserDataThroughFacebook(id) {
-    console.log('Logged Through Facebook');
+    // console.log('Logged Through Facebook');
     
     if(!id) {
         return 'Id error';
@@ -268,15 +275,23 @@ async function getLoggedUserDataThroughFacebook(id) {
                 }
                 
                 if (user.length === 0) {
-                    const userData = await addNewUserIfSessionUserNotFound(firstName, lastName, loggedUserEmail);
-                    if(!userData) {
-                        return reject('User Not Found');
-                    } 
+                    const userName = splitString(session[0].name);
+                    console.log(userName);
+                    try {
+                        const userData = await addNewUserIfSessionUserNotFound(userName[0], userName[1], loggedUserEmail);
+                        if(!userData) {
+                            return reject('User Not Found');
+                        } 
 
-                    console.log('User Data:', userData);
+                        // console.log('User Data:', userData);
+                        resolve(userData);
+                    } catch (error) {
+                        // console.error("Error creating new user:", error);
+                        return reject(error);
+                    }
                 }
 
-                console.log('User Data:', user);
+                // console.log('User Data:', user);
                 resolve(user);  // Return the fetched user data ...
             });
         });
@@ -314,15 +329,23 @@ async function getLoggedUserDataThroughLinkedIn(id) {
                 }
                 
                 if (user.length === 0) {
-                    const userData = await addNewUserIfSessionUserNotFound(firstName, lastName, loggedUserEmail);
-                    if(!userData) {
-                        return reject('User Not Found');
-                    } 
+                    const userName = splitString(session[0].name);
+                    console.log(userName);
+                    try {
+                        const userData = await addNewUserIfSessionUserNotFound(userName[0], userName[1], loggedUserEmail);
+                        if(!userData) {
+                            return reject('User Not Found');
+                        } 
 
-                    console.log('User Data:', userData);
+                        // console.log('User Data:', userData);
+                        resolve(userData);
+                    } catch (error) {
+                        // console.error("Error creating new user:", error);
+                        return reject(error);
+                    }
                 }
 
-                console.log('User Data:', user);
+                // console.log('User Data:', user);
                 resolve(user);  // Return the fetched user data ...
             });
         });
@@ -341,30 +364,67 @@ async function addNewUserIfSessionUserNotFound(firstName, lastName, email) {
             }
 
             // console.log('New user created:', result);
-            // console.log(result.insertId);  // Return the new user ID ...
+            // console.log(result.insertId);  // Return the new user ID ... 
 
-            // Set expiration time manually ...
-            const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour ...
+            const userQuery = 'SELECT * FROM users WHERE userId = ?';
+                pool.query(userQuery, result.insertId, (error, result) => {
+                    if(error) {
+                        // console.log(error);
+                        return reject('Error fetching user data');
+                    } 
 
-            // generate a new token for the newly created user ...
-            const token = jwt.sign({
-                id: result.insertId,
-                exp: expTime
-            }, process.env.JWT_SECRET);
+                    if(result.length == 0) {
+                        return reject('User Not Found');
+                    }
 
-            // Store the logged User Details in the session ...
-            const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
-            const values = [result.insertId, token, new Date(), 'Active', 'User'];
-            pool.query(sessionQuery, values, (error, newSession) => {
-                if(error) {
-                    // console.log(error);
-                    return reject('Error creating session');
-                }
-                
-                // console.log('Session created:', newSession);
-                return resolve({ message: "Session Created", session: newSession.affectedRows, token: token });
+                    // console.log('User Data:', result);
+                    return resolve(result[0]);  // Return the fetched user data...
             });
-        })
+        });
+    });
+} 
+
+async function generateNewTokenForPlatformLogins (id) {
+    // console.log(id);
+
+    if(!id) {
+        return 'Error Occured. Cannot proceed.';
+    }
+
+    return new Promise((resolve, reject) => {
+        // Set expiration time manually ...
+        const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour ...
+
+        // generate a new token for the newly created user ...
+        const token = jwt.sign({
+            id: id,
+            exp: expTime
+        }, process.env.JWT_SECRET); 
+
+        // console.log(token);
+
+        // Store the logged User Details in the session ...
+        const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
+        const values = [id, token, new Date(), 'Active', 'User'];
+        console.log(values);
+        pool.query(sessionQuery, values, (error, newSession) => {
+            if(error) {
+                // console.log(error);
+                reject('Error creating session');
+            }
+
+            const idKey = "Saved User Id";
+                        
+            // Encrypt the id (convert it to a JSON string first) ...
+            const { encryptedData, iv } = encryptData(JSON.stringify(id));
+                        
+            // Store encrypted data and IV in localStorage ...
+            localStorage.setItem(idKey, JSON.stringify({ encryptedData, iv }));
+            
+            // console.log('Session created:', newSession); 
+
+            resolve(token);
+        });
     });
 }
 
