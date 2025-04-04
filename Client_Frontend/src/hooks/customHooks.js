@@ -75,9 +75,7 @@ const useCalculateAge = (date) => {
 
 const useSetUserProfileCompletion = (user) => {
     console.log(user);
-    let filledDataCount = 0;
-
-    
+    let filledDataCount = 0;    
 
     for(let key in user) {
         if(user[key] != '' && user[key] != null && user[key] != undefined) {
@@ -114,7 +112,8 @@ const useCheckValidImageFile = (file) => {
         "image/jpeg", 
         "image/jpg", 
         "image/gif", 
-        "image/webp"
+        "image/webp",
+        "image/svg+xml"
     ]; 
 
     if(!allowedImageTypes.includes(file.type)) {

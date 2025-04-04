@@ -4,7 +4,9 @@ const { pool } = require('../config/dbConnection');
 async function uploadUserImage (req, res) {
     console.log(req.body);
     const { id } = req.body;
+    
     console.log(id);
+
     if(!id) {
         return res.status(400).send('Image Upload Failed');
     }

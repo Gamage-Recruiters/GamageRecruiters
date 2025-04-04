@@ -29,8 +29,8 @@ const storage = multer.diskStorage({
 
 // Define file filter logic
 const fileFilter = (req, file, callback) => {
-    const imageTypes = /jpeg|jpg|png|gif/;
-    const cvTypes = /pdf|docx/;
+    const imageTypes = /jpeg|jpg|png|gif|JPG|PNG|JPEG|GIF/;
+    const cvTypes = /pdf|docx|PDF|DOCX|ppt|PPT|pptx|PPTX/;
     const extName = path.extname(file.originalname).toLowerCase();
     const mimeType = file.mimetype.toLowerCase();
 
