@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { pool } = require('../config/dbConnection');
 const { otpCache, generateOTP, sendOTP } = require('../middlewares/OTP');
+const { localStorage, encryptData, decryptData } = require('../utils/localStorage');
 const { fetchLoggedUserIdAndMethod, fetchLoggedPlatformUserRegisteredId } = require('../utils/retrieveLocalStorageData');
 const { setLoggedUserIdAndMethod, setLoggedPlatformUserRegisteredId } = require('../utils/setLocalStorageData');
 

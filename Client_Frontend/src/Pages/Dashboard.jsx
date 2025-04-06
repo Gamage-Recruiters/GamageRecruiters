@@ -110,6 +110,11 @@ export default function Dashboard() {
   const [profileCompletionPercentage, setProfileCompletionPercentage] = useState('');
   const [accessToken, setAccessToken] = useState('');
   const [loggedUserId, setLoggedUserId] = useState('');
+  const [jobStatus, setJobStatus] = useState('');
+  const [jobData, setJobData] = useState({});
+  const [lastActive, setLastActive] = useState('');
+  const [lastProfileActivity, setLastProfileActivity] = useState('');
+  const [lastProfileActivityTime, setLastProfileActivityTime] = useState('');
 
   // const [user, setUser] = useState({
   //   userId: "001",
@@ -235,6 +240,9 @@ export default function Dashboard() {
     } 
     
     fetchAppliedJobCount(loggedUserId);
+    fetchJobApplicationStatusForUser(loggedUserId);
+    fetchLastActiveStatusForUser(loggedUserId);
+    fetchLastProfileActivity(loggedUserId);
 
     if(user.cv) {
       const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;
@@ -392,23 +400,23 @@ export default function Dashboard() {
     try {
       // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
       const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data');
-      console.log(loggedUserResponse.data);
-      console.log(loggedUserResponse.data.data[0]);
+      // console.log(loggedUserResponse.data);
+      // console.log(loggedUserResponse.data.data[0]);
       if(loggedUserResponse.status === 200) {
         setUser(loggedUserResponse.data.data[0]);
         setLoggedUserId(loggedUserResponse.data.data[0].userId);
         console.log(loggedUserId);
         const profileCompletion = useSetUserProfileCompletion(loggedUserResponse.data.data[0]);
         setProfileCompletionPercentage(profileCompletion);
-        console.log('Percentage', profileCompletionPercentage); 
+        // console.log('Percentage', profileCompletionPercentage); 
 
         // If there is no token stored, then store the newly created token in the localStorage ...
         const token = localStorage.getItem('User Auth Token');
         if(token) {
-          console.log(token);
+          // console.log(token);
           return 'Token Exists';
         } else {
-          console.log('Storing Token ...');
+          // console.log('Storing Token ...');
           localStorage.setItem('User Auth Token', loggedUserResponse.data.token);
         }
       } else {
@@ -425,9 +433,9 @@ export default function Dashboard() {
   const fetchAppliedJobCount = async (id) => {
     try {
       const countResponse = await axios.get(`http://localhost:8000/api/jobs/applied/count/${id}`);
-      console.log(countResponse.data);
+      // console.log(countResponse.data);
       if(countResponse.status == 200) {
-        console.log(countResponse.data.data[0]["COUNT(applicationId)"]);
+        // console.log(countResponse.data.data[0]["COUNT(applicationId)"]);
         setNotifications(countResponse.data.data[0]["COUNT(applicationId)"]);
       } else {
         toast.error('Failed to load count');
@@ -435,6 +443,77 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.log(error);
+      return;
+    }
+  } 
+
+  const fetchJobApplicationStatusForUser = async (id) => {
+    try {
+      const jobApplicationStatusResponse = await axios.get(`http://localhost:8000/user/application-status/${id}`);
+      // console.log(jobApplicationStatusResponse.data);
+      if(jobApplicationStatusResponse.status == 200) {
+        // console.log(jobApplicationStatusResponse.data.jobStatus);
+        // console.log(jobApplicationStatusResponse.data.data);
+        setJobStatus(jobApplicationStatusResponse.data.jobStatus);
+        setJobData(jobApplicationStatusResponse.data.data[0]);
+      } else if (jobApplicationStatusResponse.status == 404) {
+        console.log('Job application not found');
+        setJobStatus('');
+        setJobData('');
+        return;
+      } else {
+        console.log('Failed to load job application status');
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  }
+
+  const fetchLastActiveStatusForUser = async (id) => {
+    try {
+      const lastActiveStatusResponse = await axios.get(`http://localhost:8000/user/last-active-status/${id}`);
+      console.log(lastActiveStatusResponse.data);
+      if(lastActiveStatusResponse.status == 200) {
+        console.log(lastActiveStatusResponse.data.jobStatus);
+        // console.log(lastActiveStatusResponse.data.data);
+        setLastActive(lastActiveStatusResponse.data.jobStatus);
+      } else {
+        console.log('Failed to load last active status');
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  }
+
+  const fetchLastProfileActivity = async (id) => {
+    try {
+      const recentActivityResponse = await axios.get(`http://localhost:8000/user/recent-activity/${id}`);
+      console.log(recentActivityResponse.data);
+      if(recentActivityResponse.status == 200) {
+        console.log(recentActivityResponse.data.recentActivity);
+        
+        if(recentActivityResponse.data.recentActivity != null) {
+          setLastProfileActivity(recentActivityResponse.data.recentActivity);
+        } else {
+          setLastProfileActivity('');
+        } 
+
+        if(recentActivityResponse.data.timeStatus != null) {
+          setLastProfileActivityTime(recentActivityResponse.data.timeStatus);
+        } else {
+          setLastProfileActivityTime('');
+        }
+        
+      } else {
+        console.log('Failed to load recent activity');
+        return;
+      }
+    } catch (error) {
+      console.error(error);
       return;
     }
   }
@@ -486,7 +565,7 @@ export default function Dashboard() {
                 <div className="mt-2 flex items-center">
                   <StatusIndicator status={userStatus} />
                   <span className="mx-2">•</span>
-                  <span className="text-sm">Last active: {user.lastActive}</span>
+                  <span className="text-sm">Last active: {lastActive}</span>
                 </div>
               </div>
               <div className="relative">
@@ -664,13 +743,22 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-grow h-full border-l border-gray-200 mx-auto mt-2"></div>
                 </div>
-                <div className="flex-grow">
-                  <div className="flex justify-between">
-                    <h4 className="font-medium text-gray-800">Applied for Senior Frontend Developer</h4>
-                    <span className="text-sm text-gray-500">2 days ago</span>
+                {jobData != '' && jobStatus != '' ? (
+                  <div className="flex-grow">
+                    <div className="flex justify-between">
+                      <h4 className="font-medium text-gray-800">Applied for {jobData.jobName} at {jobData.company}</h4>
+                      <span className="text-sm text-gray-500">{jobStatus}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">You applied for a new position at {jobData.company}</p>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">You applied for a new position at TechCorp Solutions.</p>
-                </div>
+                ) : (
+                  <div className="flex-grow">
+                    <div className="flex justify-between">
+                      <h4 className="font-medium text-gray-800">No Jobs Applied</h4>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">Oops! No Job Applications Yet.</p>
+                  </div>
+                )}
               </div>
               
               <div className="flex">
@@ -697,10 +785,10 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between">
-                    <h4 className="font-medium text-gray-800">Updated Your Profile</h4>
-                    <span className="text-sm text-gray-500">1 week ago</span>
+                    <h4 className="font-medium text-gray-800">{lastProfileActivity || 'Still No Activity Yet'}</h4>
+                    <span className="text-sm text-gray-500">{lastProfileActivityTime || ''}</span>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">You updated your profile information and uploaded a new CV.</p>
+                  <p className="text-sm text-gray-600 mt-1">You {lastProfileActivity || 'still have no activity'}</p>
                 </div>
               </div>
             </div>

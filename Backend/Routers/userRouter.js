@@ -19,4 +19,13 @@ router.delete('/delete-profile/:id', userController.deleteUser);
 // Change Password Route ...
 router.post('/change-password', userController.changePassword);
 
+// Access Job Application Status ...
+router.get('/application-status/:userId', userController.getUserRecentJobActivity);
+
+// Access Last Active Status ...
+router.get('/last-active-status/:userId', userController.getLastActiveStatus);
+
+// Access User Profile Recent Activity Data ...
+router.get('/recent-activity/:userId', userController.getRecentProfileActivity);
+
 module.exports = router;

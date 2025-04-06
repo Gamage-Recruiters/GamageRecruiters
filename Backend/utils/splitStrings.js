@@ -1,4 +1,4 @@
-function splitString (str) {
+function splitStrings (str) {
     if(!str) {
         return 'enter a string';
     }
@@ -9,4 +9,4 @@ function splitString (str) {
     return [part1, part2];
 }
 
-module.exports = splitString;
+module.exports = splitStrings;
