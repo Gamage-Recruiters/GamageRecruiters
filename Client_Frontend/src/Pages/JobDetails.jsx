@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify';
+import Swal from 'sweetalert2';
 import { Briefcase, MapPin, Clock, DollarSign, Calendar, ArrowLeft } from "lucide-react";
 import { verifyEmail, verifyPhoneNumber } from "../scripts/verifyData";
+import { useChangeDateFormat } from "../hooks/customHooks";
 
 // const jobData = [
 //   {
@@ -95,6 +97,8 @@ export default function JobDetails() {
   } 
   
   const handleApplyJob = async (e) => {
+    e.preventDefault();
+
     if(!firstName || !lastName || !email || !phoneNumber) {
       toast.error('Please All the required fields');
       return;
@@ -132,10 +136,26 @@ export default function JobDetails() {
       if(submitApplicationResponse.status == 200) {
         toast.success('Job Application Submitted Successfully');
         setIsApplying(false);
-        // navigate('/jobs');
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPhoneNumber('');
+        setCV(null);
+        navigate('/jobs');
+      } else if(submitApplicationResponse.status == 401) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Required',
+          text: 'To apply job, You must login first',
+          confirmButtonColor: '#3085d6',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate('/login');
+          }
+        });
       } else {
         toast.error('Job Application Submitted Error');
-        console.log(submitApplicationResponse.statusText);
+        // console.log(submitApplicationResponse.statusText);
         return;
       }
     } catch (error) {
@@ -180,7 +200,7 @@ export default function JobDetails() {
             </div>
             <div className="flex items-center">
               <MapPin className="mr-2" size={18} />
-              <span>{job.location}</span>
+              <span>{job.jobLocation}</span>
             </div>
             <div className="flex items-center">
               <Clock className="mr-2" size={18} />
@@ -192,7 +212,7 @@ export default function JobDetails() {
             </div>
             <div className="flex items-center">
               <Calendar className="mr-2" size={18} />
-              <span>Posted: {job.postedDate}</span>
+              <span>Posted: {useChangeDateFormat(job.postedDate)}</span>
             </div>
           </div>
         </div>
@@ -264,7 +284,7 @@ export default function JobDetails() {
         {isApplying ? (
           <div className="bg-white rounded-lg shadow-md p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Apply for this Position</h2>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleApplyJob}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
@@ -326,7 +346,6 @@ export default function JobDetails() {
                 <button
                   type="submit"
                   className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
-                  onClick={handleApplyJob}
                 >
                   Submit Application
                 </button>

@@ -149,6 +149,7 @@ const ProfileOverview = ({ user }) => {
               localStorage.removeItem('User Auth Token');
               localStorage.removeItem('Login Method');
               localStorage.removeItem('Token Expires At');
+              localStorage.clear();
               navigate('/');
             } else {
               Swal.fire({

@@ -5,7 +5,8 @@ const {
   addJob,
   updateJob,
   deleteJob,
-  viewJobsByUser
+  viewJobsByUser,
+  viewAppliedJobCountByUser
 } = require("../Controllers/JobsManagementController");
 const router = express.Router();
 
@@ -17,6 +18,9 @@ router.get("/:jobId", viewJob);
 
 // View jobs applied by a user ...
 router.get("/applied/:userId", viewJobsByUser);
+
+// View applied job count by a user ...
+router.get("/applied/count/:userId", viewAppliedJobCountByUser);
 
 // Add a New Job
 router.post("/addjob", addJob);

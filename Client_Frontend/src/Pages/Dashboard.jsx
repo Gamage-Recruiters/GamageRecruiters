@@ -18,6 +18,7 @@ import EditProfileForm from "../components/dashboard/EditProfileForm";
 import AccountSettings from "../components/dashboard/AccountSettings";
 import { useConCatName, useChangeDateFormat, useSetUserProfileCompletion, useSetDateToTimeStamp } from "../hooks/customHooks";
 import handleToken from "../scripts/handleToken";
+import { toast, ToastContainer } from "react-toastify";
 
 // Animated Tab Context
 const TabContext = ({ children, defaultTab }) => {
@@ -103,11 +104,12 @@ const AnimatedCard = ({ children, delay = 0 }) => {
 // Main Dashboard Component
 export default function Dashboard() {
   const [userStatus, setUserStatus] = useState("Active");
-  const [notifications, setNotifications] = useState(3);
+  const [notifications, setNotifications] = useState(0);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
   const [user, setUser] = useState({});
   const [profileCompletionPercentage, setProfileCompletionPercentage] = useState('');
   const [accessToken, setAccessToken] = useState('');
+  const [loggedUserId, setLoggedUserId] = useState('');
 
   // const [user, setUser] = useState({
   //   userId: "001",
@@ -227,6 +229,12 @@ export default function Dashboard() {
     // }
 
     fetchUserProfileData();
+    
+    if(!loggedUserId) {
+      fetchAppliedJobCount(loggedUserId);
+    } 
+    
+    fetchAppliedJobCount(loggedUserId);
 
     if(user.cv) {
       const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;
@@ -388,6 +396,8 @@ export default function Dashboard() {
       console.log(loggedUserResponse.data.data[0]);
       if(loggedUserResponse.status === 200) {
         setUser(loggedUserResponse.data.data[0]);
+        setLoggedUserId(loggedUserResponse.data.data[0].userId);
+        console.log(loggedUserId);
         const profileCompletion = useSetUserProfileCompletion(loggedUserResponse.data.data[0]);
         setProfileCompletionPercentage(profileCompletion);
         console.log('Percentage', profileCompletionPercentage); 
@@ -395,8 +405,10 @@ export default function Dashboard() {
         // If there is no token stored, then store the newly created token in the localStorage ...
         const token = localStorage.getItem('User Auth Token');
         if(token) {
+          console.log(token);
           return 'Token Exists';
         } else {
+          console.log('Storing Token ...');
           localStorage.setItem('User Auth Token', loggedUserResponse.data.token);
         }
       } else {
@@ -408,11 +420,28 @@ export default function Dashboard() {
       console.log(error);
       return;
     }
+  } 
+
+  const fetchAppliedJobCount = async (id) => {
+    try {
+      const countResponse = await axios.get(`http://localhost:8000/api/jobs/applied/count/${id}`);
+      console.log(countResponse.data);
+      if(countResponse.status == 200) {
+        console.log(countResponse.data.data[0]["COUNT(applicationId)"]);
+        setNotifications(countResponse.data.data[0]["COUNT(applicationId)"]);
+      } else {
+        toast.error('Failed to load count');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   }
   
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 min-h-screen p-4 md:p-6 transition-all duration-300">
-     
+     <ToastContainer/>
       {isFirstVisit && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 fade-in">
           <div className="bg-white rounded-xl p-8 max-w-md shadow-2xl transform transition-all duration-500 scale-up">
@@ -432,7 +461,7 @@ export default function Dashboard() {
               </div>
               <div className="text-center p-3 bg-green-50 rounded-lg">
                 <Briefcase className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                <span className="text-sm font-medium">3 Active applications</span>
+                <span className="text-sm font-medium">{notifications ? notifications : 0} Active applications</span>
               </div>
             </div>
             <button 
@@ -476,10 +505,10 @@ export default function Dashboard() {
                   <Calendar size={16} className="mr-1" /> Member since {user.createdAt ? useChangeDateFormat(user.createdAt) : ''}
                 </div>
                 <div className="flex items-center">
-                  <MapPin size={16} className="mr-1" /> {user.address ? user.address : ''}
+                  <MapPin size={16} className="mr-1" /> {user.address ? user.address : 'No Address Provided'}
                 </div>
                 <div className="flex items-center">
-                  <Mail size={16} className="mr-1" /> {user.email ? user.email : ''}
+                  <Mail size={16} className="mr-1" /> {user.email ? user.email : 'No Email Provided'}
                 </div>
               </div>
             </div>
@@ -583,7 +612,7 @@ export default function Dashboard() {
                   <div className="bg-blue-50 rounded-lg p-3">
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-sm text-gray-600">Applications</span>
-                      <span className="text-sm font-medium">{appliedJobs.length}</span>
+                      <span className="text-sm font-medium">{ notifications ? notifications : 0 }</span>
                     </div>
                     <div className="flex items-center text-xs text-gray-500">
                       <Eye size={14} className="mr-1" /> 

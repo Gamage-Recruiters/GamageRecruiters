@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { pool } = require('../config/dbConnection');
 const generateNewToken = require('../auth/token/generateNewToken');
-const { localStorage, encryptData, decryptData } = require('../utils/localStorage');
+const { fetchLoggedUserIdAndMethod } = require('../utils/retrieveLocalStorageData');
+const { setLoggedPlatformUserRegisteredId } = require('../utils/setLocalStorageData');
 const splitString = require('../utils/splitStrings');
 
 dotenv.config();
@@ -67,22 +68,9 @@ async function generateNewAccessToken (req, res) {
 
 async function getLoggedUserData (req, res) {
 
-    const key = 'Saved User Data';
-
-    // Retrieve encrypted data from localStorage ...
-    const storedData = localStorage.getItem(key);
-
-    if(!storedData) {
-        console.log(`No data found for key: ${key}`);
-        return res.status(404).send('No data found. Error Occured.');
-    } 
-
-    const { encryptedData, iv } = JSON.parse(storedData); // Parse stored JSON ...
-    const decryptedData = decryptData(encryptedData, iv); // Decrypt data ...
-    const retrievedArray = JSON.parse(decryptedData); // Convert string back to array ...
-    // console.log("Decrypted Array:", retrievedArray);
-    const id = retrievedArray[0];
-    const loginMethod = retrievedArray[1];
+    const arr = fetchLoggedUserIdAndMethod();
+    const id = arr[0];
+    const loginMethod = arr[1];
 
     // console.log(loginMethod); 
 
@@ -104,11 +92,11 @@ async function getLoggedUserData (req, res) {
             // console.log('User Data Retrieved:', userData);
 
             const accesstoken = await generateNewTokenForPlatformLogins(userData[0].userId);
-            console.log(accesstoken);
+            // console.log(accesstoken);
 
             return res.status(200).json({ message: 'User Data Retrieved', data: userData, token: accesstoken });
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             return res.status(404).send(error);
         }
     }
@@ -118,7 +106,7 @@ async function getLoggedUserData (req, res) {
             const userData = await getLoggedUserDataThroughFacebook(id);
             // console.log('User Data Retrieved:', userData);
             const accesstoken = await generateNewTokenForPlatformLogins(userData[0].userId);
-            console.log(accesstoken);
+            // console.log(accesstoken);
 
             return res.status(200).json({ message: 'User Data Retrieved', data: userData, token: accesstoken });
         } catch (error) {
@@ -133,7 +121,7 @@ async function getLoggedUserData (req, res) {
             // console.log('User Data Retrieved:', userData);
 
             const accesstoken = await generateNewTokenForPlatformLogins(userData[0].userId);
-            console.log(accesstoken);
+            // console.log(accesstoken);
 
             return res.status(200).json({ message: 'User Data Retrieved', data: userData, token: accesstoken });
         } catch (error) {
@@ -181,7 +169,7 @@ async function getLoggedUserDataThroughEmailPassword(id) {
                 if (user.length === 0) {
                     return reject('User Not Found');
                 } 
-                
+
                 // console.log('User Data:', user);
                 resolve(user);  // Return the fetched user data ...
             });
@@ -263,7 +251,7 @@ async function getLoggedUserDataThroughFacebook(id) {
                 return reject('Session Not Found');
             }
 
-            console.log(session);
+            // console.log(session);
             const loggedUserEmail = session[0].email;
             
             // Check whether there is existing user related to loggedUserEmail ...
@@ -276,7 +264,7 @@ async function getLoggedUserDataThroughFacebook(id) {
                 
                 if (user.length === 0) {
                     const userName = splitString(session[0].name);
-                    console.log(userName);
+                    // console.log(userName);
                     try {
                         const userData = await addNewUserIfSessionUserNotFound(userName[0], userName[1], loggedUserEmail);
                         if(!userData) {
@@ -330,7 +318,7 @@ async function getLoggedUserDataThroughLinkedIn(id) {
                 
                 if (user.length === 0) {
                     const userName = splitString(session[0].name);
-                    console.log(userName);
+                    // console.log(userName);
                     try {
                         const userData = await addNewUserIfSessionUserNotFound(userName[0], userName[1], loggedUserEmail);
                         if(!userData) {
@@ -359,7 +347,7 @@ async function addNewUserIfSessionUserNotFound(firstName, lastName, email) {
         const values = [firstName, lastName, null, null, null, null, null, null, null, null, null, email, null, null, null, null, new Date()];
         pool.query(insertDataQuery, values, (error, result) => {
             if (error) {
-                console.log(error);
+                // console.log(error);
                 return reject('Error creating new user');
             }
 
@@ -406,22 +394,14 @@ async function generateNewTokenForPlatformLogins (id) {
         // Store the logged User Details in the session ...
         const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
         const values = [id, token, new Date(), 'Active', 'User'];
-        console.log(values);
+        // console.log(values);
         pool.query(sessionQuery, values, (error, newSession) => {
             if(error) {
                 // console.log(error);
                 reject('Error creating session');
             }
 
-            const idKey = "Saved User Id";
-                        
-            // Encrypt the id (convert it to a JSON string first) ...
-            const { encryptedData, iv } = encryptData(JSON.stringify(id));
-                        
-            // Store encrypted data and IV in localStorage ...
-            localStorage.setItem(idKey, JSON.stringify({ encryptedData, iv }));
-            
-            // console.log('Session created:', newSession); 
+            setLoggedPlatformUserRegisteredId(id); 
 
             resolve(token);
         });

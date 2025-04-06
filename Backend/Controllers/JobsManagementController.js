@@ -9,7 +9,11 @@ async function viewJobs(req, res) {
         console.log("Error executing query:", error); // Log the exact error from the query
         return res.status(500).send("Error fetching jobs");
       }
-      console.log("Results:", results); // Log the query results
+
+      if(results.length == 0) {
+        return res.status(404).send('No Jobs Found');
+      }
+      // console.log("Results:", results); // Log the query results
       return res.status(200).json({ jobs: results });
     });
   } catch (error) {
@@ -59,7 +63,7 @@ async function viewJobsByUser(req, res) {
   }
 
   try {
-    const fetchAppliedJobsQuery = 'SELECT * FROM jobapplications WHERE userId = ?';
+    const fetchAppliedJobsQuery = 'SELECT * FROM jobapplications INNER JOIN jobs ON jobapplications.jobId = jobs.jobId WHERE jobapplications.userId = ?';
     pool.query(fetchAppliedJobsQuery, [userId], (error, results) => {
       if (error) {
         console.log("Error fetching applied jobs:", error);
@@ -71,6 +75,29 @@ async function viewJobsByUser(req, res) {
       }
 
       return res.status(200).json({ message: 'Jobs Found for user', data: results });
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error);
+  }
+}
+
+async function viewAppliedJobCountByUser(req, res) {
+  const {userId} = req.params;
+
+  if(!userId) {
+    return res.status(400).send("User ID is required");
+  }
+
+  try {
+    const getAppliedJobCountQuery = 'SELECT COUNT(applicationId) FROM jobapplications WHERE userId = ?';
+    pool.query(getAppliedJobCountQuery, userId, (error, result) => {
+      if(error) {
+        console.log(error);
+        return res.status(400).send(error);
+      }
+
+      return res.status(200).json({ message: 'Applied Job Count Retrieved', data: result });
     });
   } catch (error) {
     console.log(error);
@@ -208,4 +235,4 @@ async function deleteJob(req, res) {
   }
 }
 
-module.exports = { viewJobs, viewJob, addJob, updateJob, deleteJob, viewJobsByUser };
+module.exports = { viewJobs, viewJob, addJob, updateJob, deleteJob, viewJobsByUser, viewAppliedJobCountByUser };

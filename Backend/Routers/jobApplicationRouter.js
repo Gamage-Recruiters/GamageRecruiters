@@ -33,12 +33,18 @@ const upload = multer({
 router.route('/apply').post(upload, jobApplicationController.applyJob); 
 
 // Get specific application by ID
-router.route('/applications/:id').get(jobApplicationController.getApplications); 
+router.route('/application/:applicationId').get(jobApplicationController.getApplication); 
+
+// Get specific application by userID
+router.route('/applications/user/:userId').get(jobApplicationController.getApplicationByUser); 
 
 // Get all job applications
 router.route('/applications').get(jobApplicationController.getApplications); 
 
+// Update a specific job application
+router.route('/update/:applicationId').put(upload, jobApplicationController.updateApplication); // Update a specific job application
+
 // Delete a specific job application
-router.route('/delete/:id').delete(jobApplicationController.deleteApplication);
+router.route('/delete/:applicationId').delete(jobApplicationController.deleteApplication);
 
 module.exports = router;
