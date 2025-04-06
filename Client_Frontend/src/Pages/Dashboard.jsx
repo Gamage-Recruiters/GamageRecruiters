@@ -236,13 +236,16 @@ export default function Dashboard() {
     fetchUserProfileData();
     
     if(!loggedUserId) {
-      fetchAppliedJobCount(loggedUserId);
-    } 
-    
+      console.log('Logged User Id error');
+      return;
+    }
+
+    fetchAppliedJobCount(loggedUserId);
     fetchAppliedJobCount(loggedUserId);
     fetchJobApplicationStatusForUser(loggedUserId);
     fetchLastActiveStatusForUser(loggedUserId);
     fetchLastProfileActivity(loggedUserId);
+    fetchUserLoginAttempts(loggedUserId);
 
     if(user.cv) {
       const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;
@@ -405,7 +408,7 @@ export default function Dashboard() {
       if(loggedUserResponse.status === 200) {
         setUser(loggedUserResponse.data.data[0]);
         setLoggedUserId(loggedUserResponse.data.data[0].userId);
-        console.log(loggedUserId);
+        // console.log(loggedUserId);
         const profileCompletion = useSetUserProfileCompletion(loggedUserResponse.data.data[0]);
         setProfileCompletionPercentage(profileCompletion);
         // console.log('Percentage', profileCompletionPercentage); 
@@ -457,7 +460,7 @@ export default function Dashboard() {
         setJobStatus(jobApplicationStatusResponse.data.jobStatus);
         setJobData(jobApplicationStatusResponse.data.data[0]);
       } else if (jobApplicationStatusResponse.status == 404) {
-        console.log('Job application not found');
+        // console.log('Job application not found');
         setJobStatus('');
         setJobData('');
         return;
@@ -474,9 +477,9 @@ export default function Dashboard() {
   const fetchLastActiveStatusForUser = async (id) => {
     try {
       const lastActiveStatusResponse = await axios.get(`http://localhost:8000/user/last-active-status/${id}`);
-      console.log(lastActiveStatusResponse.data);
+      // console.log(lastActiveStatusResponse.data);
       if(lastActiveStatusResponse.status == 200) {
-        console.log(lastActiveStatusResponse.data.jobStatus);
+        // console.log(lastActiveStatusResponse.data.jobStatus);
         // console.log(lastActiveStatusResponse.data.data);
         setLastActive(lastActiveStatusResponse.data.jobStatus);
       } else {
@@ -492,9 +495,9 @@ export default function Dashboard() {
   const fetchLastProfileActivity = async (id) => {
     try {
       const recentActivityResponse = await axios.get(`http://localhost:8000/user/recent-activity/${id}`);
-      console.log(recentActivityResponse.data);
+      // console.log(recentActivityResponse.data);
       if(recentActivityResponse.status == 200) {
-        console.log(recentActivityResponse.data.recentActivity);
+        // console.log(recentActivityResponse.data.recentActivity);
         
         if(recentActivityResponse.data.recentActivity != null) {
           setLastProfileActivity(recentActivityResponse.data.recentActivity);
@@ -510,6 +513,27 @@ export default function Dashboard() {
         
       } else {
         console.log('Failed to load recent activity');
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  }
+
+  const fetchUserLoginAttempts = async (id) => {
+    try {
+      const userLoginAttemptsResponse = await axios.get(`http://localhost:8000/session/login-attempts/${id}`);
+      // console.log(userLoginAttemptsResponse.data);
+      if(userLoginAttemptsResponse.status == 200) {
+        // console.log(userLoginAttemptsResponse.data.data);
+        if(userLoginAttemptsResponse.data.data > 1) {
+          setIsFirstVisit(false);
+        } else {
+          setIsFirstVisit(true);
+        }
+      } else {
+        console.log('Error Fetching user login attempts');
         return;
       }
     } catch (error) {

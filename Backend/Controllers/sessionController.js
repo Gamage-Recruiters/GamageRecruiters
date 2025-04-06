@@ -269,6 +269,33 @@ async function getLoggedUserDataThroughPlatforms(id, method) {
     });
 }
 
+async function getUserLoginAttempts (req, res) {
+    const { userId } = req.params;
+
+    if(!userId) {
+        return res.status(400).send('userId is Required');
+    }
+
+    try {
+        const userLoginAttemptsQuery = 'SELECT COUNT(Id) FROM sessions WHERE Id = ?';
+        pool.query(userLoginAttemptsQuery, userId, (error, result) => {
+            if(error) {
+                console.log(error);
+                return res.status(400).send(error);
+            }
+
+            if(result.length == 0) {
+                return res.status(404).send('No Login Attempts Found for user');
+            }
+
+            return res.status(200).json({ message: 'Retreived Login Attempts Successfully', data: result[0]["COUNT(Id)"] });
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send(error);
+    }
+}
+
 // async function getLoggedUserDataThroughGoogle(id) {
 //     // console.log('Logged Through Google');
 
@@ -501,4 +528,4 @@ async function getLoggedUserDataThroughPlatforms(id, method) {
 //     });
 // }
 
-module.exports = { getLoggedUserData, generateNewAccessToken };
+module.exports = { getLoggedUserData, generateNewAccessToken, getUserLoginAttempts };

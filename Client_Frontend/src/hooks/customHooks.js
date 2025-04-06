@@ -74,7 +74,7 @@ const useCalculateAge = (date) => {
 }
 
 const useSetUserProfileCompletion = (user) => {
-    console.log(user);
+    // console.log(user);
     let filledDataCount = 0;    
 
     for(let key in user) {
