@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { Menu, Bell, User, Search, Settings } from 'lucide-react';
 
-interface NavbarProps {
-  onMenuClick: () => void;
-}
-
-function Navbar({ onMenuClick }: NavbarProps) {
+function Navbar({ onMenuClick }) {
   const [searchFocused, setSearchFocused] = useState(false);
   
   return (
@@ -16,6 +12,7 @@ function Navbar({ onMenuClick }: NavbarProps) {
             <button
               onClick={onMenuClick}
               className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+              aria-label="Toggle menu"
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -31,29 +28,44 @@ function Navbar({ onMenuClick }: NavbarProps) {
                 className="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-600 rounded-full bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent text-sm text-gray-900 dark:text-gray-100"
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
+                aria-label="Search"
               />
             </div>
           </div>
 
           <div className="flex items-center space-x-1 md:space-x-4">
-            <button className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white relative focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200">
+            {/* Notification Button */}
+            <button
+              className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white relative focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+              aria-label="Notifications"
+            >
               <Bell className="h-5 w-5" />
               <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800"></span>
             </button>
             
-            <button className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200">
+            {/* Settings Button */}
+            <button
+              className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+              aria-label="Settings"
+            >
               <Settings className="h-5 w-5" />
             </button>
             
+            {/* User Profile */}
             <div className="flex items-center pl-2">
-              <button className="flex items-center space-x-3 py-1 px-3 rounded-full text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white group">
+              <button
+                className="flex items-center space-x-3 py-1 px-3 rounded-full text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white group"
+                aria-label="User Profile"
+              >
                 <div className="relative">
                   <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-medium overflow-hidden">
                     <User className="h-5 w-5" />
                   </div>
                   <span className="absolute bottom-0 right-0 block h-2 w-2 rounded-full bg-green-500 ring-2 ring-white dark:ring-gray-800"></span>
                 </div>
-                <span className="hidden md:block font-medium group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-200">Admin</span>
+                <span className="hidden md:block font-medium group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-200">
+                  Admin
+                </span>
               </button>
             </div>
           </div>

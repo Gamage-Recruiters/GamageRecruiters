@@ -245,7 +245,7 @@ export default function Contact() {
 
 
                     <div>
-                      <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Phone Number (optional)</label>
+                      <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Phone Number</label>
                       <input
                         type="tel"
                         name="phoneNumber"

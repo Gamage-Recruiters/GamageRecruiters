@@ -9,13 +9,18 @@ import { mockUsers } from '../data/mockData';
 import { useNavigate } from 'react-router-dom';
 
 function ClientUsers() {
+  console.log('Component Rendered');
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // console.log('mockUsers:', mockUsers);
   const clients = mockUsers.filter(user => user.role === 'client');
 
+  // console.log('Clients:', clients);
+  
   // Filter clients based on search term and status
   const filteredClients = clients.filter(client => {
     const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -38,7 +43,7 @@ function ClientUsers() {
   };
 
   // Get relative time string (e.g., "2 days ago")
-  const getRelativeTime = (dateString: string) => {
+  const getRelativeTime = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));

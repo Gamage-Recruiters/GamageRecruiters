@@ -81,6 +81,7 @@ router.post('/login', async (req, res) => {
                 secure: true,
                 maxAge: 100 * 60 * 60, // 1 hour ...
             });
+            
 
             // Store User Data in the database Session ...
             const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';

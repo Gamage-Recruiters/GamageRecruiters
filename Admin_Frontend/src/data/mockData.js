@@ -1,37 +1,6 @@
-import { User, Job, Workshop } from './types';
+// Mock Data
 
-export interface Application {
-  id: string;
-  jobId: string;
-  applicantName: string;
-  email: string;
-  status: 'pending' | 'reviewed' | 'shortlisted' | 'rejected';
-  appliedDate: string;
-  resumeUrl: string;
-}
-
-export interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  publishDate: string;
-  status: 'draft' | 'published';
-  imageUrl: string;
-}
-
-export interface Partner {
-  id: string;
-  name: string;
-  logo: string;
-  website: string;
-  description: string;
-  partnershipDate: string;
-  status: 'active' | 'inactive';
-}
-
-export const mockUsers: User[] = [
+export const mockUsers = [
   {
     id: '1',
     name: 'John Smith',
@@ -50,7 +19,7 @@ export const mockUsers: User[] = [
   },
 ];
 
-export const mockJobs: Job[] = [
+export const mockJobs = [
   {
     id: '1',
     title: 'Senior Software Engineer',
@@ -73,7 +42,7 @@ export const mockJobs: Job[] = [
   },
 ];
 
-export const mockWorkshops: Workshop[] = [
+export const mockWorkshops = [
   {
     id: '1',
     title: 'Resume Writing Masterclass',
@@ -92,7 +61,7 @@ export const mockWorkshops: Workshop[] = [
   },
 ];
 
-export const mockApplications: Application[] = [
+export const mockApplications = [
   {
     id: '1',
     jobId: '1',
@@ -113,7 +82,7 @@ export const mockApplications: Application[] = [
   },
 ];
 
-export const mockBlogPosts: BlogPost[] = [
+export const mockBlogPosts = [
   {
     id: '1',
     title: 'Top 10 Interview Tips for 2024',
@@ -136,7 +105,7 @@ export const mockBlogPosts: BlogPost[] = [
   },
 ];
 
-export const mockPartners: Partner[] = [
+export const mockPartners = [
   {
     id: '1',
     name: 'TechCorp Solutions',

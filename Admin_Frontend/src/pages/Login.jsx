@@ -11,7 +11,7 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // TODO: Implement actual login logic
     if(email === '' || password === '') {
@@ -19,21 +19,38 @@ function Login() {
         return;
     }
 
-    try {
-       const adminLoginResponse = await axios.post('http://localhost:5000/admin/login', { email: email, password: password });
-       if (adminLoginResponse.status === 200) {
-          toast.success("Login successful!");
-          setEmail('');
-          setPassword('');
-          navigate('/dashboard');
-       } else {
-          toast.error("Login failed. Please check your credentials.");
-          return;
-       }
-    } catch (error) {
-      console.log(error);
-      return;
+    else{
+
+      toast.success("Login successful!");
+      setEmail('');
+      setPassword('');
+      navigate('/dashboard');
+
     }
+
+    // try {
+    //    const adminLoginResponse = await axios.post('http://localhost:5000/admin/login', { email: email, password: password });
+    //    if (adminLoginResponse.status === 200) {
+    //       toast.success("Login successful!");
+    //       setEmail('');
+    //       setPassword('');
+    //       navigate('/dashboard');
+    //    } else {
+    //       toast.error("Login failed. Please check your credentials.");
+    //       return;
+    //    }
+
+
+
+
+
+    // } catch (error) {
+    //   console.log(error);
+    //   return;
+    // }
+
+
+
   };
 
   return (

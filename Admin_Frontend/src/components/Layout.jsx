@@ -17,22 +17,19 @@ function Layout() {
         <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
         
         <main className="flex-1 h-full overflow-y-auto bg-white/40 dark:bg-gray-900/40">
-<div className="h-full">
+          {/* Main content inside a motion.div for animation */}
           <motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  exit={{ opacity: 0, y: 20 }}
-  transition={{ duration: 0.4, ease: "easeOut" }}
-  className="w-full h-full px-6 py-8 overflow-y-auto"
->
-  <Outlet />
-</motion.div>
-
-
-          </div>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="w-full h-full px-6 py-8 overflow-y-auto"
+          >
+            <Outlet />
+          </motion.div>
         </main>
         
-        {/* Decorative elements */}
+        {/* Decorative background elements */}
         <div className="fixed top-0 right-0 -z-10 w-96 h-96 bg-purple-200 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
         <div className="fixed bottom-0 left-0 -z-10 w-96 h-96 bg-blue-200 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
       </div>

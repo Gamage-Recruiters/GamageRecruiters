@@ -7,9 +7,6 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-
-
-    
 // Mock blog post data based on the structure provided
 const mockBlogPosts = [
   {
@@ -134,7 +131,7 @@ function BlogManagement() {
   };
 
   // Get relative time string (e.g., "2 days ago")
-  const getRelativeTime = (dateString: string) => {
+  const getRelativeTime = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));

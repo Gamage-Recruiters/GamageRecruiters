@@ -15,7 +15,7 @@ function Applications() {
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'reviewed': return 'bg-blue-100 text-blue-800';
@@ -25,7 +25,7 @@ function Applications() {
     }
   };
 
-  const getJobTitle = (jobId: string) => {
+  const getJobTitle = (jobId) => {
     const job = mockJobs.find(j => j.id === jobId);
     return job ? job.title : 'Unknown Position';
   };

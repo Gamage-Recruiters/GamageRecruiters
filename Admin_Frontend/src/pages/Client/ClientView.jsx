@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaLinkedin, FaFacebook, FaGlobe, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaBirthdayCake, FaUser } from 'react-icons/fa';
 
-const ClientDetailsPage: React.FC = () => {
+const ClientDetailsPage  = () => {
   // Mock client data - in a real application, you would fetch this data from an API or props
   const client = { 
     firstName: 'John', 

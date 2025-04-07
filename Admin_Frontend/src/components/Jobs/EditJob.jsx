@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Minus, AlertTriangle } from 'lucide-react';
 
-const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
+function EditJob({ jobs = defaultJobs, onUpdateJob }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -411,7 +411,7 @@ const EditJob = ({ jobs = defaultJobs, onUpdateJob }) => {
       </form>
     </div>
   );
-};
+}
 
 // Default job data for testing
 const defaultJobs = [

@@ -10,7 +10,7 @@ const ViewAllJobs = ({ jobs = defaultJobs }) => {
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          job.company.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'All' || job.Status === filterStatus;
+    const matchesStatus = filterStatus === 'All' || job.status === filterStatus; // Updated to 'status'
     
     return matchesSearch && matchesStatus;
   });
@@ -20,7 +20,7 @@ const ViewAllJobs = ({ jobs = defaultJobs }) => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Manage Jobs</h1>
         <Link 
-          to="/jobss/add" 
+          to="/jobs/add"  // Fixed route to "/jobs/add"
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
         >
           <Plus size={18} />
@@ -80,10 +80,10 @@ const ViewAllJobs = ({ jobs = defaultJobs }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{job.postedDate}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                      ${job.Status === 'Active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
-                        job.Status === 'Inactive' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' :
+                      ${job.status === 'Active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
+                        job.status === 'Inactive' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' :
                         'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'}`}>
-                      {job.Status}
+                      {job.status}  {/* Updated to 'status' */}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -91,7 +91,7 @@ const ViewAllJobs = ({ jobs = defaultJobs }) => {
                       <Link to={`/view-job/${job.id}`} className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                         <Eye size={18} />
                       </Link>
-                      <Link to={`/jobss/edit/${job.id}`} className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
+                      <Link to={`/jobs/edit/${job.id}`} className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
                         <Edit size={18} />
                       </Link>
                       <button onClick={() => {/* Delete handling */}} className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
@@ -124,7 +124,7 @@ const defaultJobs = [
     location: "Colombo",
     jobType: "Full-time",
     salaryRange: "LKR30000-LKR 50000",
-    Status: "Active", 
+    status: "Active",  // Updated to 'status'
     postedDate: "March 5, 2025",
     description:
       "Looking for an experienced software engineer to lead our development team. Join our innovative company to create cutting-edge solutions that transform the way businesses operate in the digital space.",
@@ -158,7 +158,7 @@ const defaultJobs = [
     location: "Kandy",
     jobType: "Part-time",
     salaryRange: "LKR25000-LKR40000",
-    Status: "Active", 
+    status: "Active",  // Updated to 'status'
     postedDate: "March 10, 2025",
     description: "Join our marketing team to help develop and implement effective marketing strategies.",
     responsibilities: [],
@@ -173,7 +173,7 @@ const defaultJobs = [
     location: "Colombo",
     jobType: "Full-time",
     salaryRange: "LKR35000-LKR55000",
-    Status: "Inactive", 
+    status: "Inactive",  // Updated to 'status'
     postedDate: "February 28, 2025",
     description: "Looking for a data analyst to help transform data into actionable insights.",
     responsibilities: [],
@@ -188,7 +188,7 @@ const defaultJobs = [
     location: "Galle",
     jobType: "Contract",
     salaryRange: "LKR45000-LKR65000",
-    Status: "Draft", 
+    status: "Draft",  // Updated to 'status'
     postedDate: "March 15, 2025",
     description: "Design beautiful and functional user interfaces for web and mobile applications.",
     responsibilities: [],

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Minus } from 'lucide-react';
 
-const AddJob = ({ onAddJob }) => {
+function AddJob({ onAddJob }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
@@ -59,10 +59,9 @@ const AddJob = ({ onAddJob }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Create new job with current date and ID
     const newJob = {
       ...formData,
-      id: Date.now(), // Generate unique ID
+      id: Date.now(),
       postedDate: new Date().toLocaleDateString('en-US', { 
         year: 'numeric', 
         month: 'long', 
@@ -70,17 +69,14 @@ const AddJob = ({ onAddJob }) => {
       })
     };
     
-    // Filter out empty list items
     newJob.responsibilities = newJob.responsibilities.filter(item => item.trim() !== '');
     newJob.requirements = newJob.requirements.filter(item => item.trim() !== '');
     newJob.benefits = newJob.benefits.filter(item => item.trim() !== '');
     
-    // Call the onAddJob function if it exists (for parent component integration)
     if (onAddJob) {
       onAddJob(newJob);
     }
     
-    // Redirect to jobs listing
     navigate(-1);
   };
 
@@ -114,7 +110,6 @@ const AddJob = ({ onAddJob }) => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Job Title */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Job Title<span className="text-red-500">*</span>
@@ -130,7 +125,6 @@ const AddJob = ({ onAddJob }) => {
             />
           </div>
 
-          {/* Company Name */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Company Name<span className="text-red-500">*</span>
@@ -146,7 +140,6 @@ const AddJob = ({ onAddJob }) => {
             />
           </div>
 
-          {/* Location */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Location<span className="text-red-500">*</span>
@@ -162,7 +155,6 @@ const AddJob = ({ onAddJob }) => {
             />
           </div>
 
-          {/* Job Type */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Job Type<span className="text-red-500">*</span>
@@ -182,7 +174,6 @@ const AddJob = ({ onAddJob }) => {
             </select>
           </div>
 
-          {/* Salary Range */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Salary Range
@@ -197,7 +188,6 @@ const AddJob = ({ onAddJob }) => {
             />
           </div>
 
-          {/* Status */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Status<span className="text-red-500">*</span>
@@ -216,7 +206,6 @@ const AddJob = ({ onAddJob }) => {
           </div>
         </div>
 
-        {/* Job Description */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Job Description<span className="text-red-500">*</span>
@@ -232,7 +221,6 @@ const AddJob = ({ onAddJob }) => {
           ></textarea>
         </div>
 
-        {/* Responsibilities */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -271,7 +259,6 @@ const AddJob = ({ onAddJob }) => {
           </div>
         </div>
 
-        {/* Requirements */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -310,7 +297,6 @@ const AddJob = ({ onAddJob }) => {
           </div>
         </div>
 
-        {/* Benefits */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -349,7 +335,6 @@ const AddJob = ({ onAddJob }) => {
           </div>
         </div>
 
-        {/* Company Description */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Company Description
@@ -366,6 +351,6 @@ const AddJob = ({ onAddJob }) => {
       </form>
     </div>
   );
-};
+}
 
 export default AddJob;

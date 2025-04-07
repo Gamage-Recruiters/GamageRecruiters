@@ -79,7 +79,7 @@ const jobData = [
   }
 ];
 
-export default function CandidateDetailsView() {
+function CandidateDetailsView() {
   const { jobId } = useParams();
   const [candidates, setCandidates] = useState([]);
   const [filteredCandidates, setFilteredCandidates] = useState([]);
@@ -260,7 +260,7 @@ export default function CandidateDetailsView() {
         </div>
       </motion.div>
 
-      {/* Main content grid - Using flex-1 and max-h to ensure proper scrolling */}
+      {/* Main content grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
         {/* Candidate List */}
         <motion.div 
@@ -294,7 +294,6 @@ export default function CandidateDetailsView() {
                 </div>
               </div>
             </div>
-            {/* Improved scrolling container with custom scrollbar */}
             <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
               <motion.div 
                 variants={containerVariants}
@@ -362,7 +361,6 @@ export default function CandidateDetailsView() {
                 </button>
               </div>
               
-              {/* Simplified candidate details */}
               <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
                 <div className="flex flex-col md:flex-row gap-6 mb-6">
                   <div className="flex-shrink-0">
@@ -441,3 +439,5 @@ export default function CandidateDetailsView() {
     </div>
   );
 }
+
+export default CandidateDetailsView;

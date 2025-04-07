@@ -15,12 +15,7 @@ import {
   X
 } from 'lucide-react';
 
-interface SidebarProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-}
-
-function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
+function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
   
   const menuItems = [
@@ -68,12 +63,7 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         initial={{ x: isOpen ? 0 : -300 }}
         animate={{ x: isOpen ? 0 : -300 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`
-          fixed top-0 left-0 h-full w-64 z-30
-          bg-white dark:bg-gray-800 shadow-lg md:shadow-none
-          md:relative md:translate-x-0
-          flex flex-col
-        `}
+        className="fixed top-0 left-0 h-full w-64 z-30 bg-white dark:bg-gray-800 shadow-lg md:shadow-none md:relative md:translate-x-0 flex flex-col"
       >
         {/* Logo and close button */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100 dark:border-gray-700">
@@ -107,22 +97,13 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`
-                      flex items-center px-4 py-2 text-sm rounded-lg
-                      ${isActive 
+                    className={`flex items-center px-4 py-2 text-sm rounded-lg ${isActive 
                         ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' 
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                      }
-                      group relative
-                    `}
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'} group relative`}
                   >
-                    <div className={`
-                      p-1 mr-3 rounded-md 
-                      ${isActive 
+                    <div className={`p-1 mr-3 rounded-md ${isActive 
                         ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300' 
-                        : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
-                      }
-                    `}>
+                        : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`}>
                       <item.icon className="h-4 w-4" />
                     </div>
                     <span className="font-medium">
@@ -150,22 +131,13 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`
-                      flex items-center px-4 py-2 text-sm rounded-lg
-                      ${isActive 
+                    className={`flex items-center px-4 py-2 text-sm rounded-lg ${isActive 
                         ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' 
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                      }
-                      group relative
-                    `}
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'} group relative`}
                   >
-                    <div className={`
-                      p-1 mr-3 rounded-md 
-                      ${isActive 
+                    <div className={`p-1 mr-3 rounded-md ${isActive 
                         ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300' 
-                        : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
-                      }
-                    `}>
+                        : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`}>
                       <item.icon className="h-4 w-4" />
                     </div>
                     <span className="font-medium">
@@ -221,13 +193,9 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`
-                    p-2 rounded-lg relative group
-                    ${isActive 
+                  className={`p-2 rounded-lg relative group ${isActive 
                       ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300' 
-                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300'
-                    }
-                  `}
+                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300'}`}
                 >
                   <item.icon className="h-5 w-5" />
                   

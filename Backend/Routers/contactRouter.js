@@ -13,7 +13,7 @@ router.route('/deleteinquiry/:id').delete(contactController.deleteInquiry);  // 
 
 router.route('/getinquiry').get(contactController.getInquiry); // not send any on req. just get all
 
-// router.route('/deleteinquiry').delete( contactController.deleteInquiry);
+
 
 
 
