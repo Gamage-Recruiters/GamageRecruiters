@@ -192,7 +192,7 @@ export default function JobDetails() {
       {/* Header Section */}
       <div className="bg-gradient-to-r from-black to-indigo-800 text-white py-12">
         <div className="mx-auto max-w-4xl  px-6 pt-10">
-          <h1 className="text-4xl font-bold">{job.title}</h1>
+          <h1 className="text-4xl font-bold">{job.jobName}</h1>
           <div className="mt-4 flex flex-wrap gap-y-3 gap-x-6 text-sm md:text-base">
             <div className="flex items-center">
               <Briefcase className="mr-2" size={18} />
