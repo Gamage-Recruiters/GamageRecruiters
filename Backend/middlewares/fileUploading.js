@@ -5,10 +5,12 @@ const fs = require('fs');
 // Define storage paths
 const imagePath = path.join(__dirname, '../uploads/images');
 const cvPath = path.join(__dirname, '../uploads/cvs');
+const blogImagePath = path.join(__dirname, '../uploads/blog/images');
 
 // Ensure directories exist
 if (!fs.existsSync(imagePath)) fs.mkdirSync(imagePath, { recursive: true });
 if (!fs.existsSync(cvPath)) fs.mkdirSync(cvPath, { recursive: true });
+if (!fs.existsSync(blogImagePath)) fs.mkdirSync(blogImagePath, { recursive: true });
 
 // Define storage logic
 const storage = multer.diskStorage({
@@ -17,7 +19,9 @@ const storage = multer.diskStorage({
             callback(null, imagePath);
         } else if (file.fieldname === 'cv') {
             callback(null, cvPath);
-        } else {
+        } else if (file.fieldname === 'blog') {
+            callback(null, blogImagePath);
+        }else {
             callback(new Error('Invalid file field'), false);
         }
     },
@@ -31,12 +35,16 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, callback) => {
     const imageTypes = /jpeg|jpg|png|gif|JPG|PNG|JPEG|GIF/;
     const cvTypes = /pdf|docx|PDF|DOCX|ppt|PPT|pptx|PPTX/;
+    const blogTypes = /jpeg|jpg|png|gif|JPG|PNG|JPEG|GIF/;
+
     const extName = path.extname(file.originalname).toLowerCase();
     const mimeType = file.mimetype.toLowerCase();
 
     if (file.fieldname === 'photo' && imageTypes.test(extName) && imageTypes.test(mimeType)) {
         callback(null, true);
     } else if (file.fieldname === 'cv' && cvTypes.test(extName) && cvTypes.test(mimeType)) {
+        callback(null, true);
+    } else if (file.fieldname === 'blog' && blogTypes.test(extName) && blogTypes.test(mimeType)) {
         callback(null, true);
     } else {
         callback(new Error(`Invalid file type for ${file.fieldname}`), false);
@@ -50,7 +58,8 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 }).fields([
     { name: 'photo', maxCount: 1 },
-    { name: 'cv', maxCount: 1 }
+    { name: 'cv', maxCount: 1 },
+    { name: 'blog', maxCount: 1 }
 ]);
 
 module.exports = upload;

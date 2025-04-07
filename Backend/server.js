@@ -100,7 +100,7 @@ app.use('/api/jobs', JobsManagementRouter);
 const testimonialsRouter = require('./Routers/testimonialsRouter');
 app.use("/api/testimonials",testimonialsRouter);
 
-const blogRoutes = require('./Routers/blogRoutes');
+const blogRoutes = require('./Routers/blogRouter');
 app.use('/api/blogs', blogRoutes);
 
 app.listen(PORT, () => {
