@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Briefcase } from "lucide-react";
 import { toast, ToastContainer } from 'react-toastify';
 import axios from "axios";
+import { useChangeDateFormat } from "../../hooks/customHooks";
 
 const AppliedJobs = ({ user }) => {
   // Sample data for applied jobs
@@ -35,7 +36,9 @@ const AppliedJobs = ({ user }) => {
   //     statusColor: "bg-red-100 text-red-800",
   //   },
   // ]);
+
   const [appliedJobs, setAppliedJobs] = useState([]);
+  const [appliedJobCount, setAppliedJobCount] = useState(0);
 
   useEffect(() => {
     if(!user) {
@@ -56,6 +59,7 @@ const AppliedJobs = ({ user }) => {
       const appliedJobsResponse = await axios.get(`http://localhost:8000/api/jobs/applied/${id}`);
       if(appliedJobsResponse.status == 200) {
         setAppliedJobs(appliedJobsResponse.data.data);
+        setAppliedJobCount(appliedJobsResponse.data.data.length);
       } else if(appliedJobsResponse.status == 404) {
         console.log('No Jobs found');
       } else {
@@ -85,18 +89,18 @@ const AppliedJobs = ({ user }) => {
         <div className="space-y-4">
           {appliedJobs.map((job) => (
             <div
-              key={job.id}
+              key={job.jobId}
               className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all"
             >
               <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                 {/* Job Details */}
                 <div>
-                  <h3 className="font-semibold text-lg">{job.title}</h3>
+                  <h3 className="font-semibold text-lg">{job.jobName}</h3>
                   <p className="text-gray-600">
-                    {job.company} • {job.location}
+                    {job.company} • {job.jobLocation}
                   </p>
                   <p className="text-gray-500 text-sm">
-                    Applied: {job.appliedDate}
+                    Applied: {useChangeDateFormat(job.appliedDate)}
                   </p>
                 </div>
 
@@ -106,7 +110,7 @@ const AppliedJobs = ({ user }) => {
                     {job.status}
                   </span>
                   <Link
-                    to={`/applications/${job.id}`}
+                    to={`/application/${job.applicationId}`}
                     className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                   >
                     View Details

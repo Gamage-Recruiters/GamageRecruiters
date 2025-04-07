@@ -1,6 +1,8 @@
 const dotenv = require('dotenv');
 const { pool } = require('../config/dbConnection');
-const { localStorage, encryptData } = require('../utils/localStorage');
+const { setLoggedUserIdAndMethod } = require('../utils/setLocalStorageData');
+const { addNewUserIfSessionUserNotFound, generateNewTokenForPlatformLogins } = require('../middlewares/userMiddleware');
+const splitStrings = require('../utils/splitStrings');
 
 dotenv.config();
 
@@ -27,21 +29,52 @@ async function loginGoogleCallback (req, res) {
         pool.query(sql, values, (error, data) => {
             if(error) {
                 return res.status(400).send('Error Saving Data');
-            } 
+            }  
 
-            // console.log('Data Saved Successfully', data);
+            setLoggedUserIdAndMethod(req.session.user.id, 'Google');
 
-            const key = "Saved User Data";
-            const userData = [req.session.user.id, 'Google'];
-                                    
-            // Encrypt the array (convert it to a JSON string first) ...
-            const { encryptedData, iv } = encryptData(JSON.stringify(userData));
-                                    
-            // Store encrypted data and IV in localStorage ...
-            localStorage.setItem(key, JSON.stringify({ encryptedData, iv }));
-            
-            // Redirect to frontend after setting session and save data ...
-            res.redirect(process.env.SUCCESS_REDIRECT_URL);
+            const userQuery = 'SELECT * FROM Users WHERE email = ?';
+            pool.query(userQuery, [req.session.user.email], async (error, result) => {
+                if(error) {
+                    console.log(error);
+                    return res.status(400).send(error);
+                } 
+
+                if(result.length === 0) {
+                    console.log('User not found, creating new user ...');
+                    const userName = splitStrings(req.session.user.name);
+                    try {
+                        const userData = await addNewUserIfSessionUserNotFound(userName[0], userName[1], req.session.user.email);
+                        if(!userData) {
+                            return res.status(404).send('User Not Found');
+                        } 
+
+                        console.log('User Data:', userData);
+                        const token = await generateNewTokenForPlatformLogins(userData.userId);
+
+                        if(!token) {
+                            return res.status(404).send('Error Occured. Cannot proceed.');
+                        }
+
+                        return res.redirect(process.env.SUCCESS_REDIRECT_URL);
+                    } catch (error) {
+                        console.error(error);
+                        return res.status(500).send(error);
+                    }
+                }
+
+                const userData = result[0];
+                console.log('User data:', userData);
+
+                const token = await generateNewTokenForPlatformLogins(userData.userId);
+
+                if(!token) {
+                    return res.status(404).send('Error Occured. Cannot proceed.');
+                }
+
+                // Redirect to frontend after setting session and save data ...
+                return res.redirect(process.env.SUCCESS_REDIRECT_URL);
+            });
         });
     } catch (error) {
         console.log(error);

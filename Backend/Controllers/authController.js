@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const { pool } = require('../config/dbConnection');
 const { otpCache, generateOTP, sendOTP } = require('../middlewares/OTP');
 const { localStorage, encryptData, decryptData } = require('../utils/localStorage');
+const { fetchLoggedUserIdAndMethod, fetchLoggedPlatformUserRegisteredId } = require('../utils/retrieveLocalStorageData');
+const { setLoggedUserIdAndMethod, setLoggedPlatformUserRegisteredId } = require('../utils/setLocalStorageData');
 
 dotenv.config();
 
@@ -90,20 +92,13 @@ async function login (req, res) {
                     return res.status(400).send('Error creating session');
                 } 
 
-                const key = "Saved User Data";
-                const userData = [result[0].userId, 'Email & Password'];
-                            
-                // Encrypt the array (convert it to a JSON string first) ...
-                const { encryptedData, iv } = encryptData(JSON.stringify(userData));
-                            
-                // Store encrypted data and IV in localStorage ...
-                localStorage.setItem(key, JSON.stringify({ encryptedData, iv }));
+                setLoggedUserIdAndMethod(result[0].userId, 'Email & Password');
 
                 return res.status(200).json({ message: 'Login Successful', token: token, data: data, tokenExpiresAt: expTime });
             });
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).send(error);
     }
 }
@@ -124,7 +119,7 @@ async function sendEmailVerificationOTP (req, res) {
         res.cookie('otpCache', otpCache, { maxAge: 3000, httpOnly: true });
         res.status(200).json({message: "OTP sent successfully", otp: otp});
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).send(error);
     }
 }
@@ -150,7 +145,7 @@ async function verifyEmailVerificationOTP (req, res) {
             const sql = 'UPDATE users SET email = ? WHERE email = ?';
             pool.query(sql, [email, oldEmail], (error, result) => {
                 if(error) {
-                    console.log(error);
+                    // console.log(error);
                     return res.status(400).send('User Registration Failed');
                 } 
 
@@ -160,7 +155,7 @@ async function verifyEmailVerificationOTP (req, res) {
             return res.status(401).send("Invalid OTP");
         }
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).send(error);
     }
 }
@@ -184,7 +179,7 @@ async function emailCheck (req, res) {
             return res.status(200).json({ message: 'Data Found', data: result });
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).send(error);
     }
 }
@@ -216,7 +211,7 @@ async function resetPassword (req, res) {
             const updateSql = 'UPDATE users SET password = ? WHERE email = ?';
             pool.query(updateSql, [hashedNewPassword, email], (error, data) => {
                 if(error) {
-                    console.log(error);
+                    // console.log(error);
                     return res.status(400).send('Error updating password');
                 }
 
@@ -224,7 +219,7 @@ async function resetPassword (req, res) {
             });
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(500).send(error);
     }
 } 
@@ -233,30 +228,19 @@ async function logout(req, res) {
     if(req.session.user) {
         req.session.destroy((err) => {
             if(err) {
-                // console.log(err);
+                console.log(err);
                 return res.status(500).send('Error destroying session');
             }
             res.clearCookie('token');
-            res.status(200).send('Logged out successfully');
+            return res.status(200).send('Logged out successfully');
         });
-    }
-
-    const key = 'Saved User Data';
-
-    // Retrieve encrypted data from localStorage ...
-    const storedData = localStorage.getItem(key);
-
-    if(!storedData) {
-        // console.log(`No data found for key: ${key}`);
-        return res.status(404).send('No Logged User data found. Error Occured.');
     } 
 
-    const { encryptedData, iv } = JSON.parse(storedData); // Parse stored JSON ...
-    const decryptedData = decryptData(encryptedData, iv); // Decrypt data ...
-    const retrievedArray = JSON.parse(decryptedData); // Convert string back to array ...
-    // console.log("Decrypted Array:", retrievedArray);
-    const id = retrievedArray[0];
-    const loginMethod = retrievedArray[1];
+    const arr = fetchLoggedUserIdAndMethod();
+
+    const id = arr[0];
+    const loginMethod = arr[1];
+
     let sql;
     let values;
     let userId;
@@ -265,13 +249,13 @@ async function logout(req, res) {
         sql = 'UPDATE sessions SET endedAt = ?, status = ? WHERE Id = ? AND endedAt IS NULL ORDER BY createdAt DESC LIMIT 1';
         values = [ new Date(), 'Ended', id ];
     } else if(loginMethod === 'Google') {
-        sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
+        sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE loginId = ? AND platform = ? AND loggedOutAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
         values = [ new Date(), id, 'Google' ];
     } else if(loginMethod === 'Facebook') {
-        sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
+        sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE loginId = ? AND platform = ? AND loggedOutAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
         values = [ new Date(), id, 'Facebook' ];
     } else if(loginMethod === 'LinkedIn') {
-        sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE Id = ? AND platform = ? AND endedAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
+        sql = 'UPDATE loginsthroughplatforms SET loggedOutAt = ? WHERE loginId = ? AND platform = ? AND loggedOutAt IS NULL ORDER BY loggedAt DESC LIMIT 1';
         values = [ new Date(), id, 'LinkedIn' ];
     } else {
         // console.log('Invalid login method Stored');
@@ -281,21 +265,7 @@ async function logout(req, res) {
     if(loginMethod === 'Email & Password') {
         userId = id;
     } else if(loginMethod === 'Google' || loginMethod === 'Facebook' || loginMethod === 'LinkedIn') {
-        const idKey = 'Saved User Id';
-
-        // Retrieve encrypted data from localStorage ...
-        const storeduserId = localStorage.getItem(key);
-
-        if(!storedData) {
-            console.log(`No data found for key: ${key}`);
-            return res.status(404).send('No data found. Error Occured.');
-        } 
-
-        const { encryptedData, iv } = JSON.parse(storeduserId); // Parse stored JSON ...
-        const decryptedData = decryptData(encryptedData, iv); // Decrypt data ...
-        const retrieveduserId = JSON.parse(decryptedData); // Convert string back to array ...
-        // console.log("Decrypted Array:", retrievedArray);
-        userId = retrieveduserId;
+        userId = fetchLoggedPlatformUserRegisteredId();
     } else {
         // console.log('Invalid login method Stored');
         return res.status(400).send('Invalid login method');
@@ -308,11 +278,11 @@ async function logout(req, res) {
                 // console.log(error);
                 return res.status(400).send(error);
             } 
-
-            // Clear the localStorage ...
-            localStorage.removeItem(key);
             
-            if(loginMethod === 'Google' || loginMethod === 'Facebook' || loginMethod === 'LinkedIn') {
+            if(loginMethod === 'Email & Password') {
+                localStorage.clear();
+                return res.status(200).json({ message: 'Logged out successfully', data: result });
+            } else if(loginMethod === 'Google' || loginMethod === 'Facebook' || loginMethod === 'LinkedIn') {
                 const endSessionQuery = 'UPDATE sessions SET endedAt = ? WHERE Id = ? AND endedAt IS NULL ORDER BY createdAt DESC LIMIT 1';
                 pool.query(endSessionQuery, [new Date(), userId], (error, result) => {
                     if(error) {
@@ -321,13 +291,13 @@ async function logout(req, res) {
                     } 
 
                     // Clear the localStorage ...
-                    localStorage.removeItem(idKey);
+                    localStorage.clear();
 
                     return res.status(200).json({ message: 'Logged out successfully', data: result });
                 });
+            } else {
+                return res.status(400).send('Invalid login method');
             }
-
-            return res.status(200).json({ message: 'Logged out successfully', data: result });
         })
     } catch (error) {
         // console.log(error);

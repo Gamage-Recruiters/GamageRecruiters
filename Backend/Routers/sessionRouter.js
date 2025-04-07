@@ -11,4 +11,7 @@ router.get('/profile-data', sessionController.getLoggedUserData);
 // Route to get a new access token ...
 router.put('/update-access-token', sessionController.generateNewAccessToken);
 
+// Route to get user login attempts ...
+router.get('/login-attempts/:userId', sessionController.getUserLoginAttempts);
+
 module.exports = router;
