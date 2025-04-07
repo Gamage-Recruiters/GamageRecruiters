@@ -245,7 +245,7 @@ export default function Dashboard() {
     fetchJobApplicationStatusForUser(loggedUserId);
     fetchLastActiveStatusForUser(loggedUserId);
     fetchLastProfileActivity(loggedUserId);
-    fetchUserLoginAttempts(loggedUserId);
+    // fetchUserLoginAttempts(loggedUserId);
 
     if(user.cv) {
       const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;

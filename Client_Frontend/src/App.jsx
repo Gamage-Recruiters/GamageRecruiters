@@ -44,7 +44,7 @@ function App() {
             <Route path="/application/:jobApplicationId" element={<Application />} />
             <Route path="/trusted-partners" element={<TrustedPartners />} />
             <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:blogid" element={<BlogDetailsPage />} />
+            <Route path="/blog/:blogId" element={<BlogDetailsPage />} />
             <Route path="/workshop" element={<WorkshopsAndSeminarsPage />} />
             <Route path="/testimonials" element={<TestimonialsSection />} />
           </Routes>

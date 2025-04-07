@@ -1,106 +1,182 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 import { ArrowLeft, Calendar, Clock, Share2, Bookmark, ThumbsUp, MessageSquare } from 'lucide-react';
+import { useChangeDateFormat, useConCatName } from '../hooks/customHooks';
+import setTimeStatus from '../scripts/setTimeStatus';
+import generateBlogReadingTime from '../scripts/generateBlogReadingTime';
 
 export default function BlogDetailsPage() {
-  const { id } = useParams();
+  const { blogId } = useParams();
   const [blogPost, setBlogPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [relatedPosts, setRelatedPosts] = useState([]);
+  const [blogLikeCount, setBlogLikeCount] = useState(0);
+  let blogComments = [];
+  const [loadComments, setLoadComments] = useState(true);
+  const [loadBlogComments, setLoadBlogComments] = useState(false);
+  const [blogReadTime, setBlogReadTime] = useState('');
   
   // Simulate fetching blog post data
   useEffect(() => {
+    if(blogId) {
+      fetchBlogData(blogId);
+      fetchBlogLikeCount(blogId);
+      fetchBlogComments(blogId);
+    }
     // This would normally be an API call
-    const fetchPost = () => {
-      setLoading(true);
+    // const fetchPost = () => {
+    //   setLoading(true);
       
-      // Mock data for demonstration
-      const post = {
-        id: parseInt(id),
-        title: "Future of Remote Work in Sri Lanka",
-        category: "Industry Trends",
-        date: "March 15, 2024",
-        readTime: "5 min read",
-        author: {
-          name: "Amara Fernando",
-          role: "Senior HR Consultant",
-          image: "https://miro.medium.com/v2/resize:fit:1400/1*NeRvhd48SzhZhQoyLwDsog.jpeg"
-        },
-        image: "https://miro.medium.com/v2/resize:fit:1400/1*NeRvhd48SzhZhQoyLwDsog.jpeg",
-        content: `
-          <p class="mb-4">The landscape of work in Sri Lanka is undergoing a significant transformation, accelerated by global events and technological advancements. As we navigate through 2024, remote and hybrid work models continue to reshape how organizations operate and how professionals approach their careers.</p>
+    //   // Mock data for demonstration
+    //   // const post = {
+    //   //   id: parseInt(id),
+    //   //   title: "Future of Remote Work in Sri Lanka",
+    //   //   category: "Industry Trends",
+    //   //   date: "March 15, 2024",
+    //   //   readTime: "5 min read",
+    //   //   author: {
+    //   //     name: "Amara Fernando",
+    //   //     role: "Senior HR Consultant",
+    //   //     image: "https://miro.medium.com/v2/resize:fit:1400/1*NeRvhd48SzhZhQoyLwDsog.jpeg"
+    //   //   },
+    //   //   image: "https://miro.medium.com/v2/resize:fit:1400/1*NeRvhd48SzhZhQoyLwDsog.jpeg",
+    //   //   content: `
+    //   //     <p class="mb-4">The landscape of work in Sri Lanka is undergoing a significant transformation, accelerated by global events and technological advancements. As we navigate through 2024, remote and hybrid work models continue to reshape how organizations operate and how professionals approach their careers.</p>
           
-          <h2 class="text-2xl font-bold mt-8 mb-4">The Current State of Remote Work</h2>
+    //   //     <h2 class="text-2xl font-bold mt-8 mb-4">The Current State of Remote Work</h2>
           
-          <p class="mb-4">According to recent surveys, approximately 62% of Sri Lankan companies now offer some form of remote work arrangement, a substantial increase from just 18% in 2019. This shift is particularly notable in the IT, finance, and business services sectors, where digital infrastructure enables seamless remote operations.</p>
+    //   //     <p class="mb-4">According to recent surveys, approximately 62% of Sri Lankan companies now offer some form of remote work arrangement, a substantial increase from just 18% in 2019. This shift is particularly notable in the IT, finance, and business services sectors, where digital infrastructure enables seamless remote operations.</p>
           
-          <p class="mb-4">The COVID-19 pandemic served as a catalyst, but the persistence of remote work arrangements suggests deeper benefits beyond crisis management. Companies report reduced operational costs, access to wider talent pools, and in many cases, improved productivity.</p>
+    //   //     <p class="mb-4">The COVID-19 pandemic served as a catalyst, but the persistence of remote work arrangements suggests deeper benefits beyond crisis management. Companies report reduced operational costs, access to wider talent pools, and in many cases, improved productivity.</p>
           
-          <blockquote class="border-l-4 border-gray-800 pl-4 italic my-6 text-gray-600">
-            "The traditional office-centric approach is evolving into a more flexible, results-oriented work culture. Companies that embrace this change are positioning themselves to thrive in the future economy." — Sri Lanka Association of HR Professionals
-          </blockquote>
+    //   //     <blockquote class="border-l-4 border-gray-800 pl-4 italic my-6 text-gray-600">
+    //   //       "The traditional office-centric approach is evolving into a more flexible, results-oriented work culture. Companies that embrace this change are positioning themselves to thrive in the future economy." — Sri Lanka Association of HR Professionals
+    //   //     </blockquote>
           
-          <h2 class="text-2xl font-bold mt-8 mb-4">Benefits and Challenges</h2>
+    //   //     <h2 class="text-2xl font-bold mt-8 mb-4">Benefits and Challenges</h2>
           
-          <p class="mb-4">For employees, remote work offers reduced commute times in congested urban centers like Colombo, improved work-life balance, and the ability to work for international companies without relocation. Many professionals report higher job satisfaction and reduced stress levels.</p>
+    //   //     <p class="mb-4">For employees, remote work offers reduced commute times in congested urban centers like Colombo, improved work-life balance, and the ability to work for international companies without relocation. Many professionals report higher job satisfaction and reduced stress levels.</p>
           
-          <p class="mb-4">However, challenges persist. Companies struggle with maintaining corporate culture, ensuring consistent productivity monitoring, and addressing the inequality between roles that can and cannot be performed remotely. Employees sometimes report feelings of isolation, difficulty separating work and personal life, and concerns about career progression in a remote environment.</p>
+    //   //     <p class="mb-4">However, challenges persist. Companies struggle with maintaining corporate culture, ensuring consistent productivity monitoring, and addressing the inequality between roles that can and cannot be performed remotely. Employees sometimes report feelings of isolation, difficulty separating work and personal life, and concerns about career progression in a remote environment.</p>
           
-          <h2 class="text-2xl font-bold mt-8 mb-4">Infrastructure Considerations</h2>
+    //   //     <h2 class="text-2xl font-bold mt-8 mb-4">Infrastructure Considerations</h2>
           
-          <p class="mb-4">One significant factor influencing remote work adoption in Sri Lanka is internet infrastructure. While urban centers enjoy relatively reliable connectivity, rural areas often face challenges with consistent high-speed internet access. Power outages remain a concern in some regions, potentially disrupting remote work.</p>
+    //   //     <p class="mb-4">One significant factor influencing remote work adoption in Sri Lanka is internet infrastructure. While urban centers enjoy relatively reliable connectivity, rural areas often face challenges with consistent high-speed internet access. Power outages remain a concern in some regions, potentially disrupting remote work.</p>
           
-          <p class="mb-4">Forward-thinking companies are addressing these challenges by providing stipends for home office setups, including backup power solutions and dedicated internet connections. Some organizations are exploring hub-and-spoke models with smaller regional offices or co-working space partnerships to provide alternative workspaces.</p>
+    //   //     <p class="mb-4">Forward-thinking companies are addressing these challenges by providing stipends for home office setups, including backup power solutions and dedicated internet connections. Some organizations are exploring hub-and-spoke models with smaller regional offices or co-working space partnerships to provide alternative workspaces.</p>
           
-          <h2 class="text-2xl font-bold mt-8 mb-4">The Future Outlook</h2>
+    //   //     <h2 class="text-2xl font-bold mt-8 mb-4">The Future Outlook</h2>
           
-          <p class="mb-4">Looking ahead, the hybrid model appears to be gaining the most traction among Sri Lankan businesses. This approach combines in-office presence with remote work flexibility, aiming to capture the benefits of both models while mitigating their respective drawbacks.</p>
+    //   //     <p class="mb-4">Looking ahead, the hybrid model appears to be gaining the most traction among Sri Lankan businesses. This approach combines in-office presence with remote work flexibility, aiming to capture the benefits of both models while mitigating their respective drawbacks.</p>
           
-          <p class="mb-4">As international companies increasingly hire remote workers from Sri Lanka, local companies face both competition for talent and opportunities to adopt global best practices. This international exposure is likely to accelerate the evolution of work models and professional expectations across the country.</p>
+    //   //     <p class="mb-4">As international companies increasingly hire remote workers from Sri Lanka, local companies face both competition for talent and opportunities to adopt global best practices. This international exposure is likely to accelerate the evolution of work models and professional expectations across the country.</p>
           
-          <p class="mb-4">The legal framework is also evolving, with discussions about updating labor laws to address remote work arrangements, including considerations for work hours, health and safety requirements for home offices, and tax implications.</p>
+    //   //     <p class="mb-4">The legal framework is also evolving, with discussions about updating labor laws to address remote work arrangements, including considerations for work hours, health and safety requirements for home offices, and tax implications.</p>
           
-          <h2 class="text-2xl font-bold mt-8 mb-4">Preparing for Success</h2>
+    //   //     <h2 class="text-2xl font-bold mt-8 mb-4">Preparing for Success</h2>
           
-          <p class="mb-4">For professionals looking to thrive in this changing landscape, developing self-management skills, digital literacy, and effective virtual communication abilities is crucial. For employers, investing in secure digital infrastructure, reimagining management approaches to focus on outcomes rather than presence, and intentionally fostering company culture across distributed teams will be key differentiators.</p>
+    //   //     <p class="mb-4">For professionals looking to thrive in this changing landscape, developing self-management skills, digital literacy, and effective virtual communication abilities is crucial. For employers, investing in secure digital infrastructure, reimagining management approaches to focus on outcomes rather than presence, and intentionally fostering company culture across distributed teams will be key differentiators.</p>
           
-          <p class="mb-6">As Sri Lanka continues to position itself as a knowledge economy hub in South Asia, the evolution of work models will play a significant role in shaping its economic future and competitiveness on the global stage.</p>
-        `,
-        tags: ["Remote Work", "HR Trends", "Workplace Culture", "Technology", "Employment"],
-        views: 1243,
-        likes: 89,
-        comments: 23
-      };
+    //   //     <p class="mb-6">As Sri Lanka continues to position itself as a knowledge economy hub in South Asia, the evolution of work models will play a significant role in shaping its economic future and competitiveness on the global stage.</p>
+    //   //   `,
+    //   //   tags: ["Remote Work", "HR Trends", "Workplace Culture", "Technology", "Employment"],
+    //   //   views: 1243,
+    //   //   likes: 89,
+    //   //   comments: 23
+    //   // };
       
-      setBlogPost(post);
+    //   // setBlogPost(post);
       
-      // Mock related posts
-      setRelatedPosts([
-        {
-          id: 2,
-          title: "Top 5 Tech Skills in Demand for 2024",
-          excerpt: "Discover the most sought-after technical skills in the Sri Lankan job market this year...",
-          category: "Career Advice",
-          date: "March 12, 2024",
-          readTime: "4 min read",
-          image: "https://www.activtrak.com/wp-content/uploads/2023/09/blog-header-7-steps-productive-remote-work-environment.jpg"
-        },
-        {
-          id: 3,
-          title: "Building Effective Workplace Cultures",
-          excerpt: "Strategies for creating productive and positive work environments in modern organizations...",
-          category: "HR Insights",
-          date: "March 10, 2024",
-          readTime: "6 min read",
-          image: "https://source.unsplash.com/random/800x600?teamwork"
-        }
-      ]);
+    //   // Mock related posts
+    //   // setRelatedPosts([
+    //   //   {
+    //   //     id: 2,
+    //   //     title: "Top 5 Tech Skills in Demand for 2024",
+    //   //     excerpt: "Discover the most sought-after technical skills in the Sri Lankan job market this year...",
+    //   //     category: "Career Advice",
+    //   //     date: "March 12, 2024",
+    //   //     readTime: "4 min read",
+    //   //     image: "https://www.activtrak.com/wp-content/uploads/2023/09/blog-header-7-steps-productive-remote-work-environment.jpg"
+    //   //   },
+    //   //   {
+    //   //     id: 3,
+    //   //     title: "Building Effective Workplace Cultures",
+    //   //     excerpt: "Strategies for creating productive and positive work environments in modern organizations...",
+    //   //     category: "HR Insights",
+    //   //     date: "March 10, 2024",
+    //   //     readTime: "6 min read",
+    //   //     image: "https://source.unsplash.com/random/800x600?teamwork"
+    //   //   }
+    //   // ]);
       
-      setLoading(false);
-    };
+    //   setLoading(false);
+    // };
     
-    fetchPost();
-  }, [id]);
+    // fetchPost();
+  }, [blogId]);
+
+  const fetchBlogData = async (id) => {
+    setLoading(true);
+    try {
+      const blogResponse = await axios.get(`http://localhost:8000/api/blogs/${id}`);
+      console.log(blogResponse.data);
+      if(blogResponse.status == 200) {
+        setBlogPost(blogResponse.data.data[0]);
+        setLoading(false);
+        const blog = blogResponse.data.data[0];
+        const fullBlogString = `${blog.title} ${blog.introduction} ${blog.subTitle1} ${blog.subContent1} ${blog.subTitle2} ${blog.subContent2} ${blog.subTitle3} ${blog.subContent3} ${blog.subTitle4} ${blog.subContent4} ${blog.subTitle5} ${blog.subContent5} ${blog.subTitle6} ${blog.subContent6} ${blog.subTitle7} ${blog.subContent7} ${blog.subTitle8} ${blog.subContent8} ${blog.subTitle9} ${blog.subContent9} ${blog.subTitle10} ${blog.subContent10} ${blog.Quote1} ${blog.Quote2} ${blog.Quote3}`
+        setBlogReadTime(generateBlogReadingTime(fullBlogString));
+      } else {
+        console.log('Unable to fetch blog data');
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  } 
+
+  const fetchBlogLikeCount = async (id) => {
+    try {
+      const blogLikeCountResponse = await axios.get(`http://localhost:8000/api/blogs/like-count/${id}`);
+      console.log(blogLikeCountResponse.data.likeCount);
+      if(blogLikeCountResponse.status == 200) {
+        setBlogLikeCount(blogLikeCountResponse.data.likeCount);
+      } else {
+        console.log('Unable to fetch blog like count');
+        setBlogLikeCount(0);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+
+  const fetchBlogComments = async (id) => {
+    try {
+      const blogCommentsResponse = await axios.get(`http://localhost:8000/api/blogs/comments/${id}`);
+      console.log(blogCommentsResponse.data.data);
+      if(blogCommentsResponse.status == 200) {
+        blogComments.push(blogCommentsResponse.data.data);
+      } else {
+        console.log('Unable to fetch blog comments');
+        blogComments = [];
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+
+  const handleLoadComments = () => {
+    setLoadComments(false);
+    setLoadBlogComments(true);
+  }
   
   if (loading) {
     return (
@@ -136,7 +212,7 @@ export default function BlogDetailsPage() {
       <div className="relative h-96 md:h-[500px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
         <img 
-          src={blogPost.image} 
+          src={blogPost.coverImage ? `http://localhost:8000/uploads/blogs/covers/${blog.coverImage}` : ''} 
           alt={blogPost.title} 
           className="w-full h-full object-cover"
         />
@@ -150,19 +226,19 @@ export default function BlogDetailsPage() {
           <div className="flex flex-wrap items-center text-white gap-6">
             <div className="flex items-center">
               <Calendar size={16} className="mr-2" />
-              <span>{blogPost.date}</span>
+              <span>{useChangeDateFormat(blogPost.addedAt)}</span>
             </div>
             <div className="flex items-center">
               <Clock size={16} className="mr-2" />
-              <span>{blogPost.readTime}</span>
+              <span>{blogReadTime ? blogReadTime : ''}</span>
             </div>
             <div className="flex items-center">
               <ThumbsUp size={16} className="mr-2" />
-              <span>{blogPost.likes} likes</span>
+              <span>{blogLikeCount ? blogLikeCount : 0} likes</span>
             </div>
             <div className="flex items-center">
               <MessageSquare size={16} className="mr-2" />
-              <span>{blogPost.comments} comments</span>
+              <span>{blogComments.length ? blogComments.length : 0} comments</span>
             </div>
           </div>
         </div>
@@ -173,12 +249,12 @@ export default function BlogDetailsPage() {
         <div className="bg-white rounded-xl shadow-md p-6 flex items-center gap-4">
           <img 
             src={blogPost.author.image} 
-            alt={blogPost.author.name} 
+            alt={blogPost.author} 
             className="w-16 h-16 rounded-full object-cover border-2 border-white"
           />
           <div>
-            <h3 className="font-bold text-lg">{blogPost.author.name}</h3>
-            <p className="text-gray-600 text-sm">{blogPost.author.role}</p>
+            <h3 className="font-bold text-lg">{blogPost.author}</h3>
+            <p className="text-gray-600 text-sm">{blogPost.authorPosition}, {blogPost.authorCompany}</p>
           </div>
           <button className="ml-auto px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
             Follow
@@ -189,11 +265,132 @@ export default function BlogDetailsPage() {
       {/* Content Section */}
       <div className="max-w-4xl mx-auto px-6 py-12">
         <article className="prose lg:prose-lg max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: blogPost.content }} />
+          <div dangerouslySetInnerHTML={{ __html: blogPost.introduction }} />
+          <br/>
+          {blogPost.subTitle1 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subTitle1 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent1 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subContent1 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subTitle2 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subTitle2 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent2 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subContent2 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subTitle3 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subTitle3 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent3 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subContent3 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subTitle4 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subTitle4 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent4 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subContent4 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subTitle5 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subTitle5 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent5 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subContent5 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subTitle6 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subTitle6 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent6 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subContent6 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subTitle7 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subTitle7 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent7 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subContent7 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subTitle8 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subTitle8 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent8 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subContent8 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subTitle9 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subTitle9 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent9 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subContent9 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subTitle10 && (
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: blogPost.subTitle10 }} />
+              <br/>
+            </div>
+          )}
+          {blogPost.subContent10 && (
+            <div>
+              <div className='font-bold' dangerouslySetInnerHTML={{ __html: blogPost.subContent10 }} />
+              <br/>
+            </div>
+          )}
         </article>
         
         {/* Tags */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
+        {/* <div className="mt-12 pt-8 border-t border-gray-200">
           <h3 className="text-sm font-semibold uppercase text-gray-500 mb-4">Tagged with</h3>
           <div className="flex flex-wrap gap-2">
             {blogPost.tags.map(tag => (
@@ -206,7 +403,7 @@ export default function BlogDetailsPage() {
               </Link>
             ))}
           </div>
-        </div>
+        </div> */}
         
         {/* Engagement Section */}
         <div className="mt-12 pt-8 border-t border-gray-200">
@@ -228,7 +425,7 @@ export default function BlogDetailsPage() {
           
           {/* Comments Section */}
           <div className="bg-gray-50 rounded-xl p-6">
-            <h3 className="font-bold text-xl mb-6">Comments ({blogPost.comments})</h3>
+            <h3 className="font-bold text-xl mb-6">Comments ({blogComments.length ? blogComments.length : 0})</h3>
             
             {/* Comment Form */}
             <div className="mb-8">
@@ -245,7 +442,7 @@ export default function BlogDetailsPage() {
             
             {/* Comments */}
             <div className="space-y-6">
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+              {/* <div className="bg-white p-4 rounded-lg shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
                   <img 
                     src="https://source.unsplash.com/random/40x40?portrait=1" 
@@ -260,9 +457,9 @@ export default function BlogDetailsPage() {
                 <p className="text-gray-700">
                   Great insights on remote work challenges in Sri Lanka. I've experienced the internet infrastructure issues firsthand. Would love to see more about how companies are addressing the digital divide.
                 </p>
-              </div>
+              </div> */}
               
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+              {/* <div className="bg-white p-4 rounded-lg shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
                   <img 
                     src="https://source.unsplash.com/random/40x40?portrait=2" 
@@ -277,12 +474,41 @@ export default function BlogDetailsPage() {
                 <p className="text-gray-700">
                   As someone working in HR, I've seen the hybrid model becoming increasingly popular. The challenge is creating fair policies between remote-capable and on-site roles. Would be interested in case studies of companies doing this well.
                 </p>
-              </div>
+              </div> */}
             </div>
             
-            <button className="w-full mt-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
-              Load More Comments
-            </button>
+            { loadComments == true && (
+              <button className="w-full mt-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors" onClick={handleLoadComments}>
+                Load Comments
+              </button>
+            )}
+
+          {loadBlogComments ? (
+            blogComments.length > 0 ? (
+              blogComments.map((comment) => (
+                <div key={comment.commentId} className="bg-white p-4 rounded-lg shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <img 
+                      src="https://source.unsplash.com/random/40x40?portrait=1" 
+                      alt="Commenter" 
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div>
+                      <h4 className="font-medium">{useConCatName(comment.firstName, comment.lastName)}</h4>
+                      <p className="text-xs text-gray-500">{setTimeStatus(comment.commentedDate)}</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-700">
+                    {comment.comment}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <p>No Comments Found!</p>
+              </div>
+            )
+          ) : null}
           </div>
         </div>
       </div>

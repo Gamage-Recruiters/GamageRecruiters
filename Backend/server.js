@@ -46,6 +46,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/images', express.static(path.join(__dirname, '/uploads/images')));
 app.use('/uploads/cv', express.static(path.join(__dirname, '/uploads/cvs')));
 app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/uploads/appliedJonobs/resumes')));
+app.use('/uploads/blogs/images', express.static(path.join(__dirname, '/uploads/blogs/images')));
+app.use('/uploads/blogs/covers', express.static(path.join(__dirname, '/uploads/blogs/covers')));
 
 app.use(session({ 
     key: "GamageRecruiters",
