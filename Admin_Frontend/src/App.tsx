@@ -20,6 +20,11 @@ import AddNewBlog from './pages/Blog/AddNewBlog';
 import EditBlog from './pages/Blog/EditBlog';
 import AddAdmin from './pages/Admin/AddAdmin';
 import EditAdmin from './pages/Admin/EditAdmin';
+import AddWorkshop from './pages/Workshop/AddWorkshop';
+import UpdateWorkshop from './pages/Workshop/UpdateWorkshop';
+
+
+
 function App() {
   // TODO: Implement actual auth logic
   const isAuthenticated = true;
@@ -49,6 +54,8 @@ function App() {
               <Route path="/blog/edit/:blogId" element={<EditBlog />} />
               <Route path="/admins/add" element={<AddAdmin />} />
               <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
+              <Route path="/workshops/add"  element={<AddWorkshop />} />
+              <Route path="/workshops/edit/:id"  element={<UpdateWorkshop />} />
 
             </Route>
           ) : (
