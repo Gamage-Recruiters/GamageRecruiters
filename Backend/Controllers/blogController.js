@@ -169,7 +169,7 @@ async function fetchBlogLikeCount (req, res) {
   }
 
   try {
-    const fetchBlogLikeCountQuery = 'SELECT COUNT(userId) AS likeCount from blogresponses WHERE blogId = ? AND liked = ?';
+    const fetchBlogLikeCountQuery = 'SELECT COUNT(userId) AS likeCount from bloglikes WHERE blogId = ? AND liked = ?';
     pool.query(fetchBlogLikeCountQuery, [blogId, 1], (error, result) => {
       if(error) {
         console.error(error);
@@ -196,8 +196,8 @@ async function fetchBlogComments (req, res) {
   }
 
   try {
-    const fetchBlogLikeCountQuery = 'SELECT * from blogresponses INNER JOIN users ON blogresponses.userId = users.userId WHERE blogresponses.blogId = ?';
-    pool.query(fetchBlogLikeCountQuery, blogId, (error, result) => {
+    const fetchBlogCommentsQuery = 'SELECT b.Id, b.userId, b.comment, b.commentedDate, u.firstName, u.lastName, u.email FROM blogcomments b INNER JOIN users u ON b.userId = u.userId WHERE b.blogId = ?';
+    pool.query(fetchBlogCommentsQuery, blogId, (error, result) => {
       if(error) {
         console.error(error);
         return res.status(400).send(error);
@@ -223,44 +223,18 @@ async function addCommentToBlog (req, res) {
   }
 
   try {
-    checkResponseQuery = 'SELECT * FROM blogresponses WHERE userId = ?';
-    pool.query(checkResponseQuery, userId, (error, result) => {
+    const addCommentQuery = 'INSERT INTO blogcomments (userId, blogId, comment, commentedDate) VALUES (?, ?, ?, ?)';
+    pool.query(addCommentQuery, [userId, blogId, comment, new Date()], (error, result) => {
       if(error) {
-        console.log(error);
+        console.error(error);
         return res.status(400).send(error);
       }
 
-      if(result.length == 0) {
-        // No Response Found ... So, create one ...
-        const addCommentToBlogQuery = 'INSERT INTO blogresponses (blogId, userId, liked, commented, comment, likedDate, commentedDate) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        pool.query(addCommentToBlogQuery, [blogId, userId, 0, 1, comment, null, new Date()], (error, result) => {
-          if(error) {
-            console.log(error);
-            return res.status(400).send(error);
-          }
-  
-          if(result.affectedRows == 0) {
-            return res.status(404).send('Comment adding failed. Response not found');
-          }
-  
-          return res.status(200).send('Comment Added Successfully');
-        });
-      } 
+      if(result.affectedRows == 0) {
+        return res.status(400).send('Commenting failed');
+      }
 
-      // there is an existing data ...
-      const updateCommentQuery = 'UPDATE blogresponses SET commented = ? comment = ? commentedDate = ? WHERE userId = ? AND blogId = ?';
-      pool.query(updateCommentQuery, [1, comment, new Date()], (error, result) => {
-        if(error) {
-          console.log(error);
-          return res.status(400).send(error);
-        }
-
-        if(result.affectedRows == 0) {
-          return res.status(404).send('Comment adding failed. Response not found');
-        }
-
-        return res.status(200).send('Comment Added Successfully');
-      })
+      return res.status(201).json({ message: 'Comment Added Successfully', data: result, Id: result.insertId });
     });
   } catch (error) {
     console.error(error);
@@ -276,44 +250,18 @@ async function LikeToBlog (req, res) {
   }
 
   try {
-    checkResponseQuery = 'SELECT * FROM blogresponses WHERE userId = ?';
-    pool.query(checkResponseQuery, userId, (error, result) => {
+    addLikeQuery = 'INSERT INTO bloglikes (blogId, userId, liked, likedDate) VALUES (?, ?, ?, ?)';
+    pool.query(addLikeQuery, [blogId, userId, 1, new Date()], (error, result) => {
       if(error) {
         console.log(error);
         return res.status(400).send(error);
       }
 
-      if(result.length == 0) {
-        // No Response Found ... So, create one ...
-        const addCommentToBlogQuery = 'INSERT INTO blogresponses (blogId, userId, liked, commented, comment, likedDate, commentedDate) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        pool.query(addCommentToBlogQuery, [blogId, userId, 1, 0, null, null, new Date()], (error, result) => {
-          if(error) {
-            console.log(error);
-            return res.status(400).send(error);
-          }
-  
-          if(result.affectedRows == 0) {
-            return res.status(404).send('Liking failed. Response not found');
-          }
-  
-          return res.status(200).send('Liked Successfully');
-        });
-      } 
+      if(result.affectedRows == 0) {
+        return res.status(400).send('Liking failed');
+      }
 
-      // there is an existing data ...
-      const updateLikeQuery = 'UPDATE blogresponses SET liked = ? likedDate = ? WHERE userId = ? AND blogId = ?';
-      pool.query(updateLikeQuery, [1, new Date()], (error, result) => {
-        if(error) {
-          console.log(error);
-          return res.status(400).send(error);
-        }
-
-        if(result.affectedRows == 0) {
-          return res.status(404).send('Like adding failed. Response not found');
-        }
-
-        return res.status(200).send('Liked Successfully');
-      })
+      return res.status(201).send('Like Added Successfully');
     });
   } catch (error) {
     console.error(error);

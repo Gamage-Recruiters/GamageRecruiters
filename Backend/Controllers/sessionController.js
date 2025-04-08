@@ -73,6 +73,9 @@ async function getLoggedUserData (req, res) {
     const loginMethod = arr[1];
 
     // console.log(loginMethod); 
+    if(!id || !loginMethod) {
+        return res.status(401).send('User ID and Login Method are required');
+    }
 
     if(loginMethod == 'Email & Password') {
         try {
@@ -82,7 +85,7 @@ async function getLoggedUserData (req, res) {
             return res.status(200).json({ message: 'User Data Retrieved', data: userData });
         } catch (error) {
             // console.error(error);
-            return res.status(404).send(error);
+            return res.status(500).send(error);
         }
     }
 

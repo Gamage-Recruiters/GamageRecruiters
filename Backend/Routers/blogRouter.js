@@ -24,6 +24,9 @@ router.get('/like-count/:blogId', blogRouter.fetchBlogLikeCount);
 // Route to fetch blog comments ...
 router.get('/comments/:blogId', blogRouter.fetchBlogComments);
 
+// Route to add a comment to a blog post ...
+router.post('/comments/add', blogRouter.addCommentToBlog)
+
 // // POST - Create a Blog
 // router.post('/', upload.single('image'), createBlog);
 

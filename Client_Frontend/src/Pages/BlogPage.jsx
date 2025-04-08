@@ -62,12 +62,16 @@ export default function BlogPage() {
       console.log(error);
       return;
     }
+  } 
+
+  const handleSubscribe = async () => {
+    
   }
 
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      {/* <nav className="bg-black text-white sticky top-0 z-50">
+      <nav className="bg-black text-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold">Gamage Recruiters</Link>
           <div className="flex items-center space-x-8">
@@ -79,7 +83,7 @@ export default function BlogPage() {
             <button className="hover:text-gray-300">Sign In</button>
           </div>
         </div>
-      </nav> */}
+      </nav>
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-black to-gray-900 text-white">
@@ -174,7 +178,7 @@ export default function BlogPage() {
               placeholder="Enter your email" 
               className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
             />
-            <button className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+            <button className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors" onClick={handleSubscribe}>
               Subscribe
             </button>
           </div>
