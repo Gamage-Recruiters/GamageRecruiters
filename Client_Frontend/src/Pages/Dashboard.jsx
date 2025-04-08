@@ -6,7 +6,7 @@ import {
   Linkedin, Facebook, FileText, Eye
 } from "lucide-react";
 import axios from "axios";
-
+import { toast, ToastContainer } from "react-toastify";
 
 
 
@@ -18,7 +18,7 @@ import EditProfileForm from "../components/dashboard/EditProfileForm";
 import AccountSettings from "../components/dashboard/AccountSettings";
 import { useConCatName, useChangeDateFormat, useSetUserProfileCompletion, useSetDateToTimeStamp } from "../hooks/customHooks";
 import handleToken from "../scripts/handleToken";
-import { toast, ToastContainer } from "react-toastify";
+import fetchLoggedUserData from "../scripts/fetchLoggedUserData";
 
 // Animated Tab Context
 const TabContext = ({ children, defaultTab }) => {
@@ -218,22 +218,18 @@ export default function Dashboard() {
 
   // Simulate first visit welcome
   useEffect(() => {
-    const token = localStorage.getItem('User Auth Token');
-    // const expirationTimeStamp = localStorage.getItem('Token Expires At');
-    // const expirationTime = useSetDateToTimeStamp(expirationTimeStamp);
-    // const curentDate = new Date().toISOString();
-    // console.log(token, expirationTime, curentDate);
-    
-    setAccessToken(token);
-    
-    // if(accessToken && expirationTime <= curentDate) {
-    //   console.log('Token Expired');
-    //   const newToken = handleToken(token, expirationTime);
-    //   console.log(newToken);
-    //   return;
-    // }
 
-    fetchUserProfileData();
+    const loggedUserData = fetchLoggedUserData();
+
+    if(loggedUserData) {
+      setUser(loggedUserData);
+      setLoggedUserId(loggedUserData.userId);
+      const profileCompletion = useSetUserProfileCompletion(loggedUserData);
+      setProfileCompletionPercentage(profileCompletion);
+    } else {
+      console.log('No Logged User Data Found!');
+      return;
+    }
     
     if(!loggedUserId) {
       console.log('Logged User Id error');
@@ -245,7 +241,7 @@ export default function Dashboard() {
     fetchJobApplicationStatusForUser(loggedUserId);
     fetchLastActiveStatusForUser(loggedUserId);
     fetchLastProfileActivity(loggedUserId);
-    fetchUserLoginAttempts(loggedUserId);
+    // fetchUserLoginAttempts(loggedUserId);
 
     if(user.cv) {
       const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;
@@ -397,41 +393,7 @@ export default function Dashboard() {
         )}
       </div>
     );
-  };
-
-  const fetchUserProfileData = async () => {
-    try {
-      // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
-      const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data');
-      // console.log(loggedUserResponse.data);
-      // console.log(loggedUserResponse.data.data[0]);
-      if(loggedUserResponse.status === 200) {
-        setUser(loggedUserResponse.data.data[0]);
-        setLoggedUserId(loggedUserResponse.data.data[0].userId);
-        // console.log(loggedUserId);
-        const profileCompletion = useSetUserProfileCompletion(loggedUserResponse.data.data[0]);
-        setProfileCompletionPercentage(profileCompletion);
-        // console.log('Percentage', profileCompletionPercentage); 
-
-        // If there is no token stored, then store the newly created token in the localStorage ...
-        const token = localStorage.getItem('User Auth Token');
-        if(token) {
-          // console.log(token);
-          return 'Token Exists';
-        } else {
-          // console.log('Storing Token ...');
-          localStorage.setItem('User Auth Token', loggedUserResponse.data.token);
-        }
-      } else {
-        // console.log('Error fetching user data');
-        toast.error('Failed To Load User Data');
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  } 
+  }; 
 
   const fetchAppliedJobCount = async (id) => {
     try {

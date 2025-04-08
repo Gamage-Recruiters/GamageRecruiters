@@ -1,45 +1,77 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import { useChangeDateFormat } from '../hooks/customHooks';
 
-const blogPosts = [
-  {
-    id: 1,
-    title: "Future of Remote Work in Sri Lanka",
-    excerpt: "Exploring how Sri Lankan companies are adapting to hybrid work models and global employment trends...",
-    category: "Industry Trends",
-    date: "March 15, 2024",
-    readTime: "5 min read",
-    image: "https://www.activtrak.com/wp-content/uploads/2023/09/blog-header-7-steps-productive-remote-work-environment.jpg"
-  },
-  {
-    id: 2,
-    title: "Top 5 Tech Skills in Demand for 2024",
-    excerpt: "Discover the most sought-after technical skills in the Sri Lankan job market this year...",
-    category: "Career Advice",
-    date: "March 12, 2024",
-    readTime: "4 min read",
-    image: "https://lmic-cimt.ca/wp-content/uploads/2024/02/LMIC-Blog-RemoteWork-HeaderImg.jpg"
-  },
-  {
-    id: 3,
-    title: "Building Effective Workplace Cultures",
-    excerpt: "Strategies for creating productive and positive work environments in modern organizations...",
-    category: "HR Insights",
-    date: "March 10, 2024",
-    readTime: "6 min read",
-    image: "https://www.zdnet.com/a/img/resize/05a31ea7c81fe137fd6e986943774def719abd95/2022/05/31/3caae7fa-5d4a-46ae-b483-a60b03540913/remote-working-from-home-man-professional-zoom-teams-video-call.jpg?auto=webp&width=1280"
-  },
-];
+// const blogPosts = [
+//   {
+//     id: 1,
+//     title: "Future of Remote Work in Sri Lanka",
+//     excerpt: "Exploring how Sri Lankan companies are adapting to hybrid work models and global employment trends...",
+//     category: "Industry Trends",
+//     date: "March 15, 2024",
+//     readTime: "5 min read",
+//     image: "https://www.activtrak.com/wp-content/uploads/2023/09/blog-header-7-steps-productive-remote-work-environment.jpg"
+//   },
+//   {
+//     id: 2,
+//     title: "Top 5 Tech Skills in Demand for 2024",
+//     excerpt: "Discover the most sought-after technical skills in the Sri Lankan job market this year...",
+//     category: "Career Advice",
+//     date: "March 12, 2024",
+//     readTime: "4 min read",
+//     image: "https://lmic-cimt.ca/wp-content/uploads/2024/02/LMIC-Blog-RemoteWork-HeaderImg.jpg"
+//   },
+//   {
+//     id: 3,
+//     title: "Building Effective Workplace Cultures",
+//     excerpt: "Strategies for creating productive and positive work environments in modern organizations...",
+//     category: "HR Insights",
+//     date: "March 10, 2024",
+//     readTime: "6 min read",
+//     image: "https://www.zdnet.com/a/img/resize/05a31ea7c81fe137fd6e986943774def719abd95/2022/05/31/3caae7fa-5d4a-46ae-b483-a60b03540913/remote-working-from-home-man-professional-zoom-teams-video-call.jpg?auto=webp&width=1280"
+//   },
+// ];
 
 const categories = ['All', 'Industry Trends', 'Career Advice', 'HR Insights', 'Market News'];
 
 export default function BlogPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [blogPosts, setBlogPosts] = useState([]);
+
+  useEffect(() => {
+    fetchBlogPages();
+  }, [])
+
+  const fetchBlogPages = async () => {
+    try {
+      const fetchBlogsResponse = await axios.get('http://localhost:8000/api/blogs');
+      console.log(fetchBlogsResponse.data);
+      if(fetchBlogsResponse.status == 200) {
+        setBlogPosts(fetchBlogsResponse.data.data);
+      } else if (fetchBlogsResponse.status == 404) {
+        console.log('No Blog Data Found');
+        setBlogPosts([]);
+        return;
+      } else {
+        console.log('Error occured while fetching blog data');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  } 
+
+  const handleSubscribe = async () => {
+    
+  }
 
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      {/* <nav className="bg-black text-white sticky top-0 z-50">
+      <nav className="bg-black text-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold">Gamage Recruiters</Link>
           <div className="flex items-center space-x-8">
@@ -51,10 +83,11 @@ export default function BlogPage() {
             <button className="hover:text-gray-300">Sign In</button>
           </div>
         </div>
-      </nav> */}
+      </nav>
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-black to-gray-900 text-white">
+        <ToastContainer/>
         <div className="max-w-7xl mx-auto px-6 py-24">
           <div className="max-w-3xl">
             <span className="uppercase text-sm font-semibold text-gray-400">Featured Article</span>
@@ -94,41 +127,43 @@ export default function BlogPage() {
 
         {/* Blog Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map(post => (
+        { blogPosts.length !== 0 ? blogPosts.map(blog => (
             <article 
-              key={post.id}
+              key={blog.blogId}
               className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300"
             >
               <div className="aspect-[4/3] overflow-hidden rounded-t-xl">
                 <img 
-                  src={post.image} 
-                  alt={post.title}
+                  src={blog.blogImage ? `http://localhost:8000/uploads/blogs/images/${blog.blogImage}` : 'https://via.placeholder.com/400'} 
+                  alt={blog.title}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-500">{post.date}</span>
+                  <span className="text-sm font-medium text-gray-500">{useChangeDateFormat(blog.addedAt)}</span>
                   <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
-                    {post.category}
+                    {blog.category}
                   </span>
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 mb-3">
-                  <Link to={`/blog/${post.id}`} className="hover:text-gray-600 transition-colors">
-                    {post.title}
+                  <Link to={`/blog/${blog.blogId}`} className="hover:text-gray-600 transition-colors">
+                    {blog.title}
                   </Link>
                 </h2>
-                <p className="text-gray-600 mb-4">{post.excerpt}</p>
+                <p className="text-gray-600 mb-4">{blog.excerpt}</p>
                 <div className="flex items-center text-sm text-gray-500">
-                  <span>{post.readTime}</span>
+                  <span>{blog.readTime}</span>
                   <span className="mx-2">•</span>
-                  <Link to={`/blog/${post.id}`} className="font-medium hover:text-gray-900">
+                  <Link to={`/blog/${blog.blogId}`} className="font-medium hover:text-gray-900">
                     Read More →
                   </Link>
                 </div>
               </div>
             </article>
-          ))}
+          )) : (
+            <p className='text-center'>No Blogs Found!</p>
+          )}
         </div>
 
         {/* Newsletter Section */}
@@ -143,7 +178,7 @@ export default function BlogPage() {
               placeholder="Enter your email" 
               className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
             />
-            <button className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+            <button className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors" onClick={handleSubscribe}>
               Subscribe
             </button>
           </div>

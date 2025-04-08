@@ -4,19 +4,28 @@ const upload = require('../middlewares/fileUploading');
 const blogRouter = require('../Controllers/blogController');
 
 // Route to get all the blogs ...
-router.get('/blogs', blogRouter.getAllBlogs);
+router.get('/', blogRouter.getAllBlogs);
 
 // Route to get a specific blog ...
-router.get('/blogs/:blogId', blogRouter.getSpecificBlogPost);
+router.get('/:blogId', blogRouter.getSpecificBlogPost);
 
 // Route to add a blog ...
-router.get('/blogs/add', upload, blogRouter.createNewBlog);
+router.post('/add', upload, blogRouter.createNewBlog);
 
 // Route to update a blog ...
-router.put('/blogs/update/:blogId', blogRouter.updateBlog);
+router.put('/update/:blogId', upload, blogRouter.updateBlog);
 
 // Route to delete a blog ...
-router.delete('/blogs/delete/:blogId', blogRouter.deleteBlog);
+router.delete('/delete/:blogId', blogRouter.deleteBlog);
+
+// Route to fetch blog like count ...
+router.get('/like-count/:blogId', blogRouter.fetchBlogLikeCount);
+
+// Route to fetch blog comments ...
+router.get('/comments/:blogId', blogRouter.fetchBlogComments);
+
+// Route to add a comment to a blog post ...
+router.post('/comments/add', blogRouter.addCommentToBlog)
 
 // // POST - Create a Blog
 // router.post('/', upload.single('image'), createBlog);

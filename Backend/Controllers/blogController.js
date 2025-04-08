@@ -1,6 +1,7 @@
 const {pool} = require('../config/dbConnection');
+const { setTimeStatus } = require('../utils/changeDateFormat');
 
-// Get all Bolg Posts ...
+// Get all Blog Posts ...
 async function getAllBlogs(req, res) {
   try {
     const blogsQuery = 'SELECT * FROM blogs';
@@ -50,7 +51,7 @@ async function getSpecificBlogPost (req, res) {
 }
 
 async function createNewBlog (req, res) {
-  const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Qoute1, Qoute2, Qoute3 } = req.body;
+  const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, category } = req.body;
 
   if(!title || !introduction || !author || !authorPosition || !authorCompany) {
     return res.status(400).send('Some fields are required. Fill Those');
@@ -59,10 +60,12 @@ async function createNewBlog (req, res) {
   try {
     // If existing, access the file names of the cv and image ...
     const blogImageName = req.files?.blog?.[0]?.filename || null;
+    const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
     console.log(blogImageName);
+    console.log(blogCoverName);
 
-    const addBlogQuery = 'INSERT INTO blogs (title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Qoute1, Qoute2, Qoute3, blogImage, addedAt) VALUES (?, ?, ?, ? , ?, ?, ?, ?, ? , ?, ?, ?, ?, ? , ?, ?, ?, ?, ? , ?, ?, ?, ?, ? , ?, ?, ?, ?, ? , ?)';
-    const values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Qoute1, Qoute2, Qoute3, blogImageName, new Date()];
+    const addBlogQuery = 'INSERT INTO blogs (title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImage, addedAt, category, coverImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName];
     pool.query(addBlogQuery, values, (error, result) => {
       if(error) {
         console.error(error);
@@ -83,8 +86,8 @@ async function createNewBlog (req, res) {
 
 async function updateBlog (req, res) {
   const { blogId } = req.params;
-  const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Qoute1, Qoute2, Qoute3 } = req.body;
-
+  const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, category } = req.body;
+  console.log(req.body);
   if(!title || !introduction || !author || !authorPosition || !authorCompany || !blogId) {
     return res.status(400).send('Some fields are required. Fill Those');
   }
@@ -92,17 +95,25 @@ async function updateBlog (req, res) {
   try {
     // If existing, access the file names of the cv and image ...
     const blogImageName = req.files?.blog?.[0]?.filename || null;
-    console.log(blogImageName); 
+    const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
+    console.log(blogImageName);
+    console.log(blogCoverName);
 
     let updateBlogQuery;
     let values
 
-    if(blogImageName) {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Qoute1 = ?, Qoute2 = ?, Qoute3 = ?, blogImage = ?, addedAt = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Qoute1, Qoute2, Qoute3, blogImageName, new Date(), blogId];
+    if (blogImageName && blogCoverName) {
+      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, blogImage = ?, addedAt = ?, category = ?, coverImage = ? WHERE blogId = ?';
+      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName, blogId];
+    } else if (!blogImageName && blogCoverName) {
+      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, addedAt = ?, category = ? coverImage = ? WHERE blogId = ?';
+      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, new Date(), category, blogCoverName, blogId];
+    } else if (blogImageName && !blogCoverName) {
+      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, blogImage = ?, addedAt = ?, category = ? WHERE blogId = ?';
+      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogId];
     } else {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Qoute1 = ?, Qoute2 = ?, Qoute3 = ?, addedAt = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Qoute1, Qoute2, Qoute3, new Date(), blogId];
+      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, addedAt = ?, category = ? WHERE blogId = ?';
+      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, new Date(), category, blogId];
     }
     
     pool.query(updateBlogQuery, values, (error, result) => {
@@ -143,14 +154,122 @@ async function deleteBlog (req, res) {
       }
 
       return res.status(200).send('Blog Deleted Successfully');
-    })
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error);
+  }
+} 
+
+async function fetchBlogLikeCount (req, res) {
+  const { blogId } = req.params;
+
+  if(!blogId) {
+    return res.status(400).send('Blog ID is required');
+  }
+
+  try {
+    const fetchBlogLikeCountQuery = 'SELECT COUNT(userId) AS likeCount from bloglikes WHERE blogId = ? AND liked = ?';
+    pool.query(fetchBlogLikeCountQuery, [blogId, 1], (error, result) => {
+      if(error) {
+        console.error(error);
+        return res.status(400).send(error);
+      }
+
+      if(result.length === 0) {
+        return res.status(404).send('No likes found for this blog');
+      }
+
+      return res.status(200).json({ likeCount: result[0].likeCount });
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).send(error);
   }
 }
 
-module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, deleteBlog };
+async function fetchBlogComments (req, res) {
+  const { blogId } = req.params;
+
+  if(!blogId) {
+    return res.status(400).send('Blog ID is required');
+  }
+
+  try {
+    const fetchBlogCommentsQuery = 'SELECT b.Id, b.userId, b.comment, b.commentedDate, u.firstName, u.lastName, u.email FROM blogcomments b INNER JOIN users u ON b.userId = u.userId WHERE b.blogId = ?';
+    pool.query(fetchBlogCommentsQuery, blogId, (error, result) => {
+      if(error) {
+        console.error(error);
+        return res.status(400).send(error);
+      }
+
+      if(result.length === 0) {
+        return res.status(404).send('No comments found for this blog');
+      }
+
+      return res.status(200).json({ data: result });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error);
+  }
+}
+
+async function addCommentToBlog (req, res) {
+  const { blogId, comment, userId } = req.body;
+
+  if(!blogId || !comment || !userId) {
+    return res.status(400).send('Some data are required. Fill Those');
+  }
+
+  try {
+    const addCommentQuery = 'INSERT INTO blogcomments (userId, blogId, comment, commentedDate) VALUES (?, ?, ?, ?)';
+    pool.query(addCommentQuery, [userId, blogId, comment, new Date()], (error, result) => {
+      if(error) {
+        console.error(error);
+        return res.status(400).send(error);
+      }
+
+      if(result.affectedRows == 0) {
+        return res.status(400).send('Commenting failed');
+      }
+
+      return res.status(201).json({ message: 'Comment Added Successfully', data: result, Id: result.insertId });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error);
+  }
+}
+
+async function LikeToBlog (req, res) {
+  const { blogId, userId } = req.body;
+
+  if(!blogId || !userId) {
+    return res.status(400).send('Some data are required. Fill Those');
+  }
+
+  try {
+    addLikeQuery = 'INSERT INTO bloglikes (blogId, userId, liked, likedDate) VALUES (?, ?, ?, ?)';
+    pool.query(addLikeQuery, [blogId, userId, 1, new Date()], (error, result) => {
+      if(error) {
+        console.log(error);
+        return res.status(400).send(error);
+      }
+
+      if(result.affectedRows == 0) {
+        return res.status(400).send('Liking failed');
+      }
+
+      return res.status(201).send('Like Added Successfully');
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error);
+  }
+} 
+
+module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, deleteBlog, fetchBlogLikeCount, fetchBlogComments, LikeToBlog, addCommentToBlog };
 
 // // create blog
 // exports.createBlog = async (req, res) => {

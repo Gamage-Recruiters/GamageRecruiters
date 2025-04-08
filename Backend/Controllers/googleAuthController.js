@@ -22,7 +22,7 @@ async function loginGoogleCallback (req, res) {
         // Store user in session ...
         req.session.user = req.user; 
             
-        console.log("User stored in session:", req.session.user);
+        // console.log("User stored in session:", req.session.user);
 
         const sql = 'INSERT INTO LoginsThroughPlatforms (accountId, photo, name, email, loggedAt, platform) VALUES (?, ?, ?, ?, ?, ?)';
         const values = [req.session.user.id, req.session.user.photo, req.session.user.name, req.session.user.email, new Date(), 'Google'];
@@ -49,7 +49,7 @@ async function loginGoogleCallback (req, res) {
                             return res.status(404).send('User Not Found');
                         } 
 
-                        console.log('User Data:', userData);
+                        // console.log('User Data:', userData);
                         const token = await generateNewTokenForPlatformLogins(userData.userId);
 
                         if(!token) {
@@ -64,7 +64,7 @@ async function loginGoogleCallback (req, res) {
                 }
 
                 const userData = result[0];
-                console.log('User data:', userData);
+                // console.log('User data:', userData);
 
                 const token = await generateNewTokenForPlatformLogins(userData.userId);
 
