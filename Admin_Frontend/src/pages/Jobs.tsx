@@ -4,9 +4,11 @@ import {
   Search, Edit2, Trash2, MapPin, Clock, DollarSign, 
   Briefcase, Calendar, PlusCircle, Filter, ChevronDown, Loader 
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function Jobs() {
   const [jobs, setJobs] = useState([]);
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -132,6 +134,7 @@ function Jobs() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() => navigate("/jobs/add")}
           className="mt-4 md:mt-0 flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all"
         >
           <PlusCircle className="h-5 w-5 mr-2" />
