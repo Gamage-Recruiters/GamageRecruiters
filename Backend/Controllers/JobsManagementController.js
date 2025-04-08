@@ -106,110 +106,195 @@ async function viewAppliedJobCountByUser(req, res) {
 }
 
 // Add a New Job
-async function addJob(req, res) {
-  const {
-    title,
-    aboutRole,
-    responsibilities,
-    requirements,
-    benefits,
-    companyInfo,
-  } = req.body;
+async function addJob (req, res) {
+  const { jobName, company, jobLocation, jobType, salaryRange, jobDescription, responsibilities, requirements, benefits, companyDescription } = req.body;
 
-  if (
-    !title ||
-    !aboutRole ||
-    !responsibilities ||
-    !requirements ||
-    !benefits ||
-    !companyInfo
-  ) {
+  if(!jobName || !company || !jobLocation || !jobType || !salaryRange || !jobDescription || !responsibilities || !requirements || !companyDescription) {
     return res.status(400).send("All fields are required");
   }
 
   try {
-    const sql =
-      "INSERT INTO jobs (title, aboutRole, responsibilities, requirements, benefits, companyInfo, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    const addJobQuery = "INSERT INTO jobs (jobName, company, jobLocation, jobType, salaryRange, postedDate, jobDescription, responsibilities, requirements, benefits, companyDescription) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
-      title,
-      aboutRole,
+      jobName,
+      company,
+      jobLocation,
+      jobType,
+      salaryRange,
+      new Date(),
+      jobDescription,
       responsibilities,
       requirements,
       benefits,
-      companyInfo,
-      new Date(),
+      companyDescription
     ];
 
-    pool.query(sql, values, (error, data) => {
+    pool.query(addJobQuery, values, (error, data) => {
       if (error) {
         console.log(error);
-        return res.status(400).send("Error adding job");
+        return res.status(400).send(error);
       }
 
-      return res
-        .status(201)
-        .json({ message: "Job added successfully", jobId: data.insertId });
+      if (data.affectedRows === 0) {
+        return res.status(400).send("Job not added");
+      }
+
+      return res.status(201).json({ message: "Job added successfully", jobId: data.insertId });
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Server error");
+    return res.status(500).send(error);
   }
 }
+
+// async function addJob(req, res) {
+//   const {
+//     title,
+//     aboutRole,
+//     responsibilities,
+//     requirements,
+//     benefits,
+//     companyInfo,
+//   } = req.body;
+
+//   if (
+//     !title ||
+//     !aboutRole ||
+//     !responsibilities ||
+//     !requirements ||
+//     !benefits ||
+//     !companyInfo
+//   ) {
+//     return res.status(400).send("All fields are required");
+//   }
+
+//   try {
+//     const sql =
+//       "INSERT INTO jobs (title, aboutRole, responsibilities, requirements, benefits, companyInfo, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+//     const values = [
+//       title,
+//       aboutRole,
+//       responsibilities,
+//       requirements,
+//       benefits,
+//       companyInfo,
+//       new Date(),
+//     ];
+
+//     pool.query(sql, values, (error, data) => {
+//       if (error) {
+//         console.log(error);
+//         return res.status(400).send("Error adding job");
+//       }
+
+//       return res
+//         .status(201)
+//         .json({ message: "Job added successfully", jobId: data.insertId });
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).send("Server error");
+//   }
+// }
 
 // Update a Job
-async function updateJob(req, res) {
-  const { jobId } = req.params; // Job ID from URL
-  const {
-    title,
-    aboutRole,
-    responsibilities,
-    requirements,
-    benefits,
-    companyInfo,
-  } = req.body;
+async function updateJob (req, res) {
+  const { jobId } = req.params;
 
-  if (
-    !title ||
-    !aboutRole ||
-    !responsibilities ||
-    !requirements ||
-    !benefits ||
-    !companyInfo
-  ) {
+  const { jobName, company, jobLocation, jobType, salaryRange, jobDescription, responsibilities, requirements, benefits, companyDescription } = req.body;
+
+  if(!jobId || !jobName || !company || !jobLocation || !jobType || !salaryRange || !jobDescription || !responsibilities || !requirements || !companyDescription) {
     return res.status(400).send("All fields are required");
   }
 
   try {
-    const sql =
-      "UPDATE jobs SET title = ?, aboutRole = ?, responsibilities = ?, requirements = ?, benefits = ?, companyInfo = ?, updatedAt = ? WHERE jobId = ?";
+    const updateJobQuery = "UPDATE jobs SET jobName = ?, company = ?, jobLocation = ?, jobType = ?, salaryRange = ?, postedDate = ?, jobDescription = ?, responsibilities = ?, requirements = ?, benefits = ?, companyDescription = ? WHERE jobId = ?";
     const values = [
-      title,
-      aboutRole,
+      jobName,
+      company,
+      jobLocation,
+      jobType,
+      salaryRange,
+      new Date(),
+      jobDescription,
       responsibilities,
       requirements,
       benefits,
-      companyInfo,
-      new Date(),
-      jobId,
+      companyDescription,
+      jobId
     ];
 
-    pool.query(sql, values, (error, result) => {
+    pool.query(updateJobQuery, values, (error, data) => {
       if (error) {
         console.log(error);
-        return res.status(400).send("Error updating job");
+        return res.status(400).send(error);
       }
 
-      if (result.affectedRows === 0) {
-        return res.status(404).send("Job not found");
+      if (data.affectedRows === 0) {
+        return res.status(400).send("Job not updated");
       }
 
-      return res.status(200).json({ message: "Job updated successfully" });
+      return res.status(200).send("Job updated successfully");
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Server error");
+    return res.status(500).send(error);
   }
 }
+
+// async function updateJob(req, res) {
+//   const { jobId } = req.params; // Job ID from URL
+//   const {
+//     title,
+//     aboutRole,
+//     responsibilities,
+//     requirements,
+//     benefits,
+//     companyInfo,
+//   } = req.body;
+
+//   if (
+//     !title ||
+//     !aboutRole ||
+//     !responsibilities ||
+//     !requirements ||
+//     !benefits ||
+//     !companyInfo
+//   ) {
+//     return res.status(400).send("All fields are required");
+//   }
+
+//   try {
+//     const sql =
+//       "UPDATE jobs SET title = ?, aboutRole = ?, responsibilities = ?, requirements = ?, benefits = ?, companyInfo = ?, updatedAt = ? WHERE jobId = ?";
+//     const values = [
+//       title,
+//       aboutRole,
+//       responsibilities,
+//       requirements,
+//       benefits,
+//       companyInfo,
+//       new Date(),
+//       jobId,
+//     ];
+
+//     pool.query(sql, values, (error, result) => {
+//       if (error) {
+//         console.log(error);
+//         return res.status(400).send("Error updating job");
+//       }
+
+//       if (result.affectedRows === 0) {
+//         return res.status(404).send("Job not found");
+//       }
+
+//       return res.status(200).json({ message: "Job updated successfully" });
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).send("Server error");
+//   }
+// }
 
 // Delete a Job
 async function deleteJob(req, res) {
