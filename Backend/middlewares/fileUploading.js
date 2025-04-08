@@ -7,6 +7,7 @@ const imagePath = path.join(__dirname, '../uploads/images');
 const cvPath = path.join(__dirname, '../uploads/cvs');
 const blogImagePath = path.join(__dirname, '../uploads/blogs/images');
 const blogCoverPath = path.join(__dirname, '../uploads/blogs/covers');
+const jobApplicationPath = path.join(__dirname, '../uploads/appliedJobs/resumes');
 
 // Ensure directories exist
 if (!fs.existsSync(imagePath)) fs.mkdirSync(imagePath, { recursive: true });
@@ -26,6 +27,9 @@ const storage = multer.diskStorage({
             callback(null, blogImagePath);
         } else if (file.fieldname === 'blogCover') {
             callback(null, blogCoverPath);
+        } else if (file.fieldname === 'resume') {
+            callback(null, jobApplicationPath);
+
         } else {
             callback(new Error('Invalid file field'), false);
         }
@@ -42,6 +46,7 @@ const fileFilter = (req, file, callback) => {
     const cvTypes = /pdf|docx|PDF|DOCX|ppt|PPT|pptx|PPTX/;
     const blogTypes = /jpeg|jpg|png|gif|JPG|PNG|JPEG|GIF/;
     const blogCoverTypes = /jpeg|jpg|png|gif|JPG|PNG|JPEG|GIF/;
+    const jobApplicationTypes = /pdf|doc|docx|txt/;
 
     const extName = path.extname(file.originalname).toLowerCase();
     const mimeType = file.mimetype.toLowerCase();
@@ -53,6 +58,8 @@ const fileFilter = (req, file, callback) => {
     } else if (file.fieldname === 'blog' && blogTypes.test(extName) && blogTypes.test(mimeType)) {
         callback(null, true);
     } else if (file.fieldname === 'blogCover' && blogCoverTypes.test(extName) && blogCoverTypes.test(mimeType)) {
+        callback(null, true);
+    } else if (file.fieldname === 'resume' && jobApplicationTypes.test(extName) && jobApplicationTypes.test(mimeType)) {
         callback(null, true);
     } else {
         callback(new Error(`Invalid file type for ${file.fieldname}`), false);
@@ -69,6 +76,7 @@ const upload = multer({
     { name: 'cv', maxCount: 1 },
     { name: 'blog', maxCount: 1 },
     { name: 'blogCover', maxCount: 1 },
+    { name: 'resume', maxCount: 1 }
 ]);
 
 module.exports = upload;

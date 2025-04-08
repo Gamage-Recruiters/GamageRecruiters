@@ -233,7 +233,7 @@ async function getUserRecentJobActivity (req, res) {
             }
 
             const gap = result[0].appliedDate ? setTimeStatus(result[0].appliedDate) : null;
-            console.log(gap);
+            // console.log(gap);
             return res.status(200).json({ message: 'Job Activity Found', jobStatus: gap, data: result });
         });
     } catch (error) {
@@ -262,7 +262,7 @@ async function getLastActiveStatus (req, res) {
             }
 
             const lastActiveStatus = setTimeStatus(result[0].createdAt);
-            console.log(lastActiveStatus);
+            // console.log(lastActiveStatus);
             return res.status(200).json({ message: 'Last Active Status Found', jobStatus: lastActiveStatus });
         });
     } catch (error) {
