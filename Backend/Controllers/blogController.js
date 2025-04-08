@@ -269,7 +269,61 @@ async function LikeToBlog (req, res) {
   }
 } 
 
-module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, deleteBlog, fetchBlogLikeCount, fetchBlogComments, LikeToBlog, addCommentToBlog };
+async function DislikeToBlog (req, res) {
+  const { blogId, userId } = req.body;
+
+  if(!blogId || !userId) {
+    return res.status(400).send('Some data are required. Fill Those');
+  }
+
+  try {
+    addLikeQuery = 'DELETE FROM bloglikes WHERE blogId = ? AND userId = ? AND liked = ?';
+    pool.query(addLikeQuery, [blogId, userId, 1], (error, result) => {
+      if(error) {
+        console.log(error);
+        return res.status(400).send(error);
+      }
+
+      if(result.affectedRows == 0) {
+        return res.status(400).send('Disliking failed');
+      }
+
+      return res.status(200).send('Like Removed Successfully');
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error);
+  }
+} 
+
+async function fetchUserLikeStateForBlog (req, res) {
+  const { blogId, userId } = req.params;
+
+  if(!blogId || !userId) {
+    return res.status(400).send('Blog ID and User ID are required');
+  }
+
+  try {
+    const fetchLikeStateQuery = 'SELECT liked FROM bloglikes WHERE blogId = ? AND userId = ?';
+    pool.query(fetchLikeStateQuery, [blogId, userId], (error, result) => {
+      if(error) {
+        console.error(error);
+        return res.status(400).send(error);
+      }
+
+      if(result.length === 0) {
+        return res.status(404).send('No Results found');
+      }
+
+      return res.status(200).send('Result Found');
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error);
+  }
+}
+
+module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, deleteBlog, fetchBlogLikeCount, fetchBlogComments, LikeToBlog, addCommentToBlog, DislikeToBlog, fetchUserLikeStateForBlog };
 
 // // create blog
 // exports.createBlog = async (req, res) => {

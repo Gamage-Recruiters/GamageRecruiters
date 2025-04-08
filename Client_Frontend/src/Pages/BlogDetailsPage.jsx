@@ -27,6 +27,7 @@ export default function BlogDetailsPage() {
   const [noOfComments, setNoOfComments] = useState(0);
   const [comment, setComment] = useState('');
   const [followAuthor, setFollowAuthor] = useState(false);
+  const [likedBlog, setLikedBlog] = useState(false);
 
   const navigate = useNavigate();
 
@@ -59,126 +60,11 @@ export default function BlogDetailsPage() {
       fetchBlogData(blogId);
       fetchBlogLikeCount(blogId);
       fetchBlogComments(blogId);
+      if(loggedUserId) {
+        fetchLikeStateforUsertoBlog(blogId, loggedUserId);
+      }
     }
   }, [blogId]);  
-  
-  // Simulate fetching blog post data
-  // useEffect(() => {
-  //   const loggedUserData = await fetchLoggedUserData();
-  //   console.log('Logged User', loggedUserData);
-  //   console.log(loggedUserData.userId);
-  //   if(loggedUserData) {
-  //     setLoggedUser(loggedUserData);
-  //     setLoggedUserId(loggedUserData.userId);
-  //   } else {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: 'Login Require',
-  //       text: 'Please login first!',
-  //       confirmButtonColor: '#3085d6',
-  //     }).then((result) => {
-  //       if(result.isConfirmed) {
-  //         navigate('/login');
-  //       }
-  //     });
-  //   }
-
-  //   if(blogId) {
-  //     fetchBlogData(blogId);
-  //     fetchBlogLikeCount(blogId);
-  //     fetchBlogComments(blogId);
-  //   }
-  //   // This would normally be an API call
-  //   // const fetchPost = () => {
-  //   //   setLoading(true);
-      
-  //   //   // Mock data for demonstration
-  //   //   // const post = {
-  //   //   //   id: parseInt(id),
-  //   //   //   title: "Future of Remote Work in Sri Lanka",
-  //   //   //   category: "Industry Trends",
-  //   //   //   date: "March 15, 2024",
-  //   //   //   readTime: "5 min read",
-  //   //   //   author: {
-  //   //   //     name: "Amara Fernando",
-  //   //   //     role: "Senior HR Consultant",
-  //   //   //     image: "https://miro.medium.com/v2/resize:fit:1400/1*NeRvhd48SzhZhQoyLwDsog.jpeg"
-  //   //   //   },
-  //   //   //   image: "https://miro.medium.com/v2/resize:fit:1400/1*NeRvhd48SzhZhQoyLwDsog.jpeg",
-  //   //   //   content: `
-  //   //   //     <p class="mb-4">The landscape of work in Sri Lanka is undergoing a significant transformation, accelerated by global events and technological advancements. As we navigate through 2024, remote and hybrid work models continue to reshape how organizations operate and how professionals approach their careers.</p>
-          
-  //   //   //     <h2 class="text-2xl font-bold mt-8 mb-4">The Current State of Remote Work</h2>
-          
-  //   //   //     <p class="mb-4">According to recent surveys, approximately 62% of Sri Lankan companies now offer some form of remote work arrangement, a substantial increase from just 18% in 2019. This shift is particularly notable in the IT, finance, and business services sectors, where digital infrastructure enables seamless remote operations.</p>
-          
-  //   //   //     <p class="mb-4">The COVID-19 pandemic served as a catalyst, but the persistence of remote work arrangements suggests deeper benefits beyond crisis management. Companies report reduced operational costs, access to wider talent pools, and in many cases, improved productivity.</p>
-          
-  //   //   //     <blockquote class="border-l-4 border-gray-800 pl-4 italic my-6 text-gray-600">
-  //   //   //       "The traditional office-centric approach is evolving into a more flexible, results-oriented work culture. Companies that embrace this change are positioning themselves to thrive in the future economy." — Sri Lanka Association of HR Professionals
-  //   //   //     </blockquote>
-          
-  //   //   //     <h2 class="text-2xl font-bold mt-8 mb-4">Benefits and Challenges</h2>
-          
-  //   //   //     <p class="mb-4">For employees, remote work offers reduced commute times in congested urban centers like Colombo, improved work-life balance, and the ability to work for international companies without relocation. Many professionals report higher job satisfaction and reduced stress levels.</p>
-          
-  //   //   //     <p class="mb-4">However, challenges persist. Companies struggle with maintaining corporate culture, ensuring consistent productivity monitoring, and addressing the inequality between roles that can and cannot be performed remotely. Employees sometimes report feelings of isolation, difficulty separating work and personal life, and concerns about career progression in a remote environment.</p>
-          
-  //   //   //     <h2 class="text-2xl font-bold mt-8 mb-4">Infrastructure Considerations</h2>
-          
-  //   //   //     <p class="mb-4">One significant factor influencing remote work adoption in Sri Lanka is internet infrastructure. While urban centers enjoy relatively reliable connectivity, rural areas often face challenges with consistent high-speed internet access. Power outages remain a concern in some regions, potentially disrupting remote work.</p>
-          
-  //   //   //     <p class="mb-4">Forward-thinking companies are addressing these challenges by providing stipends for home office setups, including backup power solutions and dedicated internet connections. Some organizations are exploring hub-and-spoke models with smaller regional offices or co-working space partnerships to provide alternative workspaces.</p>
-          
-  //   //   //     <h2 class="text-2xl font-bold mt-8 mb-4">The Future Outlook</h2>
-          
-  //   //   //     <p class="mb-4">Looking ahead, the hybrid model appears to be gaining the most traction among Sri Lankan businesses. This approach combines in-office presence with remote work flexibility, aiming to capture the benefits of both models while mitigating their respective drawbacks.</p>
-          
-  //   //   //     <p class="mb-4">As international companies increasingly hire remote workers from Sri Lanka, local companies face both competition for talent and opportunities to adopt global best practices. This international exposure is likely to accelerate the evolution of work models and professional expectations across the country.</p>
-          
-  //   //   //     <p class="mb-4">The legal framework is also evolving, with discussions about updating labor laws to address remote work arrangements, including considerations for work hours, health and safety requirements for home offices, and tax implications.</p>
-          
-  //   //   //     <h2 class="text-2xl font-bold mt-8 mb-4">Preparing for Success</h2>
-          
-  //   //   //     <p class="mb-4">For professionals looking to thrive in this changing landscape, developing self-management skills, digital literacy, and effective virtual communication abilities is crucial. For employers, investing in secure digital infrastructure, reimagining management approaches to focus on outcomes rather than presence, and intentionally fostering company culture across distributed teams will be key differentiators.</p>
-          
-  //   //   //     <p class="mb-6">As Sri Lanka continues to position itself as a knowledge economy hub in South Asia, the evolution of work models will play a significant role in shaping its economic future and competitiveness on the global stage.</p>
-  //   //   //   `,
-  //   //   //   tags: ["Remote Work", "HR Trends", "Workplace Culture", "Technology", "Employment"],
-  //   //   //   views: 1243,
-  //   //   //   likes: 89,
-  //   //   //   comments: 23
-  //   //   // };
-      
-  //   //   // setBlogPost(post);
-      
-  //   //   // Mock related posts
-  //   //   // setRelatedPosts([
-  //   //   //   {
-  //   //   //     id: 2,
-  //   //   //     title: "Top 5 Tech Skills in Demand for 2024",
-  //   //   //     excerpt: "Discover the most sought-after technical skills in the Sri Lankan job market this year...",
-  //   //   //     category: "Career Advice",
-  //   //   //     date: "March 12, 2024",
-  //   //   //     readTime: "4 min read",
-  //   //   //     image: "https://www.activtrak.com/wp-content/uploads/2023/09/blog-header-7-steps-productive-remote-work-environment.jpg"
-  //   //   //   },
-  //   //   //   {
-  //   //   //     id: 3,
-  //   //   //     title: "Building Effective Workplace Cultures",
-  //   //   //     excerpt: "Strategies for creating productive and positive work environments in modern organizations...",
-  //   //   //     category: "HR Insights",
-  //   //   //     date: "March 10, 2024",
-  //   //   //     readTime: "6 min read",
-  //   //   //     image: "https://source.unsplash.com/random/800x600?teamwork"
-  //   //   //   }
-  //   //   // ]);
-      
-  //   //   setLoading(false);
-  //   // };
-    
-  //   // fetchPost();
-  // }, [blogId]);
 
   const fetchBlogData = async (id) => {
     setLoading(true);
@@ -203,6 +89,21 @@ export default function BlogDetailsPage() {
       return;
     }
   } 
+
+  const fetchLikeStateforUsertoBlog = async (idBlog, idUser) => {
+    try {
+      const userLikeStateForBlogResponse = await axios.get(`http://localhost:8000/api/blogs/state/${idBlog}/${idUser}`);
+      console.log(userLikeStateForBlogResponse.data);
+      if(userLikeStateForBlogResponse.status == 200) {
+        setLikedBlog(true);
+      } else {
+        setLikedBlog(false);
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
 
   const fetchBlogLikeCount = async (id) => {
     try {
@@ -301,7 +202,66 @@ export default function BlogDetailsPage() {
   }
 
   const handleFollowAuthor = () => {
-    setFollowAuthor(true);
+    if(followAuthor == true) {
+      setFollowAuthor(false);
+    } else {
+      setFollowAuthor(true);
+    }
+  } 
+
+  const handleLikeState = async () => {
+    console.log(likedBlog);
+    if(likedBlog == true) {
+      setLikedBlog(false);
+      setBlogLikeCount(blogLikeCount - 1);
+      await handleDislikeBlog();
+    } else {
+      setLikedBlog(true);
+      setBlogLikeCount(blogLikeCount + 1);
+      await handleLikeBlog();
+    }
+  }
+
+  const handleLikeBlog = async () => {
+    if(!loggedUserId || !blogId) {
+      toast.error('Something Went Wrong');
+      return;
+    }
+
+    try {
+      const likeBlogResponse = await axios.post('http://localhost:8000/api/blogs/likes/add', { blogId: blogId, userId: loggedUserId });
+      // console.log(likeBlogResponse.data);
+      if(likeBlogResponse.status == 201) {
+        console.log('Liked Blog');
+      } else {
+        console.log('Error Occured');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  } 
+
+  const handleDislikeBlog = async () => {
+    if(!loggedUserId || !blogId) {
+      toast.error('Something Went Wrong');
+      return;
+    }
+
+    try {
+      const dislikeBlogResponse = await axios.post('http://localhost:8000/api/blogs/likes/remove', { blogId: blogId, userId: loggedUserId });
+      // console.log(dislikeBlogResponse.data);
+      if(dislikeBlogResponse.status == 200) {
+        console.log('Disliked Blog');
+      } else {
+        console.log('Error Occured');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   }
   
   if (loading) {
@@ -539,18 +499,27 @@ export default function BlogDetailsPage() {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <ThumbsUp size={18} />
-                <span>Like</span>
+              <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors" onClick={handleLikeState}>
+                { likedBlog == false ? (
+                  <div className='flex justify-content-center'>
+                    <ThumbsUp size={18} className="mt-1"/>
+                    <span className='ml-3'>Like</span>
+                  </div>
+                ) : (
+                  <div className='flex justify-content-center'>
+                    <ThumbsUp size={18} className="text-blue-500 fill-blue-500 mt-1"/>
+                    <span className='ml-3'>Liked</span>
+                  </div>
+                )}
               </button>
               <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                 <Share2 size={18} />
                 <span>Share</span>
               </button>
             </div>
-            <button className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+            {/* <button className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
               Subscribe to Newsletter
-            </button>
+            </button> */}
           </div>
           
           {/* Comments Section */}

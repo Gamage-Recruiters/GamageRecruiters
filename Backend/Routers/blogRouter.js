@@ -25,7 +25,16 @@ router.get('/like-count/:blogId', blogRouter.fetchBlogLikeCount);
 router.get('/comments/:blogId', blogRouter.fetchBlogComments);
 
 // Route to add a comment to a blog post ...
-router.post('/comments/add', blogRouter.addCommentToBlog)
+router.post('/comments/add', blogRouter.addCommentToBlog);
+
+// Route to add a like to a blog post ...
+router.post('/likes/add', blogRouter.LikeToBlog);
+
+// Route to remove a like related to a post ...
+router.post('/likes/remove', blogRouter.DislikeToBlog);
+
+// Route to get the like state related to a user for a specific post ...
+router.get('/state/:blogId/:userId', blogRouter.fetchUserLikeStateForBlog);
 
 // // POST - Create a Blog
 // router.post('/', upload.single('image'), createBlog);
