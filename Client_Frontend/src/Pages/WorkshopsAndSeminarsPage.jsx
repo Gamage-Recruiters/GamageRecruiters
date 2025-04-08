@@ -217,7 +217,7 @@ const categories = [
               <button 
                 className="px-6 py-3 bg-transparent border-2 border-white text-white font-medium rounded-full hover:bg-white hover:bg-opacity-10 transform transition duration-300 hover:scale-105"
               >
-                Subscribe to Updates
+                
               </button>
             </div>
           </div>

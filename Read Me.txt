@@ -1,0 +1,7 @@
+first install dependencies using " npm i " for both frontend and backend
+
+add your email and email password or app password in to .env file, relevent valiables
+
+post method can be check by client frontend
+
+get method can be use with postman  ->  localhost:8000/api/contact/getinquiry/  
