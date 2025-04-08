@@ -17,7 +17,9 @@ const facebookAuthRouter = require('./Routers/facebookAuthRouter');
 const linkedInAuthRouter = require('./Routers/linkedInAuthRouter');
 const jobapplicationRouter = require('./Routers/jobApplicationRouter'); 
 const JobsManagementRouter = require('./Routers/JobsManagementRouter')
-
+const blogRoutes = require('./Routers/blogRouter');
+const testimonialsRouter = require('./Routers/testimonialsRouter');
+const workshopRoutes = require('./Routers/workshopsRoutes');
 
 require('dotenv').config();
 require('./auth/passportAuthGoogle');
@@ -87,6 +89,9 @@ app.use('/user', userRouter);
 app.use('/admin', adminRouter);
 app.use('/auth', authRouter);
 
+
+
+
 app.use('/session', sessionRouter);
 
 app.use('/', googleAuthRouter);
@@ -94,13 +99,14 @@ app.use('/', facebookAuthRouter);
 app.use('/', linkedInAuthRouter);
 
 app.use('/api/jobapplications', jobapplicationRouter);
-app.use('/api/jobs', JobsManagementRouter); 
+app.use('/api/jobs', JobsManagementRouter);
+
+app.use('/api/workshops', workshopRoutes);
 
 
-const testimonialsRouter = require('./Routers/testimonialsRouter');
 app.use("/api/testimonials",testimonialsRouter);
 
-const blogRoutes = require('./Routers/blogRouter');
+
 app.use('/api/blogs', blogRoutes);
 
 app.listen(PORT, () => {
