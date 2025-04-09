@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-
+import Swal from 'sweetalert2';
 
 
 
@@ -18,7 +18,6 @@ import EditProfileForm from "../components/dashboard/EditProfileForm";
 import AccountSettings from "../components/dashboard/AccountSettings";
 import { useConCatName, useChangeDateFormat, useSetUserProfileCompletion, useSetDateToTimeStamp } from "../hooks/customHooks";
 import handleToken from "../scripts/handleToken";
-import fetchLoggedUserData from "../scripts/fetchLoggedUserData";
 
 // Animated Tab Context
 const TabContext = ({ children, defaultTab }) => {
@@ -218,30 +217,19 @@ export default function Dashboard() {
 
   // Simulate first visit welcome
   useEffect(() => {
+    fetchLoggedUserData();
 
-    const loggedUserData = fetchLoggedUserData();
-
-    if(loggedUserData) {
-      setUser(loggedUserData);
-      setLoggedUserId(loggedUserData.userId);
-      const profileCompletion = useSetUserProfileCompletion(loggedUserData);
-      setProfileCompletionPercentage(profileCompletion);
+    if(loggedUserId) {
+      fetchAppliedJobCount(loggedUserId);
+      fetchAppliedJobCount(loggedUserId);
+      fetchJobApplicationStatusForUser(loggedUserId);
+      fetchLastActiveStatusForUser(loggedUserId);
+      fetchLastProfileActivity(loggedUserId);
+      // fetchUserLoginAttempts(loggedUserId);
     } else {
-      console.log('No Logged User Data Found!');
+      console.log('UserId Error');
       return;
     }
-    
-    if(!loggedUserId) {
-      console.log('Logged User Id error');
-      return;
-    }
-
-    fetchAppliedJobCount(loggedUserId);
-    fetchAppliedJobCount(loggedUserId);
-    fetchJobApplicationStatusForUser(loggedUserId);
-    fetchLastActiveStatusForUser(loggedUserId);
-    fetchLastProfileActivity(loggedUserId);
-    // fetchUserLoginAttempts(loggedUserId);
 
     if(user.cv) {
       const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;
@@ -322,7 +310,7 @@ export default function Dashboard() {
   const handleTerminateAccount = () => {
     // Implement account termination logic
     if (window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
-      alert("Account terminated successfully.");
+      toast.error("Account terminated successfully.");
       // Redirect to home page or login
     }
   };
@@ -394,6 +382,25 @@ export default function Dashboard() {
       </div>
     );
   }; 
+
+  const fetchLoggedUserData = async () => {
+      try {
+        // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
+        const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data');
+        // console.log(loggedUserResponse.data);
+        // console.log(loggedUserResponse.data.data[0]);
+        if(loggedUserResponse.status === 200) {
+          setUser(loggedUserResponse.data.data[0]);
+          setLoggedUserId(loggedUserResponse.data.data[0].userId)
+        } else {
+          console.log('Failed To Load User Data');
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+  }
 
   const fetchAppliedJobCount = async (id) => {
     try {

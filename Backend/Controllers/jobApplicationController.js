@@ -11,8 +11,8 @@ async function applyJob(req, res) {
         return res.status(400).send('Please fill all the required fields');
     }
 
-    const resumeLink = req.file?.path ? req.file.path : null;
-    const resumeName = req.file?.filename ? req.file.filename : null;
+    const resumeLink = req.files?.resume?.[0]?.filename || null;
+    const resumeName = req.files?.resume?.[0]?.filename || null;
 
     console.log(resumeLink);
     console.log(resumeName);
@@ -222,8 +222,8 @@ async function updateApplication(req, res) {
     }
 
     try {
-        const resumeLink = req.file?.path ? req.file.path : null;
-        const resumeName = req.file?.filename ? req.file.filename : null;
+        const resumeLink = req.files?.resume?.[0]?.filename || null;
+        const resumeName = req.files?.resume?.[0]?.filename || null;
 
         console.log(resumeLink);
         console.log(resumeName);

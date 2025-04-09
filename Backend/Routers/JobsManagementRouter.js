@@ -26,9 +26,9 @@ router.get("/applied/count/:userId", viewAppliedJobCountByUser);
 router.post("/addjob", addJob);
 
 // Update a Job
-router.put("/:jobId", updateJob);
+router.put("/update/:jobId", updateJob);
 
 // Delete a Job
-router.delete("/:jobId", deleteJob);
+router.delete("/delete/:jobId", deleteJob);
 
 module.exports = router;
