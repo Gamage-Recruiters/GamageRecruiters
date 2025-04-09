@@ -71,19 +71,7 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-black text-white sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold">Gamage Recruiters</Link>
-          <div className="flex items-center space-x-8">
-            <input 
-              type="text" 
-              placeholder="Search articles..." 
-              className="px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
-            />
-            <button className="hover:text-gray-300">Sign In</button>
-          </div>
-        </div>
-      </nav>
+      
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-black to-gray-900 text-white">
