@@ -115,6 +115,13 @@ function Jobs() {
     }
   };
 
+  
+function handleeditJob(jobId: any): void {
+  const navigate = useNavigate(); // Initialize navigate hook
+ 
+  navigate(`/jobs/edit/${jobId}`);
+}
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -289,6 +296,7 @@ function Jobs() {
                       <motion.button 
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
+                        onClick={() => handleeditJob(job.jobId)}
                         className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                       >
                         <Edit2 className="h-5 w-5" />

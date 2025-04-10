@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Minus, AlertTriangle } from 'lucide-react';
+import axios from 'axios';
 
-// Define interface for Job with proper typing
+// Define interface for Job with proper typing and field names matching the backend
 interface Job {
-  id: number;
-  title: string;
+  jobId: number;
+  jobName: string;
   company: string;
-  location: string;
+  jobLocation: string;
   jobType: string;
   salaryRange: string;
-  Status: string;
-  description: string;
+  status: string;
+  jobDescription: string;
   responsibilities: string[];
   requirements: string[];
   benefits: string[];
@@ -21,24 +22,23 @@ interface Job {
 
 // Define props interface
 interface EditJobProps {
-  jobs?: Job[];
   onUpdateJob?: (job: Job) => void;
 }
 
-const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) => {
-  const { id } = useParams<{ id: string }>();
+const EditJob: React.FC<EditJobProps> = ({ onUpdateJob }) => {
+  const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<Job>({
-    id: 1,
-    title: '',
+    jobId: 0,
+    jobName: '',
     company: '',
-    location: '',
+    jobLocation: '',
     jobType: 'Full-time',
     salaryRange: '',
-    Status: 'Active',
-    description: '',
+    status: 'Active',
+    jobDescription: '',
     responsibilities: [''],
     requirements: [''],
     benefits: [''],
@@ -47,29 +47,53 @@ const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) =>
   });
 
   useEffect(() => {
-    // Find the job with the matching id
-    const jobId = id ? parseInt(id) : 1;
-    const job = jobs.find(job => job.id === jobId);
+    // Fetch job data from the backend
+    const fetchJobData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/jobs/${jobId}`);
+        
+        if (response.data) {
+          // Parse array fields if they come as strings from the backend
+          const job = response.data;
+          
+          // Convert string arrays to actual arrays if needed
+          const responsibilities = Array.isArray(job.responsibilities) 
+            ? job.responsibilities 
+            : job.responsibilities ? JSON.parse(job.responsibilities) : [''];
+            
+          const requirements = Array.isArray(job.requirements)
+            ? job.requirements
+            : job.requirements ? JSON.parse(job.requirements) : [''];
+            
+          const benefits = Array.isArray(job.benefits)
+            ? job.benefits
+            : job.benefits ? JSON.parse(job.benefits) : [''];
+          
+          setFormData({
+            ...job,
+            responsibilities,
+            requirements,
+            benefits
+          });
+          setLoading(false);
+        } else {
+          setError('Job not found');
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Error fetching job:', err);
+        setError('Failed to load job data');
+        setLoading(false);
+      }
+    };
     
-    if (job) {
-      // Ensure arrays have at least one item
-      const responsibilities = job.responsibilities?.length > 0 ? job.responsibilities : [''];
-      const requirements = job.requirements?.length > 0 ? job.requirements : [''];
-      const benefits = job.benefits?.length > 0 ? job.benefits : [''];
-      
-      setFormData({
-        ...job,
-        responsibilities,
-        requirements,
-        benefits
-      });
-      setLoading(false);
+    if (jobId) {
+      fetchJobData();
     } else {
-      // Use type-safe error setting
-      setError('Job not found');
+      setError('Job ID is required');
       setLoading(false);
     }
-  }, [id, jobs]);
+  }, [jobId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -109,25 +133,32 @@ const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) =>
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Create updated job object
-    const updatedJob: Job = {
-      ...formData,
+    try {
       // Filter out empty list items
-      responsibilities: formData.responsibilities.filter(item => item.trim() !== ''),
-      requirements: formData.requirements.filter(item => item.trim() !== ''),
-      benefits: formData.benefits.filter(item => item.trim() !== ''),
-    };
-    
-    // Call the onUpdateJob function if it exists
-    if (onUpdateJob) {
-      onUpdateJob(updatedJob);
+      const cleanedFormData = {
+        ...formData,
+        responsibilities: formData.responsibilities.filter(item => item.trim() !== ''),
+        requirements: formData.requirements.filter(item => item.trim() !== ''),
+        benefits: formData.benefits.filter(item => item.trim() !== ''),
+      };
+      
+      // Send update request to the backend
+      await axios.put(`http://localhost:8000/api/jobs/update/${jobId}`, cleanedFormData);
+      
+      // Call the onUpdateJob function if it exists
+      if (onUpdateJob) {
+        onUpdateJob(cleanedFormData);
+      }
+      
+      // Redirect back to jobs list
+      navigate('/jobs');
+    } catch (err) {
+      console.error('Error updating job:', err);
+      alert('Failed to update job. Please try again.');
     }
-    
-    // Redirect back
-    navigate(-1);
   };
 
   const handleCancel = () => {
@@ -149,7 +180,7 @@ const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) =>
         <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{error}</h2>
         <p className="text-gray-600 dark:text-gray-400 mb-4">The job you're looking for could not be found.</p>
         <button 
-          onClick={() => navigate('/jobss')}
+          onClick={() => navigate('/jobs')}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
         >
           Back to Jobs
@@ -184,16 +215,16 @@ const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) =>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Job Title */}
+          {/* Job Title (jobName) */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Job Title<span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              name="title"
+              name="jobName"
               required
-              value={formData.title}
+              value={formData.jobName}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
             />
@@ -214,16 +245,16 @@ const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) =>
             />
           </div>
 
-          {/* Location */}
+          {/* Location (jobLocation) */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Location<span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              name="location"
+              name="jobLocation"
               required
-              value={formData.location}
+              value={formData.jobLocation}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
             />
@@ -252,11 +283,12 @@ const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) =>
           {/* Salary Range */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Salary Range
+              Salary Range<span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               name="salaryRange"
+              required
               value={formData.salaryRange}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
@@ -269,9 +301,9 @@ const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) =>
               Status<span className="text-red-500">*</span>
             </label>
             <select
-              name="Status"
+              name="status"
               required
-              value={formData.Status}
+              value={formData.status}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
             >
@@ -301,20 +333,20 @@ const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) =>
             Job Description<span className="text-red-500">*</span>
           </label>
           <textarea
-            name="description"
+            name="jobDescription"
             required
-            value={formData.description}
+            value={formData.jobDescription}
             onChange={handleChange}
             rows={4}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
           ></textarea>
         </div>
 
-       
+        {/* Responsibilities */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Responsibilities
+              Responsibilities<span className="text-red-500">*</span>
             </label>
             <button
               type="button"
@@ -348,48 +380,99 @@ const EditJob: React.FC<EditJobProps> = ({ jobs = defaultJobs, onUpdateJob }) =>
           </div>
         </div>
 
-      
+        {/* Requirements */}
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Requirements<span className="text-red-500">*</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => addListItem('requirements')}
+              className="flex items-center gap-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
+            >
+              <Plus size={16} />
+              <span>Add</span>
+            </button>
+          </div>
+          <div className="space-y-2">
+            {formData.requirements.map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={item}
+                  onChange={(e) => handleListChange(e, index, 'requirements')}
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                />
+                {formData.requirements.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeListItem(index, 'requirements')}
+                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                  >
+                    <Minus size={16} />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Benefits */}
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Benefits
+            </label>
+            <button
+              type="button"
+              onClick={() => addListItem('benefits')}
+              className="flex items-center gap-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
+            >
+              <Plus size={16} />
+              <span>Add</span>
+            </button>
+          </div>
+          <div className="space-y-2">
+            {formData.benefits.map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={item}
+                  onChange={(e) => handleListChange(e, index, 'benefits')}
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                />
+                {formData.benefits.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeListItem(index, 'benefits')}
+                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                  >
+                    <Minus size={16} />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Company Description */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Company Description<span className="text-red-500">*</span>
+          </label>
+          <textarea
+            name="companyDescription"
+            required
+            value={formData.companyDescription}
+            onChange={handleChange}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+          ></textarea>
+        </div>
       </form>
     </div>
   );
 };
-
-// Default job data for testing
-const defaultJobs: Job[] = [
-  {
-    id: 1,
-    title: "Software Engineer",
-    company: "Tech Solutions Ltd",
-    location: "Colombo",
-    jobType: "Full-time",
-    salaryRange: "LKR30000-LKR 50000",
-    Status: "Active", 
-    postedDate: "March 5, 2025",
-    description:
-      "Looking for an experienced software engineer to lead our development team. Join our innovative company to create cutting-edge solutions that transform the way businesses operate in the digital space.",
-    responsibilities: [
-      "Develop and maintain software applications",
-      "Lead a team of junior developers",
-      "Ensure best coding practices are followed",
-      "Collaborate with product managers to define feature requirements",
-      "Participate in code reviews and architectural decisions"
-    ],
-    requirements: [
-      "5+ years of experience in software development",
-      "Proficiency in React, Node.js, and TypeScript",
-      "Strong problem-solving skills",
-      "Experience with cloud platforms (AWS/Azure/GCP)",
-      "Bachelor's degree in Computer Science or related field"
-    ],
-    benefits: [
-      "Competitive salary and performance bonuses",
-      "Flexible work arrangements",
-      "Health insurance and wellness programs",
-      "Professional development opportunities",
-      "Modern office with great facilities"
-    ],
-    companyDescription: "Tech Solutions Ltd is a leading software development company specializing in enterprise solutions. With over 10 years in the industry, we've helped hundreds of businesses transform their digital presence."
-  }
-];
 
 export default EditJob;

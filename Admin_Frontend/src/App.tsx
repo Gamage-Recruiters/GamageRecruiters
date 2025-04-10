@@ -43,7 +43,7 @@ function App() {
               <Route path="/jobs" element={<ViewAllJobs />} />
               <Route path="/jobss" element={<Jobs />} />
               <Route path="/jobs/add" element={<AddJob/>} />
-              <Route path="/jobss/edit/:jobid" element={<EditJob />} />
+              <Route path="/jobs/edit/:jobid" element={<EditJob />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="/workshops" element={<Workshops />} />
               <Route path="/blog" element={<Blog />} />
