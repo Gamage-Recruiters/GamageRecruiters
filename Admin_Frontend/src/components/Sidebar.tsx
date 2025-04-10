@@ -12,7 +12,8 @@ import {
   Settings,
   ChevronRight,
   Menu,
-  X
+  X,
+  Phone
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -22,12 +23,13 @@ interface SidebarProps {
 
 function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const location = useLocation();
-  
+
   const menuItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/clients', icon: Users, label: 'Clients' },
     { path: '/admins', icon: Users, label: 'Admins' },
     { path: '/jobss', icon: Briefcase, label: 'Jobs' },
+    { path: '/contact', icon: Phone, label: 'Contact' },
     { path: '/candidate', icon: FileText, label: 'Applications' },
     { path: '/workshops', icon: Calendar, label: 'Workshops' },
     { path: '/blog', icon: BookOpen, label: 'Blog' },
@@ -35,8 +37,8 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   ];
 
   // Group menu items by category
-  const mainMenuItems = menuItems.slice(0, 4);
-  const secondaryMenuItems = menuItems.slice(4);
+  const mainMenuItems = menuItems.slice(0, 5);
+  const secondaryMenuItems = menuItems.slice(5);
 
   return (
     <>
@@ -62,7 +64,7 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           <Menu className="h-5 w-5" />
         </button>
       )}
-    
+
       {/* Sidebar */}
       <motion.aside
         initial={{ x: isOpen ? 0 : -300 }}
@@ -83,15 +85,15 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             </div>
             <h1 className="text-lg font-bold text-gray-800 dark:text-white">Gamage</h1>
           </div>
-          
-          <button 
+
+          <button
             onClick={() => setIsOpen(false)}
             className="md:hidden p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
           </button>
         </div>
-        
+
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto py-4 px-3">
           {/* Main menu */}
@@ -102,15 +104,15 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             <nav className="space-y-1">
               {mainMenuItems.map((item) => {
                 const isActive = location.pathname === item.path;
-                
+
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
                     className={`
                       flex items-center px-4 py-2 text-sm rounded-lg
-                      ${isActive 
-                        ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' 
+                      ${isActive
+                        ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                       }
                       group relative
@@ -118,8 +120,8 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   >
                     <div className={`
                       p-1 mr-3 rounded-md 
-                      ${isActive 
-                        ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300' 
+                      ${isActive
+                        ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300'
                         : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
                       }
                     `}>
@@ -136,7 +138,7 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               })}
             </nav>
           </div>
-          
+
           {/* Secondary menu */}
           <div className="mb-6">
             <h2 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
@@ -145,15 +147,15 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             <nav className="space-y-1">
               {secondaryMenuItems.map((item) => {
                 const isActive = location.pathname === item.path;
-                
+
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
                     className={`
                       flex items-center px-4 py-2 text-sm rounded-lg
-                      ${isActive 
-                        ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' 
+                      ${isActive
+                        ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                       }
                       group relative
@@ -161,8 +163,8 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   >
                     <div className={`
                       p-1 mr-3 rounded-md 
-                      ${isActive 
-                        ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300' 
+                      ${isActive
+                        ? 'bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300'
                         : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
                       }
                     `}>
@@ -180,7 +182,7 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             </nav>
           </div>
         </div>
-        
+
         {/* Settings */}
         <div className="p-3 border-t border-gray-100 dark:border-gray-700">
           <Link
@@ -192,7 +194,7 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             </div>
             <span className="font-medium">Settings</span>
           </Link>
-          
+
           {/* Collapse button - visible only on larger screens */}
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -212,30 +214,30 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               <span className="text-white font-bold text-sm">GR</span>
             </div>
           </div>
-          
+
           <div className="flex-1 py-4 flex flex-col items-center space-y-4">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path;
-              
+
               return (
                 <Link
                   key={item.path}
                   to={item.path}
                   className={`
                     p-2 rounded-lg relative group
-                    ${isActive 
-                      ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300' 
+                    ${isActive
+                      ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300'
                       : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300'
                     }
                   `}
                 >
                   <item.icon className="h-5 w-5" />
-                  
+
                   {/* Tooltip */}
                   <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap">
                     {item.label}
                   </div>
-                  
+
                   {isActive && (
                     <span className="absolute inset-y-0 left-0 w-1 bg-purple-600 dark:bg-purple-500 rounded-r-full" />
                   )}
@@ -243,14 +245,14 @@ function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               );
             })}
           </div>
-          
+
           <div className="py-4 flex flex-col items-center border-t border-gray-100 dark:border-gray-700">
             <button
               onClick={() => setIsOpen(true)}
               className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300 relative group"
             >
               <ChevronRight className="h-5 w-5" />
-              
+
               {/* Tooltip */}
               <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap">
                 Expand Sidebar

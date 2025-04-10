@@ -20,6 +20,7 @@ import AddNewBlog from './pages/Blog/AddNewBlog';
 import EditBlog from './pages/Blog/EditBlog';
 import AddAdmin from './pages/Admin/AddAdmin';
 import EditAdmin from './pages/Admin/EditAdmin';
+import Contact from './pages/Contact';
 function App() {
   // TODO: Implement actual auth logic
   const isAuthenticated = true;
@@ -29,13 +30,14 @@ function App() {
       <AnimatePresence mode="wait">
         <Routes>
           <Route path="/" element={<Login />} />
-          
+
           {isAuthenticated ? (
             <Route element={<Layout />}>
               <Route path="/Dashboard" element={<Dashboard />} />
               <Route path="/clients" element={<ClientUsers />} />
               <Route path="/admins" element={<AdminUsers />} />
               <Route path="/jobs" element={<Jobs />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/jobss" element={<ViewAllJobs />} />
               <Route path="/jobss/add" element={<AddJob />} />
               <Route path="/jobss/edit/:jobid" element={<EditJob />} />
