@@ -40,8 +40,8 @@ function App() {
               <Route path="/Dashboard" element={<Dashboard />} />
               <Route path="/clients" element={<ClientUsers />} />
               <Route path="/admins" element={<AdminUsers />} />
-              <Route path="/jobs" element={<Jobs />} />
-              <Route path="/jobss" element={<ViewAllJobs />} />
+              <Route path="/jobs" element={<ViewAllJobs />} />
+              <Route path="/jobss" element={<Jobs />} />
               <Route path="/jobs/add" element={<AddJob/>} />
               <Route path="/jobss/edit/:jobid" element={<EditJob />} />
               <Route path="/applications" element={<Applications />} />
