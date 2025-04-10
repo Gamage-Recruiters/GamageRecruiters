@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useChangeDateFormat } from '../hooks/customHooks';
+import { verifyEmail } from '../scripts/verifyData';
 
 // const blogPosts = [
 //   {
@@ -39,6 +40,7 @@ const categories = ['All', 'Industry Trends', 'Career Advice', 'HR Insights', 'M
 export default function BlogPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [blogPosts, setBlogPosts] = useState([]);
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     fetchBlogPages();
@@ -65,13 +67,35 @@ export default function BlogPage() {
   } 
 
   const handleSubscribe = async () => {
-    
+    if(!email) {
+      toast.error('Please enter your email');
+      return;
+    }
+
+    if(!verifyEmail(email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      const subscribeToNewsLetterResponse = await axios.post('http://localhost:8000/user/subscribe-newsletter', { email: email });
+      console.log(subscribeToNewsLetterResponse.data);
+      if(subscribeToNewsLetterResponse.status == 200) {
+        toast.success('Subscribed to NewsLetter Successfully');
+        setEmail('');
+      } else {
+        toast.error('An error occured. Please try again');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   }
 
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-black to-gray-900 text-white">
@@ -162,9 +186,11 @@ export default function BlogPage() {
           </p>
           <div className="max-w-md mx-auto flex gap-4">
             <input 
+              value={email}
               type="email" 
               placeholder="Enter your email" 
               className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+              onChange={(e) => setEmail(e.target.value)}
             />
             <button className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors" onClick={handleSubscribe}>
               Subscribe

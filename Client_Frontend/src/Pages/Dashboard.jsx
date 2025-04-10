@@ -387,11 +387,14 @@ export default function Dashboard() {
       try {
         // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
         const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data');
-        // console.log(loggedUserResponse.data);
+        console.log(loggedUserResponse.data);
         // console.log(loggedUserResponse.data.data[0]);
         if(loggedUserResponse.status === 200) {
-          setUser(loggedUserResponse.data.data[0]);
-          setLoggedUserId(loggedUserResponse.data.data[0].userId)
+          setUser(loggedUserResponse.data.data.user[0]);
+          setLoggedUserId(loggedUserResponse.data.data.user[0].userId);
+          setAccessToken(loggedUserResponse.data.data.token);
+          // Store Token In localStorage ...
+          localStorage.setItem('AccessToken', loggedUserResponse.data.data.token);
         } else {
           console.log('Failed To Load User Data');
           return;

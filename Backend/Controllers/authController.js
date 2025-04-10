@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { pool } = require('../config/dbConnection');
 const { otpCache, generateOTP, sendOTP } = require('../middlewares/OTP');
-const { localStorage, encryptData, decryptData } = require('../utils/localStorage');
+const { localStorage } = require('../utils/localStorage');
 const { fetchLoggedUserIdAndMethod, fetchLoggedPlatformUserRegisteredId } = require('../utils/retrieveLocalStorageData');
 const { setLoggedUserIdAndMethod, setLoggedPlatformUserRegisteredId } = require('../utils/setLocalStorageData');
 
@@ -93,7 +93,7 @@ async function login (req, res) {
                 } 
 
                 setLoggedUserIdAndMethod(result[0].userId, 'Email & Password');
-
+                setLoggedPlatformUserRegisteredId(result[0].userId); // Set the logged user ID in localStorage ...
                 return res.status(200).json({ message: 'Login Successful', token: token, data: data, tokenExpiresAt: expTime });
             });
         });

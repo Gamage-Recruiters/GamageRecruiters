@@ -28,4 +28,7 @@ router.get('/last-active-status/:userId', userController.getLastActiveStatus);
 // Access User Profile Recent Activity Data ...
 router.get('/recent-activity/:userId', userController.getRecentProfileActivity);
 
+// Subscribe to News Letter ...
+router.post('/subscribe-newsletter', userController.subscribeToNewsletter);
+
 module.exports = router;

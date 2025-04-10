@@ -36,10 +36,6 @@ export default function LoginPage() {
       // console.log(loginResponse);
       if(loginResponse.status == 200) {
         toast.success('User Login Successfull');
-        // console.log(loginResponse.data.token);
-        localStorage.setItem('User Auth Token', loginResponse.data.token);
-        localStorage.setItem('Login Method', 'email & password');
-        localStorage.setItem('Token Expires At', loginResponse.data.tokenExpiresAt);
         navigate('/dashboard');
       } else {
         toast.error('User Login Failed');
@@ -58,7 +54,6 @@ export default function LoginPage() {
       console.log(loginViaGmailResponse);
       if(loginViaGmailResponse.status == 200) {
         console.log(loginViaGmailResponse.data);
-        localStorage.setItem('Login Method', 'gmail');
         window.location.href = loginViaGmailResponse.data.data; // Redirect to Google OAuth ...
       } else {
         toast.error('Something Went Wrong');
@@ -77,7 +72,6 @@ export default function LoginPage() {
       console.log(loginViaFacebookResponse);
       if(loginViaFacebookResponse.status == 200) {
         console.log(loginViaFacebookResponse.data);
-        localStorage.setItem('Login Method', 'facebook');
         window.location.href = loginViaFacebookResponse.data.data; // Redirect to Facebook OAuth ...
       } else {
         toast.error('Something Went Wrong');
@@ -96,7 +90,6 @@ export default function LoginPage() {
       console.log(loginViaLinkedInResponse);
       if(loginViaLinkedInResponse.status == 200) {
         console.log(loginViaLinkedInResponse.data);
-        localStorage.setItem('Login Method', 'linkedIn');
         window.location.href = loginViaLinkedInResponse.data.data; // Redirect to Google OAuth ...
       } else {
         toast.error('Something Went Wrong');

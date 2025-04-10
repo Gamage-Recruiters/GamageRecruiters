@@ -19,7 +19,8 @@ const jobapplicationRouter = require('./Routers/jobApplicationRouter');
 const JobsManagementRouter = require('./Routers/JobsManagementRouter')
 const blogRoutes = require('./Routers/blogRouter');
 const testimonialsRouter = require('./Routers/testimonialsRouter');
-const workshopRoutes = require('./Routers/workshopsRoutes');
+const workshopRouter = require('./Routers/workshopsRouter');
+const contactRouter = require('./Routers/contactRouter');
 
 require('dotenv').config();
 require('./auth/passportAuthGoogle');
@@ -44,7 +45,6 @@ app.use(cors({
   credentials: true,
 }));
 
-
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/images', express.static(path.join(__dirname, '/uploads/images')));
 app.use('/uploads/cv', express.static(path.join(__dirname, '/uploads/cvs')));
@@ -52,6 +52,7 @@ app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/up
 app.use('/uploads/blogs/images', express.static(path.join(__dirname, '/uploads/blogs/images')));
 app.use('/uploads/blogs/covers', express.static(path.join(__dirname, '/uploads/blogs/covers')));
 app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/uploads/appliedJobs/resumes')));
+app.use('/uploads/workshops/images', express.static(path.join(__dirname, '/uploads/workshops/images')));
 
 app.use(session({ 
     key: "GamageRecruiters",
@@ -87,14 +88,10 @@ app.get("/api/check-db", async (req, res) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-const contactRouter = require('./Routers/contactRouter');
 app.use("/api/contact",contactRouter);
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
 app.use('/auth', authRouter);
-
-
-
 
 app.use('/session', sessionRouter);
 
@@ -105,11 +102,9 @@ app.use('/', linkedInAuthRouter);
 app.use('/api/jobapplications', jobapplicationRouter);
 app.use('/api/jobs', JobsManagementRouter);
 
-app.use('/api/workshops', workshopRoutes);
-
+app.use('/api/workshops', workshopRouter);
 
 app.use("/api/testimonials",testimonialsRouter);
-
 
 app.use('/api/blogs', blogRoutes);
 

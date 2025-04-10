@@ -3,4 +3,5 @@ node_modules/
 .DS_Store
 storage/
 dumps/
+backup/
 uploads/
