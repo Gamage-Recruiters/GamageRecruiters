@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { AtSign, Lock, ArrowRight } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
+import baseURL from "../config/axiosPortConfig";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -29,17 +30,13 @@ export default function LoginPage() {
       return;
     }
 
-    console.log("Logging in", { email, password });
+    console.log("Logging in", { email, password, baseURL });
 
     try {
-      const loginResponse = await axios.post('http://localhost:8000/auth/login', { email: email, password: password }, { withCredentials: true });
+      const loginResponse = await axios.post(`${baseURL}/auth/login`, { email: email, password: password }, { withCredentials: true });
       // console.log(loginResponse);
-      if(loginResponse.status == 200) {
-        toast.success('User Login Successfull');
-        // console.log(loginResponse.data.token);
-        localStorage.setItem('User Auth Token', loginResponse.data.token);
-        localStorage.setItem('Login Method', 'email & password');
-        localStorage.setItem('Token Expires At', loginResponse.data.tokenExpiresAt);
+      if(loginResponse.status === 200) {
+        toast.success('User Login Successful');
         navigate('/dashboard');
       } else {
         toast.error('User Login Failed');
@@ -54,11 +51,10 @@ export default function LoginPage() {
   const loginViaGmail = async (e) => {
     e.preventDefault();
     try {
-      const loginViaGmailResponse = await axios.get('http://localhost:8000/google/login');
+      const loginViaGmailResponse = await axios.get(`${baseURL}/google/login`);
       console.log(loginViaGmailResponse);
       if(loginViaGmailResponse.status == 200) {
         console.log(loginViaGmailResponse.data);
-        localStorage.setItem('Login Method', 'gmail');
         window.location.href = loginViaGmailResponse.data.data; // Redirect to Google OAuth ...
       } else {
         toast.error('Something Went Wrong');
@@ -73,11 +69,10 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const loginViaFacebookResponse = await axios.get('http://localhost:8000/facebook/login');
+      const loginViaFacebookResponse = await axios.get(`${baseURL}/facebook/login`);
       console.log(loginViaFacebookResponse);
       if(loginViaFacebookResponse.status == 200) {
         console.log(loginViaFacebookResponse.data);
-        localStorage.setItem('Login Method', 'facebook');
         window.location.href = loginViaFacebookResponse.data.data; // Redirect to Facebook OAuth ...
       } else {
         toast.error('Something Went Wrong');
@@ -92,12 +87,11 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const loginViaLinkedInResponse = await axios.get('http://localhost:8000/linkedin/login');
+      const loginViaLinkedInResponse = await axios.get(`${baseURL}/linkedin/login`);
       console.log(loginViaLinkedInResponse);
       if(loginViaLinkedInResponse.status == 200) {
         console.log(loginViaLinkedInResponse.data);
-        localStorage.setItem('Login Method', 'linkedIn');
-        window.location.href = loginViaLinkedInResponse.data.data; // Redirect to Google OAuth ...
+        window.location.href = loginViaLinkedInResponse.data.data; // Redirect to LinkedIn OAuth ...
       } else {
         toast.error('Something Went Wrong');
       }

@@ -20,6 +20,7 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import VerifyEmail from "./VerifyEmail";
 import { verifyEmail, verifyFacebookURL, verifyLinkedInURL, verifyPassword, verifyPhoneNumber } from "../scripts/verifyData";
+import baseURL from "../config/axiosPortConfig";
 
 
 export default function SignupPage() {
@@ -119,9 +120,9 @@ export default function SignupPage() {
     formData.append('photo', photo);
 
     try {
-      const signupResponse = await axios.post('http://localhost:8000/auth/register', formData);
+      const signupResponse = await axios.post(`${baseURL}/auth/register`, formData);
       if(signupResponse.status == 201) {
-        const sendOTPResponse = await axios.post('http://localhost:8000/auth/sendOTP', { email: email });
+        const sendOTPResponse = await axios.post(`${baseURL}/auth/sendOTP`, { email: email });
         if(sendOTPResponse.status == 200) {
           toast.success('An OTP has been sent to your email');
           setLoadUI(false);

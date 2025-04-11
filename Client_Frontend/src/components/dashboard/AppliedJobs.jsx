@@ -4,6 +4,7 @@ import { Briefcase } from "lucide-react";
 import { toast, ToastContainer } from 'react-toastify';
 import axios from "axios";
 import { useChangeDateFormat } from "../../hooks/customHooks";
+import baseURL from "../../config/axiosPortConfig";
 
 const AppliedJobs = ({ user }) => {
   // Sample data for applied jobs
@@ -56,7 +57,7 @@ const AppliedJobs = ({ user }) => {
     } 
 
     try {
-      const appliedJobsResponse = await axios.get(`http://localhost:8000/api/jobs/applied/${id}`);
+      const appliedJobsResponse = await axios.get(`${baseURL}/api/jobs/applied/${id}`);
       if(appliedJobsResponse.status == 200) {
         setAppliedJobs(appliedJobsResponse.data.data);
         setAppliedJobCount(appliedJobsResponse.data.data.length);

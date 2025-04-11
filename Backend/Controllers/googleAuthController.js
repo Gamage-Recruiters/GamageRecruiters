@@ -45,8 +45,9 @@ async function loginGoogleCallback (req, res) {
                     const userName = splitStrings(req.session.user.name);
                     try {
                         const userData = await addNewUserIfSessionUserNotFound(userName[0], userName[1], req.session.user.email);
+
                         if(!userData) {
-                            return res.status(404).send('User Not Found');
+                            return res.status(400).send('Error Occured While Creating a new user');
                         } 
 
                         // console.log('User Data:', userData);

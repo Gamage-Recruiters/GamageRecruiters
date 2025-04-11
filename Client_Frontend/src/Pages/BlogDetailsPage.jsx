@@ -8,6 +8,7 @@ import { useChangeDateFormat, useConCatName } from '../hooks/customHooks';
 import setTimeStatus from '../scripts/setTimeStatus';
 import generateBlogReadingTime from '../scripts/generateBlogReadingTime';
 import fetchLoggedUserData from '../scripts/fetchLoggedUserData';
+import baseURL from '../config/axiosPortConfig';
 
 
 export default function BlogDetailsPage() {
@@ -69,7 +70,7 @@ export default function BlogDetailsPage() {
   const fetchBlogData = async (id) => {
     setLoading(true);
     try {
-      const blogResponse = await axios.get(`http://localhost:8000/api/blogs/${id}`);
+      const blogResponse = await axios.get(`${baseURL}/api/blogs/${id}`);
       // console.log(blogResponse.data);
       if(blogResponse.status == 200) {
         setBlogPost(blogResponse.data.data[0]);
@@ -92,7 +93,7 @@ export default function BlogDetailsPage() {
 
   const fetchLikeStateforUsertoBlog = async (idBlog, idUser) => {
     try {
-      const userLikeStateForBlogResponse = await axios.get(`http://localhost:8000/api/blogs/state/${idBlog}/${idUser}`);
+      const userLikeStateForBlogResponse = await axios.get(`${baseURL}/api/blogs/state/${idBlog}/${idUser}`);
       console.log(userLikeStateForBlogResponse.data);
       if(userLikeStateForBlogResponse.status == 200) {
         setLikedBlog(true);
@@ -107,7 +108,7 @@ export default function BlogDetailsPage() {
 
   const fetchBlogLikeCount = async (id) => {
     try {
-      const blogLikeCountResponse = await axios.get(`http://localhost:8000/api/blogs/like-count/${id}`);
+      const blogLikeCountResponse = await axios.get(`${baseURL}/api/blogs/like-count/${id}`);
       console.log(blogLikeCountResponse.data.likeCount);
       if(blogLikeCountResponse.status == 200) {
         setBlogLikeCount(blogLikeCountResponse.data.likeCount);
@@ -124,7 +125,7 @@ export default function BlogDetailsPage() {
 
   const fetchBlogComments = async (id) => {
     try {
-      const blogCommentsResponse = await axios.get(`http://localhost:8000/api/blogs/comments/${id}`);
+      const blogCommentsResponse = await axios.get(`${baseURL}/api/blogs/comments/${id}`);
       console.log(blogCommentsResponse.data.data);
       if(blogCommentsResponse.status == 200) {
         const blogRelatedcomments = blogCommentsResponse.data.data;
@@ -171,7 +172,7 @@ export default function BlogDetailsPage() {
     }
 
     try {
-      const addCommentResponse = await axios.post('http://localhost:8000/api/blogs/comments/add', { blogId: blogId, comment: comment, userId: loggedUserId });
+      const addCommentResponse = await axios.post(`${baseURL}/api/blogs/comments/add`, { blogId: blogId, comment: comment, userId: loggedUserId });
       console.log(addCommentResponse.data);
       if(addCommentResponse.status == 201) {
         const commentRelatedData = {
@@ -229,7 +230,7 @@ export default function BlogDetailsPage() {
     }
 
     try {
-      const likeBlogResponse = await axios.post('http://localhost:8000/api/blogs/likes/add', { blogId: blogId, userId: loggedUserId });
+      const likeBlogResponse = await axios.post(`${baseURL}/api/blogs/likes/add`, { blogId: blogId, userId: loggedUserId });
       // console.log(likeBlogResponse.data);
       if(likeBlogResponse.status == 201) {
         console.log('Liked Blog');
@@ -250,7 +251,7 @@ export default function BlogDetailsPage() {
     }
 
     try {
-      const dislikeBlogResponse = await axios.post('http://localhost:8000/api/blogs/likes/remove', { blogId: blogId, userId: loggedUserId });
+      const dislikeBlogResponse = await axios.post(`${baseURL}/api/blogs/likes/remove`, { blogId: blogId, userId: loggedUserId });
       // console.log(dislikeBlogResponse.data);
       if(dislikeBlogResponse.status == 200) {
         console.log('Disliked Blog');

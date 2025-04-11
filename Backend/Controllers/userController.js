@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const { pool } = require('../config/dbConnection');
 const { setTimeStatus } = require('../utils/changeDateFormat');
+const subscriptionNotifyEmailSending = require('../middlewares/subscriptionNotifyEmailSending');
+const { localStorage } = require('../utils/localStorage');
 
 async function uploadUserImage (req, res) {
     console.log(req.body);
@@ -65,7 +67,8 @@ async function uploadUserCV (req, res) {
 }
 
 async function updateUserDetails (req, res) {
-    const { userId, firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, photo, cv, linkedInLink, facebookLink, portfolioLink, profileDescription } = req.body; 
+    const { userId } = req.params;
+    const { firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, photo, cv, linkedInLink, facebookLink, portfolioLink, profileDescription } = req.body; 
 
     if(!userId || !firstName || !lastName || !gender || !birthDate || !address || !phoneNumber1 || !cv || !profileDescription) {
         return res.status(400).send('Error With required fields');
@@ -164,6 +167,7 @@ async function deleteUser (req, res) {
                 return res.status(400).send('Deletion Failed');
             } 
 
+            localStorage.clear();
             return res.status(200).json({ message: 'User Deleted Successfully', data: result });
         });
     } catch (error) {
@@ -301,4 +305,45 @@ async function getRecentProfileActivity(req, res) {
     }
 }
 
-module.exports = { deleteUser, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity }
+async function subscribeToNewsletter(req, res) {
+    const { email } = req.body;
+
+    if(!email) {
+        return res.status(400).send('Email Required for Subscription');
+    }
+
+    try {
+        // check the email validity ...
+        const checkEmailQuery = 'SELECT * FROM users WHERE email = ?';
+        pool.query(checkEmailQuery, email, (error, result) => {
+            if(error) {
+                console.log(error);
+                return res.status(400).send(error);
+            }
+
+            if(result.affectedRows == 0) {
+                return res.status(400).send('Subscription Failed');
+            }
+
+            const updateSubscriptionStatusQuery = 'UPDATE users SET subscribedToNewsLetter = ? WHERE email = ?';
+            pool.query(updateSubscriptionStatusQuery, [1, email], (error, state) => {
+                if(error) {
+                    console.log(error);
+                    return res.status(400).send(error);
+                }
+    
+                if(state.affectedRows == 0) {
+                    return res.status(400).send('Subscription Failed');
+                }
+
+                subscriptionNotifyEmailSending(email);
+                return res.status(200).send('Subscription Successfull');
+            })
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
+
+module.exports = { deleteUser, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter }

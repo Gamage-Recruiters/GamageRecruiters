@@ -8,13 +8,14 @@ const cvPath = path.join(__dirname, '../uploads/cvs');
 const blogImagePath = path.join(__dirname, '../uploads/blogs/images');
 const blogCoverPath = path.join(__dirname, '../uploads/blogs/covers');
 const jobApplicationPath = path.join(__dirname, '../uploads/appliedJobs/resumes');
+const workShopImagePath = path.join(__dirname, '../uploads/workshops/images');
 
 // Ensure directories exist
 if (!fs.existsSync(imagePath)) fs.mkdirSync(imagePath, { recursive: true });
 if (!fs.existsSync(cvPath)) fs.mkdirSync(cvPath, { recursive: true });
 if (!fs.existsSync(blogImagePath)) fs.mkdirSync(blogImagePath, { recursive: true });
 if (!fs.existsSync(blogCoverPath)) fs.mkdirSync(blogCoverPath, { recursive: true });
-
+if (!fs.existsSync(workShopImagePath)) fs.mkdirSync(workShopImagePath, { recursive: true });
 
 // Define storage logic
 const storage = multer.diskStorage({
@@ -29,7 +30,8 @@ const storage = multer.diskStorage({
             callback(null, blogCoverPath);
         } else if (file.fieldname === 'resume') {
             callback(null, jobApplicationPath);
-
+        } else if (file.fieldname === 'workshopImage') {
+            callback(null, workShopImagePath);
         } else {
             callback(new Error('Invalid file field'), false);
         }
@@ -47,6 +49,7 @@ const fileFilter = (req, file, callback) => {
     const blogTypes = /jpeg|jpg|png|gif|JPG|PNG|JPEG|GIF/;
     const blogCoverTypes = /jpeg|jpg|png|gif|JPG|PNG|JPEG|GIF/;
     const jobApplicationTypes = /pdf|doc|docx|txt/;
+    const workShopImageTypes = /jpeg|jpg|png|gif|JPG|PNG|JPEG|GIF/;
 
     const extName = path.extname(file.originalname).toLowerCase();
     const mimeType = file.mimetype.toLowerCase();
@@ -60,6 +63,8 @@ const fileFilter = (req, file, callback) => {
     } else if (file.fieldname === 'blogCover' && blogCoverTypes.test(extName) && blogCoverTypes.test(mimeType)) {
         callback(null, true);
     } else if (file.fieldname === 'resume' && jobApplicationTypes.test(extName) && jobApplicationTypes.test(mimeType)) {
+        callback(null, true);
+    } else if (file.fieldname === 'workshopImage' && workShopImageTypes.test(extName) && workShopImageTypes.test(mimeType)) {
         callback(null, true);
     } else {
         callback(new Error(`Invalid file type for ${file.fieldname}`), false);
@@ -76,7 +81,8 @@ const upload = multer({
     { name: 'cv', maxCount: 1 },
     { name: 'blog', maxCount: 1 },
     { name: 'blogCover', maxCount: 1 },
-    { name: 'resume', maxCount: 1 }
+    { name: 'resume', maxCount: 1 },
+    { name: 'workshopImage', maxCount: 1 }
 ]);
 
 module.exports = upload;

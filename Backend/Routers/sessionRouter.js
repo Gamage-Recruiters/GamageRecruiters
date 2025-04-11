@@ -8,8 +8,8 @@ const router = express.Router();
 router.get('/profile-data', sessionController.getLoggedUserData);
 // router.get('/profile-data', authenticateToken, sessionController.getLoggedUserData);
 
-// Route to get a new access token ...
-router.put('/update-access-token', sessionController.generateNewAccessToken);
+// Route to handle access token ...
+router.post('/handle-token', sessionController.handleAccessToken);
 
 // Route to get user login attempts ...
 router.get('/login-attempts/:userId', sessionController.getUserLoginAttempts);

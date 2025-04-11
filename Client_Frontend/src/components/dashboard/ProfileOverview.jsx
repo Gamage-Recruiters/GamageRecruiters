@@ -5,6 +5,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { toast, ToastContainer } from 'react-toastify';
 import { useCalculateAge, useChangeDateFormat, useCheckValidCVFile, useCheckValidImageFile, useConCatName } from "../../hooks/customHooks";
+import baseURL from "../../config/axiosPortConfig";
 
 const ProfileOverview = ({ user }) => {
   const [cvLink, setCVLink] = useState('');
@@ -18,14 +19,14 @@ const ProfileOverview = ({ user }) => {
 
   useEffect(() => {
     if(user.cv) {
-      const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;
+      const cvURL = `${baseURL}/uploads/cvs/${user.cv}`;
       setCVLink(cvURL);
     } else {
       setCVLink('');
     }
 
     if(user.photo) {
-      const photoURL = `http://localhost:8000/uploads/images/${user.photo}`;
+      const photoURL = `${baseURL}/uploads/images/${user.photo}`;
       setImageLink(photoURL);
     } else {
       setImageLink('');
@@ -71,12 +72,12 @@ const ProfileOverview = ({ user }) => {
     console.log(formData);
 
     try {
-      const updateUserImageResponse = await axios.put('http://localhost:8000/user/upload-user-image', formData);
+      const updateUserImageResponse = await axios.put(`${baseURL}/user/upload-user-image`, formData);
       console.log(updateUserImageResponse.data);
       if(updateUserImageResponse.status == 200) {
         toast.success('User Image Uploaded Successfully');
         console.log(updateUserImageResponse.data.image);
-        window.location.reload;
+        window.location.reload();
       } else {
         toast.error('User Image Upload Failed');
         return;
@@ -107,14 +108,14 @@ const ProfileOverview = ({ user }) => {
     }
 
     try {
-      const updateUserCVResponse = await axios.put('http://localhost:8000/user/update-user-cv', formData);
+      const updateUserCVResponse = await axios.put(`${baseURL}/user/update-user-cv`, formData);
       console.log(updateUserCVResponse);
       if(updateUserCVResponse.status == 200) {
         toast.success('User CV Uploaded Successfully');
         console.log(updateUserCVResponse.data.cv);
-        const userImageLink = `http://localhost:8000/uploads/images/${updateUserCVResponse.data.cv}`;
+        const userImageLink = `${baseURL}/uploads/images/${updateUserCVResponse.data.cv}`;
         setImageLink(userImageLink);
-        window.location.reload;
+        window.location.reload();
       } else {
         toast.error('User Image Upload Failed');
         return;
@@ -137,7 +138,7 @@ const ProfileOverview = ({ user }) => {
     }).then(async (result) => {
         if(result.isConfirmed) {
           try {
-            const logoutResponse = await axios.get('http://localhost:8000/auth/logout');
+            const logoutResponse = await axios.get(`${baseURL}/auth/logout`);
             console.log(logoutResponse);
             if(logoutResponse.status == 200) {
               Swal.fire({

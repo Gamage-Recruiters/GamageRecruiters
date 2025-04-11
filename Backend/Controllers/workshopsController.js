@@ -47,12 +47,18 @@ async function createWorkshop(req, res) {
   }
 
   try {
-    const query = "INSERT INTO workshops (title, category, date, time, location, image, color, speaker, price, spots, rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    const values = [title, category, date, time, location, image, color, speaker, price, spots, rating];
+    // If existing, access the file names of the cv and image ...
+    const workShopImageName = req.files?.workshopImage?.[0]?.filename || null;
+
+    console.log('Image Name:', workShopImageName);
+
+    const query = "INSERT INTO workshops (title, category, date, time, location, color, speaker, price, spots, rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating];
 
     pool.query(query, values, (error, result) => {
       if (error) return res.status(500).send(error);
-      return res.status(200).json({ message: 'Workshop Created', data: result });
+      
+      return res.status(201).json({ message: 'Workshop Created', data: result });
     });
   } catch (error) {
     console.error(error);
@@ -63,7 +69,7 @@ async function createWorkshop(req, res) {
 // Update Workshop
 async function updateWorkshop(req, res) {
   const { id } = req.params;
-  const { title, category, date, time, location, image, color, speaker, price, spots, rating } = req.body;
+  const { title, category, date, time, location, color, speaker, price, spots, rating } = req.body;
 
   if (!id || !title || !category || !date || !time || !location || !speaker || !price) {
     return res.status(400).send('Required fields missing');

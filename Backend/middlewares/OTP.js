@@ -7,7 +7,7 @@ dotenv.config();
 const otpCache = {};
 
 // Function to generate a random string ...
-const generateOTP = () => {
+function generateOTP () {
     return randomstring.generate({
         length: 6,
         charset: 'numeric'
@@ -15,7 +15,7 @@ const generateOTP = () => {
 };
 
 // Function to send OTP via email ...
-const sendOTP = async (email, otp) => {
+async function sendOTP (email, otp) {
     const mailOptions = {
         from: process.env.APP_EMAIL,
         to: email,
@@ -23,7 +23,7 @@ const sendOTP = async (email, otp) => {
         text:`Your OTP for email verification is ${otp}`
     };
 
-    let transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: process.env.APP_EMAIL,

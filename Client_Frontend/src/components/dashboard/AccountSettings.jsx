@@ -4,6 +4,7 @@ import { Key, AlertTriangle } from "lucide-react";
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
+import baseURL from "../../config/axiosPortConfig";
 import 'react-toastify/dist/ReactToastify.css';
 
 const AccountSettings = ({ user }) => {
@@ -46,7 +47,7 @@ const AccountSettings = ({ user }) => {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const changePasswordResponse = await axios.post('http://localhost:8000/user/change-password', { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
+          const changePasswordResponse = await axios.post(`${baseURL}/user/change-password`, { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
           console.log(changePasswordResponse.data);
           if(changePasswordResponse.status == 200) {
             Swal.fire({
@@ -88,9 +89,9 @@ const AccountSettings = ({ user }) => {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const changePasswordResponse = await axios.post('http://localhost:8000/user/change-password', { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
-          console.log(changePasswordResponse.data);
-          if(changePasswordResponse.status == 200) {
+          const terminateAccountResponse = await axios.delete(`${baseURL}/user/delete-profile/${user.userId}`);
+          console.log(terminateAccountResponse.data);
+          if(terminateAccountResponse.status == 200) {
             Swal.fire({
               icon: 'success',
               title: 'Account Terminated!',
@@ -99,7 +100,7 @@ const AccountSettings = ({ user }) => {
             });
             navigate('/');
           } else {
-            setError('Password Change Failed');
+            setError('Account Termination Failed');
             return;
           }
         } catch (error) {

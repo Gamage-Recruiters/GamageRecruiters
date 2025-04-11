@@ -18,6 +18,8 @@ import EditProfileForm from "../components/dashboard/EditProfileForm";
 import AccountSettings from "../components/dashboard/AccountSettings";
 import { useConCatName, useChangeDateFormat, useSetUserProfileCompletion, useSetDateToTimeStamp } from "../hooks/customHooks";
 import handleToken from "../scripts/handleToken";
+import baseURL from "../config/axiosPortConfig";
+import SessionTimeout from "../protected/SessionTimeout";
 
 // Animated Tab Context
 const TabContext = ({ children, defaultTab }) => {
@@ -232,7 +234,7 @@ export default function Dashboard() {
     }
 
     if(user.cv) {
-      const cvURL = `http://localhost:8000/uploads/cvs/${user.cv}`;
+      const cvURL = `${baseURL}/uploads/cvs/${user.cv}`;
       console.log('cv-url', cvURL);
       setCVLink(cvURL);
     } else {
@@ -240,7 +242,7 @@ export default function Dashboard() {
     }
 
     if(user.photo) {
-      const photoURL = `http://localhost:8000/uploads/images/${user.photo}`;
+      const photoURL = `${baseURL}/uploads/images/${user.photo}`;
       console.log('image-url', photoURL);
       setImageLink(photoURL);
     } else {
@@ -386,12 +388,17 @@ export default function Dashboard() {
   const fetchLoggedUserData = async () => {
       try {
         // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
-        const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data');
-        // console.log(loggedUserResponse.data);
+        const loggedUserResponse = await axios.get(`${baseURL}/session/profile-data`);
+        console.log(loggedUserResponse.data);
         // console.log(loggedUserResponse.data.data[0]);
         if(loggedUserResponse.status === 200) {
-          setUser(loggedUserResponse.data.data[0]);
-          setLoggedUserId(loggedUserResponse.data.data[0].userId)
+          setUser(loggedUserResponse.data.data.user[0]);
+          setLoggedUserId(loggedUserResponse.data.data.user[0].userId);
+          setAccessToken(loggedUserResponse.data.data.token);
+          const percentage = useSetUserProfileCompletion(loggedUserResponse.data.data.user[0]);
+          setProfileCompletionPercentage(percentage);
+          // Store Token In localStorage ...
+          localStorage.setItem('AccessToken', loggedUserResponse.data.data.token);
         } else {
           console.log('Failed To Load User Data');
           return;
@@ -404,7 +411,7 @@ export default function Dashboard() {
 
   const fetchAppliedJobCount = async (id) => {
     try {
-      const countResponse = await axios.get(`http://localhost:8000/api/jobs/applied/count/${id}`);
+      const countResponse = await axios.get(`${baseURL}/api/jobs/applied/count/${id}`);
       // console.log(countResponse.data);
       if(countResponse.status == 200) {
         // console.log(countResponse.data.data[0]["COUNT(applicationId)"]);
@@ -421,7 +428,7 @@ export default function Dashboard() {
 
   const fetchJobApplicationStatusForUser = async (id) => {
     try {
-      const jobApplicationStatusResponse = await axios.get(`http://localhost:8000/user/application-status/${id}`);
+      const jobApplicationStatusResponse = await axios.get(`${baseURL}/user/application-status/${id}`);
       // console.log(jobApplicationStatusResponse.data);
       if(jobApplicationStatusResponse.status == 200) {
         // console.log(jobApplicationStatusResponse.data.jobStatus);
@@ -445,7 +452,7 @@ export default function Dashboard() {
 
   const fetchLastActiveStatusForUser = async (id) => {
     try {
-      const lastActiveStatusResponse = await axios.get(`http://localhost:8000/user/last-active-status/${id}`);
+      const lastActiveStatusResponse = await axios.get(`${baseURL}/user/last-active-status/${id}`);
       // console.log(lastActiveStatusResponse.data);
       if(lastActiveStatusResponse.status == 200) {
         // console.log(lastActiveStatusResponse.data.jobStatus);
@@ -463,7 +470,7 @@ export default function Dashboard() {
 
   const fetchLastProfileActivity = async (id) => {
     try {
-      const recentActivityResponse = await axios.get(`http://localhost:8000/user/recent-activity/${id}`);
+      const recentActivityResponse = await axios.get(`${baseURL}/user/recent-activity/${id}`);
       // console.log(recentActivityResponse.data);
       if(recentActivityResponse.status == 200) {
         // console.log(recentActivityResponse.data.recentActivity);
@@ -492,7 +499,7 @@ export default function Dashboard() {
 
   const fetchUserLoginAttempts = async (id) => {
     try {
-      const userLoginAttemptsResponse = await axios.get(`http://localhost:8000/session/login-attempts/${id}`);
+      const userLoginAttemptsResponse = await axios.get(`${baseURL}/session/login-attempts/${id}`);
       // console.log(userLoginAttemptsResponse.data);
       if(userLoginAttemptsResponse.status == 200) {
         // console.log(userLoginAttemptsResponse.data.data);
@@ -514,6 +521,8 @@ export default function Dashboard() {
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 min-h-screen p-4 md:p-6 transition-all duration-300">
      <ToastContainer/>
+     {/* Session timeout logic will run in background */}
+     <SessionTimeout />
       {isFirstVisit && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 fade-in">
           <div className="bg-white rounded-xl p-8 max-w-md shadow-2xl transform transition-all duration-500 scale-up">

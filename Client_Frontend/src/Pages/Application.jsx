@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import Swal from 'sweetalert2';
+import baseURL from "../config/axiosPortConfig";
 
 export default function Application() {
   // const [applications, setApplications] = useState([
@@ -49,7 +50,7 @@ export default function Application() {
 
   const fetchJobApplicationData = async (id) => {
     try {
-      const fetchJobApplicationData = await axios.get(`http://localhost:8000/api/jobapplications/application/${id}`);
+      const fetchJobApplicationData = await axios.get(`${baseURL}/api/jobapplications/application/${id}`);
       console.log(fetchJobApplicationData.data);
       if(fetchJobApplicationData.status == 200) {
         console.log(fetchJobApplicationData.data.data);
@@ -77,9 +78,9 @@ export default function Application() {
     let cvLink
     const patternRelatedToPath = 'uploads\\appliedJobs\\resumes\\';
     if(currentCV.includes(patternRelatedToPath)) {
-      cvLink = `http://localhost:8000/${currentCV}`;
+      cvLink = `${baseURL}/${currentCV}`;
     } else {
-      cvLink = `http://localhost:8000/uploads/appliedJobs/resumes/${currentCV}`;
+      cvLink = `${baseURL}/uploads/appliedJobs/resumes/${currentCV}`;
     }
     console.log(cvLink);
     window.open(cvLink, '_blank');
@@ -87,7 +88,7 @@ export default function Application() {
 
   const fetchAllJobApplicationsRelatedToUser = async (id) => {
     try {
-      const fetchUserJobApplicationsData = await axios.get(`http://localhost:8000/api/jobapplications/applications/user/${id}`);
+      const fetchUserJobApplicationsData = await axios.get(`${baseURL}/api/jobapplications/applications/user/${id}`);
       console.log(fetchUserJobApplicationsData.data);
       if(fetchUserJobApplicationsData.status == 200) {
         console.log(fetchUserJobApplicationsData.data.data);
@@ -139,7 +140,7 @@ export default function Application() {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const updateApplicationResponse = await axios.put(`http://localhost:8000/api/jobapplications/update/${jobApplicationId}`, formData);
+          const updateApplicationResponse = await axios.put(`${baseURL}/api/jobapplications/update/${jobApplicationId}`, formData);
           console.log(updateApplicationResponse.data);
           if(updateApplicationResponse.status == 200) {
             Swal.fire({
@@ -182,7 +183,7 @@ export default function Application() {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const removeApplicationResponse = await axios.delete(`http://localhost:8000/api/jobapplications/delete/${jobApplicationId}`);
+          const removeApplicationResponse = await axios.delete(`${baseURL}/api/jobapplications/delete/${jobApplicationId}`);
           console.log(removeApplicationResponse.data);
           if(removeApplicationResponse.status == 200) {
             Swal.fire({
