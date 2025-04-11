@@ -7,28 +7,43 @@ const { fetchLoggedUserIdAndMethod } = require('../utils/retrieveLocalStorageDat
 dotenv.config();
 
 async function handleAccessToken (req, res) {
-    const { userId, token } = req.body;
+    const { token } = req.body;
 
     if(!token) {
         return res.status(400).send('Token Required');
     }
 
     try {
-        console.log(token);
+        // console.log(token);
         // decode the token ...
         decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(decodedToken);
+        // console.log(decodedToken);
+        return res.status(200).json({ message: 'Token is valid' });
     } catch (error) {
         if (error.name === "TokenExpiredError") {
             console.log('Token Expired');
             // generate a new Token to proceed ...
             try {
-                const newToken = await generateNewAccessToken(userId, token);
-                if(newToken) {
-                    return res.status(200).json({ message: 'Token generated successfully', token: newToken });
-                } else {
-                    return res.status(400).send('Token Creating Error');
-                }
+                const fecthSessionDataQuery = 'SELECT * FROM sessions WHERE token = ?';
+                pool.query(fecthSessionDataQuery, token, async (error, result) => {
+                    if(error) {
+                        return res.status(400).send(error);
+                    }
+
+                    if(result.length == 0) {
+                        return res.status(404).send('Session Data Not Found');
+                    }
+
+                    const userId = result[0].Id;
+                    // Generate new access token ...
+                    const newToken = await generateNewAccessToken(userId, token);
+                    console.log(newToken);
+                    if(newToken) {
+                        return res.status(201).json({ message: 'Token generated successfully', token: newToken });
+                    } else {
+                        return res.status(400).send('Token Creating Error');
+                    }
+                });
             } catch (error) {
                 console.log(error);
                 return res.status(500).send(error.message);

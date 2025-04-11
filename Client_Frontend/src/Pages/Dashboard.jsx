@@ -109,7 +109,6 @@ export default function Dashboard() {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
   const [user, setUser] = useState({});
   const [profileCompletionPercentage, setProfileCompletionPercentage] = useState('');
-  const [accessToken, setAccessToken] = useState('');
   const [loggedUserId, setLoggedUserId] = useState('');
   const [jobStatus, setJobStatus] = useState('');
   const [jobData, setJobData] = useState({});
@@ -394,11 +393,16 @@ export default function Dashboard() {
         if(loggedUserResponse.status === 200) {
           setUser(loggedUserResponse.data.data.user[0]);
           setLoggedUserId(loggedUserResponse.data.data.user[0].userId);
-          setAccessToken(loggedUserResponse.data.data.token);
+          // console.log(loggedUserResponse.data.data.token);
           const percentage = useSetUserProfileCompletion(loggedUserResponse.data.data.user[0]);
           setProfileCompletionPercentage(percentage);
-          // Store Token In localStorage ...
-          localStorage.setItem('AccessToken', loggedUserResponse.data.data.token);
+          if (!handleToken(loggedUserResponse.data.data.token)) {
+            console.log('Token is not valid');
+            return;
+          } else {
+            console.log('Token Authentication Successfull');
+            return;
+          }
         } else {
           console.log('Failed To Load User Data');
           return;

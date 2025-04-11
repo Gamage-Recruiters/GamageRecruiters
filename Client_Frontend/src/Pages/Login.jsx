@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { AtSign, Lock, ArrowRight } from "lucide-react";
-import "react-toastify/dist/ReactToastify.css";
 import baseURL from "../config/axiosPortConfig";
+import handleToken from "../scripts/handleToken";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,14 +13,19 @@ export default function LoginPage() {
   const navigate = useNavigate(); 
 
   useEffect(() => {
-    const authToken = localStorage.getItem('User Auth Token');
+    const authToken = localStorage.getItem('AccessToken');
 
     console.log(authToken);
 
-    // if(authToken) {
-    //   navigate('/dashboard');
-    // } 
-
+    if(authToken) {
+      if (!handleToken(authToken)) {
+        console.log('Token is not valid');
+        return;
+      } else {
+        console.log('Token Authentication Successfull');
+        navigate('/dashboard');
+      }
+    } 
   }, [])
   
   const handleLogin = async (e) => {
