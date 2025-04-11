@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const { pool } = require('../config/dbConnection');
 const { setTimeStatus } = require('../utils/changeDateFormat');
 const subscriptionNotifyEmailSending = require('../middlewares/subscriptionNotifyEmailSending');
+const { localStorage } = require('../utils/localStorage');
 
 async function uploadUserImage (req, res) {
     console.log(req.body);
@@ -66,7 +67,8 @@ async function uploadUserCV (req, res) {
 }
 
 async function updateUserDetails (req, res) {
-    const { userId, firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, photo, cv, linkedInLink, facebookLink, portfolioLink, profileDescription } = req.body; 
+    const { userId } = req.params;
+    const { firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, photo, cv, linkedInLink, facebookLink, portfolioLink, profileDescription } = req.body; 
 
     if(!userId || !firstName || !lastName || !gender || !birthDate || !address || !phoneNumber1 || !cv || !profileDescription) {
         return res.status(400).send('Error With required fields');
@@ -165,6 +167,7 @@ async function deleteUser (req, res) {
                 return res.status(400).send('Deletion Failed');
             } 
 
+            localStorage.clear();
             return res.status(200).json({ message: 'User Deleted Successfully', data: result });
         });
     } catch (error) {

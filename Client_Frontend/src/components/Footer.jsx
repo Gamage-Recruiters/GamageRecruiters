@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast, ToastContainer } from "react-toastify";
+import baseURL from '../config/axiosPortConfig';
 
 const navigation = {
   main: [
@@ -70,8 +73,38 @@ const navigation = {
 };
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
+
+  const handleSubscribe = async () => {
+    if(!email) {
+      toast.error('Please enter your email');
+      return;
+    }
+
+    if(!verifyEmail(email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email });
+      console.log(subscribeToNewsLetterResponse.data);
+      if(subscribeToNewsLetterResponse.status == 200) {
+        toast.success('Subscribed to NewsLetter Successfully');
+        setEmail('');
+      } else {
+        toast.error('An error occured. Please try again');
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+
   return (
     <footer className="bg-gradient-to-r from-blue-900 to-indigo-900">
+      <ToastContainer/>
       <div className="mx-auto max-w-7xl px-6 py-12 md:py-16 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Company Info */}
@@ -142,10 +175,13 @@ export default function Footer() {
                   type="email"
                   placeholder="Your email"
                   className="bg-blue-800/50 text-white rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
                 <button
                   type="submit"
                   className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md px-4 py-2 transition-colors"
+                  onClick={handleSubscribe}
                 >
                   Subscribe
                 </button>

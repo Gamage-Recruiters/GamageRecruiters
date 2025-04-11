@@ -11,10 +11,10 @@ router.put('/update-user-cv', upload, userController.uploadUserCV);
 router.put('/upload-user-image', upload, userController.uploadUserImage);
 
 // Update Profile Route ...
-router.put('/update-user-data', upload, userController.updateUserDetails);
+router.put('/update-user-data/:userId', upload, userController.updateUserDetails);
 
 // Delete Profile Route ...
-router.delete('/delete-profile/:id', userController.deleteUser);
+router.delete('/delete-profile/:userId', userController.deleteUser);
 
 // Change Password Route ...
 router.post('/change-password', userController.changePassword);

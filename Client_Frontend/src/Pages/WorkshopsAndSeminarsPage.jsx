@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, MapPin, ArrowRight, Search, Filter, Users, Star, ChevronDown, X, Bookmark, Share2 } from 'lucide-react';
+import baseURL from '../config/axiosPortConfig';
 
 // Categories for filtering
 const categories = [
@@ -25,7 +26,7 @@ const WorkshopsAndSeminarsPage = () => {
     // Fetch workshops data from the backend API
     const fetchWorkshops = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/workshops');
+        const response = await fetch(`${baseURL}/api/workshops`);
         if (!response.ok) {
           throw new Error('Failed to fetch workshops data');
         }

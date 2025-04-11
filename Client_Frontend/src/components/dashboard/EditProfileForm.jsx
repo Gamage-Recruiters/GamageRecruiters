@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { useChangeDateFormat } from "../../hooks/customHooks";
+import baseURL from "../../config/axiosPortConfig";
 
 const EditProfileForm = ({ user, setUser }) => {
   const [formData, setFormData] = useState({ ...user });
@@ -33,8 +34,7 @@ const EditProfileForm = ({ user, setUser }) => {
         }).then(async (result) => {
           if(result.isConfirmed) {
             try {
-              const updateResponse = await axios.put('http://localhost:8000/user/update-user-data', {
-                userId: formData.userId, 
+              const updateResponse = await axios.put(`${baseURL}/user/update-user-data/${formData.userId}`, { 
                 firstName: formData.firstName, 
                 lastName: formData.lastName, 
                 gender: formData.gender, 

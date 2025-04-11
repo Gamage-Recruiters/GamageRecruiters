@@ -4,6 +4,7 @@ import axios from "axios";
 import { AtSign, ArrowRight } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 import ResetPassword from './ResetPassword';
+import baseURL from '../config/axiosPortConfig';
 
 const EmailCheck = () => {
     const [loadEmailCheck, setLoadEmailCheck] = useState(true);
@@ -18,7 +19,7 @@ const EmailCheck = () => {
         }
 
         try {
-            const emailCheckResponse = await axios.post('http://localhost:8000/auth/email-check', { email: email });
+            const emailCheckResponse = await axios.post(`${baseURL}/auth/email-check`, { email: email });
             console.log(emailCheckResponse);
             if(emailCheckResponse.status == 200) {
                 toast.success('Email Noted');

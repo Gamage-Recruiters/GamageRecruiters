@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { af } from "date-fns/locale";
+import baseURL from "../config/axiosPortConfig";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ export default function Contact() {
     try {
 
 
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}contact/addinquiry`, formData).then((results) => {
+      await axios.post(`${baseURL}contact/addinquiry`, formData).then((results) => {
 
         console.log(results);
 

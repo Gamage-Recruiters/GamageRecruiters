@@ -7,7 +7,7 @@ const { fetchLoggedUserIdAndMethod } = require('../utils/retrieveLocalStorageDat
 dotenv.config();
 
 async function handleAccessToken (req, res) {
-    const { userId, token, date } = req.body;
+    const { userId, token } = req.body;
 
     if(!token) {
         return res.status(400).send('Token Required');
@@ -23,7 +23,7 @@ async function handleAccessToken (req, res) {
             console.log('Token Expired');
             // generate a new Token to proceed ...
             try {
-                const newToken = await generateNewAccessToken(userId, date);
+                const newToken = await generateNewAccessToken(userId, token);
                 if(newToken) {
                     return res.status(200).json({ message: 'Token generated successfully', token: newToken });
                 } else {

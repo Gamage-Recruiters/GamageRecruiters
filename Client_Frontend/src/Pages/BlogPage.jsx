@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useChangeDateFormat } from '../hooks/customHooks';
 import { verifyEmail } from '../scripts/verifyData';
+import baseURL from '../config/axiosPortConfig';
 
 // const blogPosts = [
 //   {
@@ -48,7 +49,7 @@ export default function BlogPage() {
 
   const fetchBlogPages = async () => {
     try {
-      const fetchBlogsResponse = await axios.get('http://localhost:8000/api/blogs');
+      const fetchBlogsResponse = await axios.get(`${baseURL}/api/blogs`);
       console.log(fetchBlogsResponse.data);
       if(fetchBlogsResponse.status == 200) {
         setBlogPosts(fetchBlogsResponse.data.data);
@@ -78,7 +79,7 @@ export default function BlogPage() {
     }
 
     try {
-      const subscribeToNewsLetterResponse = await axios.post('http://localhost:8000/user/subscribe-newsletter', { email: email });
+      const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email });
       console.log(subscribeToNewsLetterResponse.data);
       if(subscribeToNewsLetterResponse.status == 200) {
         toast.success('Subscribed to NewsLetter Successfully');

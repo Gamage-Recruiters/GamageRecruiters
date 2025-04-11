@@ -39,10 +39,18 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// app.use(cors({
+//   origin: ['http://localhost:5173', 'http://localhost:5174'],
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true,
+// }));
+// app.use(cors());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: function (origin, callback) {
+    callback(null, origin); // Reflect the request origin
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

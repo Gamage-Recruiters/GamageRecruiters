@@ -20,10 +20,12 @@ import VerifyEmail from './Pages/VerifyEmail';
 import EmailCheck from './Pages/EmailCheck';
 import ResetPassword from './Pages/ResetPassword';
 import TestimonialsSection from './Pages/TestimonialsSection';
+import WindowOnClose from './protected/WindowOnClose';
 
 function App() {
   return (
     <Router>
+      <WindowOnClose/>
       <div className="flex flex-col min-h-screen">
         <Toaster position="top-center" />
         <Navbar />

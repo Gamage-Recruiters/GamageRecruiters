@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from "axios";
 import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon, ChevronRightIcon, BuildingOfficeIcon, MapPinIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import JobCard from '../components/JobCard';
+import baseURL from '../config/axiosPortConfig';
 
 // Mock data - will be replaced with actual API calls
 // const jobs = [
@@ -123,7 +124,7 @@ export default function JobListings() {
 
   const loadJobs = async () => {
       try {
-        const loadJobsResponse = await axios.get('http://localhost:8000/api/jobs');
+        const loadJobsResponse = await axios.get(`${baseURL}/api/jobs`);
         console.log(loadJobsResponse.data);
         if(loadJobsResponse.status == 200) {
           console.log('Jobs loaded successfully');

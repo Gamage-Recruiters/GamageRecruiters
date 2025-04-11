@@ -6,7 +6,7 @@ const setTimeStampToDate = require("../../utils/changeDateFormat");
 
 dotenv.config();
 
-async function generateNewAccessToken (id, date) {
+async function generateNewAccessToken (id, token) {
     if(!id || !date) {
         return 'Error Occured. Cannot proceed.';
     }
@@ -22,10 +22,10 @@ async function generateNewAccessToken (id, date) {
         }, process.env.JWT_SECRET);
 
         // update the token in session ...
-        const updateTokenQuery = 'UPDATE sessions SET token = ? WHERE Id = ? AND createdAt = ?';
+        const updateTokenQuery = 'UPDATE sessions SET token = ? WHERE Id = ? AND token = ?';
         return new Promise((resolve, reject) => {
             // get the logged user data from session ...
-            pool.query(updateTokenQuery, [id, date], (error, result) => {
+            pool.query(updateTokenQuery, [newToken, id, token], (error, result) => {
                 if(error) {
                     // console.log(error);
                     return reject(error);

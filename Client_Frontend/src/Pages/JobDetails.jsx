@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { Briefcase, MapPin, Clock, DollarSign, Calendar, ArrowLeft } from "lucide-react";
 import { verifyEmail, verifyPhoneNumber } from "../scripts/verifyData";
 import { useChangeDateFormat } from "../hooks/customHooks";
+import baseURL from "../config/axiosPortConfig";
 
 // const jobData = [
 //   {
@@ -73,7 +74,7 @@ export default function JobDetails() {
     }
 
     try {
-      const fetchDataByIdResponse = await axios.get(`http://localhost:8000/api/jobs/${jobId}`);
+      const fetchDataByIdResponse = await axios.get(`${baseURL}/api/jobs/${jobId}`);
       // console.log(fetchDataByIdResponse.data);
       if(fetchDataByIdResponse.status == 200) {
         setJob(fetchDataByIdResponse.data.data);
@@ -131,7 +132,7 @@ export default function JobDetails() {
     console.log(formData);
 
     try {
-      const submitApplicationResponse = await axios.post('http://localhost:8000/api/jobapplications/apply', formData);
+      const submitApplicationResponse = await axios.post(`${baseURL}/api/jobapplications/apply`, formData);
       console.log(submitApplicationResponse);
       if(submitApplicationResponse.status == 200) {
         toast.success('Job Application Submitted Successfully');
