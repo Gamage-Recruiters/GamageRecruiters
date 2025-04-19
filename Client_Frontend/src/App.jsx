@@ -47,8 +47,8 @@ function App() {
             <Route path="/application/:jobApplicationId" element={<ProtectedRoute><Application /></ProtectedRoute>} />
             <Route path="/trusted-partners" element={<TrustedPartners />} />
             <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:blogId" element={<BlogDetailsPage />} />
-            <Route path="/workshop" element={<WorkshopsAndSeminarsPage />} />
+            <Route path="/blog/:blogId" element={<ProtectedRoute><BlogDetailsPage /></ProtectedRoute>} />
+            <Route path="/workshop" element={<ProtectedRoute><WorkshopsAndSeminarsPage /></ProtectedRoute>} />
             <Route path="/testimonials" element={<TestimonialsSection />} />
           </Routes>
         </main>

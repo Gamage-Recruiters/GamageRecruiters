@@ -12,22 +12,18 @@ const handleToken = async (token) => {
         // generate ne token ...
         const response = await axios.post(`${baseURL}/session/handle-token`, { token: token });
         console.log(response.data);
-        if (response.status === 200) {
-            console.log(response.data.message);
-            localStorage.setItem('AccessToken', token);
-            return true;
-        } else if (response.status === 201) {
+        if (response.status === 201) {
             console.log(response.data.message);
             console.log(response.data.token);
             localStorage.setItem('AccessToken', response.data.token);
-            return true;
+            return 'Token Authentication Successfull';
         } else {
             console.log(response.data.message);
-            return false;
+            return 'Token Authentication Error';
         }
     } catch (error) {
         console.log(error);
-        return false;
+        return 'Token Authentication Error';
     }
 }
 

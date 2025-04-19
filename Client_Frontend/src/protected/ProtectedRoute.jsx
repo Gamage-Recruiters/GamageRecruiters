@@ -1,18 +1,13 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import handleToken from '../scripts/handleToken';
+import verifyToken from '../scripts/verifyToken';
 
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('AccessToken');
+  const isLoginAuthenticated = localStorage.getItem('IsLoginAuthenticated');
+  console.log('Is User Authenticated:', isLoginAuthenticated);
   // return isAuthenticated ? children : <Navigate to="/login" />;
-  if (token) {
-    if(!handleToken(token)) {
-      console.log('Token is not valid');
-      return <Navigate to="/login" />;
-    } else {
-      console.log('Token Authentication Successfull');
-      return children;
-    }
+  if (isLoginAuthenticated == true) {
+    return children;
   } else {
     return <Navigate to="/login" />;
   }

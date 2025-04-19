@@ -183,20 +183,35 @@ async function updateUserDetails (req, res) {
 
 async function deleteUser (req, res) {
     try {
-        const id = req.params.id;
+        const userId = req.params.userId;
 
-        if(!id) {
+        if(!userId) {
             return res.status(400).send('Deletion Failed');
         }
 
-        const sql = 'DELETE FROM users WHERE userId = ?';
-        pool.query(sql, [id], (error, result) => {
+        console.log(userId);
+
+        const removeSessionQuery = 'DELETE FROM sessions WHERE Id = ?';
+        pool.query(removeSessionQuery, userId, (error, result) => {
             if(error) {
-                return res.status(400).send('Deletion Failed');
+                console.log(error);
+                return res.status(400).send(error);
             } 
 
-            localStorage.clear();
-            return res.status(200).json({ message: 'User Deleted Successfully', data: result });
+            if(result.affectedRows == 0) {
+                return res.status(400).send('Deletion Failed');
+            }
+
+            const sql = 'DELETE FROM users WHERE userId = ?';
+            pool.query(sql, userId, (error, result) => {
+                if(error) {
+                    console.log(error);
+                    return res.status(400).send('Deletion Failed');
+                } 
+
+                localStorage.clear();
+                return res.status(200).json({ message: 'User Deleted Successfully', data: result });
+            });
         });
     } catch (error) {
         console.log(error);
