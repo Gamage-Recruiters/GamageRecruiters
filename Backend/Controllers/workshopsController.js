@@ -20,6 +20,27 @@ async function getAllWorkshops(req, res) {
   }
 }
 
+// Get latest Workshops
+async function getLatestWorkshops(req, res) {
+  try {
+    const query = "SELECT * FROM workshops ORDER BY addedAt DESC LIMIT 3";
+    pool.query(query, (error, result) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).send(error);
+      }
+      if (result.length === 0) {
+        return res.status(404).send('No Latest workshops found');
+      }
+      return res.status(200).json({ message: 'Latest Workshops Found', data: result });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error);
+  }
+}
+
+
 // Get Single Workshop by ID
 async function getWorkshopById(req, res) {
   const { id } = req.params;
@@ -113,5 +134,6 @@ module.exports = {
   getWorkshopById,
   createWorkshop,
   updateWorkshop,
-  deleteWorkshop
+  deleteWorkshop,
+  getLatestWorkshops
 };

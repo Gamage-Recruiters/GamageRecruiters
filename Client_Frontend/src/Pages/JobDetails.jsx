@@ -8,6 +8,7 @@ import { Briefcase, MapPin, Clock, DollarSign, Calendar, ArrowLeft } from "lucid
 import { verifyEmail, verifyPhoneNumber } from "../scripts/verifyData";
 import { useChangeDateFormat } from "../hooks/customHooks";
 import baseURL from "../config/axiosPortConfig";
+import SessionTimeout from "../protected/SessionTimeout";
 
 // const jobData = [
 //   {
@@ -172,6 +173,8 @@ export default function JobDetails() {
   if (!job) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+        {/* Session timeout logic will run in background */}
+        <SessionTimeout />
         <div className="text-center p-8 bg-white rounded-lg shadow-md">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Job Not Found</h2>
           <p className="text-gray-600 mb-6">The job listing you're looking for doesn't exist or has been removed.</p>
@@ -190,6 +193,8 @@ export default function JobDetails() {
   return (
     <div className="bg-gray-50 min-h-screen pb-16">
       <ToastContainer />
+      {/* Session timeout logic will run in background */}
+      <SessionTimeout />
       {/* Header Section */}
       <div className="bg-gradient-to-r from-black to-indigo-800 text-white py-12">
         <div className="mx-auto max-w-4xl  px-6 pt-10">

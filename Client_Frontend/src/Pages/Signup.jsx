@@ -125,6 +125,7 @@ export default function SignupPage() {
         const sendOTPResponse = await axios.post(`${baseURL}/auth/sendOTP`, { email: email });
         if(sendOTPResponse.status == 200) {
           toast.success('An OTP has been sent to your email');
+          localStorage.setItem('IsSignupAuthenticated', true);
           setLoadUI(false);
           setLoadVerifyOTP(true);
         } else {

@@ -36,12 +36,12 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/jobs" element={<JobListings />} />
-            <Route path="/jobs/:jobId" element={<JobDetails />} />
+            <Route path="/jobs/:jobId" element={<ProtectedRoute><JobDetails /></ProtectedRoute>} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
-            <Route path='/verifyEmail' element={<VerifyEmail/>} />
-            <Route path='/emailCheck' element={<EmailCheck/>} />
-            <Route path='/resetPassword' element={<ResetPassword/>} />
+            <Route path='/verifyEmail' element={<ProtectedRoute><VerifyEmail/></ProtectedRoute>} />
+            <Route path='/emailCheck' element={<ProtectedRoute><EmailCheck/></ProtectedRoute>} />
+            <Route path='/resetPassword' element={<ProtectedRoute><ResetPassword/></ProtectedRoute>} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/application/:jobApplicationId" element={<ProtectedRoute><Application /></ProtectedRoute>} />

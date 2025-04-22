@@ -9,6 +9,7 @@ import setTimeStatus from '../scripts/setTimeStatus';
 import generateBlogReadingTime from '../scripts/generateBlogReadingTime';
 import fetchLoggedUserData from '../scripts/fetchLoggedUserData';
 import baseURL from '../config/axiosPortConfig';
+import SessionTimeout from "../protected/SessionTimeout";
 
 
 export default function BlogDetailsPage() {
@@ -279,6 +280,8 @@ export default function BlogDetailsPage() {
   if (!blogPost) {
     return (
       <div className="min-h-screen flex items-center justify-center">
+        {/* Session timeout logic will run in background */}
+        <SessionTimeout />
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Blog Post Not Found</h2>
           <p className="text-gray-600 mb-6">The blog post you're looking for doesn't exist or has been removed.</p>
@@ -294,7 +297,8 @@ export default function BlogDetailsPage() {
     <div className="min-h-screen bg-white">
       {/* Back Button Bar */}
       <ToastContainer/>
-      
+      {/* Session timeout logic will run in background */}
+      <SessionTimeout />
       {/* Hero Section */}
       <div className="relative h-96 md:h-[500px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>

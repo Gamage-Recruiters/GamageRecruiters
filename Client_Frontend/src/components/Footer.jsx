@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from "react-toastify";
 import baseURL from '../config/axiosPortConfig';
+import { verifyEmail } from '../scripts/verifyData';
 
 const navigation = {
   main: [
@@ -84,7 +85,7 @@ export default function Footer() {
     if(!verifyEmail(email)) {
       toast.error('Please enter a valid email address');
       return;
-    }
+    } 
 
     try {
       const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email });
@@ -169,7 +170,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-white">Stay Updated</h3>
             <p className="mt-4 text-gray-300">Subscribe to our newsletter for job alerts and career tips.</p>
-            <form className="mt-4">
+            <form className="mt-4" onSubmit={handleSubscribe}>
               <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="email"
@@ -181,7 +182,6 @@ export default function Footer() {
                 <button
                   type="submit"
                   className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md px-4 py-2 transition-colors"
-                  onClick={handleSubscribe}
                 >
                   Subscribe
                 </button>

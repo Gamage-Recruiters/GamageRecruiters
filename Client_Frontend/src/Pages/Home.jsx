@@ -1,77 +1,82 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, MapPin, Briefcase, DollarSign, Calendar, Clock } from 'lucide-react';
+import axios from 'axios';
 import TrustedPartnersSection from '../components/Home/TrustedPartnersSection';
 import AutoScrollingTestimonials from '../components/Home/AutoScrollingTestimonials';
-const featuredJobs = [
-  {
-    id: 1,
-    title: "Senior Software Engineer",
-    company: "Tech Solutions Ltd",
-    location: "Colombo",
-    jobType: "Full-time",
-    salaryRange: "$3000-$5000",
-    description: "Looking for an experienced software engineer to lead our development team.",
-    color: "bg-blue-50",
-    accent: "border-blue-400"
-  },
-  {
-    id: 2,
-    title: "HR Manager",
-    company: "Global Enterprises",
-    location: "Kandy",
-    jobType: "Full-time",
-    salaryRange: "$2500-$3500",
-    description: "Seeking an experienced HR professional to manage our growing team.",
-    color: "bg-emerald-50",
-    accent: "border-emerald-400"
-  },
-  {
-    id: 3,
-    title: "Marketing Specialist",
-    company: "Digital Marketing Pro",
-    location: "Galle",
-    jobType: "Remote",
-    salaryRange: "$2000-$3000",
-    description: "Join our dynamic marketing team and help grow our digital presence.",
-    color: "bg-purple-50",
-    accent: "border-purple-400"
-  }
-];
+import baseURL from "../config/axiosPortConfig";
+import generateRandomColor from '../scripts/generateRandomColor';
+import { useChangeDateFormat } from '../hooks/customHooks';
+
+// const featuredJobs = [
+//   {
+//     id: 1,
+//     title: "Senior Software Engineer",
+//     company: "Tech Solutions Ltd",
+//     location: "Colombo",
+//     jobType: "Full-time",
+//     salaryRange: "$3000-$5000",
+//     description: "Looking for an experienced software engineer to lead our development team.",
+//     color: "bg-blue-50",
+//     accent: "border-blue-400"
+//   },
+//   {
+//     id: 2,
+//     title: "HR Manager",
+//     company: "Global Enterprises",
+//     location: "Kandy",
+//     jobType: "Full-time",
+//     salaryRange: "$2500-$3500",
+//     description: "Seeking an experienced HR professional to manage our growing team.",
+//     color: "bg-emerald-50",
+//     accent: "border-emerald-400"
+//   },
+//   {
+//     id: 3,
+//     title: "Marketing Specialist",
+//     company: "Digital Marketing Pro",
+//     location: "Galle",
+//     jobType: "Remote",
+//     salaryRange: "$2000-$3000",
+//     description: "Join our dynamic marketing team and help grow our digital presence.",
+//     color: "bg-purple-50",
+//     accent: "border-purple-400"
+//   }
+// ];
 
 
-const events = [
-  {
-    id: 1,
-    title: "Resume Building Masterclass",
-    date: "April 10, 2025",
-    time: "10:00 AM - 12:00 PM",
-    location: "Colombo Innovation Hub",
-    category: "Career Development",
-    image: "https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg",
-    color: "from-blue-500 to-indigo-600",
-  },
-  {
-    id: 2,
-    title: "Tech Industry Networking Event",
-    date: "April 17, 2025",
-    time: "5:30 PM - 8:30 PM",
-    location: "Kingsbury Hotel, Colombo",
-    category: "Networking",
-    image: "https://images.pexels.com/photos/1709003/pexels-photo-1709003.jpeg",
-    color: "from-purple-500 to-pink-600",
-  },
-  {
-    id: 3,
-    title: "Leadership Skills Workshop",
-    date: "April 24, 2025",
-    time: "9:00 AM - 4:00 PM",
-    location: "Grand Kandy Resort",
-    category: "Professional Development",
-    image: "https://images.pexels.com/photos/3321797/pexels-photo-3321797.jpeg",
-    color: "from-emerald-500 to-teal-600",
-  },
-];
+// const events = [
+//   {
+//     id: 1,
+//     title: "Resume Building Masterclass",
+//     date: "April 10, 2025",
+//     time: "10:00 AM - 12:00 PM",
+//     location: "Colombo Innovation Hub",
+//     category: "Career Development",
+//     image: "https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg",
+//     color: "from-blue-500 to-indigo-600",
+//   },
+//   {
+//     id: 2,
+//     title: "Tech Industry Networking Event",
+//     date: "April 17, 2025",
+//     time: "5:30 PM - 8:30 PM",
+//     location: "Kingsbury Hotel, Colombo",
+//     category: "Networking",
+//     image: "https://images.pexels.com/photos/1709003/pexels-photo-1709003.jpeg",
+//     color: "from-purple-500 to-pink-600",
+//   },
+//   {
+//     id: 3,
+//     title: "Leadership Skills Workshop",
+//     date: "April 24, 2025",
+//     time: "9:00 AM - 4:00 PM",
+//     location: "Grand Kandy Resort",
+//     category: "Professional Development",
+//     image: "https://images.pexels.com/photos/3321797/pexels-photo-3321797.jpeg",
+//     color: "from-emerald-500 to-teal-600",
+//   },
+// ];
 
 // Statistics for counter animation
 const statistics = [
@@ -86,8 +91,6 @@ const TrustedPartners = () => {
   const rightScrollRef = useRef(null);
 
   useEffect(() => {
-    localStorage.clear();
-    
     const animateLeftScroll = () => {
       if (leftScrollRef.current) {
         if (leftScrollRef.current.scrollLeft >= leftScrollRef.current.scrollWidth / 2) {
@@ -124,6 +127,9 @@ export default function Home() {
   // State for animating counter statistics
   const [counters, setCounters] = useState(statistics.map(() => 0));
   const [readmore, setReadmore] = useState(false);
+  const [latestJobs, setLatestJobs] = useState([]);
+  const [jobColors, setJobColors] = useState([]);
+  const [events, setEvents] = useState([]);
 
   // State for currently visible featured job
   const [activeJobIndex, setActiveJobIndex] = useState(0);
@@ -159,8 +165,16 @@ export default function Home() {
 
   // Featured job carousel
   useEffect(() => {
+    localStorage.clear();
+    loadLatestJobs();
+    loadEvents();
+    // Generate a unique random color for each job ...
+    const colors = latestJobs.map(() => generateRandomColor());
+    console.log(colors);
+    setJobColors(colors);
+
     const interval = setInterval(() => {
-      setActiveJobIndex(prev => (prev + 1) % featuredJobs.length);
+      setActiveJobIndex(prev => (prev + 1) % latestJobs.length);
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -306,9 +320,47 @@ export default function Home() {
         quote: "My internship at Gamage Recruiters was an incredible learning experience that helped me develop both my creative and leadership skills. As a Team Lead in the Creative Design team, I had the opportunity to oversee projects, manage tasks, and collaborate with a talented group of individuals. This experience sharpened my ability to think strategically, communicate effectively, and deliver compelling visual content. The fast-paced and dynamic environment at Gamage Recruiters prepared me for future roles and gave me the confidence to take on bigger responsibilities in my career. I’m grateful for the mentorship and hands-on experience I gained during my time there!",
         image: "https://i.ibb.co/PvCfxjd9/gamage.png"
     }
-]
+  ]
 
   const duplicatedPartners = [...partners, ...partners, ...partners];
+
+  const loadLatestJobs = async () => {
+    try {
+      const loadLatestJobsResponse = await axios.get(`${baseURL}/api/jobs/latest`);
+      console.log(loadLatestJobsResponse.data);
+      if(loadLatestJobsResponse.status == 200) {
+        console.log('Jobs loaded successfully');
+        console.log(loadLatestJobsResponse.data.jobs);
+        setLatestJobs(loadLatestJobsResponse.data.jobs);
+      } else {
+        toast.error('Error Loading Jobs');
+        console.log(loadLatestJobsResponse.statusText);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+
+  const loadEvents = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/workshops/latest`);
+      console.log(response);
+      if(response.status == 200) {
+        console.log('Events Loaded Successfully');
+        console.log(response.data.data);
+        setEvents(response.data.data);
+      } else {
+        toast.error('Error Loading Events');
+        console.log(response.statusText);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
 
   return (
     <div className="bg-white overflow-hidden">
@@ -393,7 +445,7 @@ export default function Home() {
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
-              Featured Opportunities
+              Latest Opportunities
             </span>
           </h2>
           <p className="mt-4 text-xl leading-8 text-gray-600">
@@ -402,18 +454,18 @@ export default function Home() {
         </div>
 
         <div className="mx-auto grid max-w-full grid-cols-1 gap-8 sm:gap-10 lg:grid-cols-3">
-          {featuredJobs.map((job, index) => (
+          {latestJobs.map((job, index) => (
             <Link
-              key={job.id}
-              to={`/jobs/${job.id}`}
+              key={job.jobId}
+              to={`/jobs/${job.jobId}`}
               className={`group transform transition-all duration-500 hover:-translate-y-2 ${index === activeJobIndex ? 'scale-105 shadow-xl' : 'scale-100 shadow-md'
                 }`}
             >
-              <div className={`flex flex-col h-full ${job.color} border-l-4 ${job.accent} rounded-lg overflow-hidden`}>
+              <div className={`flex flex-col h-full ${jobColors[index]} border-l-4 ${jobColors[index]} rounded-lg overflow-hidden`}>
                 <div className="p-8 flex flex-col flex-grow">
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors duration-300">
-                      {job.title}
+                      {job.jobName}
                     </h3>
                     <span className="px-3 py-1 text-xs font-medium rounded-full bg-white text-indigo-600 border border-indigo-100">
                       {job.jobType}
@@ -421,12 +473,12 @@ export default function Home() {
                   </div>
 
                   <p className="text-base font-medium text-indigo-600 mb-4">{job.company}</p>
-                  <p className="text-base text-gray-600 mb-6 flex-grow">{job.description}</p>
+                  <p className="text-base text-gray-600 mb-6 flex-grow">{job.jobDescription}</p>
 
                   <div className="mt-auto grid grid-cols-2 gap-2 text-sm text-gray-500">
                     <div className="flex items-center">
                       <MapPin size={16} className="mr-1 text-gray-400" />
-                      {job.location}
+                      {job.jobLocation}
                     </div>
                     <div className="flex items-center">
                       <DollarSign size={16} className="mr-1 text-gray-400" />
@@ -489,7 +541,7 @@ export default function Home() {
                   <h3 className="text-xl font-bold mb-2">{event.title}</h3>
                   <div className="flex items-center text-sm mb-1">
                     <Calendar size={16} className="mr-1" />
-                    {event.date}
+                    {useChangeDateFormat(event.date)}
                   </div>
                   <div className="flex items-center text-sm mb-1">
                     <Clock size={16} className="mr-1" />
@@ -544,12 +596,12 @@ export default function Home() {
               >
                 Create Your Profile
               </Link>
-              <Link
+              {/* <Link
                 to="/employers"
                 className="w-full sm:w-auto rounded-full bg-indigo-700 px-8 py-4 text-base font-semibold text-white shadow-lg border border-indigo-500 hover:bg-indigo-600 transform transition duration-300 hover:scale-105"
               >
                 For Employers
-              </Link>
+              </Link> */}
             </div>
 
             <div className="mt-6">

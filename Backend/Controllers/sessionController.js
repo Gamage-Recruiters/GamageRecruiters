@@ -17,7 +17,7 @@ async function verifyAccessToken (req, res) {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         // ✅ Token is valid ...
         return res.send('Token is Valid'); // Optional: return decoded data if needed ...
-    } catch (error) {
+    } catch (error) { 
         if (error.name === "TokenExpiredError") {
             // console.log('Token is Expired');
             return res.send('Token is Expired');
