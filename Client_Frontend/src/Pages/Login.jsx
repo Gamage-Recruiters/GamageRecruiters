@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { AtSign, Lock, ArrowRight } from "lucide-react";
-import "react-toastify/dist/ReactToastify.css";
 import baseURL from "../config/axiosPortConfig";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,15 +12,8 @@ export default function LoginPage() {
   const navigate = useNavigate(); 
 
   useEffect(() => {
-    const authToken = localStorage.getItem('User Auth Token');
-
-    console.log(authToken);
-
-    // if(authToken) {
-    //   navigate('/dashboard');
-    // } 
-
-  }, [])
+    localStorage.setItem('IsLoginAuthenticated', true);
+  }, []);
   
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,6 +29,7 @@ export default function LoginPage() {
       const loginResponse = await axios.post(`${baseURL}/auth/login`, { email: email, password: password }, { withCredentials: true });
       // console.log(loginResponse);
       if(loginResponse.status === 200) {
+        localStorage.setItem('IsUserAuthenticated', true);
         toast.success('User Login Successful');
         navigate('/dashboard');
       } else {
@@ -55,6 +49,7 @@ export default function LoginPage() {
       console.log(loginViaGmailResponse);
       if(loginViaGmailResponse.status == 200) {
         console.log(loginViaGmailResponse.data);
+        localStorage.setItem('IsUserAuthenticated', true);
         window.location.href = loginViaGmailResponse.data.data; // Redirect to Google OAuth ...
       } else {
         toast.error('Something Went Wrong');
@@ -73,6 +68,7 @@ export default function LoginPage() {
       console.log(loginViaFacebookResponse);
       if(loginViaFacebookResponse.status == 200) {
         console.log(loginViaFacebookResponse.data);
+        localStorage.setItem('IsUserAuthenticated', true);
         window.location.href = loginViaFacebookResponse.data.data; // Redirect to Facebook OAuth ...
       } else {
         toast.error('Something Went Wrong');
@@ -91,6 +87,7 @@ export default function LoginPage() {
       console.log(loginViaLinkedInResponse);
       if(loginViaLinkedInResponse.status == 200) {
         console.log(loginViaLinkedInResponse.data);
+        localStorage.setItem('IsUserAuthenticated', true);
         window.location.href = loginViaLinkedInResponse.data.data; // Redirect to LinkedIn OAuth ...
       } else {
         toast.error('Something Went Wrong');

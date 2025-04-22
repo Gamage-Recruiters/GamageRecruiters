@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import Swal from 'sweetalert2';
 import baseURL from "../config/axiosPortConfig";
+import SessionTimeout from "../protected/SessionTimeout";
 
 export default function Application() {
   // const [applications, setApplications] = useState([
@@ -212,6 +213,8 @@ export default function Application() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <ToastContainer/>
+      {/* Session timeout logic will run in background */}
+      <SessionTimeout />
       {/* Header */}
       <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-6">
         <h2 className="text-3xl font-bold text-gray-800">My Applications</h2>

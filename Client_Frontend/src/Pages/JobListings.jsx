@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon, ChevronRightIcon, BuildingOfficeIcon, MapPinIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import JobCard from '../components/JobCard';
 import baseURL from '../config/axiosPortConfig';
@@ -262,6 +263,7 @@ export default function JobListings() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ToastContainer/>
       {/* Hero section with gradient background */}
       <div className="bg-gradient-to-r from-blue-900 to-black py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">

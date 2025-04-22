@@ -17,8 +17,30 @@ async function viewJobs(req, res) {
       return res.status(200).json({ jobs: results });
     });
   } catch (error) {
-    console.log("Server error:", error); // Log server errors
-    return res.status(500).send("Server error");
+    console.log(error);
+    return res.status(500).send(error);
+  }
+}
+
+async function viewLatestJobs(req, res) {
+  try {
+    const latestJobsQuery = 'SELECT * FROM jobs ORDER BY postedDate DESC LIMIT 3';
+    pool.query(latestJobsQuery, (error, results) => {
+      if (error) {
+        console.log("Error executing query:", error); // Log the exact error from the query
+        return res.status(500).send("Error fetching jobs");
+      }
+
+      if(results.length == 0) {
+        return res.status(404).send('No Latest Jobs Found');
+      }
+
+      // console.log("Results:", results); // Log the query results
+      return res.status(200).json({ jobs: results });
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error);
   }
 }
 
@@ -320,4 +342,4 @@ async function deleteJob(req, res) {
   }
 }
 
-module.exports = { viewJobs, viewJob, addJob, updateJob, deleteJob, viewJobsByUser, viewAppliedJobCountByUser };
+module.exports = { viewJobs, viewJob, addJob, updateJob, deleteJob, viewJobsByUser, viewAppliedJobCountByUser, viewLatestJobs };

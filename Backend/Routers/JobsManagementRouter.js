@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   viewJobs,
+  viewLatestJobs,
   viewJob,
   addJob,
   updateJob,
@@ -10,8 +11,11 @@ const {
 } = require("../Controllers/JobsManagementController");
 const router = express.Router();
 
-// View all Jobs
+// View all Jobs ...
 router.get("/", viewJobs);
+
+// View Latest Jobs ...
+router.get("/latest", viewLatestJobs);
 
 // View a Job by id ...
 router.get("/:jobId", viewJob);

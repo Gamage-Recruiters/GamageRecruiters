@@ -5,11 +5,13 @@ const {
     getWorkshopById,
     createWorkshop,
     updateWorkshop,
-    deleteWorkshop
+    deleteWorkshop,
+    getLatestWorkshops
 } = require('../Controllers/workshopsController');
 
 // Corrected routes
 router.get('/', getAllWorkshops); // /api/workshops
+router.get('/latest', getLatestWorkshops) // /api/workshops/latest 
 router.get('/:id', getWorkshopById); // /api/workshops/:id
 router.post('/add', createWorkshop); // /api/workshops/add
 router.put('/update/:id', updateWorkshop); // /api/workshops/update/:id
