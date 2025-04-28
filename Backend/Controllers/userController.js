@@ -25,7 +25,7 @@ async function uploadUserImage (req, res) {
                     return res.status(400).send(error);
                 } 
 
-                if(result.affectedRows == 0) {
+                if(result.affectedRows === 0) {
                     return res.status(400).send('Image Upload Failed');
                 }
 
@@ -35,7 +35,7 @@ async function uploadUserImage (req, res) {
                         return res.status(400).send(error);
                     }
 
-                    if(result.affectedRows == 0) {
+                    if(result.affectedRows === 0) {
                         return res.status(400).send('Log Insertion Failed');
                     }
 
@@ -70,7 +70,7 @@ async function uploadUserCV (req, res) {
                     return res.status(400).send(error);
                 } 
 
-                if(result.affectedRows == 0) {
+                if(result.affectedRows === 0) {
                     return res.status(400).send('CV Upload Failed');
                 }
 
@@ -80,7 +80,7 @@ async function uploadUserCV (req, res) {
                         return res.status(400).send(error);
                     }
 
-                    if(result.affectedRows == 0) {
+                    if(result.affectedRows === 0) {
                         return res.status(400).send('Log Insertion Failed');
                     }
 
@@ -158,7 +158,7 @@ async function updateUserDetails (req, res) {
                 return res.status(400).send('An error occured during update');
             }
 
-            if(result.affectedRows == 0) {
+            if(result.affectedRows === 0) {
                 return res.status(400).send('User Data Update Failed');
             }
 
@@ -168,7 +168,7 @@ async function updateUserDetails (req, res) {
                     return res.status(400).send('Activity Log Failed');
                 }
 
-                if(result.affectedRows == 0) {
+                if(result.affectedRows === 0) {
                     return res.status(400).send('Log Insertion Failed');
                 }
 
@@ -198,7 +198,7 @@ async function deleteUser (req, res) {
                 return res.status(400).send(error);
             } 
 
-            if(result.affectedRows == 0) {
+            if(result.affectedRows === 0) {
                 return res.status(400).send('Deletion Failed');
             }
 
@@ -251,7 +251,7 @@ async function changePassword (req, res) {
                     return res.status(400).send(error);
                 }
 
-                if(result.affectedRows == 0) {
+                if(result.affectedRows === 0) {
                     return res.status(400).send('Password Change Failed');
                 }
 
@@ -261,7 +261,7 @@ async function changePassword (req, res) {
                         return res.status(400).send('Activity Log Failed');
                     }
 
-                    if(log.affectedRows == 0) {
+                    if(log.affectedRows === 0) {
                         return res.status(400).send('Log Insertion Failed');
                     }
 
@@ -290,7 +290,7 @@ async function getUserRecentJobActivity (req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.length == 0) {
+            if(result.length === 0) {
                 return res.status(404).send('No Job Activity Found');
             }
 
@@ -379,7 +379,7 @@ async function subscribeToNewsletter(req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.affectedRows == 0) {
+            if(result.affectedRows === 0) {
                 return res.status(400).send('Subscription Failed');
             }
 
@@ -390,7 +390,7 @@ async function subscribeToNewsletter(req, res) {
                     return res.status(400).send(error);
                 }
     
-                if(state.affectedRows == 0) {
+                if(state.affectedRows === 0) {
                     return res.status(400).send('Subscription Failed');
                 }
 

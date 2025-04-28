@@ -19,19 +19,19 @@ const SessionTimeout = () => {
         }).then(async () => {
             const logoutResponse = await axios.get(`${baseURL}/auth/logout`);
             console.log(logoutResponse);
-            if(logoutResponse.status == 200) {
+            if(logoutResponse.status === 200) {
                 localStorage.clear(); 
                 navigate('/login');
             } else {
-                Swal.fire ({
-                  icon: 'error',
-                  title: 'Logout Failed',
-                  text: 'Logout Failed. Try Again!',
-                  confirmButtonColor: '#3085d6',
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Logout Failed',
+                    text: 'Logout Failed. Try Again!',
+                    confirmButtonColor: '#3085d6',
                 });
             }
         });
-      }, 2 * 30 * 60 * 1000); // 1 hour in milliseconds ...
+      },  2 * 2 * 30 * 60 * 1000); // 2 hours in milliseconds ...
     };
   
     useEffect(() => {

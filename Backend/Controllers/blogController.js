@@ -1,5 +1,4 @@
 const {pool} = require('../config/dbConnection');
-const { setTimeStatus } = require('../utils/changeDateFormat');
 
 // Get all Blog Posts ...
 async function getAllBlogs(req, res) {
@@ -11,7 +10,7 @@ async function getAllBlogs(req, res) {
         return res.status(500).send(error);
       }
 
-      if(result.length == 0) {
+      if(result.length === 0) {
         return res.status(404).send('No Blogs Found');
       }
 
@@ -23,6 +22,7 @@ async function getAllBlogs(req, res) {
   }
 } 
 
+// Get a specific blog ...
 async function getSpecificBlogPost (req, res) {
   const { blogId } = req.params;
 
@@ -38,7 +38,7 @@ async function getSpecificBlogPost (req, res) {
         return res.status(500).send(error);
       }
 
-      if(result.length == 0) {
+      if(result.length === 0) {
         return res.status(404).send('Blog not found');
       }
 
@@ -50,6 +50,7 @@ async function getSpecificBlogPost (req, res) {
   }
 }
 
+// Create a New Blog Post ...
 async function createNewBlog (req, res) {
   const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, category } = req.body;
 
@@ -72,7 +73,7 @@ async function createNewBlog (req, res) {
         return res.status(400).send(error);
       }
 
-      if(result.affectedRows == 0) {
+      if(result.affectedRows === 0) {
         return res.status(400).send('Failed to add Blog');
       }
 
@@ -84,6 +85,7 @@ async function createNewBlog (req, res) {
   }
 }
 
+// Update a specific blog post ...
 async function updateBlog (req, res) {
   const { blogId } = req.params;
   const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, category } = req.body;
@@ -122,7 +124,7 @@ async function updateBlog (req, res) {
         return res.status(400).send(error);
       }
 
-      if(result.affectedRows == 0) {
+      if(result.affectedRows === 0) {
         return res.status(400).send('Failed to update Blog');
       }
 
@@ -134,6 +136,7 @@ async function updateBlog (req, res) {
   }
 }
 
+// Delete a specific blog post ...
 async function deleteBlog (req, res) {
   const { blogId } = req.params;
 
@@ -149,7 +152,7 @@ async function deleteBlog (req, res) {
         return res.status(400).send(error);
       }
 
-      if(result.affectedRows == 0) {
+      if(result.affectedRows === 0) {
         return res.status(400).send('Failed to update Blog');
       }
 
@@ -161,6 +164,7 @@ async function deleteBlog (req, res) {
   }
 } 
 
+// Fetch the likes related to a blog ...
 async function fetchBlogLikeCount (req, res) {
   const { blogId } = req.params;
 
@@ -188,6 +192,7 @@ async function fetchBlogLikeCount (req, res) {
   }
 }
 
+// Fetch comments related to a blog post ...
 async function fetchBlogComments (req, res) {
   const { blogId } = req.params;
 
@@ -215,6 +220,7 @@ async function fetchBlogComments (req, res) {
   }
 }
 
+// Add a comment to a blog post ...
 async function addCommentToBlog (req, res) {
   const { blogId, comment, userId } = req.body;
 
@@ -230,7 +236,7 @@ async function addCommentToBlog (req, res) {
         return res.status(400).send(error);
       }
 
-      if(result.affectedRows == 0) {
+      if(result.affectedRows === 0) {
         return res.status(400).send('Commenting failed');
       }
 
@@ -242,6 +248,7 @@ async function addCommentToBlog (req, res) {
   }
 }
 
+// Like to a blog post ...
 async function LikeToBlog (req, res) {
   const { blogId, userId } = req.body;
 
@@ -257,7 +264,7 @@ async function LikeToBlog (req, res) {
         return res.status(400).send(error);
       }
 
-      if(result.affectedRows == 0) {
+      if(result.affectedRows === 0) {
         return res.status(400).send('Liking failed');
       }
 
@@ -269,6 +276,7 @@ async function LikeToBlog (req, res) {
   }
 } 
 
+// Dislike a blog post ...
 async function DislikeToBlog (req, res) {
   const { blogId, userId } = req.body;
 
@@ -284,7 +292,7 @@ async function DislikeToBlog (req, res) {
         return res.status(400).send(error);
       }
 
-      if(result.affectedRows == 0) {
+      if(result.affectedRows === 0) {
         return res.status(400).send('Disliking failed');
       }
 
@@ -296,6 +304,7 @@ async function DislikeToBlog (req, res) {
   }
 } 
 
+// fetch a user like state (liked or not) for a specific blog post ...
 async function fetchUserLikeStateForBlog (req, res) {
   const { blogId, userId } = req.params;
 

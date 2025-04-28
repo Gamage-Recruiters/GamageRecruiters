@@ -11,7 +11,7 @@ const WindowOnClose = () => {
       const handleWindowClose = async (event) => {
         const logoutResponse = await axios.get(`${baseURL}/auth/logout`);
         console.log(logoutResponse);
-        if(logoutResponse.status == 200) {
+        if(logoutResponse.status === 200) {
             localStorage.clear(); 
             navigate('/login');
         } else {

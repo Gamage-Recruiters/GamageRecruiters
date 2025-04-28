@@ -46,7 +46,7 @@ async function handleAccessToken (req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.length == 0) {
+            if(result.length === 0) {
                 return res.status(404).send('Session Data Not Found');
             }
 
@@ -85,7 +85,7 @@ async function getTokenRelatedLoggedUserData (req, res) {
                 return res.status(400).send(error);
             } 
 
-            if(result.length == 0) {
+            if(result.length === 0) {
                 return res.status(404).send('Session Data Not Found');
             }
 
@@ -97,7 +97,7 @@ async function getTokenRelatedLoggedUserData (req, res) {
                     return res.status(400).send(error);
                 }
 
-                if(user.length == 0) {
+                if(user.length === 0) {
                     return res.status(404).send('User Data Not Found');
                 }
 
@@ -121,7 +121,7 @@ async function getLoggedUserData (req, res) {
         return res.status(401).send('User ID and Login Method are required');
     }
 
-    if(loginMethod == 'Email & Password') {
+    if(loginMethod === 'Email & Password') {
         try {
             const userData = await getLoggedUserDataThroughEmailPassword(id);
             // console.log('User Data Retrieved:', userData);
@@ -133,7 +133,7 @@ async function getLoggedUserData (req, res) {
         }
     }
 
-    if(loginMethod == 'Google') {
+    if(loginMethod === 'Google') {
         try {
             const userData = await getLoggedUserDataThroughPlatforms(id, 'Google');
             // console.log('User Data Retrieved:', userData);
@@ -149,7 +149,7 @@ async function getLoggedUserData (req, res) {
         }
     }
 
-    if(loginMethod == 'Facebook') {
+    if(loginMethod === 'Facebook') {
         try {
             const userData = await getLoggedUserDataThroughPlatforms(id, 'Facebook');
             // console.log('User Data Retrieved:', userData);
@@ -165,7 +165,7 @@ async function getLoggedUserData (req, res) {
         }
     }  
 
-    if(loginMethod == 'LinkedIn') {
+    if(loginMethod === 'LinkedIn') {
         try {
             const userData = await getLoggedUserDataThroughPlatforms(id, 'LinkedIn');
             // console.log('User Data Retrieved:', userData);
@@ -301,7 +301,7 @@ async function getUserLoginAttempts (req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.length == 0) {
+            if(result.length === 0) {
                 return res.status(404).send('No Login Attempts Found for user');
             }
 

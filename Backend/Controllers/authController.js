@@ -18,19 +18,21 @@ async function register (req, res) {
 
     try {
         // If existing, access the file names of the cv and image ...
-        const cvName = req.files?.cv?.[0]?.filename || null;
+        // const cvName = req.files?.cv?.[0]?.filename || null;
         const imageName = req.files?.photo?.[0]?.filename || null;
     
-        console.log('cvName:', cvName);
+        // console.log('cvName:', cvName);
         console.log('imageName:', imageName);
     
         // Encrypt the password ...
         const hashedPassword = await bcrypt.hash(password, 10);
     
-        const values = [ firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, hashedPassword, cvName, imageName, profileDescription, new Date() ];
+        // const values = [ firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, hashedPassword, cvName, imageName, profileDescription, new Date() ];
+        const values = [ firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, hashedPassword, imageName, profileDescription, new Date() ];
     
         // Register the user by saving details in the database ...
-        const sql = 'INSERT INTO users (firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, cv, photo, profileDescription, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'; 
+        // const sql = 'INSERT INTO users (firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, cv, photo, profileDescription, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const sql = 'INSERT INTO users (firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, photo, profileDescription, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         pool.query(sql, values, (error, data) => {
             if(error) {
                 return res.status(400).send('Error registering user');
@@ -92,7 +94,7 @@ async function login (req, res) {
                     return res.status(400).send('Error creating session');
                 } 
 
-                setLoggedUserIdAndMethod(result[0].userId, 'Email & Password');
+                setLoggedUserIdAndMethod(result[0].userId, 'Email & Password'); // Set the logged userId and method in localStorage ...
                 setLoggedPlatformUserRegisteredId(result[0].userId); // Set the logged user ID in localStorage ...
                 return res.status(200).json({ message: 'Login Successful', token: token, data: data, tokenExpiresAt: expTime });
             });
