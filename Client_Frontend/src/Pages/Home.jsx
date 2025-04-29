@@ -4,79 +4,12 @@ import { ArrowRight, MapPin, Briefcase, DollarSign, Calendar, Clock } from 'luci
 import axios from 'axios';
 import TrustedPartnersSection from '../components/Home/TrustedPartnersSection';
 import AutoScrollingTestimonials from '../components/Home/AutoScrollingTestimonials';
+import TestimonialsSection from '../components/Patners/TestimonialsSection';
 import baseURL from "../config/axiosPortConfig";
 import generateRandomColor from '../scripts/generateRandomColor';
 import { useChangeDateFormat } from '../hooks/customHooks';
 
-// const featuredJobs = [
-//   {
-//     id: 1,
-//     title: "Senior Software Engineer",
-//     company: "Tech Solutions Ltd",
-//     location: "Colombo",
-//     jobType: "Full-time",
-//     salaryRange: "$3000-$5000",
-//     description: "Looking for an experienced software engineer to lead our development team.",
-//     color: "bg-blue-50",
-//     accent: "border-blue-400"
-//   },
-//   {
-//     id: 2,
-//     title: "HR Manager",
-//     company: "Global Enterprises",
-//     location: "Kandy",
-//     jobType: "Full-time",
-//     salaryRange: "$2500-$3500",
-//     description: "Seeking an experienced HR professional to manage our growing team.",
-//     color: "bg-emerald-50",
-//     accent: "border-emerald-400"
-//   },
-//   {
-//     id: 3,
-//     title: "Marketing Specialist",
-//     company: "Digital Marketing Pro",
-//     location: "Galle",
-//     jobType: "Remote",
-//     salaryRange: "$2000-$3000",
-//     description: "Join our dynamic marketing team and help grow our digital presence.",
-//     color: "bg-purple-50",
-//     accent: "border-purple-400"
-//   }
-// ];
 
-
-// const events = [
-//   {
-//     id: 1,
-//     title: "Resume Building Masterclass",
-//     date: "April 10, 2025",
-//     time: "10:00 AM - 12:00 PM",
-//     location: "Colombo Innovation Hub",
-//     category: "Career Development",
-//     image: "https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg",
-//     color: "from-blue-500 to-indigo-600",
-//   },
-//   {
-//     id: 2,
-//     title: "Tech Industry Networking Event",
-//     date: "April 17, 2025",
-//     time: "5:30 PM - 8:30 PM",
-//     location: "Kingsbury Hotel, Colombo",
-//     category: "Networking",
-//     image: "https://images.pexels.com/photos/1709003/pexels-photo-1709003.jpeg",
-//     color: "from-purple-500 to-pink-600",
-//   },
-//   {
-//     id: 3,
-//     title: "Leadership Skills Workshop",
-//     date: "April 24, 2025",
-//     time: "9:00 AM - 4:00 PM",
-//     location: "Grand Kandy Resort",
-//     category: "Professional Development",
-//     image: "https://images.pexels.com/photos/3321797/pexels-photo-3321797.jpeg",
-//     color: "from-emerald-500 to-teal-600",
-//   },
-// ];
 
 // Statistics for counter animation
 const statistics = [
@@ -510,6 +443,7 @@ export default function Home() {
 
       {/* Trusted Partners Section */}
       <TrustedPartnersSection />
+      <TestimonialsSection/>
 
       {/* Workshops and Seminars Section */}
       <div className="bg-white py-24">
@@ -615,46 +549,7 @@ export default function Home() {
           </div>
 
           {/* Mobile App Promo */}
-          <div className="mt-20 max-w-5xl mx-auto">
-            <div className="bg-indigo-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-indigo-700">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-                <div>
-                  <h3 className="text-2xl font-bold text-white mb-4">Take Your Job Search On The Go</h3>
-                  <p className="text-indigo-100 mb-6">
-                    Download our mobile app to get instant notifications about new job opportunities that match your profile.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                    <button className="bg-black text-white rounded-lg px-6 py-3 flex items-center justify-center transform transition hover:scale-105">
-                      <span className="mr-2">▶</span>
-                      <span>
-                        <span className="block text-xs">Download on the</span>
-                        <span className="block text-sm font-semibold">App Store</span>
-                      </span>
-                    </button>
-                    <button className="bg-black text-white rounded-lg px-6 py-3 flex items-center justify-center transform transition hover:scale-105">
-                      <span className="mr-2">▶</span>
-                      <span>
-                        <span className="block text-xs">GET IT ON</span>
-                        <span className="block text-sm font-semibold">Google Play</span>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-                <div className="flex justify-center">
-                  <div className="relative w-64 h-96">
-                    <div className="absolute inset-0 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-3xl transform rotate-2"></div>
-                    <div className="absolute inset-2 bg-black rounded-3xl overflow-hidden">
-                      <img
-                        src="/api/placeholder/300/600"
-                        alt="Mobile app screenshot"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </div>
       </div>
     </div >
