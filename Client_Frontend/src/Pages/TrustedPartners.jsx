@@ -33,7 +33,7 @@ const TrustedPartnersPage = () => {
     {
       id: 3,
       company: "Transocean DUTY FREE (PVT) LTD",
-      logo: "https://www.hac.lk/uploads/brand/pelwatte-LSrs5cqkat.png",
+      logo: "https://i.ibb.co/mFHfsjFg/Trans-Ocean.png",
       quote: "Working with Gamage Recruiters has been an outstanding experience. Their team demonstrated exceptional professionalism, efficiency, and dedication in understanding our recruitment needs and delivering top-tier candidates. Their seamless process and industry expertise ensured that we onboarded highly skilled professionals who have contributed significantly to our company’s success. I highly recommend Gamage Recruiters to any organization seeking a reliable and results-driven recruitment partner.",
       author: "R.Jayasinghe",
       position: "Director - Transocean DUTY FREE (PVT) LTD",
@@ -46,6 +46,15 @@ const TrustedPartnersPage = () => {
       quote: "Gamage Recruiters exceeded our expectations in every way. Their deep understanding of the maritime industry and commitment to finding the right talent made our hiring process smooth and efficient. They provided us with highly qualified professionals who perfectly matched our requirements. Their proactive approach, attention to detail, and excellent communication made the entire process effortless. We truly appreciate their support and look forward to working with them again in the future.",
       author: "P. Senanayaka",
       position: "Chairman & Director - MeedRo",
+      rating: 5
+    },
+    {
+      id: 4,
+      company: "Gnanam Food (PVT)Ltd",
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCgHY4mRTDRj0DEKOsx98NfZdLfhD_knYSyw&s",
+      quote: "Working with Gamage Recruiters was a game-changer! They didn’t just send resumes — they delivered top-tier talent with precision and speed. Sharp, professional, and truly in sync with our hiring goals. Highly recommended!",
+      author: "Patchamuthu Satheesan",
+      position: "Manager Operations-Gnanam Food ",
       rating: 5
     }
   ];
@@ -126,6 +135,7 @@ const TrustedPartnersPage = () => {
 
         <PartnersGrid />
         <TPSection />
+        
 
 
 
@@ -244,7 +254,9 @@ const TrustedPartnersPage = () => {
           </div>
         </div>
       </div>
+    
     </div>
+    
   );
 };
 
