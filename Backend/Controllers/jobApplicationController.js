@@ -51,7 +51,7 @@ async function applyJob(req, res) {
                     return res.status(401).send('User Not Found. You must login first.');
                 } 
 
-                if(result[0].firstName != firstName && result[0].lastName != lastName) {
+                if(result[0].firstName !== firstName && result[0].lastName !== lastName) {
                     return res.status(400).send('Names are not matching. Cannot proceed');
                 }
 
@@ -128,7 +128,7 @@ async function getApplication(req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.length == 0) {
+            if(result.length === 0) {
                 return res.status(404).send('Job Application Not found');
             }
 
@@ -172,7 +172,7 @@ async function getApplicationByUser (req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.length == 0) {
+            if(result.length === 0) {
                 return res.status(404).send('Job Application Not found');
             }
 
@@ -195,7 +195,7 @@ async function getApplications (req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.length == 0) {
+            if(result.length === 0) {
                 return res.status(404).send('Job Applications Not found');
             }
 
@@ -245,7 +245,7 @@ async function updateApplication(req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.affectedRows == 0) {
+            if(result.affectedRows === 0) {
                 return res.status(404).send('Job Application Not Found');
             }
 
@@ -273,7 +273,7 @@ async function deleteApplication(req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.affectedRows == 0) {
+            if(result.affectedRows === 0) {
                 return res.status(404).send('Job Application Not Found');
             }
 

@@ -26,7 +26,7 @@ async function addNewUserIfSessionUserNotFound(firstName, lastName, email) {
                         return reject('Error fetching user data');
                     } 
 
-                    if(result.length == 0) {
+                    if(result.length === 0) {
                         return reject('User Not Found');
                     }
 

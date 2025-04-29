@@ -7,7 +7,8 @@ const {
   updateJob,
   deleteJob,
   viewJobsByUser,
-  viewAppliedJobCountByUser
+  viewAppliedJobCountByUser,
+  getAllCVsRelatedToAJob
 } = require("../Controllers/JobsManagementController");
 const router = express.Router();
 
@@ -34,5 +35,8 @@ router.put("/update/:jobId", updateJob);
 
 // Delete a Job
 router.delete("/delete/:jobId", deleteJob);
+
+// Fetch job applications resumes for a job
+router.get("/resumes/:jobId", getAllCVsRelatedToAJob)
 
 module.exports = router;

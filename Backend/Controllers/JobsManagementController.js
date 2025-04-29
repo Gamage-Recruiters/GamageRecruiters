@@ -10,7 +10,7 @@ async function viewJobs(req, res) {
         return res.status(500).send("Error fetching jobs");
       }
 
-      if(results.length == 0) {
+      if(results.length === 0) {
         return res.status(404).send('No Jobs Found');
       }
       // console.log("Results:", results); // Log the query results
@@ -31,7 +31,7 @@ async function viewLatestJobs(req, res) {
         return res.status(500).send("Error fetching jobs");
       }
 
-      if(results.length == 0) {
+      if(results.length === 0) {
         return res.status(404).send('No Latest Jobs Found');
       }
 
@@ -342,4 +342,31 @@ async function deleteJob(req, res) {
   }
 }
 
-module.exports = { viewJobs, viewJob, addJob, updateJob, deleteJob, viewJobsByUser, viewAppliedJobCountByUser, viewLatestJobs };
+async function getAllCVsRelatedToAJob (req, res) {
+  const { jobId } = req.params;
+
+  if(!jobId) {
+    return res.status(400).send("JobId is required");
+  }
+
+  try {
+    const fetchCVQuery = 'SELECT resume FROM jobapplications WHERE jobId = ?';
+    pool.query(fetchCVQuery, [jobId], (error, result) => {
+      if(error) {
+        console.log(error);
+        return res.status(400).send(error);
+      }
+
+      if(result.length === 0) {
+        return res.status(404).send('No applied job application resumes found for job');
+      }
+
+      return res.status(200).json({ message: "Resumes Fetched Successfully", data: result });
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Server error");
+  }
+}
+
+module.exports = { viewJobs, viewJob, addJob, updateJob, deleteJob, viewJobsByUser, viewAppliedJobCountByUser, viewLatestJobs, getAllCVsRelatedToAJob };
