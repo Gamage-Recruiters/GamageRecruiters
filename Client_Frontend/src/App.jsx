@@ -6,6 +6,7 @@ import Home from './Pages/Home';
 import About from './Pages/About';
 import Services from './Pages/Services';
 import JobListings from './Pages/JobListings';
+import Subsidiaries from './Pages/Subsidiaries';
 import JobDetails from './Pages/JobDetails';
 import Contact from './Pages/Contact';
 import Login from './Pages/Login';
@@ -22,7 +23,8 @@ import ResetPassword from './Pages/ResetPassword';
 import TestimonialsSection from './Pages/TestimonialsSection';
 import WindowOnClose from './protected/WindowOnClose';
 import ProtectedRoute from './protected/ProtectedRoute';
-import Subsidiaries from './Pages/Subsidiaries';
+
+
 
 function App() {
   return (
@@ -37,7 +39,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/jobs" element={<JobListings />} />
-            <Route Path="/subs" element={<Subsidiaries/>}/>
+            <Route Path="/subsidiaries" element={<Subsidiaries/>}/>
             <Route path="/jobs/:jobId" element={<ProtectedRoute><JobDetails /></ProtectedRoute>} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />

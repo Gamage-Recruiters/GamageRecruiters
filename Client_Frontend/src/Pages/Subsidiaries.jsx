@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Mail, Phone, ArrowRight, GraduationCap, Briefcase, Award, Calendar, Clock, Users, Wine, Ship, BookOpen, Globe, Star, Sparkles } from 'lucide-react';
 
-export default function Subsidiaries() {
+function Subsidiaries() {
   // State for animations and interactions
   const [scrollY, setScrollY] = useState(0);
   const [activeTab, setActiveTab] = useState('dutyfree');
@@ -596,3 +596,5 @@ export default function Subsidiaries() {
     </div>
   );
 }
+
+export default Subsidiaries;
