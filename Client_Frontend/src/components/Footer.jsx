@@ -25,7 +25,7 @@ const navigation = {
   social: [
     {
       name: 'Facebook',
-      href: '#',
+      href: 'https://www.facebook.com/share/1AEbyXrDdh/',
       icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
@@ -38,7 +38,7 @@ const navigation = {
     },
     {
       name: 'LinkedIn',
-      href: '#',
+      href: 'https://www.linkedin.com/company/gamage-recruiters/',
       icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
@@ -48,19 +48,24 @@ const navigation = {
       ),
     },
     {
-      name: 'Twitter',
-      href: '#',
+      name: 'X',
+      href: 'https://x.com/GamageRecru?t=zaNDJqpjWEwAKXYbIM7xIg&s=09',
       icon: (props) => (
-        <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-          <path
-            d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.025 10.025 0 01-3.127 1.195 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"
-          />
+        <svg
+          className="h-6 w-6 text-white hover:text-gray-400 transition-colors duration-300"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M14.095479,10.316482L22.286354,1h-1.940718l-7.115352,8.087682L7.551414,1H1l8.589488,12.231093L1,23h1.940717
+l7.509372-8.542861L16.448587,23H23L14.095479,10.316482z M11.436522,13.338465l-0.871624-1.218704l-6.924311-9.68815h2.981339
+l5.58978,7.82155l0.867949,1.218704l7.26506,10.166271h-2.981339L11.436522,13.338465z" />
         </svg>
       ),
     },
     {
       name: 'Instagram',
-      href: '#',
+      href: 'https://www.instagram.com/gamage__recruiters/',
       icon: (props) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path
@@ -78,20 +83,20 @@ export default function Footer() {
   const [email, setEmail] = useState('');
 
   const handleSubscribe = async () => {
-    if(!email) {
+    if (!email) {
       toast.error('Please enter your email');
       return;
     }
 
-    if(!verifyEmail(email)) {
+    if (!verifyEmail(email)) {
       toast.error('Please enter a valid email address');
       return;
-    } 
+    }
 
     try {
       const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email });
       console.log(subscribeToNewsLetterResponse.data);
-      if(subscribeToNewsLetterResponse.status == 200) {
+      if (subscribeToNewsLetterResponse.status == 200) {
         toast.success('Subscribed to NewsLetter Successfully');
         setEmail('');
       } else {
@@ -106,7 +111,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-r from-blue-900 to-indigo-900">
-      <ToastContainer/>
+      <ToastContainer />
       <div className="mx-auto max-w-7xl px-6 py-12 md:py-16 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Company Info */}
@@ -195,7 +200,7 @@ export default function Footer() {
         <div className="mt-12 border-t border-blue-800/50 pt-8">
           <div className="flex justify-center space-x-6">
             {navigation.social.map((item) => (
-              <a key={item.name} href={item.href} className="text-gray-300 hover:text-white">
+              <a key={item.name} href={item.href} target='_blank' className="text-gray-300 hover:text-white">
                 <span className="sr-only">{item.name}</span>
                 <item.icon className="h-6 w-6" aria-hidden="true" />
               </a>
