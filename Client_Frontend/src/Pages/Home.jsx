@@ -98,7 +98,7 @@ export default function Home() {
 
   // Featured job carousel
   useEffect(() => {
-    localStorage.clear();
+    // localStorage.clear();
     loadLatestJobs();
     loadEvents();
     // Generate a unique random color for each job ...
