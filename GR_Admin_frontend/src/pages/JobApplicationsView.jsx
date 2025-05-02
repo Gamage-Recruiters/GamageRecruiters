@@ -17,6 +17,8 @@ const JobApplicationsView = () => {
     fetchJobs();
   }, []);
 
+  
+
   const fetchJobs = async () => {
     setLoading(true);
     try {

@@ -35,28 +35,7 @@ function BlogManagement() {
     return matchesSearch && matchesStatus;
   });
 
-  const fetchJobStatistics = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('/api/jobs');
-      // Check if response.data exists and has data property
-      setJobStats(response.data?.data || []);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch job statistics. Please try again later.');
-      console.error(err);
-      setJobStats([]); // Reset to empty array on error
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredJobs = (jobStats || []).filter(job => 
-    job.jobName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.company.toLowerCase().includes(searchTerm.toLowerCase())
-  ).sort((a, b) => {
-    // ... rest of your sort logic
-  });
+  
 
   // Sort blog posts by date
   const sortedPosts = [...filteredPosts].sort((a, b) => {
