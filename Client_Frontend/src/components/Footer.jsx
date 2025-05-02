@@ -14,6 +14,7 @@ const navigation = {
     { name: 'Blog', href: '/blog' },
     { name: 'Workshops', href: '/workshop' },
     { name: 'Contact', href: '/contact' },
+    { name: 'Subsidiaries', href: '/subsidiaries' },
   ],
   support: [
     { name: 'Login', href: '/login' },

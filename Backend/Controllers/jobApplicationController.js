@@ -184,6 +184,34 @@ async function getApplicationByUser (req, res) {
     }
 }
 
+// Get all applications releted to a specific user ...
+async function getApplicationByJobId (req, res) {
+    const { jobId } = req.params; // If id is provided, get specific application 
+
+    if (!jobId) {
+        return res.status(400).send('Job Id is required');
+    }
+
+    try {
+        const applicationDataQuery = 'SELECT * FROM jobapplications WHERE jobId = ?';
+        pool.query(applicationDataQuery, jobId, (error, result) => {
+            if(error) {
+                console.log(error);
+                return res.status(400).send(error);
+            }
+
+            if(result.length === 0) {
+                return res.status(404).send('Job Applications Not found');
+            }
+
+            return res.status(200).json({ message: 'Application Data Found', data: result });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Error retrieving job applications.', error: error.message });
+    }
+}
+
 // Get all applications ...
 async function getApplications (req, res) {
 
@@ -302,4 +330,4 @@ async function deleteApplication(req, res) {
 //     }
 // }
 
-module.exports = { applyJob, getApplication, getApplicationByUser, getApplications, updateApplication, deleteApplication };
+module.exports = { applyJob, getApplication, getApplicationByUser, getApplications, updateApplication, deleteApplication, getApplicationByJobId };

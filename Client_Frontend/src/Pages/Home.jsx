@@ -98,7 +98,7 @@ export default function Home() {
 
   // Featured job carousel
   useEffect(() => {
-    localStorage.clear();
+    // localStorage.clear();
     loadLatestJobs();
     loadEvents();
     // Generate a unique random color for each job ...
@@ -525,7 +525,7 @@ export default function Home() {
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-y-4 gap-x-6">
               <Link
-                to="/login"
+                to="/signup"
                 className="w-full sm:w-auto rounded-full bg-white px-8 py-4 text-base font-semibold text-indigo-700 shadow-lg hover:bg-indigo-50 transform transition duration-300 hover:scale-105"
               >
                 Create Your Profile

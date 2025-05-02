@@ -6,6 +6,7 @@ import Home from './Pages/Home';
 import About from './Pages/About';
 import Services from './Pages/Services';
 import JobListings from './Pages/JobListings';
+import Subsidiaries from './Pages/Subsidiaries';
 import JobDetails from './Pages/JobDetails';
 import Contact from './Pages/Contact';
 import Login from './Pages/Login';
@@ -23,6 +24,8 @@ import TestimonialsSection from './Pages/TestimonialsSection';
 import WindowOnClose from './protected/WindowOnClose';
 import ProtectedRoute from './protected/ProtectedRoute';
 
+
+
 function App() {
   return (
     <Router>
@@ -36,6 +39,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/jobs" element={<JobListings />} />
+            <Route path="/subsidiaries" element={<Subsidiaries />} />
             <Route path="/jobs/:jobId" element={<ProtectedRoute><JobDetails /></ProtectedRoute>} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
@@ -48,7 +52,7 @@ function App() {
             <Route path="/trusted-partners" element={<TrustedPartners />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:blogId" element={<ProtectedRoute><BlogDetailsPage /></ProtectedRoute>} />
-            <Route path="/workshop" element={<ProtectedRoute><WorkshopsAndSeminarsPage /></ProtectedRoute>} />
+            <Route path="/workshop" element={<WorkshopsAndSeminarsPage />} />
             <Route path="/testimonials" element={<TestimonialsSection />} />
           </Routes>
         </main>

@@ -1,4 +1,7 @@
 const { pool } = require("../config/dbConnection");
+const { db } = require("../config/dbConnection");
+
+
 
 // View All Jobs
 async function viewJobs(req, res) {
@@ -136,7 +139,7 @@ async function addJob (req, res) {
   }
 
   try {
-    const addJobQuery = "INSERT INTO jobs (jobName, company, jobLocation, jobType, salaryRange, postedDate, jobDescription, responsibilities, requirements, benefits, companyDescription) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const addJobQuery = "INSERT INTO jobs (jobName, company, jobLocation, jobType, salaryRange, postedDate, jobDescription, responsibilities, requirements, benefits, companyDescription, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
       jobName,
       company,
@@ -148,7 +151,8 @@ async function addJob (req, res) {
       responsibilities,
       requirements,
       benefits,
-      companyDescription
+      companyDescription,
+      'Active'
     ];
 
     pool.query(addJobQuery, values, (error, data) => {
@@ -168,6 +172,8 @@ async function addJob (req, res) {
     return res.status(500).send(error);
   }
 }
+
+
 
 // async function addJob(req, res) {
 //   const {
@@ -369,4 +375,31 @@ async function getAllCVsRelatedToAJob (req, res) {
   }
 }
 
-module.exports = { viewJobs, viewJob, addJob, updateJob, deleteJob, viewJobsByUser, viewAppliedJobCountByUser, viewLatestJobs, getAllCVsRelatedToAJob };
+
+
+const getJobStatistics = async (req, res) => {
+  try {
+    const [jobs] = await db.query(`
+      SELECT 
+        j.id AS jobId,
+        j.jobName,
+        j.company,
+        MAX(a.appliedDate) AS lastApplication,
+        COUNT(a.applicationId) AS applicationCount
+      FROM jobs j
+      LEFT JOIN jobapplications a ON j.id = a.jobId
+      GROUP BY j.id, j.jobName, j.company
+    `);
+
+    res.json(jobs);
+  } catch (err) {
+    console.error("Error fetching job statistics:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
+
+
+
+module.exports = { viewJobs, viewJob,getJobStatistics, addJob, updateJob, deleteJob, viewJobsByUser, viewAppliedJobCountByUser, viewLatestJobs, getAllCVsRelatedToAJob };

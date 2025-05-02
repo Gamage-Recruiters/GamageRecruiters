@@ -29,6 +29,7 @@ const PartnersGrid = () => {
     { id: 23, name: "Prime Group", logo: "https://i.ibb.co/GvsdH7ms/primegroup.png", category: "Residencies" },
     { id: 24, name: "SriTrims Limited", logo: "https://i.ibb.co/v6zVsVwL/sritrims.png", category: "Garment Exporter" },
     { id: 25, name: "Antler Group", logo: "https://i.ibb.co/0pbkzPgj/antler.jpg", category: "Fabric" },
+    { id: 25, name: "Gnanam Food (PVT)Ltd", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCgHY4mRTDRj0DEKOsx98NfZdLfhD_knYSyw&s", category: "Food" },,
     
   ];
 

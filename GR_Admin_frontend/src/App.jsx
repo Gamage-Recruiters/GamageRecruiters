@@ -22,8 +22,10 @@ import AddAdmin from './pages/Admin/AddAdmin';
 import EditAdmin from './pages/Admin/EditAdmin';
 import AddWorkshop from './pages/Workshop/AddWorkshop';
 import UpdateWorkshop from './pages/Workshop/UpdateWorkshop';
-
-
+import InquiryManagement from './pages/InquiryManagement';
+import ApplicationDetailView from './pages/ApplicationDetailView';
+import JobApplicationsView from './pages/JobApplicationsView';
+import JobDashboard from './components/JobDashboard';
 
 function App() {
   // TODO: Implement actual auth logic
@@ -56,6 +58,11 @@ function App() {
               <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
               <Route path="/workshops/add"  element={<AddWorkshop />} />
               <Route path="/workshops/edit/:id"  element={<UpdateWorkshop />} />
+              <Route path="/inquiries" element={<InquiryManagement />} />
+              <Route path="/applications/:applicationId" element={<ApplicationDetailView />} />
+              <Route path="/jobs/:jobId/applications" element={<JobApplicationsView />} />
+              <Route path="/applications" element={<JobApplicationsView />} />
+              <Route path="/job-dashboard" element={<JobDashboard />} />
 
             </Route>
           ) : (

@@ -24,4 +24,4 @@ function dbconnect() {
   });
 }
 
-module.exports = { dbconnect, pool }; // Export pool here
+module.exports = { dbconnect,db: pool.promise(), pool }; // Export pool here

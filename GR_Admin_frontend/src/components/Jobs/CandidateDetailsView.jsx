@@ -93,35 +93,73 @@ export default function CandidateDetailsView() {
   // Status options for filtering
   const statusOptions = ["All", "New", "Shortlisted", "Interviewing", "Rejected"];
 
+    useEffect(() => {
+      const fetchJobs = async () => {
+        try {
+          const response = await fetch('http://localhost:8000/api/jobs');
+          const data = await response.json();
+          setJobs(data);
+        } catch (error) {
+          console.error('Error fetching jobs:', error);
+        }
+      };
+      fetchJobs();
+    }, []);
+
   // Initialize candidates based on job ID or show all
   useEffect(() => {
-    let initialCandidates = candidateData;
-    if (selectedJob !== "all") {
-      initialCandidates = candidateData.filter(candidate => candidate.jobId === selectedJob);
-    }
-    setCandidates(initialCandidates);
-    setFilteredCandidates(initialCandidates);
+    const fetchCandidates = async () => {
+      try {
+        let url;
+        if (selectedJob === "all") {
+          url = '/api/applications';
+        } else {
+          url = `http://localhost:8000/api/jobs/${selectedJob}/applications`;
+        }
+        const response = await fetch(url);
+        const data = await response.json();
+        const mappedCandidates = data.map(app => ({
+          id: app.applicationId,
+          jobId: app.jobId,
+          firstName: app.firstName,
+          lastName: app.lastName,
+          email: app.email,
+          phone: app.phoneNumber,
+          appliedDate: new Date(app.appliedDate).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }),
+          status: app.status || 'New',
+          resumeUrl: `http://localhost:8000/api/applications/download/${app.applicationId}`
+        }));
+        setCandidates(mappedCandidates);
+        setFilteredCandidates(mappedCandidates);
+      } catch (error) {
+        console.error('Error fetching candidates:', error);
+      }
+    };
+    fetchCandidates();
   }, [selectedJob]);
 
   // Filter and sort candidates
   useEffect(() => {
     let filtered = [...candidates];
     
-    // Filter by search term
+    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(candidate => 
         `${candidate.firstName} ${candidate.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        candidate.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        candidate.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+        candidate.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
-    // Filter by status
+    // Status filter
     if (filterStatus !== "All") {
       filtered = filtered.filter(candidate => candidate.status === filterStatus);
     }
     
-    // Sort candidates
+    // Sorting
     filtered.sort((a, b) => {
       let comparison = 0;
       if (sortBy === "name") {
@@ -160,7 +198,7 @@ export default function CandidateDetailsView() {
 
   // Get job title for display
   const getJobTitle = (jobId) => {
-    const job = jobData.find(j => j.id === jobId);
+    const job = jobs.find(j => j.jobId === jobId);
     return job ? job.title : "Unknown Position";
   };
 

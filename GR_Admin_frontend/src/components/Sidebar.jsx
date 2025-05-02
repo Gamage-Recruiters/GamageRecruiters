@@ -9,6 +9,7 @@ import {
   Calendar,
   BookOpen,
   Handshake,
+  Mail,
   Settings,
   ChevronRight,
   Menu,
@@ -27,6 +28,8 @@ function Sidebar({ isOpen, setIsOpen }) {
     { path: '/workshops', icon: Calendar, label: 'Workshops' },
     { path: '/blog', icon: BookOpen, label: 'Blog' },
     { path: '/partners', icon: Handshake, label: 'Partners' },
+    { path: '/inquiries', icon: Mail, label: 'Inquiries' },
+    { path: '/job-dashboard', icon: Mail, label: 'Job Applications' },
   ];
 
   // Group menu items by category

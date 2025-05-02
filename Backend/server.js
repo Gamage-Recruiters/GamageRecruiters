@@ -22,6 +22,7 @@ const testimonialsRouter = require('./Routers/testimonialsRouter');
 const workshopRouter = require('./Routers/workshopsRouter');
 const contactRouter = require('./Routers/contactRouter');
 
+
 require('dotenv').config();
 require('./auth/passportAuthGoogle');
 require('./auth/passportAuthFacebook');
@@ -54,7 +55,8 @@ app.use(cors({
 }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/uploads/images', express.static(path.join(__dirname, '/uploads/images')));
+app.use('/uploads/users/images', express.static(path.join(__dirname, '/uploads/users/images')));
+app.use('/uploads/admin/images', express.static(path.join(__dirname, '/uploads/admin/images')));
 // app.use('/uploads/cv', express.static(path.join(__dirname, '/uploads/cvs')));
 app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/uploads/appliedJonobs/resumes')));
 app.use('/uploads/blogs/images', express.static(path.join(__dirname, '/uploads/blogs/images')));

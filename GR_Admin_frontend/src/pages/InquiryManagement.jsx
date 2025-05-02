@@ -385,7 +385,8 @@ function InquiryManagement() {
                       {pageNum}
                     </button>
                   );
-                })}
+                })} 
+                
 
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
