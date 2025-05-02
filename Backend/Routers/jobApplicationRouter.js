@@ -15,6 +15,9 @@ router.route('/applications/user/:userId').get(jobApplicationController.getAppli
 // Get all job applications
 router.route('/applications').get(jobApplicationController.getApplications); 
 
+// Get job applications related to a jobId 
+router.route('/:jobId').get(jobApplicationController.getApplicationByJobId);
+
 // Update a specific job application
 router.route('/update/:applicationId').put(upload, jobApplicationController.updateApplication); // Update a specific job application
 

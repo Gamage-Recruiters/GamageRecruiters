@@ -116,38 +116,38 @@ async function updateUserDetails (req, res) {
         let updateQuery;
 
         if(cvName == null && imageName == null) {
-            values = [firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, profileDescription, 'Updated User Profile Details', new Date(), userId];
+            values = [firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, profileDescription, userId];
 
             updateQuery = `UPDATE users 
                                     SET firstName = ?, lastName = ?, gender = ?, birthDate = ?, address = ?, address2 = ?, 
-                                    phoneNumber1 = ?, phoneNumber2 = ?, linkedInLink = ?, facebookLink = ?, portfolioLink = ? 
+                                    phoneNumber1 = ?, phoneNumber2 = ?, linkedInLink = ?, facebookLink = ?, portfolioLink = ?, profileDescription = ?
                                     WHERE userId = ?`;
             
         } else if (cvName == null && imageName != null) {
-            values = [firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, photo, linkedInLink, facebookLink, portfolioLink, profileDescription, 'Updated User Profile Details', new Date(), userId];
+            values = [firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, photo, linkedInLink, facebookLink, portfolioLink, profileDescription, userId];
 
             updateQuery = `UPDATE users 
                                     SET firstName = ?, lastName = ?, gender = ?, birthDate = ?, address = ?, address2 = ?, 
                                     phoneNumber1 = ?, phoneNumber2 = ?, photo = ?, linkedInLink = ?, facebookLink = ?, 
-                                    portfolioLink = ?, profileDescription = ?, recentActivity = ?, updatedAt = ? 
+                                    portfolioLink = ?, profileDescription = ? 
                                     WHERE userId = ?`;
             
         } else if (cvName != null && imageName == null) {
-            values = [firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, cv, linkedInLink, facebookLink, portfolioLink, profileDescription, 'Updated User Profile Details', new Date(), userId];
+            values = [firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, cv, linkedInLink, facebookLink, portfolioLink, profileDescription, userId];
 
             updateQuery = `UPDATE users 
                                     SET firstName = ?, lastName = ?, gender = ?, birthDate = ?, address = ?, address2 = ?, 
                                     phoneNumber1 = ?, phoneNumber2 = ?, cv = ?, linkedInLink = ?, facebookLink = ?, 
-                                    portfolioLink = ?, profileDescription = ?, recentActivity = ?, updatedAt = ? 
+                                    portfolioLink = ?, profileDescription = ? 
                                     WHERE userId = ?`;
             
         } else {
-            values = [firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, photo, cv, linkedInLink, facebookLink, portfolioLink, profileDescription, 'Updated User Profile Details', new Date(), userId];
+            values = [firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, photo, cv, linkedInLink, facebookLink, portfolioLink, profileDescription, userId];
 
             updateQuery = `UPDATE users 
                                     SET firstName = ?, lastName = ?, gender = ?, birthDate = ?, address = ?, address2 = ?, 
                                     phoneNumber1 = ?, phoneNumber2 = ?, photo = ?, cv = ?, linkedInLink = ?, facebookLink = ?, 
-                                    portfolioLink = ?, profileDescription = ?, recentActivity = ?, updatedAt = ? 
+                                    portfolioLink = ?, profileDescription = ?
                                     WHERE userId = ?`;
 
         }
@@ -397,6 +397,71 @@ async function subscribeToNewsletter(req, res) {
                 subscriptionNotifyEmailSending(email);
                 return res.status(200).send('Subscription Successfull');
             })
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
+
+async function getAllSystemUsers (req, res) {
+    try {
+        const usersQuery = 'SELECT COUNT(userId) FROM users';
+        pool.query(usersQuery, (error, result) => {
+           if(error) {
+               console.log(error);
+               return res.status(400).send(error);
+           }
+
+           if(result.length === 0) {
+               return res.status(404).send('No Users Found');
+           }
+
+           return res.status(200).json({ message: 'Users Found', users: result[0] });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
+
+async function getAllActiveUsers (req, res) {
+    try {
+        const ActiveUsersQuery = 'SELECT COUNT(DISTINCT  sessions.Id) FROM sessions INNER JOIN users ON sessions.Id = users.userId WHERE sessions.status = ?';
+        pool.query(ActiveUsersQuery, 'Active', (error, data) => {
+           if(error) {
+               console.log(error);
+               return res.status(400).send(error);
+           }
+
+           if(data.length === 0) {
+               return res.status(404).send('No Active Users Found');
+           }
+
+           return res.status(200).json({ message: 'Active Users Found', activeUsers: data[0] });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
+
+async function getAllUsersInCurrentMonth (req, res) {
+    try {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1;
+        const ActiveUsersInThisMonthQuery = 'SELECT COUNT(DISTINCT  sessions.Id) FROM sessions INNER JOIN users ON sessions.Id = users.userId WHERE sessions.status = ? AND MONTH(users.createdAt) = ?';
+        pool.query(ActiveUsersInThisMonthQuery, ['Active', currentMonth], (error, result) => {
+            if(error) {
+                console.log(error);
+                return res.status(400).send(error);
+            }
+
+            if(result.length === 0) {
+                return res.status(404).send('No Active Users Found');
+            }
+
+            return res.status(200).json({ message: 'Monthly Active Users Found', activeUsers: result[0] });
         });
     } catch (error) {
         console.log(error);

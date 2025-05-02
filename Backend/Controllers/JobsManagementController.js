@@ -136,7 +136,7 @@ async function addJob (req, res) {
   }
 
   try {
-    const addJobQuery = "INSERT INTO jobs (jobName, company, jobLocation, jobType, salaryRange, postedDate, jobDescription, responsibilities, requirements, benefits, companyDescription) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const addJobQuery = "INSERT INTO jobs (jobName, company, jobLocation, jobType, salaryRange, postedDate, jobDescription, responsibilities, requirements, benefits, companyDescription, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
       jobName,
       company,
@@ -148,7 +148,8 @@ async function addJob (req, res) {
       responsibilities,
       requirements,
       benefits,
-      companyDescription
+      companyDescription,
+      'Active'
     ];
 
     pool.query(addJobQuery, values, (error, data) => {
