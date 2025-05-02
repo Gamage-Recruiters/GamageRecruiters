@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import axios from "axios";
 import { AtSign, Lock, ArrowRight } from "lucide-react";
+import axios from "axios";
 import baseURL from "../config/axiosPortConfig";
+import verifyToken from "../scripts/verifyToken.js";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
@@ -13,6 +14,21 @@ export default function LoginPage() {
 
   useEffect(() => {
     localStorage.setItem('IsLoginAuthenticated', true);
+    const accessToken = localStorage.getItem('AccessToken');
+
+    const verifyAccessToken = async (token) => {
+      if(accessToken) {
+        const response = verifyToken(token);
+        console.log(response);
+        if(response === 'Token is Valid') {
+          navigate("/dashboard");
+        }
+
+        localStorage.removeItem('AccessToken');
+      }
+    }
+
+    verifyAccessToken(accessToken);
   }, []);
   
   const handleLogin = async (e) => {

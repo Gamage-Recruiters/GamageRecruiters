@@ -3,31 +3,86 @@ const jwt = require('jsonwebtoken');
 const { pool } = require('../config/dbConnection');
 
 async function register (req, res) {
-    const { email, password } = req.body;
+    const { name, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, email, password } = req.body;
 
-    if(!email || !password) {
-        return res.status(400).send('Email or Password cannot be empty!');
+    if(!name || !gender || !role || !primaryPhoneNumber || !secondaryPhoneNumber || !status || !email || !password) {
+        return res.status(400).send('Name, Email and Password cannot be empty!');
     }
 
     try {
+        const imageName = req.files?.adminPhoto?.[0]?.filename || null;
+        console.log('imageName', imageName);
+
         // Check a data related to email, exists in the database ...
         const sql = 'SELECT * FROM admin WHERE email = ?';
         pool.query(sql, [email], async (error, result) => {
             if(error) {
-                return res.status(404).send('Admin User Not Found');
+                return res.status(400).send(error);
             }
 
-            // Verify Password ...
-            const verifyPasswordResult = await bcrypt.compare(password, result[0].password)
+            if(result.length === 0) {
+                return res.status(404).send('Data Not Found');
+            }
 
-            if(!verifyPasswordResult) {
-                return res.status(400).send('Password Entered is not Correct');
-            } 
+            // Hash the password ...
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Store the details in database ...
+            const adminStoreDataQuery = 'INSERT INTO admin (name, email, password, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            pool.query(adminStoreDataQuery, [name, email, hashedPassword, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, imageName], (error, result) => {
+                if(error) {
+                    return res.status(400).send(error);
+                }
+
+                if(result.affectedRows === 0) {
+                    return res.status(403).send('Data Insertion Error');
+                }
+
+                return res.status(201).json({ message: 'Successfully Registered', data: result });
+            })
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
+
+async function login (req, res) {
+    const { email, password } = req.body;
+
+    if(!email || !password) {
+        return res.status(400).send('Please fill all the required fields');
+    }
+
+    try {
+        // check whether the admin user is existing or not ...
+        const adminUserQuery = 'SELECT * FROM admin WHERE email = ?';
+        pool.query(adminUserQuery, email, async (error, result) => {
+            if (error) {
+                return res.status(400).send(error);
+            }
+
+            if (result.length === 0) {
+                return res.status(404).send('Data Not Found');
+            }
+
+            const adminId = result[0].adminId;
+            const adminPassword = result[0].password;
+            // Check password validity ...
+            const verifyPassword = await bcrypt.compare(password, adminPassword);
+
+            if(!verifyPassword) {
+                return res.status(401).send('Password is Incorrect');
+            }
+
+            // Set expiration time manually ...
+            const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour ...
 
             // Generate jwt token ...
             const token = jwt.sign({
-                id: result[0].adminId
-            }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                id: result[0].adminId,
+                exp: expTime,
+            }, process.env.JWT_SECRET);
 
             // Pass a Cookie to frontend ...
             res.cookie('token', token, {
@@ -39,45 +94,20 @@ async function register (req, res) {
 
             // Store User Data in the database Session ...
             const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
-            const values = [ result[0].adminId, token, new Date(), 'Admin', 'Active' ];
+            const values = [ adminId, token, new Date(), 'Admin', 'Active' ];
             pool.query(sessionQuery, values, (error, data) => {
                 if(error) {
                     console.log(error);
                     return res.status(400).send('Error creating session');
-                } 
+                }
+
+                if(data.affectedRows === 0) {
+                    return res.status(400).send('Data Insertion Error');
+                }
 
                 return res.status(200).json({ message: 'Login Successful', token: token, data: data });
             });
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send(error);
-    }
-}
-
-async function login (req, res) {
-    const { name, email, password } = req.body;
-
-    if(!name || !email || !password) {
-        return res.status(400).send('Please fill all the required fields');
-    }
-
-    try {
-        // Encrypt the password ...
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const values = [ name, email, hashedPassword, new Date() ];
-
-        // Register the admin user by saving details in the database ...
-        const sql = 'INSERT INTO admin (name, email, password, createdAt) VALUES (?, ?, ?, ?)'; 
-        pool.query(sql, values, (error, data) => {
-            if(error) {
-                return res.status(400).send('Error registering admin user');
-            } 
-
-            console.log(data);
-            return res.status(201).json({ message: 'Admin User registered successfully', data: data});
-        });
+        })
     } catch (error) {
         console.log(error);
         return res.status(500).send(error);

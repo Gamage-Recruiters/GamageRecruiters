@@ -44,7 +44,7 @@ router.put("/update/:jobId", updateJob);
 router.delete("/delete/:jobId", deleteJob);
 
 // Fetch job applications resumes for a job
-router.get("/resumes/:jobId", getAllCVsRelatedToAJob)
+router.get("/resumes/:jobId", getAllCVsRelatedToAJob);
 
 
 

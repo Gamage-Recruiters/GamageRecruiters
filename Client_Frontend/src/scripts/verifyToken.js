@@ -24,7 +24,7 @@ const verifyToken = async (token) => {
         }
     } catch (error) {
         // console.log(error);
-        return 'Error Occured';
+        return 'Error Occurred';
     }
 } 
 
