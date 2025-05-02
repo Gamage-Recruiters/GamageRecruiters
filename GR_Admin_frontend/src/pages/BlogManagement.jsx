@@ -107,8 +107,8 @@ const mockBlogPosts = [
 function BlogManagement() {
     const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
+  const [sortDirection, setSortDirection] = useState('desc');
+  const [filterStatus, setFilterStatus] = useState('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Filter blog posts based on search term and status
