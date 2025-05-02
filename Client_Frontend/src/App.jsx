@@ -54,7 +54,6 @@ function App() {
             <Route path="/blog/:blogId" element={<ProtectedRoute><BlogDetailsPage /></ProtectedRoute>} />
             <Route path="/workshop" element={<WorkshopsAndSeminarsPage />} />
             <Route path="/testimonials" element={<TestimonialsSection />} />
-            
           </Routes>
         </main>
         <Footer />

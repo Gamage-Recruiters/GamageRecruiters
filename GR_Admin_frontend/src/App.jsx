@@ -22,7 +22,7 @@ import AddAdmin from './pages/Admin/AddAdmin';
 import EditAdmin from './pages/Admin/EditAdmin';
 import AddWorkshop from './pages/Workshop/AddWorkshop';
 import UpdateWorkshop from './pages/Workshop/UpdateWorkshop';
-
+import InquiryManagement from './pages/InquiryManagement';
 
 
 function App() {
@@ -56,6 +56,7 @@ function App() {
               <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
               <Route path="/workshops/add"  element={<AddWorkshop />} />
               <Route path="/workshops/edit/:id"  element={<UpdateWorkshop />} />
+              <Route path="/inquiries" element={<InquiryManagement />} />
 
             </Route>
           ) : (
