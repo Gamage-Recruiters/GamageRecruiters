@@ -21,6 +21,8 @@ function BlogManagement() {
   const [sortDirection, setSortDirection] = useState('desc');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [jobStats, setJobStats] = useState([]);
+
 
   // Filter blog posts based on search term and status
   const filteredPosts = mockBlogPosts.filter(post => {
