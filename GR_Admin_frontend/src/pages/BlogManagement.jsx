@@ -12,96 +12,7 @@ import { useNavigate } from 'react-router-dom';
     
 // Mock blog post data based on the structure provided
 const mockBlogPosts = [
-  {
-    id: 1,
-    title: "Future of Remote Work in Sri Lanka",
-    category: "Industry Trends",
-    date: "March 15, 2024",
-    readTime: "5 min read",
-    author: {
-      name: "Amara Fernando",
-      role: "Senior HR Consultant",
-      image: "https://source.unsplash.com/random/100x100?portrait"
-    },
-    image: "https://source.unsplash.com/random/1200x600?office",
-    tags: ["Remote Work", "HR Trends", "Workplace Culture", "Technology", "Employment"],
-    views: 1243,
-    likes: 89,
-    comments: 23,
-    status: 'published'
-  },
-  {
-    id: 2,
-    title: "Emerging Tech Startups in Colombo",
-    category: "Technology",
-    date: "March 10, 2024",
-    readTime: "7 min read",
-    author: {
-      name: "Raj Patel",
-      role: "Tech Analyst",
-      image: "https://source.unsplash.com/random/100x100?man"
-    },
-    image: "https://source.unsplash.com/random/1200x600?startup",
-    tags: ["Startups", "Technology", "Innovation", "Investment"],
-    views: 982,
-    likes: 67,
-    comments: 14,
-    status: 'published'
-  },
-  {
-    id: 3,
-    title: "Sustainable Tourism Practices",
-    category: "Tourism",
-    date: "March 5, 2024",
-    readTime: "6 min read",
-    author: {
-      name: "Nimal Perera",
-      role: "Tourism Consultant",
-      image: "https://source.unsplash.com/random/100x100?person"
-    },
-    image: "https://source.unsplash.com/random/1200x600?beach",
-    tags: ["Tourism", "Sustainability", "Environment", "Travel"],
-    views: 756,
-    likes: 52,
-    comments: 9,
-    status: 'published'
-  },
-  {
-    id: 4,
-    title: "Financial Planning for Small Businesses",
-    category: "Finance",
-    date: "February 28, 2024",
-    readTime: "8 min read",
-    author: {
-      name: "Sarah Johnson",
-      role: "Financial Advisor",
-      image: "https://source.unsplash.com/random/100x100?woman"
-    },
-    image: "https://source.unsplash.com/random/1200x600?finance",
-    tags: ["Finance", "Small Business", "Planning", "Growth"],
-    views: 623,
-    likes: 41,
-    comments: 7,
-    status: 'draft'
-  },
-  {
-    id: 5,
-    title: "Cultural Heritage Preservation",
-    category: "Culture",
-    date: "February 20, 2024",
-    readTime: "4 min read",
-    author: {
-      name: "Lakshmi Gupta",
-      role: "Cultural Historian",
-      image: "https://source.unsplash.com/random/100x100?portrait2"
-    },
-    image: "https://source.unsplash.com/random/1200x600?temple",
-    tags: ["Culture", "Heritage", "Preservation", "History"],
-    views: 512,
-    likes: 39,
-    comments: 5,
-    status: 'published'
-  }
+ 
 ];
 
 function BlogManagement() {
@@ -120,6 +31,29 @@ function BlogManagement() {
     const matchesStatus = filterStatus === 'all' || post.status === filterStatus;
     
     return matchesSearch && matchesStatus;
+  });
+
+  const fetchJobStatistics = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('/api/jobs');
+      // Check if response.data exists and has data property
+      setJobStats(response.data?.data || []);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch job statistics. Please try again later.');
+      console.error(err);
+      setJobStats([]); // Reset to empty array on error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredJobs = (jobStats || []).filter(job => 
+    job.jobName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.company.toLowerCase().includes(searchTerm.toLowerCase())
+  ).sort((a, b) => {
+    // ... rest of your sort logic
   });
 
   // Sort blog posts by date

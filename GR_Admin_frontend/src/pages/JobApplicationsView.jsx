@@ -20,7 +20,7 @@ const JobApplicationsView = () => {
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/jobs');
+      const response = await axios.get('http://localhost:8000/api/jobs');
       setJobs(response.data.data);
       setError(null);
     } catch (err) {
@@ -34,7 +34,7 @@ const JobApplicationsView = () => {
   const fetchApplicationsForJob = async (jobId) => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/jobs/${jobId}/applications`);
+      const response = await axios.get(`http://localhost:8000/api/jobs/${jobId}/applications`);
       setApplications(response.data.data);
       setError(null);
     } catch (err) {
@@ -53,7 +53,7 @@ const JobApplicationsView = () => {
 
   const downloadCV = async (applicationId, fileName) => {
     try {
-      const response = await axios.get(`/api/applications/download/${applicationId}`, {
+      const response = await axios.get(`http://localhost:8000/api/applications/download/${applicationId}`, {
         responseType: 'blob'
       });
       
@@ -75,7 +75,7 @@ const JobApplicationsView = () => {
     if (!selectedJob) return;
     
     try {
-      const response = await axios.get(`/api/jobs/${selectedJob.jobId}/applications/download-all`, {
+      const response = await axios.get(`http://localhost:8000/api/jobs/${selectedJob.jobId}/applications/download-all`, {
         responseType: 'blob'
       });
       
@@ -101,7 +101,7 @@ const JobApplicationsView = () => {
 
   const deleteApplication = async (applicationId) => {
     try {
-      await axios.delete(`/api/applications/delete/${applicationId}`);
+      await axios.delete(`http://localhost:8000/api/applications/delete/${applicationId}`);
       // Refresh applications list
       fetchApplicationsForJob(selectedJob.jobId);
       setError(null);
@@ -117,7 +117,7 @@ const JobApplicationsView = () => {
     if (!selectedJob) return;
     
     try {
-      await axios.delete(`/api/jobs/${selectedJob.jobId}/applications/delete-all`);
+      await axios.delete(`http://localhost:8000/api/jobs/${selectedJob.jobId}/applications/delete-all`);
       // Clear applications list
       setApplications([]);
       setError(null);
@@ -139,7 +139,7 @@ const JobApplicationsView = () => {
 
   const viewApplication = (applicationId) => {
     // Navigate to application detail view
-    window.location.href = `/applications/${applicationId}`;
+    window.location.href = `http://localhost:8000/api/applications/${applicationId}`;
   };
 
   // Confirmation Modal
