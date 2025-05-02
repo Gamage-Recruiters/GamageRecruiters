@@ -19,7 +19,6 @@ async function sendInquiry(req, res) {
             
             [ phoneNumber, email, name,subject,message],
 
-  
 
             async (err, results) => {
 
@@ -29,7 +28,7 @@ async function sendInquiry(req, res) {
 
                 // sending Email
                 
-               await sendEmail(email,"Inquiry Received",name,subject,message,"+94 77 479 5371 || +94 201 4386","#");
+            await sendEmail(email,"Inquiry Received",name,subject,message,"+94 77 479 5371 || +94 201 4386","#");
 
                return res.status(201).json({ message: 'Data Saved Successfuly and Email Sent !' });
 

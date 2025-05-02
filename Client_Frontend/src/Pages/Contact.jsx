@@ -35,7 +35,7 @@ export default function Contact() {
     try {
 
 
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}contact/addinquiry`, formData).then((results) => {
+    await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/contact/addinquiry`, formData).then((results) => {
 
         console.log(results);
 
@@ -65,7 +65,7 @@ export default function Contact() {
 
       }).catch((error) => {
 
-        console.log(error.response.data.message);
+        // console.log(error.response.data.message);
 
 
         setFormStatus({ submitted: false, loading: false, error: error.response.data.message });
