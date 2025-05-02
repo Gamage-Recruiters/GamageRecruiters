@@ -29,6 +29,7 @@ function Sidebar({ isOpen, setIsOpen }) {
     { path: '/blog', icon: BookOpen, label: 'Blog' },
     { path: '/partners', icon: Handshake, label: 'Partners' },
     { path: '/inquiries', icon: Mail, label: 'Inquiries' },
+    { path: '/JobDashboard', icon: Mail, label: 'Jobapp' },
   ];
 
   // Group menu items by category
