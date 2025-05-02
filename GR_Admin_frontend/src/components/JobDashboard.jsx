@@ -27,19 +27,27 @@ const JobDashboard = () => {
     fetchJobStatistics();
   }, []);
 
-  const fetchJobStatistics = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('/api/jobs/statistics');
-      setJobStats(response.data.data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch job statistics. Please try again later.');
-      console.error(err);
-    } finally {
-      setLoading(false);
+const fetchJobStatistics = async () => {
+  setLoading(true);
+  try {
+    const response = await axios.get('http://localhost:8000/api/jobs');
+    
+    // Validate response structure
+    if (!Array.isArray(response.data)) {
+      throw new Error('Invalid API response format');
     }
-  };
+
+    setJobStats(response.data);
+    setError(null);
+  } catch (err) {
+    setError(err.message || 'Failed to fetch job statistics. Please try again later.');
+    console.error('Fetch error:', err.response?.data || err.message);
+    // Reset to empty array on error
+    setJobStats([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSort = (field) => {
     if (sortBy === field) {
@@ -52,7 +60,7 @@ const JobDashboard = () => {
 
   const downloadAllCVsForJob = async (jobId, jobName) => {
     try {
-      const response = await axios.get(`/api/jobs/${jobId}/applications/download-all`, {
+      const response = await axios.get(`http://localhost:8000/api/jobs/${jobId}/applications/download-all`, {
         responseType: 'blob'
       });
       

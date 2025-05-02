@@ -27,7 +27,7 @@ const ApplicationDetailView = () => {
   const fetchApplicationDetails = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/applications/application/${applicationId}`);
+      const response = await axios.get(`http://localhost:8000/api/applications/application/${applicationId}`);
       setApplication(response.data.data[0]);
       
       // Set form fields
@@ -90,7 +90,7 @@ const ApplicationDetailView = () => {
     if (!application?.resume) return;
     
     try {
-      const response = await axios.get(`/api/applications/download/${applicationId}`, {
+      const response = await axios.get(`http://localhost:8000/api/applications/download/${applicationId}`, {
         responseType: 'blob'
       });
       

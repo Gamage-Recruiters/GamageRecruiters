@@ -8,9 +8,16 @@ const {
   deleteJob,
   viewJobsByUser,
   viewAppliedJobCountByUser,
-  getAllCVsRelatedToAJob
+  getAllCVsRelatedToAJob,
+  getJobStatistics
 } = require("../Controllers/JobsManagementController");
 const router = express.Router();
+
+
+
+// In your router file
+router.get("/statistics", getJobStatistics);
+
 
 // View all Jobs ...
 router.get("/", viewJobs);
@@ -39,4 +46,8 @@ router.delete("/delete/:jobId", deleteJob);
 // Fetch job applications resumes for a job
 router.get("/resumes/:jobId", getAllCVsRelatedToAJob)
 
+
+
+
 module.exports = router;
+
