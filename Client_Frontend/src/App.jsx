@@ -39,7 +39,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/jobs" element={<JobListings />} />
-            <Route Path="/subsidiaries" element={<Subsidiaries/>}/>
+            <Route path="/subsidiaries" element={<Subsidiaries />} />
             <Route path="/jobs/:jobId" element={<ProtectedRoute><JobDetails /></ProtectedRoute>} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
