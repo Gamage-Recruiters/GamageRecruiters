@@ -25,8 +25,8 @@
     const [sortDirection, setSortDirection] = useState('desc');
     const [filterStatus, setFilterStatus] = useState('all');
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-
     const [blogPosts, setBlogPosts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
 
     // In your axios request:
@@ -48,6 +48,11 @@
     useEffect(() => {
       fetchPosts();
     }, []);
+
+    const formatStatus = (status) => {
+      if (!status) return 'Draft';
+      return status.charAt(0).toUpperCase() + status.slice(1);
+    };
     
 
 
@@ -120,25 +125,30 @@
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <motion.div 
-            whileHover={{ y: -5 }}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700"
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Posts</h3>
-              <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
-                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          {/* Total Posts Card */}
+          {/* Total Posts Card */}
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Posts</h3>
+                <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                  <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
               </div>
-            </div>
-            <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{blogPosts.reduce((sum, post) => sum + (post?.views || 0), 0).toLocaleString()}</p>
-            <div className="flex items-center mt-2 text-sm">
-              <span className="text-green-500 flex items-center">
-                <ChevronUp className="h-4 w-4" />
-                15%
-              </span>
-              <span className="text-gray-400 dark:text-gray-500 ml-2">from last month</span>
-            </div>
-          </motion.div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                {/* Fixed numeric handling with double parentheses */}
+                {(blogPosts.reduce((sum, post) => sum + (post?.views || 0), 0)).toLocaleString()}
+              </p>
+              <div className="flex items-center mt-2 text-sm">
+                <span className="text-green-500 flex items-center">
+                  <ChevronUp className="h-4 w-4" />
+                  15%
+                </span>
+                <span className="text-gray-400 dark:text-gray-500 ml-2">from last month</span>
+              </div>
+            </motion.div>
           
           <motion.div 
             whileHover={{ y: -5 }}
@@ -162,27 +172,36 @@
             </div>
           </motion.div>
           
-          <motion.div 
-            whileHover={{ y: -5 }}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700"
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Engagement</h3>
-              <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
-                <Share2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
-            <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-            {blogPosts.filter(p => p?.status === 'published').length}
-            </p>
-            <div className="flex items-center mt-2 text-sm">
-              <span className="text-green-500 flex items-center">
-                <ChevronUp className="h-4 w-4" />
-                23%
-              </span>
-              <span className="text-gray-400 dark:text-gray-500 ml-2">from last month</span>
-            </div>
-          </motion.div>
+          {/* Total Engagement Card */}
+          {/* Total Engagement Card */}
+<motion.div 
+  whileHover={{ y: -5 }}
+  className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700"
+>
+  <div className="flex items-center justify-between">
+    <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Engagement</h3>
+    <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
+      <Share2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+    </div>
+  </div>
+  <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+    {/* FINAL FIX: Add double parentheses and numeric safety */}
+    {(
+      blogPosts.reduce((sum, post) => sum + (
+        (post?.likes || 0) + 
+        (post?.comments || 0) + 
+        (post?.views || 0)
+      ), 0)
+    ).toLocaleString()}
+  </p>
+  <div className="flex items-center mt-2 text-sm">
+    <span className="text-green-500 flex items-center">
+      <ChevronUp className="h-4 w-4" />
+      23%
+    </span>
+    <span className="text-gray-400 dark:text-gray-500 ml-2">from last month</span>
+  </div>
+</motion.div>
         </div>
 
         {/* Blog Posts Table Card */}
@@ -340,7 +359,7 @@
                             : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
                         }`}
                       >
-                        {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+                        {formatStatus(post?.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -351,23 +370,27 @@
                         {getRelativeTime(post.date)}
                       </div>
                     </td>
+                    {/* In the table row for engagement metrics */}
                     <td className="px-6 py-4">
                       <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4">
                         <span className="flex items-center">
                           <Eye className="h-4 w-4 mr-1" />
-                          {post.views.toLocaleString()}
+                          {/* Add safe numeric handling for views */}
+                          {(post?.views || 0).toLocaleString()}
                         </span>
                         <span className="flex items-center">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                           </svg>
-                          {post.likes}
+                          {/* Add safe numeric handling for likes */}
+                          {(post?.likes || 0).toLocaleString()}
                         </span>
                         <span className="flex items-center">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                           </svg>
-                          {post.comments}
+                          {/* Add safe numeric handling for comments */}
+                          {(post?.comments || 0).toLocaleString()}
                         </span>
                       </div>
                     </td>
@@ -392,19 +415,30 @@
                   </motion.tr>
                 ))}
                 </AnimatePresence>
-                
-                {/* Empty State */}
-                {sortedPosts.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-24 text-center">
-                      <div className="text-gray-500 dark:text-gray-400">
-                        <Search className="h-8 w-8 mx-auto mb-4" />
-                        <p className="font-medium">No blog posts found</p>
-                        <p className="mt-1 text-sm">Try adjusting your search or filters</p>
-                      </div>
-                    </td>
-                  </tr>
-                )}
+               {/* Loading State */}
+                              {isLoading && (
+                                <tr>
+                                  <td colSpan={5} className="px-6 py-24 text-center">
+                                    <div className="text-gray-500 dark:text-gray-400">
+                                      <RefreshCw className="h-8 w-8 mx-auto mb-4 animate-spin" />
+                                      <p className="font-medium">Loading posts...</p>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+
+                              {/* Empty State */}
+                              {!isLoading && sortedPosts.length === 0 && (
+                                <tr>
+                                  <td colSpan={5} className="px-6 py-24 text-center">
+                                    <div className="text-gray-500 dark:text-gray-400">
+                                      <Search className="h-8 w-8 mx-auto mb-4" />
+                                      <p className="font-medium">No blog posts found</p>
+                                      <p className="mt-1 text-sm">Try adjusting your search or filters</p>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
               </tbody>
             </table>
           </div>
