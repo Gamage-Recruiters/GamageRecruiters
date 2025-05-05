@@ -406,8 +406,56 @@ async function subscribeToNewsletter(req, res) {
 
 async function getAllSystemUsers (req, res) {
     try {
-        const usersQuery = 'SELECT COUNT(userId) FROM users';
+        const usersQuery = 'SELECT * FROM users';
         pool.query(usersQuery, (error, result) => {
+           if(error) {
+               console.log(error);
+               return res.status(400).send(error);
+           }
+
+           if(result.length === 0) {
+               return res.status(404).send('No Users Found');
+           }
+
+           return res.status(200).json({ message: 'Users Found', users: result });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
+
+async function getUserById (req, res) {
+    const { userId } = req.params;
+
+    if(!userId) {
+        return res.status(400).send('User ID is required');
+    }
+
+    try {
+        const userQuery = 'SELECT * FROM users WHERE userId = ?';
+        pool.query(userQuery, userId, (error, result) => {
+            if(error) {
+                console.log(error);
+                return res.status(400).send(error);
+            }
+
+            if(result.length === 0) {
+                return res.status(404).send('User Not Found');
+            }
+
+            return res.status(200).json({ message: 'User Found', user: result[0] });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
+
+async function getAllSystemUsersCount (req, res) {
+    try {
+        const usersCountQuery = 'SELECT COUNT(userId) FROM users';
+        pool.query(usersCountQuery, (error, result) => {
            if(error) {
                console.log(error);
                return res.status(400).send(error);
@@ -425,10 +473,10 @@ async function getAllSystemUsers (req, res) {
     }
 }
 
-async function getAllActiveUsers (req, res) {
+async function getAllActiveUsersCount (req, res) {
     try {
-        const ActiveUsersQuery = 'SELECT COUNT(DISTINCT  sessions.Id) FROM sessions INNER JOIN users ON sessions.Id = users.userId WHERE sessions.status = ?';
-        pool.query(ActiveUsersQuery, 'Active', (error, data) => {
+        const ActiveUsersCountQuery = 'SELECT COUNT(DISTINCT  sessions.Id) FROM sessions INNER JOIN users ON sessions.Id = users.userId WHERE sessions.status = ?';
+        pool.query(ActiveUsersCountQuery, 'Active', (error, data) => {
            if(error) {
                console.log(error);
                return res.status(400).send(error);
@@ -446,12 +494,12 @@ async function getAllActiveUsers (req, res) {
     }
 }
 
-async function getAllUsersInCurrentMonth (req, res) {
+async function getAllUsersCountInCurrentMonth (req, res) {
     try {
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth() + 1;
-        const ActiveUsersInThisMonthQuery = 'SELECT COUNT(DISTINCT  sessions.Id) FROM sessions INNER JOIN users ON sessions.Id = users.userId WHERE sessions.status = ? AND MONTH(users.createdAt) = ?';
-        pool.query(ActiveUsersInThisMonthQuery, ['Active', currentMonth], (error, result) => {
+        const ActiveUsersCountInThisMonthQuery = 'SELECT COUNT(DISTINCT  sessions.Id) FROM sessions INNER JOIN users ON sessions.Id = users.userId WHERE sessions.status = ? AND MONTH(users.createdAt) = ?';
+        pool.query(ActiveUsersCountInThisMonthQuery, ['Active', currentMonth], (error, result) => {
             if(error) {
                 console.log(error);
                 return res.status(400).send(error);
@@ -461,7 +509,7 @@ async function getAllUsersInCurrentMonth (req, res) {
                 return res.status(404).send('No Active Users Found');
             }
 
-            return res.status(200).json({ message: 'Monthly Active Users Found', activeUsers: result[0] });
+            return res.status(200).json({ message: 'Monthly Active Users Found', activeUsersCount: result[0]['COUNT(DISTINCT  sessions.Id)'] });
         });
     } catch (error) {
         console.log(error);
@@ -469,4 +517,4 @@ async function getAllUsersInCurrentMonth (req, res) {
     }
 }
 
-module.exports = { deleteUser, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter }
+module.exports = { deleteUser, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter, getAllSystemUsersCount, getAllActiveUsersCount, getAllUsersCountInCurrentMonth, getAllSystemUsers, getUserById }

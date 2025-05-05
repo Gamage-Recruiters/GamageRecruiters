@@ -4,11 +4,23 @@ const upload = require('../middlewares/fileUploading');
 
 const router = express.Router();
 
-
+// Route to add a new admin user ...
 router.post('/register', upload, adminController.register);
 
-
+// Route for admin login ...
 // router.route('/login').post(adminController.login);
 router.post('/login', adminController.login);
+
+// Route to fetch all admin users ...
+router.get('/all', adminController.fetchAllAdminUsers);
+
+// Route to fetch a specific admin user data ...
+router.get('/:adminId', adminController.getAdminDataById);
+
+// Route to delete a specific admin user data ...
+router.delete('/delete/:adminId', adminController.deleteAdminUserDetails);
+
+// Route to update a specific admin user data ...
+router.put('/update/:adminId', upload, adminController.updateAdminUserDetails);
 
 module.exports = router;
