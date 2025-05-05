@@ -119,6 +119,8 @@ app.use("/api/testimonials",testimonialsRouter);
 
 app.use('/api/blogs', blogRoutes);
 
+
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 })
