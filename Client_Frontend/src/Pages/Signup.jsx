@@ -56,7 +56,7 @@ export default function SignupPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if(!firstName || !lastName || !email || !password || !confirmPassword || !birthDate || !gender || !cv || !profileDescription) {
+    if(!firstName || !lastName || !email || !password || !confirmPassword || !birthDate || !gender || !profileDescription) {
       toast.error('Please fill the required fields');
       return;
     }
@@ -586,35 +586,7 @@ export default function SignupPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="form-group">
-                    <label className="block text-sm font-medium text-gray-700 mb-4">
-                      Upload CV (PDF) *
-                    </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-all cursor-pointer">
-                      <input
-                        type="file"
-                        name="cv"
-                        accept=".pdf"
-                        className="hidden"
-                        id="cv-upload"
-                        required
-                        onChange={handleCVChange}
-                      />
-                      <label htmlFor="cv-upload" className="cursor-pointer">
-                        <FaFileUpload className="mx-auto text-gray-400 text-3xl mb-2" />
-                        { cv ? (
-                          <p className="text-sm text-gray-500">
-                            {cvName}
-                          </p>
-                        ): (
-                          <p className="text-sm text-gray-500">
-                            Drag and drop your CV here, or <span className="text-blue-600 font-medium">browse</span>
-                          </p>
-                        )}
-                        <p className="text-xs text-gray-400 mt-1">PDF format only</p>
-                      </label>
-                    </div>
-                  </div>
+                  
 
                   <div className="form-group">
                     <label className="block text-sm font-medium text-gray-700 mb-4">
