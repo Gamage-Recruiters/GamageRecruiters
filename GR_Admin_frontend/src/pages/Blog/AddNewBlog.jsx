@@ -59,7 +59,7 @@ const BlogEditor = () => {
   const [previewImages, setPreviewImages] = useState({
     blog: null,
     blogCover: null,
-    author: '/api/placeholder/100/100'
+    author: 'http://localhost:8000/api/placeholder/100/100'
   });
   
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
@@ -126,7 +126,7 @@ const BlogEditor = () => {
       }
       
       // Send data to backend
-      const response = await fetch('/api/blogs/add', {
+      const response = await fetch('http://localhost:8000/api/blogs/add', {
         method: 'POST',
         body: formDataToSend,
       });

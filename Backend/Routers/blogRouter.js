@@ -48,4 +48,24 @@ router.get('/state/:blogId/:userId', blogRouter.fetchUserLikeStateForBlog);
 // // Delete Blog
 // router.delete('/:id', deleteBlog);
 
+// Add this route in your backend router
+router.get('/:blogId', async (req, res) => {
+    try {
+      const { blogId } = req.params;
+      const query = `
+        SELECT *, 
+          CONCAT('/uploads/blog_images/', blogImage) as blogImageUrl,
+          CONCAT('/uploads/cover_images/', coverImage) as blogCoverUrl
+        FROM blogs WHERE blogId = ?`;
+      
+      pool.query(query, [blogId], (error, results) => {
+        if (error) return res.status(500).send(error);
+        if (results.length === 0) return res.status(404).send('Blog not found');
+        res.json(results[0]);
+      });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  });
+
 module.exports = router;
