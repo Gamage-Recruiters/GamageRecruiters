@@ -8,6 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+
 function ClientUsers() {
   const navigate = useNavigate();
   const [clients, setClients] = useState([]);
@@ -41,6 +42,18 @@ function ClientUsers() {
 
     fetchClients();
   }, []);
+
+  const handleDelete = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this client?')) return;
+  
+    try {
+      await axios.delete(`http://localhost:8000/user/delete-profile/${userId}`);
+      setClients(prev => prev.filter(client => client.userId !== userId));
+    } catch (err) {
+      console.error('Failed to delete user:', err);
+      alert('Something went wrong while deleting the user.');
+    }
+  };
 
   const filteredClients = clients.filter(client => {
     const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
@@ -229,9 +242,9 @@ function ClientUsers() {
                       {getRelativeTime(client.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-2"><Eye className="w-4 h-4" /></button>
+                      <button onClick={() => navigate(`/admin/client/view/${client.userId}`)} className="text-indigo-600 hover:text-indigo-900 mr-2"><Eye className="w-4 h-4" /></button>
                       <button className="text-green-600 hover:text-green-900 mr-2"><Edit2 className="w-4 h-4" /></button>
-                      <button className="text-red-600 hover:text-red-900"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => handleDelete(client.userId)} className="text-red-600 hover:text-red-900"><Trash2 className="w-4 h-4" /></button>
                     </td>
                   </motion.tr>
                 ))}

@@ -26,6 +26,9 @@ import InquiryManagement from './pages/InquiryManagement';
 import ApplicationDetailView from './pages/ApplicationDetailView';
 import JobApplicationsView from './pages/JobApplicationsView';
 import JobDashboard from './components/JobDashboard';
+import ViewClient from './components/ViewClient';
+
+
 
 function App() {
   // TODO: Implement actual auth logic
@@ -41,6 +44,7 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/Dashboard" element={<Dashboard />} />
               <Route path="/clients" element={<ClientUsers />} />
+              <Route path="/admin/client/view/:userId" element={<ViewClient />} />
               <Route path="/admins" element={<AdminUsers />} />
               <Route path="/jobs" element={<ViewAllJobs />} />
               <Route path="/jobss" element={<Jobs />} />
