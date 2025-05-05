@@ -2,43 +2,33 @@ const nodemailer = require("nodemailer");
 const setConfirmEmailBody = require('../utils/confirmEmailbody');
 require('dotenv').config();
 
-const transpoter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
     secure: true,
     auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD
+      
+        user: process.env.APP_EMAIL,
+        pass: process.env.APP_PASSWORD
     },
 });
 
 async function sendEmail(to, subject, clientName, clientSubject, clientMassage, companyNumber, websiteLink) {
-
     try {
-
-
         const mailDetails = {
-
             from: process.env.EMAIL,
             to: to,
             subject: subject,
-            html: await setConfirmEmailBody(clientName, clientSubject, clientMassage, companyNumber, websiteLink),
+            html: setConfirmEmailBody(clientName, clientSubject, clientMassage, companyNumber, websiteLink),
         };
 
-        transpoter.sendMail(mailDetails, (error) => {
+        await transporter.sendMail(mailDetails);
 
-            if (error) {
-                console.log(error);
-            }
 
-            console.log("Email sent:", info.response);
 
-        })
     } catch (error) {
-        console.log(error);
+        console.log("Failed to send email:", error);
     }
-
 }
-
 
 module.exports = sendEmail;
