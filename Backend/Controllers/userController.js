@@ -517,4 +517,26 @@ async function getAllUsersCountInCurrentMonth (req, res) {
     }
 }
 
-module.exports = { deleteUser, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter, getAllSystemUsersCount, getAllActiveUsersCount, getAllUsersCountInCurrentMonth, getAllSystemUsers, getUserById }
+async function getAllClientUsers(req, res) {
+    try {
+        const query = 'SELECT * FROM users ';
+        pool.query(query, (error, results) => {
+            if (error) {
+                console.error('Error fetching client users:', error);
+                return res.status(500).send('Failed to fetch client users');
+            }
+
+            if (results.length === 0) {
+                return res.status(404).send('No client users found');
+            }
+
+            return res.status(200).json({ message: 'Client users fetched successfully', data: results });
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('Internal Server Error');
+    }
+}
+
+
+module.exports = { deleteUser,getAllClientUsers, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter, getAllSystemUsersCount, getAllActiveUsersCount, getAllUsersCountInCurrentMonth, getAllSystemUsers, getUserById }

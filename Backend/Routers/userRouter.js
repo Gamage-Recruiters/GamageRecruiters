@@ -4,6 +4,10 @@ const userController = require('../Controllers/userController');
 
 const router = express.Router();
 
+// View All Client Users
+router.get('/all', userController.getAllClientUsers);
+
+
 // Update User CV Route ...
 router.put('/update-user-cv', upload, userController.uploadUserCV);
 
