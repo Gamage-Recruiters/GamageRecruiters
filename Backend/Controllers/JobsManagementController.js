@@ -381,14 +381,14 @@ const getJobStatistics = async (req, res) => {
   try {
     const [jobs] = await db.query(`
       SELECT 
-        j.id AS jobId,
-        j.jobName,
-        j.company,
-        MAX(a.appliedDate) AS lastApplication,
-        COUNT(a.applicationId) AS applicationCount
+      j.jobId AS jobId,
+      j.jobName,
+      j.company,
+      MAX(a.appliedDate) AS lastApplication,
+      COUNT(a.applicationId) AS applicationCount
       FROM jobs j
-      LEFT JOIN jobapplications a ON j.id = a.jobId
-      GROUP BY j.id, j.jobName, j.company
+      LEFT JOIN jobapplications a ON j.jobId = a.jobId
+      GROUP BY j.jobId, j.jobName, j.company;
     `);
 
     res.json(jobs);

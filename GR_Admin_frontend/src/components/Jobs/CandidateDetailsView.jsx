@@ -1,479 +1,541 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Search, CalendarDays, Filter, ArrowLeft, ArrowUp, ArrowDown, UserCircle, Mail, Phone, Briefcase, Calendar, Download, X } from "lucide-react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { FiDownload, FiTrash2, FiSearch, FiFilter, FiUser, FiMail, FiPhone, FiCalendar, FiFile, FiArchive, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 
-// Sample candidate data
-const candidateData = [
-  {
-    id: 1,
-    jobId: 1,
-    firstName: "John",
-    lastName: "Smith",
-    email: "john.smith@example.com",
-    phone: "+94 76 123 4567",
-    appliedDate: "March 15, 2025",
-    experience: "6 years",
-    skills: ["React", "Node.js", "TypeScript", "AWS", "MongoDB"],
-    education: "MSc in Computer Science",
-    status: "Shortlisted",
-    resumeUrl: "/resumes/john-smith.pdf"
-  },
-  {
-    id: 2,
-    jobId: 1,
-    firstName: "Sarah",
-    lastName: "Johnson",
-    email: "sarah.j@example.com",
-    phone: "+94 77 234 5678",
-    appliedDate: "March 18, 2025",
-    experience: "8 years",
-    skills: ["React", "Angular", "JavaScript", "Azure", "PostgreSQL"],
-    education: "BSc in Software Engineering",
-    status: "New",
-    resumeUrl: "/resumes/sarah-johnson.pdf"
-  },
-  {
-    id: 3,
-    jobId: 1,
-    firstName: "Michael",
-    lastName: "Wong",
-    email: "michael.w@example.com",
-    phone: "+94 75 345 6789",
-    appliedDate: "March 10, 2025",
-    experience: "4 years",
-    skills: ["React", "Redux", "TypeScript", "GCP", "Firebase"],
-    education: "BSc in Computer Engineering",
-    status: "Interviewing",
-    resumeUrl: "/resumes/michael-wong.pdf"
-  },
-  {
-    id: 4,
-    jobId: 2,
-    firstName: "Emily",
-    lastName: "Chen",
-    email: "emily.c@example.com",
-    phone: "+94 71 456 7890",
-    appliedDate: "March 17, 2025",
-    experience: "3 years",
-    skills: ["Java", "Spring", "Kubernetes", "Docker"],
-    education: "BSc in Information Technology",
-    status: "New",
-    resumeUrl: "/resumes/emily-chen.pdf"
-  }
-];
+const CandidateDetailsView = () => {
+  // State management
+  const [applications, setApplications] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filterJobId, setFilterJobId] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedApplications, setSelectedApplications] = useState([]);
+  const [statistics, setStatistics] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmAction, setConfirmAction] = useState({ type: null, id: null });
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
 
-// Sample job data
-const jobData = [
-  {
-    id: 1,
-    title: "Senior Software Engineer",
-    company: "Tech Solutions Ltd",
-    location: "Colombo"
-  },
-  {
-    id: 2,
-    title: "Backend Developer",
-    company: "Digital Innovations Inc",
-    location: "Kandy"
-  }
-];
+  const baseUrl = 'http://localhost:8000';
 
-export default function CandidateDetailsView() {
-  const { jobId } = useParams();
-  const [candidates, setCandidates] = useState([]);
-  const [filteredCandidates, setFilteredCandidates] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("appliedDate");
-  const [sortOrder, setSortOrder] = useState("desc");
-  const [filterStatus, setFilterStatus] = useState("All");
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [selectedJob, setSelectedJob] = useState(parseInt(jobId) || "all");
-
-  // Status options for filtering
-  const statusOptions = ["All", "New", "Shortlisted", "Interviewing", "Rejected"];
-
-    useEffect(() => {
-      const fetchJobs = async () => {
-        try {
-          const response = await fetch('http://localhost:8000/api/jobs');
-          const data = await response.json();
-          setJobs(data);
-        } catch (error) {
-          console.error('Error fetching jobs:', error);
-        }
-      };
-      fetchJobs();
-    }, []);
-
-  // Initialize candidates based on job ID or show all
+  // Fetch data on component mount
   useEffect(() => {
-    const fetchCandidates = async () => {
-      try {
-        let url;
-        if (selectedJob === "all") {
-          url = '/api/applications';
-        } else {
-          url = `http://localhost:8000/api/jobs/${selectedJob}/applications`;
-        }
-        const response = await fetch(url);
-        const data = await response.json();
-        const mappedCandidates = data.map(app => ({
-          id: app.applicationId,
-          jobId: app.jobId,
-          firstName: app.firstName,
-          lastName: app.lastName,
-          email: app.email,
-          phone: app.phoneNumber,
-          appliedDate: new Date(app.appliedDate).toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          }),
-          status: app.status || 'New',
-          resumeUrl: `http://localhost:8000/api/applications/download/${app.applicationId}`
-        }));
-        setCandidates(mappedCandidates);
-        setFilteredCandidates(mappedCandidates);
-      } catch (error) {
-        console.error('Error fetching candidates:', error);
-      }
-    };
-    fetchCandidates();
-  }, [selectedJob]);
+    fetchJobs();
+    fetchAllApplications();
+    fetchStatistics();
+  }, []);
 
-  // Filter and sort candidates
-  useEffect(() => {
-    let filtered = [...candidates];
-    
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(candidate => 
-        `${candidate.firstName} ${candidate.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        candidate.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  // Fetch all jobs
+  const fetchJobs = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/api/jobs`);
+      setJobs(response.data.data || []);
+    } catch (err) {
+      console.error('Error fetching jobs:', err);
+      setError('Failed to load jobs data.');
+    }
+  };
+
+  // Fetch all applications
+  const fetchAllApplications = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${baseUrl}/api/jobapplications/applications`);
+      setApplications(response.data.data || []);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching applications:', err);
+      setError('Failed to load applications data.');
+      setLoading(false);
+    }
+  };
+
+  // Fetch applications for a specific job
+  const fetchApplicationsByJob = async (jobId) => {
+    if (jobId === 'all') {
+      return fetchAllApplications();
     }
     
-    // Status filter
-    if (filterStatus !== "All") {
-      filtered = filtered.filter(candidate => candidate.status === filterStatus);
+    setLoading(true);
+    try {
+      const response = await axios.get(`${baseUrl}/api/jobapplications/jobs/${jobId}/applications`);
+      setApplications(response.data.data || []);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching applications for job:', err);
+      setError(`Failed to load applications for job ID ${jobId}.`);
+      setLoading(false);
     }
-    
-    // Sorting
-    filtered.sort((a, b) => {
-      let comparison = 0;
-      if (sortBy === "name") {
-        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
-        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
-        comparison = nameA.localeCompare(nameB);
-      } else if (sortBy === "appliedDate") {
-        const dateA = new Date(a.appliedDate);
-        const dateB = new Date(b.appliedDate);
-        comparison = dateA - dateB;
-      } else if (sortBy === "status") {
-        comparison = a.status.localeCompare(b.status);
-      }
-      
-      return sortOrder === "asc" ? comparison : -comparison;
-    });
-    
-    setFilteredCandidates(filtered);
-  }, [candidates, searchTerm, sortBy, sortOrder, filterStatus]);
+  };
 
-  // Handle sort toggle
-  const handleSort = (field) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(field);
-      setSortOrder("desc");
+  // Fetch job statistics
+  const fetchStatistics = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/api/jobs/statistics`);
+      setStatistics(response.data.data || []);
+    } catch (err) {
+      console.error('Error fetching job statistics:', err);
     }
   };
 
   // Handle job filter change
-  const handleJobChange = (e) => {
-    const jobId = e.target.value === "all" ? "all" : parseInt(e.target.value);
-    setSelectedJob(jobId);
+  const handleFilterChange = (e) => {
+    const jobId = e.target.value;
+    setFilterJobId(jobId);
+    fetchApplicationsByJob(jobId);
   };
 
-  // Get job title for display
-  const getJobTitle = (jobId) => {
-    const job = jobs.find(j => j.jobId === jobId);
-    return job ? job.title : "Unknown Position";
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { staggerChildren: 0.05 }
+  // Handle application selection for bulk actions
+  const handleSelectApplication = (applicationId) => {
+    setSelectedApplications(prev => {
+      if (prev.includes(applicationId)) {
+        return prev.filter(id => id !== applicationId);
+      } else {
+        return [...prev, applicationId];
+      }
+    });
+  };
+
+  // Select/deselect all applications
+  const handleSelectAll = () => {
+    if (selectedApplications.length === filteredApplications.length) {
+      setSelectedApplications([]);
+    } else {
+      setSelectedApplications(filteredApplications.map(app => app.applicationId));
     }
   };
-  
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 }
+
+  // Download individual resume
+  const downloadResume = async (applicationId) => {
+    try {
+      window.open(`${baseUrl}/api/jobapplications/applications/download/${applicationId}`, '_blank');
+      showToastMessage('Resume download started', 'success');
+    } catch (err) {
+      console.error('Error downloading resume:', err);
+      showToastMessage('Failed to download resume', 'error');
+    }
+  };
+
+  // Download all resumes for a job
+  const downloadAllResumes = async (jobId) => {
+    try {
+      window.open(`${baseUrl}/api/jobapplications/jobs/${jobId}/applications/download-all`, '_blank');
+      showToastMessage('Bulk download started', 'success');
+    } catch (err) {
+      console.error('Error downloading all resumes:', err);
+      showToastMessage('Failed to download all resumes', 'error');
+    }
+  };
+
+  // Delete individual application
+  const deleteApplication = async (applicationId) => {
+    try {
+      await axios.delete(`${baseUrl}/api/jobapplications/delete/${applicationId}`);
+      setApplications(applications.filter(app => app.applicationId !== applicationId));
+      showToastMessage('Application deleted successfully', 'success');
+      fetchStatistics(); // Refresh statistics after deletion
+    } catch (err) {
+      console.error('Error deleting application:', err);
+      showToastMessage('Failed to delete application', 'error');
+    }
+  };
+
+  // Delete all applications for a job
+  const deleteAllApplications = async (jobId) => {
+    try {
+      await axios.delete(`${baseUrl}/api/jobapplications/jobs/${jobId}/applications/delete-all`);
+      if (filterJobId === jobId || filterJobId === 'all') {
+        // If we're viewing the job that was deleted or all jobs, refresh the view
+        fetchApplicationsByJob(filterJobId);
+      }
+      showToastMessage('All applications for this job deleted successfully', 'success');
+      fetchStatistics(); // Refresh statistics after deletion
+    } catch (err) {
+      console.error('Error deleting all applications:', err);
+      showToastMessage('Failed to delete applications', 'error');
+    }
+  };
+
+  // Delete selected applications
+  const deleteSelectedApplications = async () => {
+    try {
+      for (const applicationId of selectedApplications) {
+        await axios.delete(`${baseUrl}/api/jobapplications/delete/${applicationId}`);
+      }
+      setApplications(applications.filter(app => !selectedApplications.includes(app.applicationId)));
+      setSelectedApplications([]);
+      showToastMessage(`${selectedApplications.length} applications deleted successfully`, 'success');
+      fetchStatistics(); // Refresh statistics after deletion
+    } catch (err) {
+      console.error('Error deleting selected applications:', err);
+      showToastMessage('Failed to delete some applications', 'error');
+    }
+  };
+
+  // Show confirmation modal
+  const showConfirmationModal = (type, id) => {
+    setConfirmAction({ type, id });
+    setShowConfirmModal(true);
+  };
+
+  // Handle confirmation modal actions
+  const handleConfirmAction = () => {
+    const { type, id } = confirmAction;
+    
+    if (type === 'deleteOne') {
+      deleteApplication(id);
+    } else if (type === 'deleteAll') {
+      deleteAllApplications(id);
+    } else if (type === 'deleteSelected') {
+      deleteSelectedApplications();
+    }
+    
+    setShowConfirmModal(false);
+  };
+
+  // Show toast message
+  const showToastMessage = (message, type) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+  };
+
+  // Filter applications based on search term
+  const filteredApplications = applications.filter(app => {
+    const searchString = searchTerm.toLowerCase();
+    return (
+      app.firstName?.toLowerCase().includes(searchString) ||
+      app.lastName?.toLowerCase().includes(searchString) ||
+      app.email?.toLowerCase().includes(searchString) ||
+      app.phoneNumber?.toLowerCase().includes(searchString) ||
+      app.jobName?.toLowerCase().includes(searchString) ||
+      app.company?.toLowerCase().includes(searchString)
+    );
+  });
+
+  // Get job name from job ID
+  const getJobName = (jobId) => {
+    const job = jobs.find(j => j.jobId === jobId);
+    return job ? `${job.jobName} at ${job.company}` : 'Unknown Job';
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header section */}
-      <motion.div 
-        className="mb-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Candidate Applications</h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-1">
-              View and manage candidate applications for your job postings
-            </p>
-          </div>
-          <button 
-            onClick={() => window.history.back()} 
-            className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition duration-300"
-          >
-            <ArrowLeft size={18} className="mr-2" />
-            Back
-          </button>
-        </div>
-      </motion.div>
+    <div className="bg-gray-50 min-h-screen p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Candidate Applications</h1>
+        <p className="text-gray-600 mt-2">Manage and review all job applications</p>
+      </div>
 
-      {/* Filters and Search */}
-      <motion.div 
-        className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" />
+      {/* Stats Cards */}
+      {statistics && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
+                <FiUser size={24} />
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm">Total Applications</p>
+                <h3 className="text-2xl font-bold">{applications.length}</h3>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-green-100 text-green-500 mr-4">
+                <FiFile size={24} />
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm">Active Jobs</p>
+                <h3 className="text-2xl font-bold">{jobs.filter(job => job.status === 'Active').length}</h3>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-purple-100 text-purple-500 mr-4">
+                <FiArchive size={24} />
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm">Applications Today</p>
+                <h3 className="text-2xl font-bold">
+                  {applications.filter(app => {
+                    const today = new Date();
+                    const appDate = new Date(app.appliedDate);
+                    return (
+                      appDate.getDate() === today.getDate() &&
+                      appDate.getMonth() === today.getMonth() &&
+                      appDate.getFullYear() === today.getFullYear()
+                    );
+                  }).length}
+                </h3>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4">
+                <FiCalendar size={24} />
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm">Last Application</p>
+                <h3 className="text-lg font-bold">
+                  {applications.length > 0 
+                    ? formatDate(applications.sort((a, b) => 
+                        new Date(b.appliedDate) - new Date(a.appliedDate)
+                      )[0].appliedDate)
+                    : 'None'}
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filters and Actions */}
+      <div className="bg-white rounded-lg shadow mb-8">
+        <div className="p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* Search */}
+            <div className="relative w-full md:w-64">
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search candidates by name, email or skills..."
+                placeholder="Search applications..."
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/80 dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition-all"
+                onChange={handleSearchChange}
               />
             </div>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <select
-              value={selectedJob}
-              onChange={handleJobChange}
-              className="px-4 py-2 bg-white/80 dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition-all"
-            >
-              <option value="all">All Jobs</option>
-              {jobData.map(job => (
-                <option key={job.id} value={job.id}>{job.title}</option>
-              ))}
-            </select>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 bg-white/80 dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition-all"
-            >
-              {statusOptions.map(status => (
-                <option key={status} value={status}>{status}</option>
-              ))}
-            </select>
-          </div>
-        </div>
 
-        {/* Results summary */}
-        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-          <div>
-            Showing {filteredCandidates.length} candidates
-            {selectedJob !== "all" && ` for ${getJobTitle(selectedJob)}`}
-          </div>
-          <div className="flex items-center gap-2">
-            <CalendarDays size={16} />
-            <span>Last updated: March 20, 2025</span>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Main content grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
-        {/* Candidate List */}
-        <motion.div 
-          className="lg:col-span-1 flex flex-col min-h-0"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-        >
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col h-full">
-            <div className="p-3 border-b border-gray-100 dark:border-gray-700">
-              <div className="flex justify-between items-center">
-                <h2 className="font-semibold text-gray-700 dark:text-gray-200">Candidates</h2>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                  <Filter size={14} />
-                  <span>Sort:</span>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => handleSort(e.target.value)}
-                    className="px-2 py-1 bg-white/80 dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-md text-xs"
-                  >
-                    <option value="appliedDate">Date</option>
-                    <option value="name">Name</option>
-                    <option value="status">Status</option>
-                  </select>
-                  <button 
-                    onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                  >
-                    {sortOrder === "asc" ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
-              <motion.div 
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="h-full"
+            {/* Job Filter */}
+            <div className="relative w-full md:w-64">
+              <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <select
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                value={filterJobId}
+                onChange={handleFilterChange}
               >
-                {filteredCandidates.length === 0 ? (
-                  <div className="p-6 text-center text-gray-500 dark:text-gray-400">
-                    No candidates match your search criteria
-                  </div>
-                ) : (
-                  filteredCandidates.map(candidate => (
-                    <motion.div 
-                      key={candidate.id}
-                      variants={itemVariants}
-                      className={`p-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-white/40 dark:hover:bg-gray-700/40 transition duration-150 ${selectedCandidate?.id === candidate.id ? 'bg-purple-50/70 dark:bg-purple-900/30 border-l-4 border-l-purple-500' : ''}`}
-                      onClick={() => setSelectedCandidate(candidate)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white mr-3 shadow-sm">
-                            {candidate.firstName.charAt(0)}{candidate.lastName.charAt(0)}
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-gray-900 dark:text-white">{candidate.firstName} {candidate.lastName}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300">{candidate.email}</p>
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">ID: {candidate.id}</span>
-                        </div>
-                      </div>
-                      <div className="mt-2 flex items-center justify-between text-sm">
-                        <span className="text-gray-500 dark:text-gray-400">{candidate.phone}</span>
-                        <span className="text-gray-500 dark:text-gray-400 flex items-center">
-                          <Calendar size={14} className="mr-1" />
-                          {candidate.appliedDate}
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))
-                )}
-              </motion.div>
+                <option value="all">All Jobs</option>
+                {jobs.map(job => (
+                  <option key={job.jobId} value={job.jobId}>
+                    {job.jobName} - {job.company}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Bulk Actions */}
+            <div className="flex items-center gap-3">
+              {filterJobId !== 'all' && (
+                <button
+                  className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors"
+                  onClick={() => downloadAllResumes(filterJobId)}
+                >
+                  <FiDownload /> Download All CVs
+                </button>
+              )}
+              
+              {selectedApplications.length > 0 && (
+                <button
+                  className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors"
+                  onClick={() => showConfirmationModal('deleteSelected')}
+                >
+                  <FiTrash2 /> Delete Selected ({selectedApplications.length})
+                </button>
+              )}
+              
+              {filterJobId !== 'all' && (
+                <button
+                  className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors"
+                  onClick={() => showConfirmationModal('deleteAll', filterJobId)}
+                >
+                  <FiTrash2 /> Delete All
+                </button>
+              )}
             </div>
           </div>
-        </motion.div>
+        </div>
+      </div>
 
-        {/* Candidate Details */}
-        <motion.div 
-          className="lg:col-span-2 flex flex-col min-h-0"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          {selectedCandidate ? (
-            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col h-full">
-              <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Candidate Details</h2>
-                <button 
-                  onClick={() => setSelectedCandidate(null)}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                >
-                  <X size={18} className="text-gray-500 dark:text-gray-400" />
-                </button>
-              </div>
-              
-              <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
-                <div className="flex flex-col md:flex-row gap-6 mb-6">
-                  <div className="flex-shrink-0">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white text-xl shadow-md">
-                      {selectedCandidate.firstName.charAt(0)}{selectedCandidate.lastName.charAt(0)}
-                    </div>
-                  </div>
-                  <div className="flex-grow">
-                    <div className="mb-4 inline-block px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-gray-600 dark:text-gray-300 text-sm">
-                      Candidate ID: {selectedCandidate.id}
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{selectedCandidate.firstName} {selectedCandidate.lastName}</h3>
-                    
-                    <div className="grid grid-cols-1 gap-4 mt-2">
-                      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <div className="grid grid-cols-1 gap-y-4">
-                          <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</p>
-                            <div className="flex items-center">
-                              <Mail size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
-                              <a href={`mailto:${selectedCandidate.email}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                {selectedCandidate.email}
-                              </a>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Phone</p>
-                            <div className="flex items-center">
-                              <Phone size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
-                              <a href={`tel:${selectedCandidate.phone}`} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                {selectedCandidate.phone}
-                              </a>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Applied Date</p>
-                            <div className="flex items-center">
-                              <Calendar size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
-                              <span className="text-gray-700 dark:text-gray-300">{selectedCandidate.appliedDate}</span>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Resume/CV</p>
-                            <div className="flex items-center">
-                              <a
-                                href={selectedCandidate.resumeUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition duration-300 shadow-sm"
-                              >
-                                <Download size={16} className="mr-2" />
-                                Download CV
-                              </a>
-                            </div>
+      {/* Applications Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        {loading ? (
+          <div className="p-12 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading applications...</p>
+          </div>
+        ) : error ? (
+          <div className="p-12 text-center">
+            <FiAlertCircle className="text-red-500 text-5xl mx-auto mb-4" />
+            <p className="text-gray-600">{error}</p>
+          </div>
+        ) : filteredApplications.length === 0 ? (
+          <div className="p-12 text-center">
+            <FiFile className="text-gray-400 text-5xl mx-auto mb-4" />
+            <p className="text-gray-600">No applications found</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={selectedApplications.length === filteredApplications.length && filteredApplications.length > 0}
+                      onChange={handleSelectAll}
+                      className="rounded text-blue-600 focus:ring-blue-500"
+                    />
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Candidate
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Contact Info
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Job Position
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Applied Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredApplications.map(application => (
+                  <tr 
+                    key={application.applicationId}
+                    className={selectedApplications.includes(application.applicationId) ? "bg-blue-50" : "hover:bg-gray-50"}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedApplications.includes(application.applicationId)}
+                        onChange={() => handleSelectApplication(application.applicationId)}
+                        className="rounded text-blue-600 focus:ring-blue-500"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                          {application.firstName?.charAt(0)}{application.lastName?.charAt(0)}
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {application.firstName} {application.lastName}
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 flex flex-col items-center justify-center h-full">
-              <UserCircle size={64} className="text-gray-300 dark:text-gray-600 mb-4" />
-              <h3 className="text-xl font-medium text-gray-600 dark:text-gray-300 mb-2">No Candidate Selected</h3>
-              <p className="text-gray-500 dark:text-gray-400 text-center">Select a candidate from the list to view their details.</p>
-            </div>
-          )}
-        </motion.div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col">
+                        <div className="text-sm text-gray-900 flex items-center">
+                          <FiMail className="mr-2 text-gray-400" />
+                          {application.email}
+                        </div>
+                        <div className="text-sm text-gray-900 flex items-center mt-1">
+                          <FiPhone className="mr-2 text-gray-400" />
+                          {application.phoneNumber}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {application.jobName || getJobName(application.jobType)}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {application.company}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {formatDate(application.appliedDate)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button 
+                          onClick={() => downloadResume(application.applicationId)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="Download Resume"
+                        >
+                          <FiDownload />
+                        </button>
+                        <button 
+                          onClick={() => showConfirmationModal('deleteOne', application.applicationId)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete Application"
+                        >
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Confirm Action</h3>
+            <p className="text-gray-600 mb-6">
+              {confirmAction.type === 'deleteOne' && "Are you sure you want to delete this application? This will also remove the candidate's resume."}
+              {confirmAction.type === 'deleteAll' && "Are you sure you want to delete ALL applications for this job? This will remove all resumes as well."}
+              {confirmAction.type === 'deleteSelected' && `Are you sure you want to delete ${selectedApplications.length} selected applications? This will remove all associated resumes.`}
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                onClick={handleConfirmAction}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className={`fixed bottom-5 right-5 p-4 rounded-md shadow-lg flex items-center space-x-2 ${
+          toast.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        }`}>
+          {toast.type === 'success' ? <FiCheckCircle /> : <FiAlertCircle />}
+          <span>{toast.message}</span>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default CandidateDetailsView;
