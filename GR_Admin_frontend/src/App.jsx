@@ -30,6 +30,7 @@ import ViewClient from './components/ViewClient';
 
 import EditAdmin from './components/EditAdmin';
 import ViewAdmin from './pages/Admin/ViewAdmin';
+import AdminProfile from './pages/Admin/AdminProfile';
 
 
 
@@ -70,6 +71,7 @@ function App() {
               <Route path="/job-dashboard" element={<JobDashboard />} />
               <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
               <Route path="/admins/view/:adminId" element={<ViewAdmin />} />
+              <Route path="/admin/profile" element={<AdminProfile />} />
 
 
 

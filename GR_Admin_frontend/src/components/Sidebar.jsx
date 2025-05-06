@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -13,23 +13,89 @@ import {
   Settings,
   ChevronRight,
   Menu,
-  X
+  X,
+  LogOut,
+  Moon,
+  Sun,
+  UserCircle
 } from 'lucide-react';
 
 function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [darkMode, setDarkMode] = useState(false);
+  const [adminData, setAdminData] = useState({
+    name: 'Admin User',
+    role: 'Administrator',
+    image: null
+  });
+  
+  // Simulating fetching admin data
+  useEffect(() => {
+    // This would be replaced with an actual API call
+    // For example: fetchAdminData(adminId)
+    const fetchData = async () => {
+      try {
+        // Mock data - replace with actual API call
+        const data = {
+          name: 'John Doe',
+          role: 'Super Admin',
+          image: null
+        };
+        setAdminData(data);
+      } catch (error) {
+        console.error('Error fetching admin data:', error);
+      }
+    };
+    
+    fetchData();
+  }, []);
+  
+  // Toggle dark mode
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  const handleLogout = async () => {
+    try {
+      // Call logout API
+      const response = await fetch('/api/admin/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        // Clear any local storage/session storage items
+        localStorage.removeItem('adminToken');
+        sessionStorage.removeItem('adminData');
+        
+        // Redirect to login page
+        navigate('/login');
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
   
   const menuItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/clients', icon: Users, label: 'Clients' },
     { path: '/admins', icon: Users, label: 'Admins' },
-    { path: '/jobss', icon: Briefcase, label: 'Jobs' },
-    { path: '/candidate', icon: FileText, label: 'Applications' },
+    { path: '/jobs', icon: Briefcase, label: 'Jobs' },
+    { path: '/candidate', icon: FileText, label: 'Applications View' },
+    { path: '/job-dashboard', icon: FileText, label: 'Job Applications' },
     { path: '/workshops', icon: Calendar, label: 'Workshops' },
     { path: '/blog', icon: BookOpen, label: 'Blog' },
     { path: '/partners', icon: Handshake, label: 'Partners' },
     { path: '/inquiries', icon: Mail, label: 'Inquiries' },
-    { path: '/job-dashboard', icon: Mail, label: 'Job Applications' },
   ];
 
   // Group menu items by category
@@ -67,7 +133,7 @@ function Sidebar({ isOpen, setIsOpen }) {
         animate={{ x: isOpen ? 0 : -300 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className={`
-          fixed top-0 left-0 h-full w-64 z-30
+          fixed top-0 left-0 h-full w-72 z-30
           bg-white dark:bg-gray-800 shadow-lg md:shadow-none
           md:relative md:translate-x-0
           flex flex-col
@@ -76,10 +142,12 @@ function Sidebar({ isOpen, setIsOpen }) {
         {/* Logo and close button */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-md bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">GR</span>
-            </div>
-            <h1 className="text-lg font-bold text-gray-800 dark:text-white">Gamage</h1>
+            {darkMode ? (
+              <img src="https://i.ibb.co/twq26b0M/W-logo-Untitled-1.png" alt="Gamage White Logo" className="h-8" />
+            ) : (
+              <img src="https://i.ibb.co/LDvQZXBq/B-logo-Untitled-1.png" alt="Gamage Black Logo" className="h-8" />
+            )}
+            <h1 className="text-lg font-bold text-gray-800 dark:text-white">Gamage Recruiters</h1>
           </div>
           
           <button 
@@ -90,8 +158,46 @@ function Sidebar({ isOpen, setIsOpen }) {
           </button>
         </div>
         
+        {/* Admin Profile Summary */}
+        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+          <Link 
+            to="/admin/profile" 
+            className="flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-lg"
+          >
+            {adminData.image ? (
+              <img 
+                src={adminData.image} 
+                alt={adminData.name} 
+                className="w-10 h-10 rounded-full object-cover border-2 border-purple-200 dark:border-purple-900" 
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-300">
+                <UserCircle className="h-6 w-6" />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-800 dark:text-white truncate">
+                {adminData.name}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                {adminData.role}
+              </p>
+            </div>
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+              Online
+            </span>
+          </Link>
+        </div>
+        
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto py-4 px-3">
+          {/* Web Admin Panel header */}
+          <div className="mb-4 px-4">
+            <h1 className="text-sm font-bold text-purple-600 dark:text-purple-400">
+              Web Admin Panel
+            </h1>
+          </div>
+        
           {/* Main menu */}
           <div className="mb-6">
             <h2 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
@@ -179,8 +285,9 @@ function Sidebar({ isOpen, setIsOpen }) {
           </div>
         </div>
         
-        {/* Settings */}
+        {/* Bottom Controls */}
         <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+          {/* Settings */}
           <Link
             to="/settings"
             className="flex items-center px-4 py-2 text-sm rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 group"
@@ -190,6 +297,28 @@ function Sidebar({ isOpen, setIsOpen }) {
             </div>
             <span className="font-medium">Settings</span>
           </Link>
+          
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="w-full flex items-center px-4 py-2 text-sm rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 group mt-1"
+          >
+            <div className="p-1 mr-3 rounded-md text-gray-500 dark:text-gray-400">
+              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </div>
+            <span className="font-medium">{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
+          </button>
+          
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center px-4 py-2 text-sm rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 group mt-1"
+          >
+            <div className="p-1 mr-3 rounded-md text-red-500 dark:text-red-400">
+              <LogOut className="h-4 w-4" />
+            </div>
+            <span className="font-medium">Logout</span>
+          </button>
           
           {/* Collapse button - visible only on larger screens */}
           <button
@@ -206,9 +335,28 @@ function Sidebar({ isOpen, setIsOpen }) {
       {!isOpen && (
         <div className="hidden md:flex flex-col h-full w-16 bg-white dark:bg-gray-800 shadow-sm">
           <div className="flex items-center justify-center h-16 border-b border-gray-100 dark:border-gray-700">
-            <div className="w-8 h-8 rounded-md bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">GR</span>
-            </div>
+            {darkMode ? (
+              <img src="https://i.ibb.co/twq26b0M/W-logo-Untitled-1.png" alt="Gamage White Logo" className="h-8" />
+            ) : (
+              <img src="https://i.ibb.co/LDvQZXBq/B-logo-Untitled-1.png" alt="Gamage Black Logo" className="h-8" />
+            )}
+          </div>
+          
+          {/* Admin Profile Mini */}
+          <div className="border-b border-gray-100 dark:border-gray-700 py-3 flex justify-center">
+            <Link to="/admin/profile">
+              {adminData.image ? (
+                <img 
+                  src={adminData.image} 
+                  alt={adminData.name} 
+                  className="w-8 h-8 rounded-full object-cover border-2 border-purple-200 dark:border-purple-900"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-300">
+                  <UserCircle className="h-5 w-5" />
+                </div>
+              )}
+            </Link>
           </div>
           
           <div className="flex-1 py-4 flex flex-col items-center space-y-4">
@@ -230,7 +378,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                   <item.icon className="h-5 w-5" />
                   
                   {/* Tooltip */}
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap">
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap z-50">
                     {item.label}
                   </div>
                   
@@ -242,7 +390,47 @@ function Sidebar({ isOpen, setIsOpen }) {
             })}
           </div>
           
-          <div className="py-4 flex flex-col items-center border-t border-gray-100 dark:border-gray-700">
+          <div className="py-4 flex flex-col items-center space-y-4 border-t border-gray-100 dark:border-gray-700">
+            {/* Settings Icon */}
+            <Link
+              to="/settings"
+              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300 relative group"
+            >
+              <Settings className="h-5 w-5" />
+              
+              {/* Tooltip */}
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap z-50">
+                Settings
+              </div>
+            </Link>
+            
+            {/* Dark Mode Toggle Icon */}
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300 relative group"
+            >
+              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              
+              {/* Tooltip */}
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap z-50">
+                {darkMode ? 'Light Mode' : 'Dark Mode'}
+              </div>
+            </button>
+            
+            {/* Logout Icon */}
+            <button
+              onClick={handleLogout}
+              className="p-2 rounded-lg text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-300 relative group"
+            >
+              <LogOut className="h-5 w-5" />
+              
+              {/* Tooltip */}
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap z-50">
+                Logout
+              </div>
+            </button>
+            
+            {/* Expand Button */}
             <button
               onClick={() => setIsOpen(true)}
               className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300 relative group"
@@ -250,7 +438,7 @@ function Sidebar({ isOpen, setIsOpen }) {
               <ChevronRight className="h-5 w-5" />
               
               {/* Tooltip */}
-              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap">
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap z-50">
                 Expand Sidebar
               </div>
             </button>

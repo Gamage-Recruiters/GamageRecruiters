@@ -10,6 +10,7 @@ router.post('/register', upload, adminController.register);
 // Route for admin login ...
 // router.route('/login').post(adminController.login);
 router.post('/login', adminController.login);
+router.post('/logout', adminController.logout); 
 
 // Route to fetch all admin users ...
 router.get('/all', adminController.fetchAllAdminUsers);
@@ -22,5 +23,7 @@ router.delete('/delete/:adminId', adminController.deleteAdminUserDetails);
 
 // Route to update a specific admin user data ...
 router.put('/update/:adminId', upload, adminController.updateAdminUserDetails);
+
+
 
 module.exports = router;

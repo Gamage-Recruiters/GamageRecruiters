@@ -1,282 +1,378 @@
-import React, { useState, useEffect } from 'react';
-import { Download, ArrowDown, ArrowRight, Briefcase, FileText, User, Mail, Phone, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { FiDownload, FiTrash2, FiRefreshCw, FiSearch, FiEye, FiFileText, FiFilePlus, FiUsers, FiBarChart2, FiAlertCircle } from 'react-icons/fi';
 
-const JobDashboard = () => {
+export default function JobDashboard() {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [appLoading, setAppLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [stats, setStats] = useState(null);
+  const [showStats, setShowStats] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState(null);
 
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/api/jobs/statistics');
-        const data = await response.json();
-        
-        if (response.ok) {
-          console.log(data);
-          console.log(response);
-          if (Array.isArray(data.data) && data.data.length > 0) {
-            setSelectedJob(data.data[0].jobId);
-            setApplications(data.data);
-            setJobs(data.data);
-            setSelectedJob(null);
-            console.log("Jobsetdone");
-            console.log("Array data", data);
-          } else {
-            setSelectedJob(null);
-            setApplications([]);
-            
-            setJobs([]);
-            console.log("NUll Job set");
-            console.log("Array data", data);
-          }
-        } else {
-          setError(data.message || 'Failed to fetch jobs');
-        }
-      } catch (err) {
-        console.error(err);
-        setError('Failed to connect to server');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchJobs();
-  }, []);
-  
-  
-
-  const handleJobClick = async (jobId) => {
-    if (selectedJob === jobId) {
-      setSelectedJob(null);
-      setApplications([]);
-      return;
-    }
-  
+  // Fetch all jobs
+  const fetchJobs = async () => {
     try {
-      setAppLoading(true);
-      setError('');
-      const response = await fetch(`http://localhost:8000/api/jobapplications/${jobId}/applications`);
-      const data = await response.json();
-      if (response.ok) {
-        setApplications(data.data);
-        setSelectedJob(jobId);
-      } else {
-        setError(data.message || 'Failed to fetch applications');
-        setApplications([]);
-      }
+      setLoading(true);
+      const res = await axios.get('http://localhost:8000/api/jobs');
+      setJobs(res.data.data || []);
+      setError(null);
     } catch (err) {
-      setError('Failed to fetch applications');
+      console.error('Error fetching jobs:', err);
+      setError('Failed to load jobs. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch job statistics
+  const fetchJobStats = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get('http://localhost:8000/api/jobapplications/jobs/statistics');
+      console.log("statistic data" ,res);
+      console.log("statistic data" ,res.data.data);
+      setStats(res.data.data || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching job statistics:', err);
+      setError('Failed to load job statistics. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch applications for a specific job
+  const fetchApplicationsByJob = async (jobId) => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`http://localhost:8000/api/jobapplications/jobs/${jobId}/applications`);
+      setApplications(res.data.data || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching applications:', err);
+      setError('Failed to load applications. Please try again.');
       setApplications([]);
     } finally {
-      setAppLoading(false);
+      setLoading(false);
     }
   };
-  
 
-  const handleDownloadAll = (jobId) => {
-    const link = document.createElement('a');
-    link.href = `http://localhost:8000/api/jobapplications/${jobId}/applications/download-all`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showDownloadNotification('All CVs download started');
+  // Initial data fetch
+  useEffect(() => {
+    fetchJobs();
+    fetchJobStats();
+  }, []);
+
+  // Download single resume
+  const downloadResume = async (applicationId) => {
+    try {
+      window.open(`http://localhost:8000/api/jobapplications/applications/download/${applicationId}`, '_blank');
+    } catch (err) {
+      console.error('Error downloading resume:', err);
+      setError('Failed to download resume. Please try again.');
+    }
   };
 
-  const handleDownloadCV = (applicationId, name) => {
-    const link = document.createElement('a');
-    link.href = `http://localhost:8000/api/jobapplications/download/${applicationId}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showDownloadNotification(`${name}'s CV download started`);
+  // Download all resumes as zip
+  const downloadAllResumes = async (jobId) => {
+    try {
+      window.open(`http://localhost:8000/api/jobapplications/jobs/${jobId}/applications/download-all`, '_blank');
+    } catch (err) {
+      console.error('Error downloading all resumes:', err);
+      setError('Failed to download all resumes. Please try again.');
+    }
   };
 
-  const showDownloadNotification = (message) => {
-    setNotificationMessage(message);
-    setShowNotification(true);
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 3000);
+  // Delete all applications for a job
+  const deleteAllApplications = async (jobId) => {
+    try {
+      setLoading(true);
+      await axios.delete(`http://localhost:8000/api/jobapplications/jobs/${jobId}/applications/delete-all`);
+      setApplications([]);
+      fetchJobStats(); // Refresh stats after deletion
+      setError(null);
+      setShowDeleteConfirm(false);
+      setJobToDelete(null);
+    } catch (err) {
+      console.error('Error deleting applications:', err);
+      setError('Failed to delete applications. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getRandomGradient = () => {
-    const gradients = [
-      'from-purple-600 to-blue-500',
-      'from-blue-600 to-cyan-500',
-      'from-emerald-600 to-teal-500',
-      'from-indigo-600 to-purple-500',
-      'from-pink-600 to-rose-500',
-    ];
-    return gradients[Math.floor(Math.random() * gradients.length)];
+  // Handle job selection
+  const handleJobSelect = (job) => {
+    setSelectedJob(job);
+    fetchApplicationsByJob(job.jobId);
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-900">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-teal-500"></div>
-      </div>
-    );
-  }
+  // Filter jobs based on search term
+  const filteredJobs = jobs.filter(job => 
+    job.jobName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    job.company?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-200">
+    <div className="min-h-screen bg-gray-900 text-gray-100">
       {/* Header */}
-      <header className="bg-gray-800 py-6 px-6 shadow-lg">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-white flex items-center">
-              <Briefcase className="mr-3 text-teal-400" size={28} />
-              Talent Hub
-            </h1>
-            <p className="text-gray-400 mt-1">Job Applications Dashboard</p>
-          </div>
-          <div className="bg-gray-700 px-4 py-2 rounded-lg text-teal-400 font-medium">
-            {jobs.length} Active Positions
+      <header className="bg-gray-800 shadow-lg border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-blue-400">Job Dashboard</h1>
+            <div className="flex space-x-4">
+              <button 
+                onClick={() => { fetchJobs(); fetchJobStats(); }}
+                className="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <FiRefreshCw className="mr-2" /> Refresh
+              </button>
+              <button 
+                onClick={() => setShowStats(!showStats)}
+                className="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              >
+                <FiBarChart2 className="mr-2" /> {showStats ? 'Hide Stats' : 'Show Stats'}
+              </button>
+            </div>
           </div>
         </div>
       </header>
-      
-      {/* Main content */}
-      <main className="max-w-6xl mx-auto p-6">
-        {error && (
-          <div className="bg-red-900/30 border border-red-500 text-red-300 px-4 py-3 rounded-lg mb-6 flex items-start">
-            <X className="text-red-400 mr-2 mt-0.5" size={18} />
-            <span>{error}</span>
-          </div>
-        )}
 
-        {/* Notification toast */}
-        {showNotification && (
-          <div className="fixed bottom-6 right-6 bg-gray-800 border-l-4 border-teal-500 text-white px-6 py-4 rounded-lg shadow-lg animate-fade-in-up">
-            <div className="flex items-center">
-              <Download className="mr-3 text-teal-400" size={20} />
-              <span>{notificationMessage}</span>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Error Alert */}
+        {error && (
+          <div className="bg-red-900 border-l-4 border-red-500 p-4 mb-6 rounded-md">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <FiAlertCircle className="h-5 w-5 text-red-400" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-100">{error}</p>
+              </div>
             </div>
           </div>
         )}
 
-        <div className="space-y-5">
-          {jobs.map((job) => {
-            const gradientClass = getRandomGradient();
-            return (
-            <div key={job.jobId} className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 hover:border-gray-600 transition-all">
-              <div
-                className="p-5 cursor-pointer transition-colors"
-                onClick={() => handleJobClick(job.jobId)}
-              >
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <div className={`h-12 w-12 rounded-lg bg-gradient-to-br ${gradientClass} flex items-center justify-center mr-4 shadow-lg`}>
-                      <Briefcase className="text-white" size={24} />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-white">{job.jobName}</h2>
-                      <p className="text-gray-400">{job.company}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-gray-700/60 rounded-full px-4 py-1 text-sm">
-                      <span className="text-teal-400 font-semibold">{job.applicationCount}</span>
-                      <span className="text-gray-400 ml-1">application{job.applicationCount !== 1 ? 's' : ''}</span>
-                    </div>
-                    <div className="text-gray-400 transition-transform duration-300">
-                      {selectedJob === job.jobId ? 
-                        <ArrowDown size={20} className="text-teal-400" /> : 
-                        <ArrowRight size={20} />
-                      }
-                    </div>
-                  </div>
-                </div>
+        {/* Job Statistics */}
+        {showStats && stats && (
+          <div className="mb-6 bg-gray-800 shadow-md rounded-lg overflow-hidden">
+            <div className="px-4 py-5 sm:px-6 border-b border-gray-700">
+              <h3 className="text-lg leading-6 font-medium text-blue-400">Job Statistics</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-700">
+                <thead className="bg-gray-700">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Job Name</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Company</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Applications</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">First Application</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Last Application</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-gray-800 divide-y divide-gray-700">
+                  {stats.map((stat) => (
+                    <tr key={stat.jobId} className="hover:bg-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{stat.jobName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{stat.company}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-900 text-blue-200">
+                          {stat.applicationCount}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        {stat.firstApplication ? new Date(stat.firstApplication).toLocaleDateString() : 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        {stat.lastApplication ? new Date(stat.lastApplication).toLocaleDateString() : 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Search Bar & Job List */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-1 bg-gray-800 shadow-md rounded-lg overflow-hidden">
+            <div className="p-4 border-b border-gray-700">
+              <div className="flex items-center bg-gray-700 rounded-md px-3 py-2">
+                <FiSearch className="text-gray-400 mr-2" />
+                <input
+                  type="text"
+                  placeholder="Search jobs..."
+                  className="bg-transparent border-none w-full text-white focus:outline-none placeholder-gray-400"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-
-              {selectedJob === job.jobId && (
-                <div className="border-t border-gray-700 bg-gray-800/50 p-5">
-                  <div className="flex justify-between items-center mb-5">
-                    <h3 className="text-lg font-medium text-white flex items-center">
-                      <FileText className="mr-2 text-teal-400" size={18} />
-                      Applications
-                    </h3>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownloadAll(job.jobId);
-                      }}
-                      className="bg-teal-600 hover:bg-teal-700 transition-colors text-white px-4 py-2 rounded-lg flex items-center shadow-lg"
+            </div>
+            <div className="overflow-y-auto max-h-96">
+              {loading && !jobs.length ? (
+                <div className="flex justify-center items-center p-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+              ) : (
+                <ul className="divide-y divide-gray-700">
+                  {filteredJobs.map((job) => (
+                    <li 
+                      key={job.jobId} 
+                      className={`p-4 cursor-pointer hover:bg-gray-700 ${selectedJob?.jobId === job.jobId ? 'bg-gray-700 border-l-4 border-blue-500' : ''}`}
+                      onClick={() => handleJobSelect(job)}
                     >
-                      <Download className="w-5 h-5 mr-2" />
-                      Download All CVs
-                    </button>
-                  </div>
-
-                  {appLoading ? (
-                    <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500 mx-auto"></div>
-                      <p className="text-gray-400 mt-3">Loading applications...</p>
-                    </div>
-                 ) : selectedJob === job.jobId && Array.isArray(applications) && applications.length === 0 ? (
-
-
-                    <div className="bg-gray-800/70 border border-gray-700 rounded-xl p-8 text-center">
-                      <div className="bg-gray-700/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <FileText className="text-gray-500" size={24} />
-                      </div>
-                      <p className="text-gray-400">No applications found for this position</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {applications.map((app) => (
-                        <div
-                          key={app.applicationId}
-                          className="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow hover:border-gray-600"
-                        >
-                          <div className="flex justify-between">
-                            <div className="flex items-start space-x-3">
-                              <div className="bg-gray-700 rounded-full h-10 w-10 flex items-center justify-center text-teal-400">
-                                <User size={20} />
-                              </div>
-                              <div>
-                                <p className="font-medium text-white text-lg">
-                                  {app.firstName} {app.lastName}
-                                </p>
-                                <div className="mt-2 space-y-1">
-                                  <p className="text-sm text-gray-400 flex items-center">
-                                    <Mail className="w-4 h-4 mr-2 text-gray-500" />{app.email}
-                                  </p>
-                                  <p className="text-sm text-gray-400 flex items-center">
-                                    <Phone className="w-4 h-4 mr-2 text-gray-500" />{app.phoneNumber}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDownloadCV(app.applicationId, `${app.firstName} ${app.lastName}`);
-                              }}
-                              className="bg-gray-700 hover:bg-gray-600 text-teal-400 hover:text-teal-300 px-3 py-2 rounded-lg flex items-center text-sm transition-colors"
-                            >
-                              <Download className="w-4 h-4 mr-2" />
-                              CV
-                            </button>
-                          </div>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-sm font-medium text-white">{job.jobName}</h3>
+                          <p className="text-xs text-gray-400">{job.company}</p>
                         </div>
-                      ))}
-                    </div>
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-900 text-blue-200">
+                          {stats?.find(s => s.jobId === job.jobId)?.applicationCount || 0}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                  {filteredJobs.length === 0 && (
+                    <li className="p-4 text-center text-gray-400">No jobs found</li>
                   )}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          {/* Applications List */}
+          <div className="md:col-span-2 bg-gray-800 shadow-md rounded-lg overflow-hidden">
+            <div className="px-4 py-5 sm:px-6 border-b border-gray-700 flex justify-between items-center">
+              <h3 className="text-lg leading-6 font-medium text-blue-400">
+                {selectedJob ? `Applications for ${selectedJob.jobName}` : 'Select a job to view applications'}
+              </h3>
+              {selectedJob && applications.length > 0 && (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => downloadAllResumes(selectedJob.jobId)}
+                    className="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  >
+                    <FiDownload className="mr-2" /> Download All CVs
+                  </button>
+                  <button
+                    onClick={() => {
+                      setJobToDelete(selectedJob);
+                      setShowDeleteConfirm(true);
+                    }}
+                    className="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    <FiTrash2 className="mr-2" /> Delete All
+                  </button>
                 </div>
               )}
             </div>
-          )})}
+            
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && jobToDelete && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
+                  <h3 className="text-xl font-medium text-red-400 mb-4">Confirm Deletion</h3>
+                  <p className="text-white mb-6">
+                    Are you sure you want to delete all applications and resumes for <span className="font-bold">{jobToDelete.jobName}</span>? This action cannot be undone.
+                  </p>
+                  <div className="flex justify-end space-x-3">
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => deleteAllApplications(jobToDelete.jobId)}
+                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    >
+                      Delete All
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {loading && selectedJob ? (
+              <div className="flex justify-center items-center p-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                {selectedJob ? (
+                  applications.length > 0 ? (
+                    <table className="min-w-full divide-y divide-gray-700">
+                      <thead className="bg-gray-700">
+                        <tr>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Applicant</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Contact</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Applied Date</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-gray-800 divide-y divide-gray-700">
+                        {applications.map((application) => (
+                          <tr key={application.applicationId} className="hover:bg-gray-700">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="text-sm font-medium text-white">
+                                  {application.firstName} {application.lastName}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-300">{application.email}</div>
+                              <div className="text-sm text-gray-400">{application.phoneNumber}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                              {new Date(application.appliedDate).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => downloadResume(application.applicationId)}
+                                  className="flex items-center text-green-400 hover:text-green-300"
+                                  title="Download CV"
+                                >
+                                  <FiDownload className="h-5 w-5" />
+                                </button>
+                                <button
+                                  onClick={() => window.location.href = `/application/${application.applicationId}`}
+                                  className="flex items-center text-blue-400 hover:text-blue-300"
+                                  title="View Details"
+                                >
+                                  <FiEye className="h-5 w-5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="p-8 text-center text-gray-400">
+                      <FiFileText className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+                      <p>No applications found for this job.</p>
+                    </div>
+                  )
+                ) : (
+                  <div className="p-12 text-center text-gray-400">
+                    <FiFilePlus className="h-16 w-16 mx-auto mb-4 text-gray-500" />
+                    <p className="text-lg">Select a job from the list to view applications</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>
   );
-};
-
-export default JobDashboard;
+}

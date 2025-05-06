@@ -226,4 +226,37 @@ async function updateAdminUserDetails (req, res) {
     }
 }
 
-module.exports = { register, login, fetchAllAdminUsers, getAdminDataById, deleteAdminUserDetails, updateAdminUserDetails }
+async function logout(req, res) {
+    try {
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.status(400).send('No token found');
+        }
+
+        // Optionally delete or deactivate the session from DB
+        const deleteSessionQuery = 'DELETE FROM sessions WHERE token = ?';
+        pool.query(deleteSessionQuery, [token], (error, result) => {
+            if (error) {
+                console.log(error);
+                return res.status(400).send('Error deleting session');
+            }
+
+            // Clear the token cookie
+            res.clearCookie('token', {
+                httpOnly: true,
+                sameSite: 'none',
+                secure: true,
+            });
+
+            return res.status(200).json({ message: 'Logout successful' });
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send('Server Error');
+    }
+}
+
+
+module.exports = { register, login, logout, fetchAllAdminUsers, getAdminDataById, deleteAdminUserDetails, updateAdminUserDetails }
