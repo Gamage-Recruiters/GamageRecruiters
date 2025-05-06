@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FiDownload, FiTrash2, FiSearch, FiFilter, FiUser, FiMail, FiPhone, FiCalendar, FiFile, FiArchive, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+import { 
+  FiDownload, FiTrash2, FiSearch, FiFilter, FiUser, FiMail, 
+  FiPhone, FiCalendar, FiFile, FiArchive, FiCheckCircle, 
+  FiAlertCircle, FiChevronDown, FiBriefcase, FiClock, FiEye
+} from 'react-icons/fi';
 
 const CandidateDetailsView = () => {
   // State management
@@ -15,6 +19,7 @@ const CandidateDetailsView = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmAction, setConfirmAction] = useState({ type: null, id: null });
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
   const baseUrl = 'http://localhost:8000';
 
@@ -79,10 +84,10 @@ const CandidateDetailsView = () => {
   };
 
   // Handle job filter change
-  const handleFilterChange = (e) => {
-    const jobId = e.target.value;
+  const handleFilterChange = (jobId) => {
     setFilterJobId(jobId);
     fetchApplicationsByJob(jobId);
+    setIsFilterDropdownOpen(false);
   };
 
   // Handle search input change
@@ -230,85 +235,129 @@ const CandidateDetailsView = () => {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
+  // Get initials for avatar
+  const getInitials = (firstName, lastName) => {
+    return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
+  };
+
+  // Get random color for avatar background based on name
+  const getAvatarColor = (name) => {
+    const colors = [
+      'bg-indigo-800', 'bg-purple-800', 'bg-pink-800', 
+      'bg-red-800', 'bg-orange-800', 'bg-amber-800',
+      'bg-emerald-800', 'bg-teal-800', 'bg-cyan-800', 
+      'bg-blue-800'
+    ];
+    
+    if (!name) return colors[0];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
+  // Get today's applications count
+  const getTodayApplicationsCount = () => {
+    if (!applications.length) return 0;
+    
+    const today = new Date();
+    return applications.filter(app => {
+      const appDate = new Date(app.appliedDate);
+      return (
+        appDate.getDate() === today.getDate() &&
+        appDate.getMonth() === today.getMonth() &&
+        appDate.getFullYear() === today.getFullYear()
+      );
+    }).length;
+  };
+
+  // Get last application date
+  const getLastApplicationDate = () => {
+    if (!applications.length) return 'None';
+    
+    const sortedApps = [...applications].sort((a, b) => 
+      new Date(b.appliedDate) - new Date(a.appliedDate)
+    );
+    
+    return formatDate(sortedApps[0].appliedDate);
+  };
+
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-900 min-h-screen p-6 text-gray-100">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Candidate Applications</h1>
-        <p className="text-gray-600 mt-2">Manage and review all job applications</p>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          Candidate Applications
+        </h1>
+        <p className="text-gray-400 mt-2">Manage and review all job applications</p>
       </div>
 
       {/* Stats Cards */}
-      {statistics && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg shadow-gray-800/30 border border-gray-700 relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-indigo-700"></div>
+          <div className="p-6">
             <div className="flex items-center">
-              <div className="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
+              <div className="p-3 rounded-full bg-indigo-900/50 text-indigo-400 mr-4">
                 <FiUser size={24} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Total Applications</p>
-                <h3 className="text-2xl font-bold">{applications.length}</h3>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-green-100 text-green-500 mr-4">
-                <FiFile size={24} />
-              </div>
-              <div>
-                <p className="text-gray-500 text-sm">Active Jobs</p>
-                <h3 className="text-2xl font-bold">{jobs.filter(job => job.status === 'Active').length}</h3>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-purple-100 text-purple-500 mr-4">
-                <FiArchive size={24} />
-              </div>
-              <div>
-                <p className="text-gray-500 text-sm">Applications Today</p>
-                <h3 className="text-2xl font-bold">
-                  {applications.filter(app => {
-                    const today = new Date();
-                    const appDate = new Date(app.appliedDate);
-                    return (
-                      appDate.getDate() === today.getDate() &&
-                      appDate.getMonth() === today.getMonth() &&
-                      appDate.getFullYear() === today.getFullYear()
-                    );
-                  }).length}
-                </h3>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4">
-                <FiCalendar size={24} />
-              </div>
-              <div>
-                <p className="text-gray-500 text-sm">Last Application</p>
-                <h3 className="text-lg font-bold">
-                  {applications.length > 0 
-                    ? formatDate(applications.sort((a, b) => 
-                        new Date(b.appliedDate) - new Date(a.appliedDate)
-                      )[0].appliedDate)
-                    : 'None'}
-                </h3>
+                <p className="text-gray-400 text-sm">Total Applications</p>
+                <h3 className="text-2xl font-bold text-white">{applications.length}</h3>
               </div>
             </div>
           </div>
         </div>
-      )}
+
+        <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg shadow-gray-800/30 border border-gray-700 relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-emerald-700"></div>
+          <div className="p-6">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-emerald-900/50 text-emerald-400 mr-4">
+                <FiBriefcase size={24} />
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Active Jobs</p>
+                <h3 className="text-2xl font-bold text-white">{jobs.filter(job => job.status === 'Active').length}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg shadow-gray-800/30 border border-gray-700 relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-purple-700"></div>
+          <div className="p-6">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-purple-900/50 text-purple-400 mr-4">
+                <FiClock size={24} />
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Applications Today</p>
+                <h3 className="text-2xl font-bold text-white">{getTodayApplicationsCount()}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg shadow-gray-800/30 border border-gray-700 relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-amber-700"></div>
+          <div className="p-6">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-amber-900/50 text-amber-400 mr-4">
+                <FiCalendar size={24} />
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Last Application</p>
+                <h3 className="text-lg font-bold text-white">{getLastApplicationDate()}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Filters and Actions */}
-      <div className="bg-white rounded-lg shadow mb-8">
+      <div className="bg-gray-800 rounded-xl shadow-lg mb-8 border border-gray-700 overflow-hidden">
         <div className="p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Search */}
@@ -317,34 +366,53 @@ const CandidateDetailsView = () => {
               <input
                 type="text"
                 placeholder="Search applications..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-200 placeholder-gray-400"
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
             </div>
 
-            {/* Job Filter */}
+            {/* Job Filter - Custom dropdown */}
             <div className="relative w-full md:w-64">
-              <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <select
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
-                value={filterJobId}
-                onChange={handleFilterChange}
+              <div 
+                className="flex items-center justify-between pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg w-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-200"
+                onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
               >
-                <option value="all">All Jobs</option>
-                {jobs.map(job => (
-                  <option key={job.jobId} value={job.jobId}>
-                    {job.jobName} - {job.company}
-                  </option>
-                ))}
-              </select>
+                <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <span>
+                  {filterJobId === 'all' 
+                    ? 'All Jobs' 
+                    : getJobName(filterJobId)}
+                </span>
+                <FiChevronDown className={`transition-transform duration-200 ${isFilterDropdownOpen ? 'rotate-180' : ''}`} />
+              </div>
+              
+              {isFilterDropdownOpen && (
+                <div className="absolute left-0 right-0 mt-2 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                  <div 
+                    className="px-4 py-2 hover:bg-gray-600 cursor-pointer text-gray-200"
+                    onClick={() => handleFilterChange('all')}
+                  >
+                    All Jobs
+                  </div>
+                  {jobs.map(job => (
+                    <div 
+                      key={job.jobId} 
+                      className="px-4 py-2 hover:bg-gray-600 cursor-pointer text-gray-200"
+                      onClick={() => handleFilterChange(job.jobId)}
+                    >
+                      {job.jobName} - {job.company}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Bulk Actions */}
             <div className="flex items-center gap-3">
               {filterJobId !== 'all' && (
                 <button
-                  className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors"
+                  className="flex items-center gap-2 bg-indigo-900/50 text-indigo-300 px-4 py-2 rounded-lg hover:bg-indigo-800 transition-colors border border-indigo-700/50"
                   onClick={() => downloadAllResumes(filterJobId)}
                 >
                   <FiDownload /> Download All CVs
@@ -353,7 +421,7 @@ const CandidateDetailsView = () => {
               
               {selectedApplications.length > 0 && (
                 <button
-                  className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors"
+                  className="flex items-center gap-2 bg-red-900/50 text-red-300 px-4 py-2 rounded-lg hover:bg-red-800 transition-colors border border-red-700/50"
                   onClick={() => showConfirmationModal('deleteSelected')}
                 >
                   <FiTrash2 /> Delete Selected ({selectedApplications.length})
@@ -362,7 +430,7 @@ const CandidateDetailsView = () => {
               
               {filterJobId !== 'all' && (
                 <button
-                  className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors"
+                  className="flex items-center gap-2 bg-red-900/50 text-red-300 px-4 py-2 rounded-lg hover:bg-red-800 transition-colors border border-red-700/50"
                   onClick={() => showConfirmationModal('deleteAll', filterJobId)}
                 >
                   <FiTrash2 /> Delete All
@@ -374,73 +442,75 @@ const CandidateDetailsView = () => {
       </div>
 
       {/* Applications Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700">
         {loading ? (
           <div className="p-12 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading applications...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto"></div>
+            <p className="mt-4 text-gray-400">Loading applications...</p>
           </div>
         ) : error ? (
           <div className="p-12 text-center">
-            <FiAlertCircle className="text-red-500 text-5xl mx-auto mb-4" />
-            <p className="text-gray-600">{error}</p>
+            <FiAlertCircle className="text-red-400 text-5xl mx-auto mb-4" />
+            <p className="text-gray-400">{error}</p>
           </div>
         ) : filteredApplications.length === 0 ? (
           <div className="p-12 text-center">
-            <FiFile className="text-gray-400 text-5xl mx-auto mb-4" />
-            <p className="text-gray-600">No applications found</p>
+            <FiFile className="text-gray-500 text-5xl mx-auto mb-4" />
+            <p className="text-gray-400">No applications found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-700/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     <input
                       type="checkbox"
                       checked={selectedApplications.length === filteredApplications.length && filteredApplications.length > 0}
                       onChange={handleSelectAll}
-                      className="rounded text-blue-600 focus:ring-blue-500"
+                      className="rounded text-indigo-600 bg-gray-700 border-gray-600 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Candidate
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Contact Info
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Job Position
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Applied Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-700">
                 {filteredApplications.map(application => (
                   <tr 
                     key={application.applicationId}
-                    className={selectedApplications.includes(application.applicationId) ? "bg-blue-50" : "hover:bg-gray-50"}
+                    className={selectedApplications.includes(application.applicationId) 
+                      ? "bg-indigo-900/20 hover:bg-indigo-900/30" 
+                      : "hover:bg-gray-700/50"}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <input
                         type="checkbox"
                         checked={selectedApplications.includes(application.applicationId)}
                         onChange={() => handleSelectApplication(application.applicationId)}
-                        className="rounded text-blue-600 focus:ring-blue-500"
+                        className="rounded text-indigo-600 bg-gray-700 border-gray-600 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
-                          {application.firstName?.charAt(0)}{application.lastName?.charAt(0)}
+                        <div className={`flex-shrink-0 h-10 w-10 ${getAvatarColor(`${application.firstName} ${application.lastName}`)} rounded-full flex items-center justify-center text-white font-medium`}>
+                          {getInitials(application.firstName, application.lastName)}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-100">
                             {application.firstName} {application.lastName}
                           </div>
                         </div>
@@ -448,41 +518,47 @@ const CandidateDetailsView = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex flex-col">
-                        <div className="text-sm text-gray-900 flex items-center">
+                        <div className="text-sm text-gray-300 flex items-center">
                           <FiMail className="mr-2 text-gray-400" />
                           {application.email}
                         </div>
-                        <div className="text-sm text-gray-900 flex items-center mt-1">
+                        <div className="text-sm text-gray-300 flex items-center mt-1">
                           <FiPhone className="mr-2 text-gray-400" />
                           {application.phoneNumber}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-gray-200">
                         {application.jobName || getJobName(application.jobType)}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-400">
                         {application.company}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-gray-300">
                         {formatDate(application.appliedDate)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
+                      <div className="flex space-x-3">
                         <button 
                           onClick={() => downloadResume(application.applicationId)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-indigo-400 hover:text-indigo-300 transition-colors"
                           title="Download Resume"
                         >
                           <FiDownload />
                         </button>
+                        <button
+                          className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                          title="View Application"
+                        >
+                          <FiEye />
+                        </button>
                         <button 
                           onClick={() => showConfirmationModal('deleteOne', application.applicationId)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-400 hover:text-red-300 transition-colors"
                           title="Delete Application"
                         >
                           <FiTrash2 />
@@ -499,23 +575,23 @@ const CandidateDetailsView = () => {
 
       {/* Confirmation Modal */}
       {showConfirmModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Confirm Action</h3>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full border border-gray-700 shadow-xl">
+            <h3 className="text-lg font-medium text-gray-100 mb-4">Confirm Action</h3>
+            <p className="text-gray-300 mb-6">
               {confirmAction.type === 'deleteOne' && "Are you sure you want to delete this application? This will also remove the candidate's resume."}
               {confirmAction.type === 'deleteAll' && "Are you sure you want to delete ALL applications for this job? This will remove all resumes as well."}
               {confirmAction.type === 'deleteSelected' && `Are you sure you want to delete ${selectedApplications.length} selected applications? This will remove all associated resumes.`}
             </p>
             <div className="flex justify-end space-x-3">
               <button
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-600 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors"
                 onClick={() => setShowConfirmModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                 onClick={handleConfirmAction}
               >
                 Confirm
@@ -527,9 +603,11 @@ const CandidateDetailsView = () => {
 
       {/* Toast Notification */}
       {toast.show && (
-        <div className={`fixed bottom-5 right-5 p-4 rounded-md shadow-lg flex items-center space-x-2 ${
-          toast.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        }`}>
+        <div className={`fixed bottom-5 right-5 p-4 rounded-xl shadow-lg flex items-center space-x-2 border ${
+          toast.type === 'success' 
+            ? 'bg-emerald-900/90 text-emerald-100 border-emerald-700' 
+            : 'bg-red-900/90 text-red-100 border-red-700'
+        } backdrop-blur-sm`}>
           {toast.type === 'success' ? <FiCheckCircle /> : <FiAlertCircle />}
           <span>{toast.message}</span>
         </div>
