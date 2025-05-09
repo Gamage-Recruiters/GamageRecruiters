@@ -12,7 +12,8 @@ export default function ViewClient() {
     const fetchClient = async () => {
       try {
         const res = await axios.get(`http://localhost:8000/user/${userId}`);
-        setClient(res.data);
+        setClient(res.data.user
+        );
       } catch (err) {
         console.error('Error fetching client:', err);
         setError(err.response?.data?.message || 'Failed to load client details');

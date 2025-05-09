@@ -20,79 +20,70 @@
   ];
 
   function BlogManagement() {
-      const navigate = useNavigate();
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [sortDirection, setSortDirection] = useState('desc');
     const [filterStatus, setFilterStatus] = useState('all');
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [blogPosts, setBlogPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
-
-    // In your axios request:
+  
     const fetchPosts = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/blogs');
-        // The actual posts are in response.data.data according to your console log
         setBlogPosts(response.data.data || []);
         console.log('Complete fetching blog posts:', response.data.data);
       } catch (error) {
         console.error('Error fetching blog posts:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-
-
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
     useEffect(() => {
       fetchPosts();
     }, []);
-
+  
     const formatStatus = (status) => {
       if (!status) return 'Draft';
       return status.charAt(0).toUpperCase() + status.slice(1);
     };
-    
-
-
-  // Filter blog posts based on search term and status
-  // Filter blog posts based on search term and status
-  const filteredPosts = blogPosts?.filter(post => {
-    // Add optional chaining for post properties
-    const matchesSearch = post?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post?.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post?.author?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus = filterStatus === 'all' || post?.status === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  }) || [];
-
-    // Sort blog posts by date
-    const sortedPosts = [...(filteredPosts || [])].sort((a, b) => {
-      // Add fallback dates in case of missing data
-      const dateA = new Date(a?.date || 0).getTime();
-      const dateB = new Date(b?.date || 0).getTime();
+  
+    const filteredPosts = blogPosts.filter(post => {
+      const matchesSearch =
+        post?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post?.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post?.author?.toLowerCase().includes(searchTerm.toLowerCase()); // Fixed here
+  
+      const matchesStatus = filterStatus === 'all' || post?.status === filterStatus;
+  
+      return matchesSearch && matchesStatus;
+    });
+  
+    const sortedPosts = [...filteredPosts].sort((a, b) => {
+      const dateA = new Date(a?.addedAt || 0).getTime(); // Fixed: use addedAt
+      const dateB = new Date(b?.addedAt || 0).getTime();
       return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
     });
-
+  
     const toggleSortDirection = () => {
-      setSortDirection(prevDirection => prevDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
     };
-
-    // Get relative time string (e.g., "2 days ago")
+  
     const getRelativeTime = (dateString) => {
       const date = new Date(dateString);
       const now = new Date();
-      const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-      
+      const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+  
       if (diffInDays === 0) return 'Today';
       if (diffInDays === 1) return 'Yesterday';
       if (diffInDays < 30) return `${diffInDays} days ago`;
-      if (diffInDays < 365) return `${Math.floor(diffInDays/30)} months ago`;
-      return `${Math.floor(diffInDays/365)} years ago`;
+      if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
+      return `${Math.floor(diffInDays / 365)} years ago`;
     };
+  
+  
+  
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -315,7 +306,7 @@
                 <AnimatePresence>
                 {sortedPosts.map((post) => (
                   <motion.tr
-                    key={post.id}
+                    key={post.blogId}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, height: 0 }}
@@ -400,7 +391,7 @@
                           <Eye className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                         </button>
                         <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                          onClick={() => navigate(`/blog/edit/1`)}
+                         onClick={() => navigate(`/blog/edit/${post.blogId}`)}
                           >
                           <Edit2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                           </button>

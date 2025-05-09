@@ -12,6 +12,7 @@ const EditBlog = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const coverImageRef = useRef(null);
+  const authorImageRef = useRef(null); // Added missing ref
 
   
   const [loading, setLoading] = useState(true);
@@ -40,6 +41,8 @@ const EditBlog = () => {
     subTitle9: '', subContent9: '',
     subTitle10: '', subContent10: ''
   });
+
+  
   
   const [visibleSections, setVisibleSections] = useState({
     section1: true,
@@ -56,6 +59,7 @@ const EditBlog = () => {
   
   const [files, setFiles] = useState({
     blog: null,
+    blogCover: null,
     author: null
   });
   
@@ -73,42 +77,52 @@ const EditBlog = () => {
 
 // Update the fetchBlogData useEffect
 useEffect(() => {
-
-
-  
   const fetchBlogData = async () => {
     try {
       const response = await fetch(`http://localhost:8000/api/blogs/${blogId}`);
       if (!response.ok) throw new Error('Failed to fetch blog');
       
-      const data = await response.json();
-      
+      const resJson = await response.json();
+      const blog = resJson.data[0]; // Access the first blog object
 
+      const processedTags = Array.isArray(blog.tags) ? blog.tags.join(', ') : blog.tags || '';
 
-      console.log('Received tags:', data.tags, typeof data.tags);
-      console.log('Full API response:', data); 
-      // Set form data with proper field names
       setFormData({
-        ...data,
-        tags: data.tags || '' // Convert array to comma-separated string if needed
+        title: blog.title || '',
+        introduction: blog.introduction || '',
+        category: blog.category || '',
+        tags: processedTags,
+        author: blog.author || '',
+        authorPosition: blog.authorPosition || '',
+        authorCompany: blog.authorCompany || '',
+        Quote1: blog.Quote1 || '',
+        Quote2: blog.Quote2 || '',
+        Quote3: blog.Quote3 || '',
+        ...Array.from({ length: 10 }).reduce((acc, _, i) => {
+          const n = i + 1;
+          acc[`subTitle${n}`] = blog[`subTitle${n}`] || '';
+          acc[`subContent${n}`] = blog[`subContent${n}`] || '';
+          return acc;
+        }, {})
       });
-      
-      // Set preview images using correct field names
+
       setPreviewImages({
-        blog: data.blogImageUrl || null,
-        blogCover: data.blogCoverUrl || null,
-        author: data.authorImageUrl || 'http://localhost:8000/api/placeholder/100/100'
+        blog: blog.blogImage || null,
+        blogCover: blog.coverImage || null,
+        author: 'http://localhost:8000/api/placeholder/100/100' // Default placeholder
       });
-      
-      // Rest of your code...
+
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching blog:', error);
       setErrorMessage(error.message || 'Failed to load blog data');
       setLoading(false);
     }
   };
+
   fetchBlogData();
 }, [blogId]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -151,8 +165,23 @@ useEffect(() => {
     
     try {
       const formDataToSend = new FormData();
-      
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('introduction', formData.introduction);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('tags', formData.tags);
+      formDataToSend.append('author', formData.author);
+      formDataToSend.append('authorPosition', formData.authorPosition);
+      formDataToSend.append('authorCompany', formData.authorCompany);
+      formDataToSend.append('Quote1', formData.Quote1);
+      formDataToSend.append('Quote2', formData.Quote2);
+      formDataToSend.append('Quote3', formData.Quote3);
+
+      for (let i = 1; i <= 10; i++) {
+        formDataToSend.append(`subTitle${i}`, formData[`subTitle${i}`]);
+        formDataToSend.append(`subContent${i}`, formData[`subContent${i}`]);
+      }
       // Add all text fields
+
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
       });
@@ -175,7 +204,8 @@ useEffect(() => {
         throw new Error(responseText || 'Failed to update blog post');
       }
       
-setSuccessMessage(responseText || 'Blog post updated successfully!');
+      setSuccessMessage(responseData.message || 'Blog post updated successfully!');
+      setTimeout(() => navigate('/blogs'), 2000);
       
       const responseData = await response.json();
       if (!response.ok) {
