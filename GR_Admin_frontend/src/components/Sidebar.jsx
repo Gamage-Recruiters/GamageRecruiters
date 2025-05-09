@@ -89,7 +89,7 @@ function Sidebar({ isOpen, setIsOpen }) {
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/clients', icon: Users, label: 'Clients' },
     { path: '/admins', icon: Users, label: 'Admins' },
-    { path: '/jobs', icon: Briefcase, label: 'Jobs' },
+    { path: '/jobss', icon: Briefcase, label: 'Jobs' },
     { path: '/candidate', icon: FileText, label: 'Applications View' },
     { path: '/job-dashboard', icon: FileText, label: 'Job Applications' },
     { path: '/workshops', icon: Calendar, label: 'Workshops' },

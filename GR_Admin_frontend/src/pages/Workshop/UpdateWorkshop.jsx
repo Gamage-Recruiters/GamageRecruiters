@@ -57,6 +57,7 @@ function UpdateWorkshop() {
       setFetchLoading(true);
       try {
         const response = await axios.get(`http://localhost:8000/api/workshops/${id}`);
+        console.log('Workshop data:', response.data);
         const workshopData = response.data;
         
         setFormData({

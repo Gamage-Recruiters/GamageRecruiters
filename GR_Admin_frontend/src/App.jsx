@@ -49,7 +49,7 @@ function App() {
               <Route path="/clients" element={<ClientUsers />} />
               <Route path="/admin/client/view/:userId" element={<ViewClient />} />
               <Route path="/admins" element={<AdminUsers />} />
-              <Route path="/jobs" element={<ViewAllJobs />} />
+              <Route path="/jobs" element={<Jobs />} />
               <Route path="/jobss" element={<Jobs />} />
               <Route path="/jobs/add" element={<AddJob/>} />
               <Route path="/jobs/edit/:jobid" element={<EditJob />} />

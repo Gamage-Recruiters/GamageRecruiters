@@ -28,21 +28,22 @@ const EditJob = ({ onUpdateJob }) => {
     const fetchJobData = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/jobs/${jobId}`);
-        
-        if (response.data) {
-          const job = response.data;
-          
-          const responsibilities = Array.isArray(job.responsibilities) 
-            ? job.responsibilities 
-            : job.responsibilities ? JSON.parse(job.responsibilities) : [''];
-            
-          const requirements = Array.isArray(job.requirements)
-            ? job.requirements
-            : job.requirements ? JSON.parse(job.requirements) : [''];
-            
-          const benefits = Array.isArray(job.benefits)
-            ? job.benefits
-            : job.benefits ? JSON.parse(job.benefits) : [''];
+    
+        if (response.data && response.data.data) {
+          const job = response.data.data;
+          console.log(response);
+    
+        const parseField = (field) => {
+          try {
+            return typeof field === 'string' ? JSON.parse(field) : Array.isArray(field) ? field : [''];
+          } catch {
+            return [field || ''];
+          }
+        };
+
+        const responsibilities = parseField(job.responsibilities);
+        const requirements = parseField(job.requirements);
+        const benefits = parseField(job.benefits);
           
           setFormData({
             ...job,
@@ -61,6 +62,7 @@ const EditJob = ({ onUpdateJob }) => {
         setLoading(false);
       }
     };
+    
     
     if (jobId) {
       fetchJobData();
@@ -114,10 +116,11 @@ const EditJob = ({ onUpdateJob }) => {
     try {
       const cleanedFormData = {
         ...formData,
-        responsibilities: formData.responsibilities.filter(item => item.trim() !== ''),
-        requirements: formData.requirements.filter(item => item.trim() !== ''),
-        benefits: formData.benefits.filter(item => item.trim() !== ''),
+        responsibilities: formData.responsibilities.filter(item => item.trim() !== '').join('\n'),
+        requirements: formData.requirements.filter(item => item.trim() !== '').join('\n'),
+        benefits: formData.benefits.filter(item => item.trim() !== '').join('\n'),
       };
+      
       
       await axios.put(`http://localhost:8000/api/jobs/update/${jobId}`, cleanedFormData);
       
