@@ -243,7 +243,7 @@ function ClientUsers() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button onClick={() => navigate(`/admin/client/view/${client.userId}`)} className="text-indigo-600 hover:text-indigo-900 mr-2"><Eye className="w-4 h-4" /></button>
-                      <button className="text-green-600 hover:text-green-900 mr-2"><Edit2 className="w-4 h-4" /></button>
+                     
                       <button onClick={() => handleDelete(client.userId)} className="text-red-600 hover:text-red-900"><Trash2 className="w-4 h-4" /></button>
                     </td>
                   </motion.tr>

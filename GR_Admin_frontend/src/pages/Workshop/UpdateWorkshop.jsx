@@ -58,8 +58,8 @@ function UpdateWorkshop() {
       try {
         const response = await axios.get(`http://localhost:8000/api/workshops/${id}`);
         console.log('Workshop data:', response.data);
-        const workshopData = response.data;
-        
+        const workshopData = response.data.data[0];
+  
         setFormData({
           title: workshopData.title || '',
           category: workshopData.category || '',
@@ -76,12 +76,11 @@ function UpdateWorkshop() {
           event_type: workshopData.event_type || 'Upcoming Event',
           link: workshopData.link || ''
         });
-        
-        // Set preview image if it exists
+  
         if (workshopData.image) {
           setPreviewImage(workshopData.image);
         }
-        
+  
         setFetchError(null);
       } catch (error) {
         console.error('Error fetching workshop data:', error);
@@ -90,9 +89,10 @@ function UpdateWorkshop() {
         setFetchLoading(false);
       }
     };
-    
+  
     fetchWorkshopData();
   }, [id]);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

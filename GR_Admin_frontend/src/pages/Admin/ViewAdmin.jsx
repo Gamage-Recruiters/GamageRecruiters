@@ -11,7 +11,8 @@ function ViewAdmin() {
   useEffect(() => {
     axios.get(`http://localhost:8000/admin/${adminId}`)
       .then((res) => {
-        setAdmin(res.data);
+        setAdmin(res.data.data[0]);
+        console.log(res.data.data[0])
         setLoading(false);
       })
       .catch((err) => {
