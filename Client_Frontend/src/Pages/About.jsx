@@ -11,7 +11,7 @@ const stats = [
 
 const subsidiaries = [
   {
-    name: 'Wine Shop',
+    name: 'Duty-free Shop -  Port City',
     description: 'Premium duty-free wine shop located in Port City, offering a curated selection of international wines and spirits.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-indigo-600">
@@ -23,7 +23,7 @@ const subsidiaries = [
     name: 'VERITAS Campus International',
     description: 'A leading educational institution offering international qualifications and professional development programs.',
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-indigo-600">
+      <svg xmlns="https://blog.unemployedprofessors.com/wp-content/uploads/2025/03/DALL%C2%B7E-2025-03-12-20.28.34-A-prestigious-university-library-setting-with-two-contrasting-study-areas.-One-side-shows-students-passively-using-AI-generated-text-on-their-laptops.webp" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-indigo-600">
         <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
       </svg>
     ),
@@ -66,7 +66,7 @@ export default function About() {
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-6">Who We Are</h2>
               <p className="text-lg text-gray-600 mb-6">
-                Founded in 2013, Gamage Recruiters has grown to become one of Sri Lanka's most respected recruitment agencies. We specialize in connecting top-tier talent with leading organizations across multiple industries.
+                Founded in 2019, Gamage Recruiters has grown to become one of Sri Lanka's most respected recruitment agencies. We specialize in connecting top-tier talent with leading organizations across multiple industries.
               </p>
               <p className="text-lg text-gray-600 mb-6">
                 Our experienced team of recruitment specialists combines industry knowledge, market insights, and a personal approach to deliver exceptional service to both candidates and employers.
@@ -77,12 +77,12 @@ export default function About() {
             </div>
             <div className="relative">
               <img 
-                src="/images/office-modern.jpg" 
+                src="https://i.ibb.co/PvCfxjd9/gamage.png" 
                 alt="Gamage Recruiters Office" 
                 className="rounded-xl shadow-2xl object-cover"
               />
               <div className="absolute -bottom-8 -left-8 bg-indigo-600 rounded-xl p-6 shadow-xl">
-                <p className="text-xl font-bold text-white">Established 2013</p>
+                <p className="text-xl font-bold text-white">Established 2019</p>
                 <p className="text-white/80 mt-1">Colombo, Sri Lanka</p>
               </div>
             </div>
