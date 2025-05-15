@@ -349,7 +349,7 @@ function Subsidiaries() {
               <GraduationCap className="h-6 w-6 text-indigo-600" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              VERITAS INTERNATIONAL <span className="text-indigo-600">Campus (PVT) LTD</span>
+              VERITAS International <span className="text-indigo-600">Campus </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Shaping future-ready individuals through academic excellence, innovation, and real-world relevance
