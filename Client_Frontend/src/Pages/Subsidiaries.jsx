@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { MapPin, Mail, Phone, ArrowRight, GraduationCap, Briefcase, Award, Calendar, Clock, Users, Wine, Ship, BookOpen, Globe, Star, Sparkles } from 'lucide-react';
 
 function Subsidiaries() {
@@ -597,4 +597,4 @@ function Subsidiaries() {
   );
 }
 
-export default Subsidiaries;
+export default memo(Subsidiaries);
