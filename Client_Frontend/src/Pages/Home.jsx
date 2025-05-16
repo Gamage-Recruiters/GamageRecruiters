@@ -13,10 +13,10 @@ import { useChangeDateFormat } from '../hooks/customHooks';
 
 // Statistics for counter animation
 const statistics = [
-  { label: "Jobs Available", value: 5000, suffix: "+" },
-  { label: "Companies", value: 1200, suffix: "+" },
-  { label: "Successful Placements", value: 15000, suffix: "+" },
-  { label: "Happy Professionals", value: 25000, suffix: "+" }
+  { label: "Jobs Available", value: 100, suffix: "+" },
+  { label: "Companies", value: 500, suffix: "+" },
+  { label: "Successful Placements", value: 1000, suffix: "+" },
+  { label: "Happy Professionals", value: 1000, suffix: "+" }
 ];
 
 const TrustedPartners = () => {

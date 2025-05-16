@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { MapPin, Mail, Phone, ArrowRight, GraduationCap, Briefcase, Award, Calendar, Clock, Users, Wine, Ship, BookOpen, Globe, Star, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function Subsidiaries() {
   // State for animations and interactions
@@ -23,6 +24,7 @@ function Subsidiaries() {
   const dutyfreeRef = useRef(null);
   const campusRef = useRef(null);
   const statsRef = useRef(null);
+  const navigate = useNavigate();
   
   // Counter final values
   const counterTargets = {
@@ -34,6 +36,9 @@ function Subsidiaries() {
   
   // Mouse position for 3D hover effects
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+
+  
   
   useEffect(() => {
     // Scroll handler
@@ -41,6 +46,7 @@ function Subsidiaries() {
       setScrollY(window.scrollY);
     };
     
+
     // Mouse move handler for 3D card effect
     const handleMouseMove = (e) => {
       setMousePosition({
@@ -182,32 +188,10 @@ function Subsidiaries() {
           </p>
           
           {/* Navigation tabs */}
-          <div className="inline-flex p-1 gap-2 bg-indigo-900/50 backdrop-blur-sm rounded-full mb-12">
-            {[
-              { id: 'dutyfree', label: 'Duty Free', icon: <Wine size={18} /> },
-              { id: 'campus', label: 'Campus', icon: <GraduationCap size={18} /> }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeTab === tab.id 
-                    ? 'bg-white text-indigo-900 shadow-lg' 
-                    : 'text-white hover:bg-white/10'
-                }`}
-              >
-                {tab.icon}
-                <span className="ml-2">{tab.label}</span>
-              </button>
-            ))}
-          </div>
+          
           
           {/* Scroll indicator */}
-          <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <div className="w-8 h-12 rounded-full border-2 border-white/50 flex items-start justify-center">
-              <div className="w-1 h-3 bg-white/80 rounded-full mt-2 animate-pulse"></div>
-            </div>
-          </div>
+          
         </div>
       </div>
 
@@ -242,7 +226,7 @@ function Subsidiaries() {
               <div className="relative h-96 overflow-hidden rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/60 to-purple-900/60 mix-blend-multiply z-10"></div>
                 <img 
-                  src="/api/placeholder/800/600" 
+                  src="https://iili.io/3gXzoa2.jpg" 
                   alt="Premium Wine Store" 
                   className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                 />
@@ -299,6 +283,31 @@ function Subsidiaries() {
                 </div>
               </div>
               
+              {/* Photo Gallery - New Addition */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <img 
+                    src="https://iili.io/3gXzoa2.jpg" 
+                    alt="Veritas Wine Collection" 
+                    className="h-40 w-full object-cover hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+                <div className="overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <img 
+                    src="https://iili.io/3gXzn3l.jpg" 
+                    alt="Premium Wine Selection" 
+                    className="h-40 w-full object-cover hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+                <div className="overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <img 
+                    src="https://iili.io/3gXzB44.jpg" 
+                    alt="Exclusive Wine Varieties" 
+                    className="h-40 w-full object-cover hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+              </div>
+              
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-white rounded-xl border border-indigo-100 p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
                   <Wine className="h-8 w-8 text-indigo-600 mb-4" />
@@ -313,13 +322,7 @@ function Subsidiaries() {
                 </div>
               </div>
               
-              <button className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-indigo-600 px-8 py-4 font-bold text-white transition-all duration-300 hover:bg-indigo-700">
-                <span className="absolute right-0 -mt-12 h-32 w-8 translate-x-12 rotate-12 transform bg-white opacity-10 transition-all duration-1000 ease-out group-hover:-translate-x-40"></span>
-                <span className="relative flex items-center">
-                  Contact Us
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
-              </button>
+             
             </div>
           </div>
         </div>
@@ -346,7 +349,7 @@ function Subsidiaries() {
               <GraduationCap className="h-6 w-6 text-indigo-600" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              VERITAS INTERNATIONAL <span className="text-indigo-600">Campus (PVT) LTD</span>
+              VERITAS International <span className="text-indigo-600">Campus </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Shaping future-ready individuals through academic excellence, innovation, and real-world relevance
@@ -454,32 +457,47 @@ function Subsidiaries() {
               </button>
             </div>
             
-            {/* Image with 3D effect */}
-            <div 
-              className="relative group perspective-1000 order-first lg:order-last"
-              style={{ transform: isVisible.campus ? get3DTransform() : 'none' }}
-            >
-              <div className="absolute -inset-px bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-40 group-hover:opacity-75 transition-opacity duration-300"></div>
-              <div className="relative h-96 overflow-hidden rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-900/60 to-indigo-900/60 mix-blend-multiply z-10"></div>
-                <img 
-                  src="/api/placeholder/800/600" 
-                  alt="Veritas Campus" 
-                  className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-20"></div>
-                
-                {/* Floating elements */}
-                <div className="absolute top-6 right-6 rounded-full bg-white/10 backdrop-blur-md px-4 py-2 z-30 flex items-center">
-                  <GraduationCap className="text-white mr-2" size={18} />
-                  <span className="text-white text-sm font-medium">Higher Education</span>
+            {/* Images with 3D effect - Now with two photos */}
+            <div className="order-first lg:order-last space-y-6">
+              {/* First image */}
+              <div 
+                className="relative group perspective-1000"
+                style={{ transform: isVisible.campus ? get3DTransform() : 'none' }}
+              >
+                <div className="absolute -inset-px bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-40 group-hover:opacity-75 transition-opacity duration-300"></div>
+                <div className="relative h-72 overflow-hidden rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-900/60 to-indigo-900/60 mix-blend-multiply z-10"></div>
+                  <img 
+                    src="https://blog.unemployedprofessors.com/wp-content/uploads/2025/03/DALL%C2%B7E-2025-03-12-20.28.34-A-prestigious-university-library-setting-with-two-contrasting-study-areas.-One-side-shows-students-passively-using-AI-generated-text-on-their-laptops.webp" 
+                    alt="Veritas Campus Library" 
+                    className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0  z-20"></div>
+                  
+                  
                 </div>
-                
-                <div className="absolute bottom-0 inset-x-0 p-8 z-30">
-                  <div className="flex flex-wrap gap-2">
-                    <span className="bg-white/10 backdrop-blur-md rounded-full px-4 py-1 text-sm text-white">Academic Excellence</span>
-                    <span className="bg-white/10 backdrop-blur-md rounded-full px-4 py-1 text-sm text-white">Innovation</span>
-                    <span className="bg-white/10 backdrop-blur-md rounded-full px-4 py-1 text-sm text-white">Industry Relevance</span>
+              </div>
+              
+              {/* Second image - newly added */}
+              <div 
+                className="relative group perspective-1000"
+                style={{ transform: isVisible.campus ? get3DTransform(0.5) : 'none' }}
+              >
+                <div className="absolute -inset-px bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl blur opacity-40 group-hover:opacity-75 transition-opacity duration-300"></div>
+                <div className="relative h-72 overflow-hidden rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/60 to-purple-900/60 mix-blend-multiply z-10"></div>
+                  <img 
+                    src="https://iili.io/3gvFonn.png" 
+                    alt="Veritas Campus Students" 
+                    className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute   z-20"></div>
+                  
+                  {/* Floating elements */}
+                  
+                  
+                  <div className="absolute bottom-0 inset-x-0 p-8 z-30">
+                    
                   </div>
                 </div>
               </div>
@@ -538,7 +556,10 @@ function Subsidiaries() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <button className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-full text-indigo-600 bg-white shadow-md hover:bg-indigo-50 transition-all duration-300 hover:shadow-lg group">
+            
+            <button
+              onClick={() => navigate('/contact')}
+              className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-full text-indigo-600 bg-white shadow-md hover:bg-indigo-50 transition-all duration-300 hover:shadow-lg group relative overflow-hidden">
               <span className="absolute right-0 -mt-12 h-32 w-8 translate-x-12 rotate-12 transform bg-indigo-100 opacity-30 transition-all duration-1000 ease-out group-hover:-translate-x-40"></span>
               <span className="relative flex items-center">
                 Contact Us
