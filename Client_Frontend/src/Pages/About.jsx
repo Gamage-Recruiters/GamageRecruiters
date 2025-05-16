@@ -3,8 +3,8 @@ import TestominolsSection from '../components/Home/TestominolsSection';
 import TeamMembers from '../components/Home/TeamSection';
 
 const stats = [
-  { label: 'Years in Business', value: '10+' },
-  { label: 'Successful Placements', value: '5000+' },
+  { label: 'Years in Business', value: '5+' },
+  { label: 'Successful Placements', value: '1000+' },
   { label: 'Client Companies', value: '200+' },
   { label: 'Industry Sectors', value: '15+' }
 ];
@@ -27,6 +27,15 @@ const subsidiaries = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
       </svg>
     ),
+  },
+  {
+    name: 'Veritas International Ship Chandling',
+    description: 'A premier ship chandling company dedicated to providing exceptional services to the marinetime industry. With its headquarters strategically located in Sri Lanka Veritas International has grown to become a trusted partner for ship owners, operators, and managers across the globe.',
+    icon: (
+      <svg xmlns="https://blog.unemployedprofessors.com/wp-content/uploads/2025/03/DALL%C2%B7E-2025-03-12-20.28.34-A-prestigious-university-library-setting-with-two-contrasting-study-areas.-One-side-shows-students-passively-using-AI-generated-text-on-their-laptops.webp" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-indigo-600">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+      </svg>
+    ),
   }
 ];
 
@@ -43,7 +52,7 @@ export default function About() {
               Connecting <span className="text-indigo-400">Talent</span> with <span className="text-indigo-400">Opportunity</span>
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300 max-w-2xl">
-              Gamage Recruiters has been bridging the gap between talented professionals and leading companies since 2013.
+              Gamage Recruiters has been bridging the gap between talented professionals and leading companies since 2019.
               Our deep understanding of the Sri Lankan job market and commitment to excellence has made us a trusted name in recruitment.
             </p>
             <div className="mt-10 flex gap-x-6">
@@ -72,13 +81,13 @@ export default function About() {
                 Our experienced team of recruitment specialists combines industry knowledge, market insights, and a personal approach to deliver exceptional service to both candidates and employers.
               </p>
               <p className="text-lg text-gray-600">
-                Beyond recruitment, we've expanded our portfolio to include educational services and retail ventures, unified under our parent company VERITAS INTERNATIONAL (PVT) LTD.
+                Beyond recruitment, we've expanded our portfolio to include educational services and retail ventures, unified under our sister company VERITAS INTERNATIONAL (PVT) LTD.
               </p>
             </div>
             <div className="relative">
-              <img 
-                src="https://i.ibb.co/PvCfxjd9/gamage.png" 
-                alt="Gamage Recruiters Office" 
+              <img
+                src="https://i.ibb.co/PvCfxjd9/gamage.png"
+                alt="Gamage Recruiters Office"
                 className="rounded-xl shadow-2xl object-cover"
               />
               <div className="absolute -bottom-8 -left-8 bg-indigo-600 rounded-xl p-6 shadow-xl">
@@ -99,7 +108,7 @@ export default function About() {
               Mission & Vision
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="bg-white p-10 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl">
               <div className="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-6">
@@ -113,7 +122,7 @@ export default function About() {
                 with the right opportunities, while fostering growth and success for both candidates and employers.
               </p>
             </div>
-            
+
             <div className="bg-white p-10 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl">
               <div className="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-indigo-600">
@@ -123,7 +132,7 @@ export default function About() {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Vision</h3>
               <p className="text-lg text-gray-600">
-                To be recognized as the premier recruitment partner in Sri Lanka, known for our integrity, expertise, and 
+                To be recognized as the premier recruitment partner in Sri Lanka, known for our integrity, expertise, and
                 commitment to excellence, while expanding our impact through diversified business ventures.
               </p>
             </div>
@@ -167,7 +176,7 @@ export default function About() {
               Under VERITAS INTERNATIONAL (PVT) LTD, we've expanded our portfolio to offer diverse services and products.
             </p>
           </div>
-          
+
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
             {subsidiaries.map((subsidiary, index) => (
               <div key={index} className="flex flex-col bg-white p-8 rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
@@ -190,7 +199,7 @@ export default function About() {
               </div>
             ))}
           </div>
-          
+
           <div className="mt-16 text-center">
             <Link
               to="/subsidiaries"
@@ -232,7 +241,7 @@ export default function About() {
                 to="/contact"
                 className="text-lg font-semibold leading-6 text-white flex items-center group"
               >
-                Contact Us 
+                Contact Us
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
                 </svg>
