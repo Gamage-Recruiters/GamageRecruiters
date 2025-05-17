@@ -61,7 +61,35 @@ const TPSection = () => {
     { id: 22, name: "Stalione Lanka", logo: "https://i.ibb.co/WWwpdM0p/stallion.jpg", category: "Business management" },
     { id: 23, name: "Prime Group", logo: "https://i.ibb.co/GvsdH7ms/primegroup.png", category: "Residencies" },
     { id: 24, name: "SriTrims Limited", logo: "https://i.ibb.co/v6zVsVwL/sritrims.png", category: "Garment Exporter" },
-    { id: 25, name: "Antler Group", logo: "https://i.ibb.co/0pbkzPgj/antler.jpg", category: "Fabric" }
+    { id: 25, name: "Antler Group", logo: "https://i.ibb.co/0pbkzPgj/antler.jpg", category: "Fabric" },
+    { id: 26, name: "Markspens Labels", logo: "https://i.ibb.co/6cSTHQGv/MS.jpg", category: "Retail" },
+    { id: 27, name: "Transco Holdings", logo: "https://i.ibb.co/8gWVLrdJ/logo.png", category: "Travel" },
+    { id: 28, name: "Global Choice", logo: "https://i.ibb.co/hx9pksLZ/GBC.jpg", category: "BPO" },
+    { id: 29, name: "Global Resources Pvt", logo: "https://i.ibb.co/Xrgq57gm/GR.png", category: "Retail" },
+    { id: 30, name: "MAS Associates", logo: "https://i.ibb.co/8nHN7LJJ/mas.jpg", category: "Auditing" },
+    { id: 31, name: "Empire Teas", logo: "https://i.ibb.co/N6fV9LcC/et.jpg", category: "Tea Manufacturing" },
+    { id: 32, name: "Asia Capitals", logo: "https://i.ibb.co/tP2YTzzC/asia-capitals.png", category: "Finance" },
+    { id: 33, name: "Dreamron", logo: "https://i.ibb.co/RTxgYkmf/dreamron.png", category: "FMCG Retail" },
+    { id: 34, name: "Star Garments", logo: "https://i.ibb.co/WWpf8Z3Z/star.jpg", category: "Apparel" },
+    { id: 35, name: "Maliban at Little Lion", logo: "https://i.ibb.co/bR1Dh5rY/littlelio-n.png", category: "Food & Beverage" },
+    { id: 36, name: "Botanicoir Lanka", logo: "https://i.ibb.co/ynVfPdjL/botan.png", category: "Export" },
+    { id: 37, name: "Rodrigi & Co", logo: "https://i.ibb.co/WNTSdTm4/rodrigo.jpg", category: "Auditing & Taxation" },
+    { id: 38, name: "Puwakaramba", logo: "https://i.ibb.co/kV2pM92h/images.png", category: "Manufacturing" },
+    { id: 39, name: "VSIS", logo: "https://i.ibb.co/B2tPJQxG/Vector-2048x975-jpg.webp", category: "IT" },
+    { id: 40, name: "Poly Creations", logo: "https://i.ibb.co/qM17v1mr/pc.png", category: "Manufacturing" },
+    { id: 41, name: "Torch Labs", logo: "https://i.ibb.co/YTVRDBnB/tll.jpg", category: "IT" },
+    { id: 42, name: "Nexus Communication", logo: "https://i.ibb.co/kgKjGPQV/nexus.webp", category: "Tele Communication" },
+    { id: 43, name: "Car Mart", logo: "https://i.ibb.co/jk9kDXD6/carmart.png", category: "Retail" },
+    { id: 44, name: "High Life Online", logo: "https://i.ibb.co/23GM2qBX/higjlifr.png", category: "BPO" },
+    { id: 45, name: "Lovikta", logo: "https://i.ibb.co/ymKPrZcz/Lovikta.png", category: "BPO" },
+    { id: 46, name: "Cult Interior", logo: "https://i.ibb.co/9kjRx5Ht/cult.jpg", category: "Retail" },
+    { id: 47, name: "SMT Apparels", logo: "https://i.ibb.co/BKydW4B1/smt.jpg", category: "Apparel" },
+    { id: 48, name: "Travelco Holidays", logo: "https://i.ibb.co/Z18MVsnQ/travalco.webp", category: "Travel" },
+    { id: 49, name: "Fairway Holdings", logo: "https://i.ibb.co/HpqxwxtJ/fairway.png", category: "Retail/Hospitality" },
+    { id: 50, name: "Evolution Auto", logo: "https://i.ibb.co/G311wVfs/evauto.jpg", category: "Retail" },
+    { id: 51, name: "Global Med", logo: "https://i.ibb.co/pvq5dNWh/glbmed.png", category: "Medical & Pharmaceutial" }
+
+
   ];
   
   // Duplicate partners array for smooth infinite scrolling
