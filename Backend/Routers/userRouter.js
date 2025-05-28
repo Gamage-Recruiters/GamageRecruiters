@@ -34,9 +34,6 @@ router.get('/recent-activity/:userId', userController.getRecentProfileActivity);
 // Subscribe to News Letter ...
 router.post('/subscribe-newsletter', userController.subscribeToNewsletter);
 
-// Fetch Users Data ...
-router.get('/all-users', userController.getAllSystemUsers);
-
 // Fetch User By Id ...
 router.get('/:userId', userController.getUserById);
 

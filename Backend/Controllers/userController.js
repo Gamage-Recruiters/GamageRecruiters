@@ -409,26 +409,6 @@ async function subscribeToNewsletter(req, res) {
     }
 }
 
-async function getAllSystemUsers (req, res) {
-    try {
-        const usersQuery = 'SELECT * FROM users';
-        pool.query(usersQuery, (error, result) => {
-           if(error) {
-               console.log(error);
-               return res.status(400).send(error);
-           }
-
-           if(result.length === 0) {
-               return res.status(404).send('No Users Found');
-           }
-
-           return res.status(200).json({ message: 'Users Found', users: result });
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send(error);
-    }
-}
 
 async function getUserById (req, res) {
     const { userId } = req.params;
