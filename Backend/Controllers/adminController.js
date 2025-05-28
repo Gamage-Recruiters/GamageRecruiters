@@ -13,21 +13,21 @@ async function register (req, res) {
         const imageName = req.files?.adminPhoto?.[0]?.filename || null;
         console.log('imageName', imageName);
 
-        // Check a data related to email, exists in the database ...
+        // Check a data related to email, exists in the database
         const sql = 'SELECT * FROM admin WHERE email = ?';
         pool.query(sql, [email], async (error, result) => {
             if(error) {
                 return res.status(400).send(error);
             }
 
-            if(result.length === 0) {
-                return res.status(404).send('Data Not Found');
+            if(result.length > 0) {
+                return res.status(409).send('Email already registered.');
             }
 
-            // Hash the password ...
+            // Hash the password
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            // Store the details in database ...
+            // Store the details in database
             const adminStoreDataQuery = 'INSERT INTO admin (name, email, password, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
             pool.query(adminStoreDataQuery, [name, email, hashedPassword, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, imageName], (error, result) => {
                 if(error) {
