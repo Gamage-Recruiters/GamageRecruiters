@@ -100,7 +100,7 @@ const rawUpload = multer({
 const upload = (req, res, next) => {
     rawUpload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
-            // Multer-specific errors
+            // multer errors
             if (err.code === 'LIMIT_UNEXPECTED_FILE') {
                 return res.status(400).json({ message: `Too many files for field: ${err.field}` });
             } else if (err.code === 'LIMIT_FILE_SIZE') {
