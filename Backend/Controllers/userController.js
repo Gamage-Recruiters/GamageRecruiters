@@ -524,32 +524,5 @@ async function getAllClientUsers(req, res) {
 }
 
 
-async function getAllUserDetails(req, res) {
-    const { userId } = req.params;
 
-    if (!userId) {
-        return res.status(400).send('User ID is required');
-    }
-
-    try {
-        const query = 'SELECT * FROM users WHERE userId = ?';
-        pool.query(query, [userId], (error, results) => {
-            if (error) {
-                console.log(error);
-                return res.status(500).send('Database query failed');
-            }
-
-            if (results.length === 0) {
-                return res.status(404).send('User not found');
-            }
-
-            return res.status(200).json({ message: 'User details retrieved successfully', user: results[0] });
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send('Server error');
-    }
-}
-
-
-module.exports = { deleteUser,getAllClientUsers, getAllUserDetails, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter, getAllSystemUsersCount, getAllActiveUsersCount, getAllUsersCountInCurrentMonth, getUserById }
+module.exports = { deleteUser,getAllClientUsers, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter, getAllSystemUsersCount, getAllActiveUsersCount, getAllUsersCountInCurrentMonth, getUserById }
