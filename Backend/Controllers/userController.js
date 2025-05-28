@@ -552,4 +552,4 @@ async function getAllUserDetails(req, res) {
 }
 
 
-module.exports = { deleteUser,getAllClientUsers, getAllUserDetails, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter, getAllSystemUsersCount, getAllActiveUsersCount, getAllUsersCountInCurrentMonth, getAllSystemUsers, getUserById }
+module.exports = { deleteUser,getAllClientUsers, getAllUserDetails, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter, getAllSystemUsersCount, getAllActiveUsersCount, getAllUsersCountInCurrentMonth, getUserById }
