@@ -196,7 +196,7 @@ async function updateAdminUserDetails (req, res) {
     
     try {
         const imageName = req.files?.adminPhoto?.[0]?.filename || null;
-        console.log('imageName', imageName);
+        console.log('Received Admin imageName:', imageName);
 
         let updateAdminUserDetailsQuery;
         let values;
@@ -205,7 +205,7 @@ async function updateAdminUserDetails (req, res) {
             updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ?, image = ? WHERE adminId = ?';
             values = [name, email, gender, role, status, primaryPhoneNumber, secondaryPhoneNumber, imageName, adminId];
         } else {
-            updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ?, WHERE adminId = ?';
+            updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ? WHERE adminId = ?';
             values = [name, email, gender, role, status, primaryPhoneNumber, secondaryPhoneNumber, adminId];
         }
 
