@@ -5,50 +5,72 @@ const subscriptionNotifyEmailSending = require('../middlewares/subscriptionNotif
 const { localStorage } = require('../utils/localStorage');
 const deleteUploadedFile =require('../utils/deleteUplodedFile');
 
-async function uploadUserImage (req, res) {
-    console.log(req.body);
+async function uploadUserImage(req, res) {
     const { id } = req.body;
-    
-    console.log(id);
 
-    if(!id) {
-        return res.status(400).send('Image Upload Failed');
+    if (!id) {
+        return res.status(400).send('Image Upload Failed: Missing user ID');
     }
 
     try {
         const imageName = req.files?.photo?.[0]?.filename || null;
-        console.log(imageName);
 
-        if(imageName) {
+        if (!imageName) {
+            return res.status(403).send('No image provided');
+        }
+
+        const getUserQuery = 'SELECT photo FROM users WHERE userId = ?';
+        pool.query(getUserQuery, [id], async (error, result) => {
+            if (error) {
+                console.error('Database error:', error);
+                return res.status(500).send('Internal Server Error');
+            }
+
+            if (result.length === 0) {
+                return res.status(404).send('User not found');
+            }
+
+            const oldPhoto = result[0].photo;
+
+            // Delete old image if it exists and is different from the new one
+            try {
+                if (oldPhoto && oldPhoto !== imageName) {
+                    await deleteUploadedFile('photo', oldPhoto);
+                }
+            } catch (deleteError) {
+                console.error('Image Deletion Error:', deleteError.message);
+            }
+
             const updateImageQuery = 'UPDATE users SET photo = ? WHERE userId = ?';
-            pool.query(updateImageQuery, [imageName, id], (error, result) => {
-                if(error) {
-                    return res.status(400).send(error);
-                } 
+            pool.query(updateImageQuery, [imageName, id], (error, updateResult) => {
+                if (error) {
+                    console.error('Image Upload DB Error:', error);
+                    return res.status(400).send('Image upload error');
+                }
 
-                if(result.affectedRows === 0) {
-                    return res.status(400).send('Image Upload Failed');
+                if (updateResult.affectedRows === 0) {
+                    return res.status(400).send('Image upload failed');
                 }
 
                 const setActivityQuery = 'INSERT INTO activitylogs (userId, activity, completedAt) VALUES (?, ?, ?)';
-                pool.query(setActivityQuery, [id, 'Updated User Image', new Date()], (error, log) => {
-                    if(error) {
-                        return res.status(400).send(error);
+                pool.query(setActivityQuery, [id, 'Updated User Image', new Date()], (logError, logResult) => {
+                    if (logError) {
+                        console.error('Activity Log Error:', logError);
+                        return res.status(400).send('Activity log failed');
                     }
 
-                    if(result.affectedRows === 0) {
-                        return res.status(400).send('Log Insertion Failed');
-                    }
-
-                    return res.status(200).json({ message: 'Image Uploaded Successfully', data: log, image: imageName });
+                    return res.status(200).json({
+                        message: 'Image uploaded successfully',
+                        data: logResult,
+                        image: imageName
+                    });
                 });
             });
-        } else {
-            return res.status(403).send('No image provided');
-        }
+        });
+
     } catch (error) {
-        console.log(error);
-        return res.status(500).send(error);
+        console.error('Unexpected Error:', error);
+        return res.status(500).send('Unexpected server error');
     }
 }
 
