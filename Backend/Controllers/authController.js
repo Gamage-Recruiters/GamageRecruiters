@@ -35,6 +35,9 @@ async function register (req, res) {
         const sql = 'INSERT INTO users (firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, photo, profileDescription, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         pool.query(sql, values, (error, data) => {
             if(error) {
+                if (error.code === 'ER_DUP_ENTRY') {
+                    return res.status(400).send('Email already exists');
+                }
                 return res.status(400).send('Error registering user');
             } 
     
