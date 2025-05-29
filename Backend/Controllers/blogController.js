@@ -337,7 +337,7 @@ module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, 
 // // create blog
 // exports.createBlog = async (req, res) => {
 //   const { title, content, category, author } = req.body;
-//   const imagePath = req.file ? `/uploads/blogs/${req.file.filename}` : null;
+//   const imagePath = req.file ? /uploads/blogs/${req.file.filename} : null;
 
 //   if (!title || !content || !category || !author) {
 //     return res.status(400).json({ message: 'All fields are required' });
@@ -379,7 +379,7 @@ module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, 
 //   try {
 //     const { id } = req.params;
 //     const { title, content, category, author } = req.body;
-//     const newImage = req.file ? `/uploads/blogs/${req.file.filename}` : null;
+//     const newImage = req.file ? /uploads/blogs/${req.file.filename} : null;
 
 //     const promisePool = pool.promise();
 
