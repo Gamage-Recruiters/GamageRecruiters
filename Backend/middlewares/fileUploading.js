@@ -8,6 +8,10 @@ const adminImagePath = path.join(__dirname, '../uploads/admin/images');
 const cvPath = path.join(__dirname, '../uploads/cvs');
 const blogImagePath = path.join(__dirname, '../uploads/blogs/images');
 const blogCoverPath = path.join(__dirname, '../uploads/blogs/covers');
+
+
+
+const authorImagePath = path.join(__dirname, '../uploads/blogs/authors');
 const jobApplicationPath = path.join(__dirname, '../uploads/appliedJobs/resumes');
 const workShopImagePath = path.join(__dirname, '../uploads/workshops/images');
 
@@ -17,6 +21,7 @@ if (!fs.existsSync(adminImagePath)) fs.mkdirSync(adminImagePath, { recursive: tr
 if (!fs.existsSync(cvPath)) fs.mkdirSync(cvPath, { recursive: true });
 if (!fs.existsSync(blogImagePath)) fs.mkdirSync(blogImagePath, { recursive: true });
 if (!fs.existsSync(blogCoverPath)) fs.mkdirSync(blogCoverPath, { recursive: true });
+if (!fs.existsSync(authorImagePath)) fs.mkdirSync(authorImagePath, { recursive: true });
 if (!fs.existsSync(workShopImagePath)) fs.mkdirSync(workShopImagePath, { recursive: true });
 
 // Define storage logic
@@ -34,6 +39,8 @@ const storage = multer.diskStorage({
             callback(null, blogImagePath);
         } else if (file.fieldname === 'blogCover') {
             callback(null, blogCoverPath);
+        }else if (file.fieldname === 'authorImage') {
+            callback(null, authorImagePath);
         } else if (file.fieldname === 'resume') {
             callback(null, jobApplicationPath);
         } else if (file.fieldname === 'workshopImage') {
@@ -73,6 +80,8 @@ const fileFilter = (req, file, callback) => {
         callback(null, true);
     } else if (file.fieldname === 'blogCover' && blogCoverTypes.test(extName) && blogCoverTypes.test(mimeType)) {
         callback(null, true);
+    }else if (file.fieldname === 'authorImage' && imageTypes.test(extName) && imageTypes.test(mimeType)) {
+        callback(null, true);
     } else if (file.fieldname === 'resume' && jobApplicationTypes.test(extName) && jobApplicationTypes.test(mimeType)) {
         callback(null, true);
     } else if (file.fieldname === 'workshopImage' && workShopImageTypes.test(extName) && workShopImageTypes.test(mimeType)) {
@@ -93,6 +102,7 @@ const rawUpload = multer({
     { name: 'cv', maxCount: 1 },
     { name: 'blog', maxCount: 1 },
     { name: 'blogCover', maxCount: 1 },
+    { name: 'authorImage', maxCount: 1 },
     { name: 'resume', maxCount: 1 },
     { name: 'workshopImage', maxCount: 1 }
 ]);

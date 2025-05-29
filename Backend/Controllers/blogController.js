@@ -62,11 +62,11 @@ async function createNewBlog (req, res) {
     // If existing, access the file names of the cv and image ...
     const blogImageName = req.files?.blog?.[0]?.filename || null;
     const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
-    console.log(blogImageName);
-    console.log(blogCoverName);
+    const authorImageName = req.files?.authorImage?.[0]?.filename || null;
+    console.log({ blogImageName, blogCoverName, authorImageName });
 
-    const addBlogQuery = 'INSERT INTO blogs (title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImage, addedAt, category, coverImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName];
+    const addBlogQuery = 'INSERT INTO blogs (title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImage, addedAt, category, coverImage, authorImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName, authorImageName];
     pool.query(addBlogQuery, values, (error, result) => {
       if(error) {
         console.error(error);
@@ -98,8 +98,8 @@ async function updateBlog (req, res) {
     // If existing, access the file names of the cv and image ...
     const blogImageName = req.files?.blog?.[0]?.filename || null;
     const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
-    console.log(blogImageName);
-    console.log(blogCoverName);
+    const authorImageName = req.files?.authorImage?.[0]?.filename || null;
+    console.log(blogImageName, blogCoverName, authorImageName);
 
     let updateBlogQuery;
     let values
@@ -108,7 +108,7 @@ async function updateBlog (req, res) {
       updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, blogImage = ?, addedAt = ?, category = ?, coverImage = ? WHERE blogId = ?';
       values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName, blogId];
     } else if (!blogImageName && blogCoverName) {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, addedAt = ?, category = ? coverImage = ? WHERE blogId = ?';
+      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, addedAt = ?, category = ?, coverImage = ? WHERE blogId = ?';
       values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, new Date(), category, blogCoverName, blogId];
     } else if (blogImageName && !blogCoverName) {
       updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, blogImage = ?, addedAt = ?, category = ? WHERE blogId = ?';
@@ -337,7 +337,7 @@ module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, 
 // // create blog
 // exports.createBlog = async (req, res) => {
 //   const { title, content, category, author } = req.body;
-//   const imagePath = req.file ? `/uploads/blogs/${req.file.filename}` : null;
+//   const imagePath = req.file ? /uploads/blogs/${req.file.filename} : null;
 
 //   if (!title || !content || !category || !author) {
 //     return res.status(400).json({ message: 'All fields are required' });
@@ -379,7 +379,7 @@ module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, 
 //   try {
 //     const { id } = req.params;
 //     const { title, content, category, author } = req.body;
-//     const newImage = req.file ? `/uploads/blogs/${req.file.filename}` : null;
+//     const newImage = req.file ? /uploads/blogs/${req.file.filename} : null;
 
 //     const promisePool = pool.promise();
 
