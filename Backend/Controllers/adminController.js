@@ -13,21 +13,21 @@ async function register (req, res) {
         const imageName = req.files?.adminPhoto?.[0]?.filename || null;
         console.log('imageName', imageName);
 
-        // Check a data related to email, exists in the database ...
+        // Check a data related to email, exists in the database
         const sql = 'SELECT * FROM admin WHERE email = ?';
         pool.query(sql, [email], async (error, result) => {
             if(error) {
                 return res.status(400).send(error);
             }
 
-            if(result.length === 0) {
-                return res.status(404).send('Data Not Found');
+            if(result.length > 0) {
+                return res.status(409).send('Email already registered.');
             }
 
-            // Hash the password ...
+            // Hash the password
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            // Store the details in database ...
+            // Store the details in database
             const adminStoreDataQuery = 'INSERT INTO admin (name, email, password, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
             pool.query(adminStoreDataQuery, [name, email, hashedPassword, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, imageName], (error, result) => {
                 if(error) {
@@ -92,9 +92,9 @@ async function login (req, res) {
                 maxAge: 100 * 60 * 60, // 1 hour ...
             });
 
-            // Store User Data in the database Session ...
-            const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
-            const values = [ adminId, token, new Date(), 'Admin', 'Active' ];
+            // Store Admin Data in the database Session ...
+            const sessionQuery = 'INSERT INTO admin_sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
+            const values = [ adminId, token, new Date(), 'Active', 'Admin' ];
             pool.query(sessionQuery, values, (error, data) => {
                 if(error) {
                     console.log(error);
@@ -196,7 +196,7 @@ async function updateAdminUserDetails (req, res) {
     
     try {
         const imageName = req.files?.adminPhoto?.[0]?.filename || null;
-        console.log('imageName', imageName);
+        console.log('Received Admin imageName:', imageName);
 
         let updateAdminUserDetailsQuery;
         let values;
@@ -205,7 +205,7 @@ async function updateAdminUserDetails (req, res) {
             updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ?, image = ? WHERE adminId = ?';
             values = [name, email, gender, role, status, primaryPhoneNumber, secondaryPhoneNumber, imageName, adminId];
         } else {
-            updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ?, WHERE adminId = ?';
+            updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ? WHERE adminId = ?';
             values = [name, email, gender, role, status, primaryPhoneNumber, secondaryPhoneNumber, adminId];
         }
 
@@ -234,24 +234,54 @@ async function logout(req, res) {
             return res.status(400).send('No token found');
         }
 
-        // Optionally delete or deactivate the session from DB
-        const deleteSessionQuery = 'DELETE FROM sessions WHERE token = ?';
-        pool.query(deleteSessionQuery, [token], (error, result) => {
-            if (error) {
-                console.log(error);
-                return res.status(400).send('Error deleting session');
-            }
+        // Decode token to check if it's an admin
+        try{
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const id = decoded.id;
 
-            // Clear the token cookie
+            // Check if this is an admin token
+            const adminQuery = 'SELECT * FROM admin WHERE adminId = ?';
+            pool.query(adminQuery, [id], (error, result) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(400).send('Error checking user type');
+                }
+
+                let deleteSessionQuery;
+                if (result.length > 0) {
+                    // It's an admin
+                    deleteSessionQuery = 'DELETE FROM admin_sessions WHERE token = ?';
+                } else {
+                    // It's a regular user
+                    deleteSessionQuery = 'DELETE FROM sessions WHERE token = ?';
+                }
+
+                pool.query(deleteSessionQuery, [token], (error, result) => {
+                    if (error) {
+                        console.log(error);
+                        return res.status(400).send('Error deleting session');
+                    }
+
+                    // Clear the token cookie
+                    res.clearCookie('token', {
+                        httpOnly: true,
+                        sameSite: 'none',
+                        secure: true,
+                    });
+
+                    return res.status(200).json({ message: 'Logout successful' });
+                });
+            });
+        } catch (error) {
+            console.log(error);
+            // If token verification fails, clear the cookie
             res.clearCookie('token', {
                 httpOnly: true,
                 sameSite: 'none',
                 secure: true,
             });
-
             return res.status(200).json({ message: 'Logout successful' });
-        });
-
+        } 
     } catch (error) {
         console.log(error);
         return res.status(500).send('Server Error');
