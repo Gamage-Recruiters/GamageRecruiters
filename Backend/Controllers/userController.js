@@ -52,48 +52,71 @@ async function uploadUserImage (req, res) {
     }
 }
 
-async function uploadUserCV (req, res) {
-    console.log(req.body);
+async function uploadUserCV(req, res) {
     const { id } = req.body;
-    console.log(id);
-    if(!id) {
-        return res.status(400).send('Image Upload Failed');
+
+    if (!id) {
+        return res.status(400).send('CV Upload Failed: Missing user ID');
     }
 
     try {
         const cvName = req.files?.cv?.[0]?.filename || null;
-        console.log(cvName);
 
-        if(cvName) {
-            const updateImageQuery = 'UPDATE users SET cv = ? WHERE userId = ?';
-            pool.query(updateImageQuery, [cvName, id], (error, result) => {
-                if(error) {
-                    return res.status(400).send(error);
-                } 
+        if (!cvName) {
+            return res.status(403).send('No CV file provided');
+        }
 
-                if(result.affectedRows === 0) {
-                    return res.status(400).send('CV Upload Failed');
+        const getUserQuery = 'SELECT cv FROM users WHERE userId = ?';
+        pool.query(getUserQuery, [id], async (error, result) => {
+            if (error) {
+                console.error('Database error:', error);
+                return res.status(500).send('Internal Server Error');
+            }
+
+            if (result.length === 0) {
+                return res.status(404).send('User not found');
+            }
+
+            const oldCv = result[0].cv;
+
+            // Delete the old CV file if it exists
+            try {
+                if (oldCv && oldCv !== cvName) {
+                    await deleteUploadedFile('cv', oldCv);
+                }
+            } catch (deleteError) {
+                console.error('CV Deletion Error:', deleteError.message);
+            }
+
+            const updateQuery = 'UPDATE users SET cv = ? WHERE userId = ?';
+            pool.query(updateQuery, [cvName, id], (updateError, updateResult) => {
+                if (updateError) {
+                    console.error('CV Upload DB Error:', updateError);
+                    return res.status(400).send('Error updating user CV');
+                }
+
+                if (updateResult.affectedRows === 0) {
+                    return res.status(400).send('CV upload failed');
                 }
 
                 const setActivityQuery = 'INSERT INTO activitylogs (userId, activity, completedAt) VALUES (?, ?, ?)';
-                pool.query(setActivityQuery, [id, 'Updated User CV', new Date()], (error, log) => {
-                    if(error) {
-                        return res.status(400).send(error);
+                pool.query(setActivityQuery, [id, 'Updated User CV', new Date()], (logError, logResult) => {
+                    if (logError) {
+                        console.error('Activity Log Error:', logError);
+                        return res.status(400).send('Activity log failed');
                     }
 
-                    if(result.affectedRows === 0) {
-                        return res.status(400).send('Log Insertion Failed');
-                    }
-
-                    return res.status(200).json({ message: 'CV Uploaded Successfully', data: log, cv: cvName });
+                    return res.status(200).json({
+                        message: 'CV uploaded successfully',
+                        data: logResult,
+                        cv: cvName
+                    });
                 });
             });
-        } else {
-            return res.status(403).send('No CV provided');
-        }
+        });
+
     } catch (error) {
-        console.log(error);
-        return res.status(500).send(error);
+        return res.status(500).send('Unexpected server error');
     }
 }
 
