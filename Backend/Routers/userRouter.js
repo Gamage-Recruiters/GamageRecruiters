@@ -1,7 +1,7 @@
 const express = require('express');
 const upload = require('../middlewares/fileUploading');
 const userController = require('../Controllers/userController');
-
+const { sendOTP } = require('../Controllers/userController');
 const router = express.Router();
 
 // View All Client Users
@@ -34,7 +34,15 @@ router.get('/recent-activity/:userId', userController.getRecentProfileActivity);
 // Subscribe to News Letter ...
 router.post('/subscribe-newsletter', userController.subscribeToNewsletter);
 
+// Fetch Users Data ...
+router.get('/all-users', userController.getAllSystemUsers);
+
 // Fetch User By Id ...
 router.get('/:userId', userController.getUserById);
+
+router.get('/user/:userId/details', userController.getAllUserDetails);
+
+router.post('/sendOTP', userController.sendOTP);
+
 
 module.exports = router;

@@ -409,6 +409,26 @@ async function subscribeToNewsletter(req, res) {
     }
 }
 
+async function getAllSystemUsers (req, res) {
+    try {
+        const usersQuery = 'SELECT * FROM users';
+        pool.query(usersQuery, (error, result) => {
+           if(error) {
+               console.log(error);
+               return res.status(400).send(error);
+           }
+
+           if(result.length === 0) {
+               return res.status(404).send('No Users Found');
+           }
+
+           return res.status(200).json({ message: 'Users Found', users: result });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
 
 async function getUserById (req, res) {
     const { userId } = req.params;
@@ -524,5 +544,97 @@ async function getAllClientUsers(req, res) {
 }
 
 
+async function getAllUserDetails(req, res) {
+    const { userId } = req.params;
 
-module.exports = { deleteUser,getAllClientUsers, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter, getAllSystemUsersCount, getAllActiveUsersCount, getAllUsersCountInCurrentMonth, getUserById }
+    if (!userId) {
+        return res.status(400).send('User ID is required');
+    }
+
+    try {
+        const query = 'SELECT * FROM users WHERE userId = ?';
+        pool.query(query, [userId], (error, results) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).send('Database query failed');
+            }
+
+            if (results.length === 0) {
+                return res.status(404).send('User not found');
+            }
+
+            return res.status(200).json({ message: 'User details retrieved successfully', user: results[0] });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send('Server error');
+    }
+}
+
+
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', // or your email service provider
+  auth: {
+    user: process.env.APP_EMAIL,
+    pass: process.env.APP_PASSWORD,
+  },
+});
+
+const otpStore = {}; // In-memory store for OTPs (use DB or Redis for production)
+
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+async function sendOTP(req, res) {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).send('Email is required');
+  }
+
+  // Optional: check if email exists in your database first
+  const checkUserQuery = 'SELECT * FROM users WHERE email = ?';
+
+  pool.query(checkUserQuery, [email], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Database query failed');
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send('Email not registered');
+    }
+
+    // Generate OTP and store it with expiry (e.g. 5 min)
+    const otp = generateOTP();
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes from now
+
+    otpStore[email] = { otp, expiresAt };
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Your OTP Code',
+      text: `Your OTP code is ${otp}. It will expire in 5 minutes.`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending OTP:', error);
+        return res.status(500).send('Failed to send OTP');
+      } else {
+        console.log(`OTP sent to ${email}: ${otp}`);
+        return res.status(200).json({ message: 'OTP sent successfully' });
+      }
+    });
+  });
+}
+
+
+
+
+
+module.exports = { deleteUser,getAllClientUsers, getAllUserDetails, changePassword, updateUserDetails, uploadUserImage, uploadUserCV, getUserRecentJobActivity, getLastActiveStatus, getRecentProfileActivity, subscribeToNewsletter, getAllSystemUsersCount, getAllActiveUsersCount, getAllUsersCountInCurrentMonth, getAllSystemUsers, getUserById ,sendOTP}
