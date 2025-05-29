@@ -92,9 +92,9 @@ async function login (req, res) {
                 maxAge: 100 * 60 * 60, // 1 hour ...
             });
 
-            // Store User Data in the database Session ...
-            const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
-            const values = [ adminId, token, new Date(), 'Admin', 'Active' ];
+            // Store Admin Data in the database Session ...
+            const sessionQuery = 'INSERT INTO admin_sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
+            const values = [ adminId, token, new Date(), 'Active', 'Admin' ];
             pool.query(sessionQuery, values, (error, data) => {
                 if(error) {
                     console.log(error);
@@ -234,24 +234,54 @@ async function logout(req, res) {
             return res.status(400).send('No token found');
         }
 
-        // Optionally delete or deactivate the session from DB
-        const deleteSessionQuery = 'DELETE FROM sessions WHERE token = ?';
-        pool.query(deleteSessionQuery, [token], (error, result) => {
-            if (error) {
-                console.log(error);
-                return res.status(400).send('Error deleting session');
-            }
+        // Decode token to check if it's an admin
+        try{
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const id = decoded.id;
 
-            // Clear the token cookie
+            // Check if this is an admin token
+            const adminQuery = 'SELECT * FROM admin WHERE adminId = ?';
+            pool.query(adminQuery, [id], (error, result) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(400).send('Error checking user type');
+                }
+
+                let deleteSessionQuery;
+                if (result.length > 0) {
+                    // It's an admin
+                    deleteSessionQuery = 'DELETE FROM admin_sessions WHERE token = ?';
+                } else {
+                    // It's a regular user
+                    deleteSessionQuery = 'DELETE FROM sessions WHERE token = ?';
+                }
+
+                pool.query(deleteSessionQuery, [token], (error, result) => {
+                    if (error) {
+                        console.log(error);
+                        return res.status(400).send('Error deleting session');
+                    }
+
+                    // Clear the token cookie
+                    res.clearCookie('token', {
+                        httpOnly: true,
+                        sameSite: 'none',
+                        secure: true,
+                    });
+
+                    return res.status(200).json({ message: 'Logout successful' });
+                });
+            });
+        } catch (error) {
+            console.log(error);
+            // If token verification fails, clear the cookie
             res.clearCookie('token', {
                 httpOnly: true,
                 sameSite: 'none',
                 secure: true,
             });
-
             return res.status(200).json({ message: 'Logout successful' });
-        });
-
+        } 
     } catch (error) {
         console.log(error);
         return res.status(500).send('Server Error');
