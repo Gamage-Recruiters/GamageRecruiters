@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
   FiDownload, FiTrash2, FiSearch, FiFilter, FiUser, FiMail, 
   FiPhone, FiCalendar, FiFile, FiArchive, FiCheckCircle, 
   FiAlertCircle, FiChevronDown, FiBriefcase, FiClock, FiEye
 } from 'react-icons/fi';
+import { createPortal } from 'react-dom';
 
 const CandidateDetailsView = () => {
   // State management
@@ -20,8 +21,21 @@ const CandidateDetailsView = () => {
   const [confirmAction, setConfirmAction] = useState({ type: null, id: null });
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const dropdownTriggerRef = useRef(null);
 
   const baseUrl = 'http://localhost:8000';
+
+  // to calculate dropdown position
+  useEffect(() => {
+    if (isFilterDropdownOpen && dropdownTriggerRef.current) {
+      const rect = dropdownTriggerRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 5, // 5px below the button
+        left: rect.left + window.scrollX
+      });
+    }
+  }, [isFilterDropdownOpen]);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -32,14 +46,15 @@ const CandidateDetailsView = () => {
 
   // Fetch all jobs
   const fetchJobs = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/api/jobs`);
-      setJobs(response.data.data || []);
-    } catch (err) {
-      console.error('Error fetching jobs:', err);
-      setError('Failed to load jobs data.');
-    }
-  };
+  try {
+    const response = await axios.get(`${baseUrl}/api/jobs`);
+    setJobs(response.data.jobs || []); // Changed from data.data to data.jobs
+    console.log("Jobs response:", response.data); // Add this for debugging
+  } catch (err) {
+    console.error('Error fetching jobs:', err);
+    setError('Failed to load jobs data.');
+  }
+};
 
   // Fetch all applications
   const fetchAllApplications = async () => {
@@ -375,6 +390,7 @@ const CandidateDetailsView = () => {
             {/* Job Filter - Custom dropdown */}
             <div className="relative w-full md:w-64">
               <div 
+                ref={dropdownTriggerRef}
                 className="flex items-center justify-between pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg w-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-200"
                 onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
               >
@@ -387,24 +403,38 @@ const CandidateDetailsView = () => {
                 <FiChevronDown className={`transition-transform duration-200 ${isFilterDropdownOpen ? 'rotate-180' : ''}`} />
               </div>
               
-              {isFilterDropdownOpen && (
-                <div className="absolute left-0 right-0 mt-2 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+              {isFilterDropdownOpen && createPortal(
+                <>
                   <div 
-                    className="px-4 py-2 hover:bg-gray-600 cursor-pointer text-gray-200"
-                    onClick={() => handleFilterChange('all')}
+                    className="fixed inset-0 bg-transparent z-40" 
+                    onClick={() => setIsFilterDropdownOpen(false)}
+                  ></div>
+                  <div 
+                    className="fixed z-50 bg-gray-700 border border-gray-600 rounded-lg shadow-xl py-2 max-h-72 overflow-y-auto"
+                    style={{
+                      width: "250px",
+                      top: `${dropdownPosition.top}px`,
+                      left: `${dropdownPosition.left}px`
+                    }}
                   >
-                    All Jobs
-                  </div>
-                  {jobs.map(job => (
                     <div 
-                      key={job.jobId} 
                       className="px-4 py-2 hover:bg-gray-600 cursor-pointer text-gray-200"
-                      onClick={() => handleFilterChange(job.jobId)}
+                      onClick={() => handleFilterChange('all')}
                     >
-                      {job.jobName} - {job.company}
+                      All Jobs
                     </div>
-                  ))}
-                </div>
+                    {jobs.map(job => (
+                      <div 
+                        key={job.jobId} 
+                        className="px-4 py-2 hover:bg-gray-600 cursor-pointer text-gray-200"
+                        onClick={() => handleFilterChange(job.jobId)}
+                      >
+                        {job.jobName} - {job.company}
+                      </div>
+                    ))}
+                  </div>
+                </>,
+                document.body
               )}
             </div>
 
