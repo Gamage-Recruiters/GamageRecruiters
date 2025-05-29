@@ -11,7 +11,7 @@ const blogCoverPath = path.join(__dirname, '../uploads/blogs/covers');
 
 const jobApplicationPath = path.join(__dirname, '../uploads/cvs');
 
-
+const jobApplicationPath = path.join(__dirname,  '../uploads/users/images');
 
 
 const workShopImagePath = path.join(__dirname, '../uploads/workshops/images');
