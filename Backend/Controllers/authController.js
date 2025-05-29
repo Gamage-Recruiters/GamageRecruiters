@@ -59,7 +59,10 @@ async function login (req, res) {
         pool.query(userQuery, [email], async (error, result) => {
             if(error) {
                 return res.status(404).send('User Not Found');
-            } 
+            }
+            if (!result || result.length === 0) {
+                return res.status(404).send('User Not Found');
+            }
 
             // Verify the password ...
             const verifyPasswordResult = await bcrypt.compare(password, result[0].password);
