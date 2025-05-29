@@ -8,6 +8,8 @@ const adminImagePath = path.join(__dirname, '../uploads/admin/images');
 const cvPath = path.join(__dirname, '../uploads/cvs');
 const blogImagePath = path.join(__dirname, '../uploads/blogs/images');
 const blogCoverPath = path.join(__dirname, '../uploads/blogs/covers');
+
+const jobApplicationPath = path.join(__dirname, '../uploads/cvs');
 const authorImagePath = path.join(__dirname, '../uploads/blogs/authors');
 const jobApplicationPath = path.join(__dirname, '../uploads/appliedJobs/resumes');
 const workShopImagePath = path.join(__dirname, '../uploads/workshops/images');
