@@ -62,11 +62,11 @@ async function createNewBlog (req, res) {
     // If existing, access the file names of the cv and image ...
     const blogImageName = req.files?.blog?.[0]?.filename || null;
     const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
-    console.log(blogImageName);
-    console.log(blogCoverName);
+    const authorImageName = req.files?.authorImage?.[0]?.filename || null;
+    console.log({ blogImageName, blogCoverName, authorImageName });
 
-    const addBlogQuery = 'INSERT INTO blogs (title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImage, addedAt, category, coverImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName];
+    const addBlogQuery = 'INSERT INTO blogs (title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImage, addedAt, category, coverImage, authorImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName, authorImageName];
     pool.query(addBlogQuery, values, (error, result) => {
       if(error) {
         console.error(error);
@@ -98,8 +98,8 @@ async function updateBlog (req, res) {
     // If existing, access the file names of the cv and image ...
     const blogImageName = req.files?.blog?.[0]?.filename || null;
     const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
-    console.log(blogImageName);
-    console.log(blogCoverName);
+    const authorImageName = req.files?.authorImage?.[0]?.filename || null;
+    console.log(blogImageName, blogCoverName, authorImageName);
 
     let updateBlogQuery;
     let values
