@@ -89,8 +89,8 @@ async function login (req, res) {
             });
 
             // Store User Data in the database Session ...
-            const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
-            const values = [ result[0].userId, token, new Date(), 'Active', 'User' ];
+            const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt,endedAt, status, role) VALUES (?, ?,?, ?, ?, ?)';
+            const values = [ result[0].userId, token, new Date(),new Date(expTime * 1000), 'Active', 'User' ];
             pool.query(sessionQuery, values, (error, data) => {
                 if(error) {
                     // console.log(error);
