@@ -105,6 +105,10 @@ async function updateBlog(req, res) {
     const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
 
     const authorImageName = req.files?.authorImage?.[0]?.filename || null;
+    console.log(blogImageName, blogCoverName, authorImageName);
+
+
+    const authorImageName = req.files?.authorImage?.[0]?.filename || null;
 
     const fields = [
       'title', 'introduction', 'subTitle1', 'subContent1', 'subTitle2', 'subContent2',
@@ -128,6 +132,7 @@ async function updateBlog(req, res) {
 
     console.log(blogImageName);
     console.log(blogCoverName);
+
 
     let updateBlogQuery;
     let values
