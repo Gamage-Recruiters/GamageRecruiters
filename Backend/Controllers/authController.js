@@ -35,6 +35,9 @@ async function register (req, res) {
         const sql = 'INSERT INTO users (firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, photo, profileDescription, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         pool.query(sql, values, (error, data) => {
             if(error) {
+                if (error.code === 'ER_DUP_ENTRY') {
+                    return res.status(400).send('Email already exists');
+                }
                 return res.status(400).send('Error registering user');
             } 
     
@@ -59,7 +62,10 @@ async function login (req, res) {
         pool.query(userQuery, [email], async (error, result) => {
             if(error) {
                 return res.status(404).send('User Not Found');
-            } 
+            }
+            if (!result || result.length === 0) {
+                return res.status(404).send('User Not Found');
+            }
 
             // Verify the password ...
             const verifyPasswordResult = await bcrypt.compare(password, result[0].password);
@@ -86,8 +92,8 @@ async function login (req, res) {
             });
 
             // Store User Data in the database Session ...
-            const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
-            const values = [ result[0].userId, token, new Date(), 'Active', 'User' ];
+            const sessionQuery = 'INSERT INTO sessions (Id, token, createdAt,endedAt, status, role) VALUES (?, ?,?, ?, ?, ?)';
+            const values = [ result[0].userId, token, new Date(),new Date(expTime * 1000), 'Active', 'User' ];
             pool.query(sessionQuery, values, (error, data) => {
                 if(error) {
                     // console.log(error);
