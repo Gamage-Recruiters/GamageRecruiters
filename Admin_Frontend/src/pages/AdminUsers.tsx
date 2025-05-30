@@ -13,7 +13,7 @@ function AdminUsers() {
   const [admins, setAdmins] = useState([]);
 
    useEffect(() => {
-    axios.get("http://localhost:8000/admin/all")
+       axios.get("http://localhost:8000/admin/all")
       .then((response) => {
         if (response.data && response.data.data) {
           setAdmins(response.data.data);
@@ -22,7 +22,7 @@ function AdminUsers() {
       .catch((error) => {
         console.error("Error fetching admins:", error);
       });
-  }, []);
+  },[admins.length]);
 
 
   const navigate = useNavigate();
