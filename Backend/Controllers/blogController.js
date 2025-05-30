@@ -333,7 +333,7 @@ async function deleteBlog (req, res) {
       }
 
       if(result.affectedRows === 0) {
-        return res.status(400).send('Failed to update Blog');
+       return res.status(404).send('Blog not found');
       }
 
       return res.status(200).send('Blog Deleted Successfully');
