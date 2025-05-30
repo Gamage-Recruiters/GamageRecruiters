@@ -20,6 +20,8 @@ if (!fs.existsSync(blogImagePath)) fs.mkdirSync(blogImagePath, { recursive: true
 if (!fs.existsSync(blogCoverPath)) fs.mkdirSync(blogCoverPath, { recursive: true });
 if (!fs.existsSync(authorImagePath)) fs.mkdirSync(authorImagePath, { recursive: true });
 if (!fs.existsSync(workShopImagePath)) fs.mkdirSync(workShopImagePath, { recursive: true });
+if (!fs.existsSync(jobApplicationPath)) fs.mkdirSync(jobApplicationPath, { recursive: true });
+
 
 // Define storage logic
 const storage = multer.diskStorage({
