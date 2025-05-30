@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Upload, Eye, EyeOff } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Upload, Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function AddAdmin() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    gender: '',
-    phoneNumber1: '',
-    phoneNumber2: '',
-    email: '',
-    password: '',
-    status: 'active',
-    role: ''
+    name: "",
+    gender: "",
+    primaryPhoneNumber: "",
+    secondaryPhoneNumber: "",
+    email: "",
+    password: "",
+    status: "active",
+    role: "",
+    adminPhoto: null,
   });
-  const [profilePic, setProfilePic] = useState(null);
+  // const [profilePic, setProfilePic] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [errors, setErrors] = useState({});
 
@@ -25,13 +28,13 @@ function AddAdmin() {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
     // Clear error for this field when user types
     if (errors[name]) {
       setErrors({
         ...errors,
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -40,8 +43,12 @@ function AddAdmin() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfilePic(file);
-      
+      // setProfilePic(file);
+      setFormData({
+        ...formData,
+        adminPhoto: file,
+      });
+
       // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -54,45 +61,76 @@ function AddAdmin() {
   // Validate form
   const validateForm = () => {
     const newErrors = {};
-    
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.gender) newErrors.gender = 'Gender selection is required';
-    if (!formData.phoneNumber1) newErrors.phoneNumber1 = 'Primary phone number is required';
-    
+
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.gender) newErrors.gender = "Gender selection is required";
+    if (!formData.primaryPhoneNumber)
+      newErrors.primaryPhoneNumber = "Primary phone number is required";
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = "Please enter a valid email address";
     }
-    
+
     // Password validation
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters long';
+      newErrors.password = "Password must be at least 8 characters long";
     }
-    
-    if (!formData.role) newErrors.role = 'Role selection is required';
-    
+
+    if (!formData.role) newErrors.role = "Role selection is required";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   // Form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
-      // Here you would normally send the data to your API
-      console.log('Form submitted:', { ...formData, profilePic });
-      
-      // Simulate successful submission
-      alert('Admin added successfully!');
-      navigate('/admins'); // Redirect to admin list page
+      console.log("Form submitted:", { ...formData });
+
+      const formDataToSend = new FormData();
+
+      for (const key in formData) {
+        if (key === "adminPhoto" && formData[key]) {
+          formDataToSend.append("adminPhoto", formData[key]);
+        } else {
+          formDataToSend.append(key, formData[key]);
+        }
+      }
+
+      try {
+        const adminLoginResponse = await axios.post(
+          "http://localhost:8000/admin/register",
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (
+          adminLoginResponse.status === 200 ||
+          adminLoginResponse.status === 201
+        ) {
+          alert("Admin added successfully!");
+          navigate("/admins");
+        } else {
+          toast.error("Registration failed.");
+        }
+      } catch (err) {
+        console.log(err);
+        toast.error("Something went wrong.");
+      }
     } else {
-      console.log('Form has errors');
+      console.log("Form has errors");
     }
   };
 
@@ -103,8 +141,8 @@ function AddAdmin() {
       className="space-y-6 pb-6"
     >
       <div className="flex items-center">
-        <button 
-          onClick={() => navigate('/admins')}
+        <button
+          onClick={() => navigate("/admins")}
           className="mr-4 p-2 text-gray-300 hover:text-indigo-400 transition-colors"
         >
           <ArrowLeft className="h-6 w-6" />
@@ -119,9 +157,9 @@ function AddAdmin() {
             <div className="relative">
               <div className="h-32 w-32 rounded-full overflow-hidden bg-gray-700 mb-2">
                 {previewUrl ? (
-                  <img 
-                    src={previewUrl} 
-                    alt="Profile preview" 
+                  <img
+                    src={previewUrl}
+                    alt="Profile preview"
                     className="h-full w-full object-cover"
                   />
                 ) : (
@@ -130,9 +168,11 @@ function AddAdmin() {
                   </div>
                 )}
               </div>
-              <button 
+              <button
                 type="button"
-                onClick={() => document.getElementById('profile-upload').click()}
+                onClick={() =>
+                  document.getElementById("profile-upload").click()
+                }
                 className="absolute bottom-2 right-0 p-2 bg-indigo-600 rounded-full text-white hover:bg-indigo-700 transition-colors"
               >
                 <Upload className="h-4 w-4" />
@@ -162,10 +202,14 @@ function AddAdmin() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`px-4 py-2 w-full border ${errors.name ? 'border-red-500' : 'border-gray-600'} bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
+                className={`px-4 py-2 w-full border ${
+                  errors.name ? "border-red-500" : "border-gray-600"
+                } bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
                 placeholder="Enter full name"
               />
-              {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+              )}
             </div>
 
             {/* Gender */}
@@ -177,7 +221,9 @@ function AddAdmin() {
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className={`px-4 py-2 w-full border ${errors.gender ? 'border-red-500' : 'border-gray-600'} bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
+                className={`px-4 py-2 w-full border ${
+                  errors.gender ? "border-red-500" : "border-gray-600"
+                } bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -185,7 +231,9 @@ function AddAdmin() {
                 <option value="Other">Other</option>
                 <option value="Prefer not to say">Prefer not to say</option>
               </select>
-              {errors.gender && <p className="mt-1 text-sm text-red-500">{errors.gender}</p>}
+              {errors.gender && (
+                <p className="mt-1 text-sm text-red-500">{errors.gender}</p>
+              )}
             </div>
 
             {/* Phone Number 1 */}
@@ -195,24 +243,33 @@ function AddAdmin() {
               </label>
               <input
                 type="tel"
-                name="phoneNumber1"
-                value={formData.phoneNumber1}
+                name="primaryPhoneNumber"
+                value={formData.primaryPhoneNumber}
                 onChange={handleChange}
-                className={`px-4 py-2 w-full border ${errors.phoneNumber1 ? 'border-red-500' : 'border-gray-600'} bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
+                className={`px-4 py-2 w-full border ${
+                  errors.primaryPhoneNumber
+                    ? "border-red-500"
+                    : "border-gray-600"
+                } bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
                 placeholder="Enter primary phone number"
               />
-              {errors.phoneNumber1 && <p className="mt-1 text-sm text-red-500">{errors.phoneNumber1}</p>}
+              {errors.primaryPhoneNumber && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.primaryPhoneNumber}
+                </p>
+              )}
             </div>
 
             {/* Phone Number 2 */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
-                Secondary Phone Number <span className="text-gray-500">(Optional)</span>
+                Secondary Phone Number{" "}
+                <span className="text-gray-500">(Optional)</span>
               </label>
               <input
                 type="tel"
-                name="phoneNumber2"
-                value={formData.phoneNumber2}
+                name="secondaryPhoneNumber"
+                value={formData.secondaryPhoneNumber}
                 onChange={handleChange}
                 className="px-4 py-2 w-full border border-gray-600 bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Enter secondary phone number"
@@ -229,10 +286,14 @@ function AddAdmin() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`px-4 py-2 w-full border ${errors.email ? 'border-red-500' : 'border-gray-600'} bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
+                className={`px-4 py-2 w-full border ${
+                  errors.email ? "border-red-500" : "border-gray-600"
+                } bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
                 placeholder="Enter email address"
               />
-              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -246,19 +307,29 @@ function AddAdmin() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`px-4 py-2 w-full border ${errors.password ? 'border-red-500' : 'border-gray-600'} bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
+                  className={`px-4 py-2 w-full border ${
+                    errors.password ? "border-red-500" : "border-gray-600"
+                  } bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
                   placeholder="Enter password"
                 />
-                <button 
+                <button
                   type="button"
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
-              <p className="mt-1 text-xs text-gray-400">Password must be at least 8 characters long</p>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-400">
+                Password must be at least 8 characters long
+              </p>
             </div>
 
             {/* Role */}
@@ -270,7 +341,9 @@ function AddAdmin() {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className={`px-4 py-2 w-full border ${errors.role ? 'border-red-500' : 'border-gray-600'} bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
+                className={`px-4 py-2 w-full border ${
+                  errors.role ? "border-red-500" : "border-gray-600"
+                } bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
               >
                 <option value="">Select Role</option>
                 <option value="Super Admin">Super Admin</option>
@@ -278,7 +351,9 @@ function AddAdmin() {
                 <option value="Support Admin">Support Admin</option>
                 <option value="Technical Admin">Technical Admin</option>
               </select>
-              {errors.role && <p className="mt-1 text-sm text-red-500">{errors.role}</p>}
+              {errors.role && (
+                <p className="mt-1 text-sm text-red-500">{errors.role}</p>
+              )}
             </div>
 
             {/* Status */}
@@ -317,7 +392,7 @@ function AddAdmin() {
           <div className="flex justify-end space-x-4 pt-4">
             <button
               type="button"
-              onClick={() => navigate('/admins')}
+              onClick={() => navigate("/admins")}
               className="px-6 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
             >
               Cancel
