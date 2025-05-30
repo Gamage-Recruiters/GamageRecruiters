@@ -1,71 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Search, Edit2, Trash2, UserCheck, UserX, User } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
-// Mock data for admins - replace with your actual data source
-const mockAdmins = [
-  {
-    adminId: 1,
-    name: "John Doe",
-    gender: "Male",
-    phoneNumber1: "+1 (555) 123-4567",
-    phoneNumber2: "+1 (555) 987-6543",
-    profilePic: "https://api.placeholder.com/150",
-    email: "john.doe@example.com",
-    status: "active",
-    role: "Super Admin"
-  },
-  {
-    adminId: 2,
-    name: "Jane Smith",
-    gender: "Female",
-    phoneNumber1: "+1 (555) 234-5678",
-    phoneNumber2: "",
-    profilePic: "https://api.placeholder.com/150",
-    email: "jane.smith@example.com",
-    status: "active",
-    role: "Content Admin"
-  },
-  {
-    adminId: 3,
-    name: "Robert Johnson",
-    gender: "Male",
-    phoneNumber1: "+1 (555) 345-6789",
-    phoneNumber2: "+1 (555) 111-2222",
-    profilePic: "https://api.placeholder.com/150",
-    email: "robert.johnson@example.com",
-    status: "inactive",
-    role: "Support Admin"
-  },
-  {
-    adminId: 4,
-    name: "Emily Williams",
-    gender: "Female",
-    phoneNumber1: "+1 (555) 456-7890",
-    phoneNumber2: "",
-    profilePic: "https://api.placeholder.com/150",
-    email: "emily.williams@example.com",
-    status: "active",
-    role: "Technical Admin"
-  }
-];
 
 function AdminUsers() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+
+  const [admins, setAdmins] = useState([]);
+
+   useEffect(() => {
+    axios.get("http://localhost:8000/admin/all")
+      .then((response) => {
+        if (response.data && response.data.data) {
+          setAdmins(response.data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching admins:", error);
+      });
+  }, []);
+
+
   const navigate = useNavigate();
 
   // Filter admins based on search term and filters
-  const filteredAdmins = mockAdmins.filter(admin => {
+  const filteredAdmins = admins.filter(admin => {
     const matchesSearch = 
-      admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      admin.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      admin.phoneNumber1.includes(searchTerm);
+      admin?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      admin?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      admin?.primaryPhoneNumber.includes(searchTerm);
     
-    const matchesRole = roleFilter === '' || admin.role === roleFilter;
-    const matchesStatus = statusFilter === '' || admin.status === statusFilter;
+    const matchesRole = roleFilter === '' || admin?.role === roleFilter;
+    const matchesStatus = statusFilter === '' || admin?.status === statusFilter;
     
     return matchesSearch && matchesRole && matchesStatus;
   });
@@ -152,10 +122,10 @@ function AdminUsers() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
-                        {admin.profilePic ? (
+                        {admin.image ? (
                           <img 
                             className="h-10 w-10 rounded-full" 
-                            src={admin.profilePic} 
+                            src={`http://localhost:8000/uploads/admin/images/${encodeURIComponent(admin.image)}`} 
                             alt={admin.name} 
                           />
                         ) : (
@@ -172,9 +142,9 @@ function AdminUsers() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-200">{admin.email}</div>
-                    <div className="text-sm text-gray-400">{admin.phoneNumber1}</div>
-                    {admin.phoneNumber2 && (
-                      <div className="text-sm text-gray-400">{admin.phoneNumber2}</div>
+                    <div className="text-sm text-gray-400">{admin.primaryPhoneNumber}</div>
+                    {admin.secondaryPhoneNumber && (
+                      <div className="text-sm text-gray-400">{admin.secondaryPhoneNumber}</div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
@@ -182,14 +152,14 @@ function AdminUsers() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      admin.status === 'active' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'
+                      admin.status.toLowerCase() === 'active' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'
                     }`}>
-                      {admin.status === 'active' ? 'Active' : 'Inactive'}
+                      {admin.status.toLowerCase() === 'active' ? 'Active' : 'Inactive'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
-                      {admin.status === 'active' ? (
+                      {admin.status.toLowerCase() === 'active' ? (
                         <button className="p-2 text-gray-400 hover:text-red-400" title="Deactivate">
                           <UserX className="h-5 w-5" />
                         </button>
