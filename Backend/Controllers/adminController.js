@@ -198,28 +198,60 @@ async function updateAdminUserDetails (req, res) {
         const imageName = req.files?.adminPhoto?.[0]?.filename || null;
         console.log('Received Admin imageName:', imageName);
 
-        let updateAdminUserDetailsQuery;
-        let values;
-
         if(imageName) {
-            updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ?, image = ? WHERE adminId = ?';
-            values = [name, email, gender, role, status, primaryPhoneNumber, secondaryPhoneNumber, imageName, adminId];
+            // get the current image path
+            const getCurrentImageQuery = "SELECT image FROM admin WHERE adminId = ?";
+
+            pool.query(getCurrentImageQuery, [adminId], async (error, result) => {
+                if (error) {
+                    return res.status(400).send(error);
+                }
+
+                //if there's a previous image, deleting it
+                if (result.length > 0 && result[0].image) {
+                    const oldImageName = result[0].image;
+                    try {
+                        const deleteUploadedFile = require('../utils/deleteUplodedFile');
+                        await deleteUploadedFile('adminPhoto', oldImageName);
+                    } catch (err) {
+                        console.log('Error deleting old image:', err);
+                    }
+                }
+                // update details
+                const updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ?, image = ? WHERE adminId = ?';
+                const values = [name, email, gender, role, status, primaryPhoneNumber, secondaryPhoneNumber, imageName, adminId];
+
+                pool.query(updateAdminUserDetailsQuery, values, (error, result) => {
+                    if (error) {
+                        return res.status(400).send(error);
+                    }
+
+                    if(result.affectedRows === 0) {
+                        return res.status(400).send('Data Update failed');
+                    }
+
+                    return res.status(200).send('Admin User Details Updated Successfully');
+                });
+            });
         } else {
-            updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ? WHERE adminId = ?';
-            values = [name, email, gender, role, status, primaryPhoneNumber, secondaryPhoneNumber, adminId];
+            // if no image is provided
+            const updateAdminUserDetailsQuery = 'UPDATE admin SET name = ?, email = ?, gender = ?, role = ?, status = ?, primaryPhoneNumber = ?, secondaryPhoneNumber = ? WHERE adminId = ?';
+            const values = [name, email, gender, role, status, primaryPhoneNumber, secondaryPhoneNumber, adminId];
+
+            pool.query(updateAdminUserDetailsQuery, values, (error, result) => {
+                if (error) {
+                    return res.status(400).send(error);
+                }
+
+                if(result.affectedRows === 0) {
+                    return res.status(400).send('Data Update failed');
+                }
+
+                return res.status(200).send('Admin User Details Updated Successfully');
+            });
         }
 
-        pool.query(updateAdminUserDetailsQuery, values, (error, result) => {
-            if (error) {
-                return res.status(400).send(error);
-            }
-
-            if(result.affectedRows === 0) {
-                return res.status(400).send('Data Update failed');
-            }
-
-            return res.status(200).send('Admin User Details Updated Successfully');
-        })
+        
     } catch (error) {
         console.log(error);
         return res.status(500).send(error);
