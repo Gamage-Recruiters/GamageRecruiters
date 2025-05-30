@@ -20,7 +20,7 @@ function Login() {
     }
 
     try {
-       const adminLoginResponse = await axios.post('http://localhost:5000/admin/login', { email: email, password: password });
+       const adminLoginResponse = await axios.post('http://localhost:8000/admin/login', { email: email, password: password });
        if (adminLoginResponse.status === 200) {
           toast.success("Login successful!");
           setEmail('');
@@ -31,7 +31,7 @@ function Login() {
           return;
        }
     } catch (error) {
-      console.log(error);
+      toast.error("Login failed. Please check your credentials.");
       return;
     }
   };
@@ -45,7 +45,7 @@ function Login() {
         className="bg-white rounded-xl shadow-xl w-full max-w-md p-8"
       >
         <div className="text-center mb-8">
-          <div className="inline-block p-3 rounded-full bg-indigo-100 mb-4" onClick={() => navigate("/Dashboard")}>
+          <div className="inline-block p-3 rounded-full bg-indigo-100 mb-4">
             <Lock className="h-8 w-8 text-indigo-600" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">GAMAGE RECRUITERS</h2>
