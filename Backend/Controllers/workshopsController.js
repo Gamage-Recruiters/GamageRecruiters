@@ -97,8 +97,10 @@ async function updateWorkshop(req, res) {
   }
 
   try {
+    const workShopImageName = req.files?.workshopImage?.[0]?.filename || null;
+    
     const query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ? WHERE id = ?";
-    const values = [title, category, date, time, location, image, color, speaker, price, spots, rating, id];
+    const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, id];
 
     pool.query(query, values, (error, result) => {
       if (error) return res.status(500).send(error);
