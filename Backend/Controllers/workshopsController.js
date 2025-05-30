@@ -73,7 +73,7 @@ async function createWorkshop(req, res) {
 
     console.log('Image Name:', workShopImageName);
 
-    const query = "INSERT INTO workshops (title, category, date, time, location, color, speaker, price, spots, rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const query = "INSERT INTO workshops (title, category, date, time, location,image, color, speaker, price, spots, rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating];
 
     pool.query(query, values, (error, result) => {
