@@ -55,7 +55,7 @@ async function createNewBlog (req, res) {
   const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, category } = req.body;
 
   if(!title || !introduction || !author || !authorPosition || !authorCompany) {
-    return res.status(400).send('Some fields are required. Fill Those');
+    return res.status(400).json({ error: 'Some fields are required. Please fill those.' });
   }
 
   try {
@@ -70,71 +70,251 @@ async function createNewBlog (req, res) {
     pool.query(addBlogQuery, values, (error, result) => {
       if(error) {
         console.error(error);
-        return res.status(400).send(error);
+        return res.status(400).json({ error: error.message || error });
       }
 
       if(result.affectedRows === 0) {
-        return res.status(400).send('Failed to add Blog');
+        return res.status(400).json({ error: 'Failed to update Blog' });
       }
 
       return res.status(200).json({ message: 'Blog Added Successfully', data: result });
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).send(error);
+    return res.status(500).json({ error: error.message || error });
   }
 }
 
 // Update a specific blog post ...
-async function updateBlog (req, res) {
+async function updateBlog(req, res) {
   const { blogId } = req.params;
-  const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, category } = req.body;
-  console.log(req.body);
-  if(!title || !introduction || !author || !authorPosition || !authorCompany || !blogId) {
-    return res.status(400).send('Some fields are required. Fill Those');
+  const {
+    title, introduction,
+    subTitle1, subContent1,
+    subTitle2, subContent2,
+    subTitle3, subContent3,
+    subTitle4, subContent4,
+    subTitle5, subContent5,
+    subTitle6, subContent6,
+    subTitle7, subContent7,
+    subTitle8, subContent8,
+    subTitle9, subContent9,
+    subTitle10, subContent10,
+    tags, author, authorPosition, authorCompany,
+    Quote1, Quote2, Quote3,
+    category
+  } = req.body;
+
+  // Helper to ensure value is a string, not an array
+  function normalizeInput(field) {
+    if (Array.isArray(field)) return field[0] || '';
+    return field || '';
+  }
+
+  // Normalize all inputs
+  const normalized = {
+    title: normalizeInput(title),
+    introduction: normalizeInput(introduction),
+    subTitle1: normalizeInput(subTitle1),
+    subContent1: normalizeInput(subContent1),
+    subTitle2: normalizeInput(subTitle2),
+    subContent2: normalizeInput(subContent2),
+    subTitle3: normalizeInput(subTitle3),
+    subContent3: normalizeInput(subContent3),
+    subTitle4: normalizeInput(subTitle4),
+    subContent4: normalizeInput(subContent4),
+    subTitle5: normalizeInput(subTitle5),
+    subContent5: normalizeInput(subContent5),
+    subTitle6: normalizeInput(subTitle6),
+    subContent6: normalizeInput(subContent6),
+    subTitle7: normalizeInput(subTitle7),
+    subContent7: normalizeInput(subContent7),
+    subTitle8: normalizeInput(subTitle8),
+    subContent8: normalizeInput(subContent8),
+    subTitle9: normalizeInput(subTitle9),
+    subContent9: normalizeInput(subContent9),
+    subTitle10: normalizeInput(subTitle10),
+    subContent10: normalizeInput(subContent10),
+    tags: normalizeInput(tags),
+    author: normalizeInput(author),
+    authorPosition: normalizeInput(authorPosition),
+    authorCompany: normalizeInput(authorCompany),
+    Quote1: normalizeInput(Quote1),
+    Quote2: normalizeInput(Quote2),
+    Quote3: normalizeInput(Quote3),
+    category: normalizeInput(category),
+  };
+
+  if (
+    !normalized.title ||
+    !normalized.introduction ||
+    !normalized.author ||
+    !normalized.authorPosition ||
+    !normalized.authorCompany ||
+    !blogId
+  ) {
+    return res.status(400).send('Some fields are required. Please fill those.');
   }
 
   try {
-    // If existing, access the file names of the cv and image ...
+    // File names for uploaded images (if any)
     const blogImageName = req.files?.blog?.[0]?.filename || null;
     const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
     const authorImageName = req.files?.authorImage?.[0]?.filename || null;
-    console.log(blogImageName, blogCoverName, authorImageName);
 
     let updateBlogQuery;
-    let values
+    let values;
 
     if (blogImageName && blogCoverName) {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, blogImage = ?, addedAt = ?, category = ?, coverImage = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName, blogId];
+      updateBlogQuery = `
+        UPDATE blogs SET
+          title = ?, introduction = ?, 
+          subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
+          subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
+          subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
+          subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
+          subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
+          tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
+          Quote1 = ?, Quote2 = ?, Quote3 = ?,
+          blogImage = ?, addedAt = ?, category = ?, coverImage = ?
+        WHERE blogId = ?
+      `;
+
+      values = [
+        normalized.title, normalized.introduction,
+        normalized.subTitle1, normalized.subContent1,
+        normalized.subTitle2, normalized.subContent2,
+        normalized.subTitle3, normalized.subContent3,
+        normalized.subTitle4, normalized.subContent4,
+        normalized.subTitle5, normalized.subContent5,
+        normalized.subTitle6, normalized.subContent6,
+        normalized.subTitle7, normalized.subContent7,
+        normalized.subTitle8, normalized.subContent8,
+        normalized.subTitle9, normalized.subContent9,
+        normalized.subTitle10, normalized.subContent10,
+        normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
+        normalized.Quote1, normalized.Quote2, normalized.Quote3,
+        blogImageName, new Date(), normalized.category, blogCoverName,
+        blogId
+      ];
     } else if (!blogImageName && blogCoverName) {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, addedAt = ?, category = ?, coverImage = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, new Date(), category, blogCoverName, blogId];
+      updateBlogQuery = `
+        UPDATE blogs SET
+          title = ?, introduction = ?, 
+          subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
+          subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
+          subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
+          subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
+          subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
+          tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
+          Quote1 = ?, Quote2 = ?, Quote3 = ?,
+          addedAt = ?, category = ?, coverImage = ?
+        WHERE blogId = ?
+      `;
+
+      values = [
+        normalized.title, normalized.introduction,
+        normalized.subTitle1, normalized.subContent1,
+        normalized.subTitle2, normalized.subContent2,
+        normalized.subTitle3, normalized.subContent3,
+        normalized.subTitle4, normalized.subContent4,
+        normalized.subTitle5, normalized.subContent5,
+        normalized.subTitle6, normalized.subContent6,
+        normalized.subTitle7, normalized.subContent7,
+        normalized.subTitle8, normalized.subContent8,
+        normalized.subTitle9, normalized.subContent9,
+        normalized.subTitle10, normalized.subContent10,
+        normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
+        normalized.Quote1, normalized.Quote2, normalized.Quote3,
+        new Date(), normalized.category, blogCoverName,
+        blogId
+      ];
     } else if (blogImageName && !blogCoverName) {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, blogImage = ?, addedAt = ?, category = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogId];
+      updateBlogQuery = `
+        UPDATE blogs SET
+          title = ?, introduction = ?, 
+          subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
+          subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
+          subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
+          subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
+          subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
+          tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
+          Quote1 = ?, Quote2 = ?, Quote3 = ?,
+          blogImage = ?, addedAt = ?, category = ?
+        WHERE blogId = ?
+      `;
+
+      values = [
+        normalized.title, normalized.introduction,
+        normalized.subTitle1, normalized.subContent1,
+        normalized.subTitle2, normalized.subContent2,
+        normalized.subTitle3, normalized.subContent3,
+        normalized.subTitle4, normalized.subContent4,
+        normalized.subTitle5, normalized.subContent5,
+        normalized.subTitle6, normalized.subContent6,
+        normalized.subTitle7, normalized.subContent7,
+        normalized.subTitle8, normalized.subContent8,
+        normalized.subTitle9, normalized.subContent9,
+        normalized.subTitle10, normalized.subContent10,
+        normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
+        normalized.Quote1, normalized.Quote2, normalized.Quote3,
+        blogImageName, new Date(), normalized.category,
+        blogId
+      ];
     } else {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, addedAt = ?, category = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, new Date(), category, blogId];
+      updateBlogQuery = `
+        UPDATE blogs SET
+          title = ?, introduction = ?, 
+          subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
+          subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
+          subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
+          subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
+          subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
+          tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
+          Quote1 = ?, Quote2 = ?, Quote3 = ?,
+          addedAt = ?, category = ?
+        WHERE blogId = ?
+      `;
+
+      values = [
+        normalized.title, normalized.introduction,
+        normalized.subTitle1, normalized.subContent1,
+        normalized.subTitle2, normalized.subContent2,
+        normalized.subTitle3, normalized.subContent3,
+        normalized.subTitle4, normalized.subContent4,
+        normalized.subTitle5, normalized.subContent5,
+        normalized.subTitle6, normalized.subContent6,
+        normalized.subTitle7, normalized.subContent7,
+        normalized.subTitle8, normalized.subContent8,
+        normalized.subTitle9, normalized.subContent9,
+        normalized.subTitle10, normalized.subContent10,
+        normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
+        normalized.Quote1, normalized.Quote2, normalized.Quote3,
+        new Date(), normalized.category,
+        blogId
+      ];
     }
-    
+
+    console.log('Update query values:', values);
+
     pool.query(updateBlogQuery, values, (error, result) => {
-      if(error) {
-        console.error(error);
+      if (error) {
+        console.error('Database error:', error);
         return res.status(400).send(error);
       }
 
-      if(result.affectedRows === 0) {
+      if (result.affectedRows === 0) {
         return res.status(400).send('Failed to update Blog');
       }
 
-      return res.status(200).send('Blog updated Successfully');
+      return res.status(200).json({ message: "Blog updated successfully!" });
     });
   } catch (error) {
-    console.error(error);
+    console.error('Unexpected error:', error);
     return res.status(500).send(error);
   }
 }
+
 
 // Delete a specific blog post ...
 async function deleteBlog (req, res) {
