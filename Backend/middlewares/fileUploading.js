@@ -8,12 +8,8 @@ const adminImagePath = path.join(__dirname, '../uploads/admin/images');
 const cvPath = path.join(__dirname, '../uploads/cvs');
 const blogImagePath = path.join(__dirname, '../uploads/blogs/images');
 const blogCoverPath = path.join(__dirname, '../uploads/blogs/covers');
-
-const jobApplicationPath = path.join(__dirname, '../uploads/cvs');
-
+const jobApplicationPath = path.join(__dirname, '../uploads/resumes');
 const authorImagePath = path.join(__dirname,  '../uploads/users/images');
-
-
 const workShopImagePath = path.join(__dirname, '../uploads/workshops/images');
 
 // Ensure directories exist
@@ -24,6 +20,8 @@ if (!fs.existsSync(blogImagePath)) fs.mkdirSync(blogImagePath, { recursive: true
 if (!fs.existsSync(blogCoverPath)) fs.mkdirSync(blogCoverPath, { recursive: true });
 if (!fs.existsSync(authorImagePath)) fs.mkdirSync(authorImagePath, { recursive: true });
 if (!fs.existsSync(workShopImagePath)) fs.mkdirSync(workShopImagePath, { recursive: true });
+if (!fs.existsSync(jobApplicationPath)) fs.mkdirSync(jobApplicationPath, { recursive: true });
+
 
 // Define storage logic
 const storage = multer.diskStorage({
