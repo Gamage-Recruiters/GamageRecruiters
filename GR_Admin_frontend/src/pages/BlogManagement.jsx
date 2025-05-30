@@ -81,7 +81,31 @@
       if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
       return `${Math.floor(diffInDays / 365)} years ago`;
     };
-  
+  //add detele function
+  const handleDelete = async (id) => {
+    if (!id) {
+      console.error('No blogId provided for delete!');
+      alert('Error: Blog ID is missing');
+      return;
+    }
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this blog?");
+    if (!confirmDelete) return;
+
+    try {
+      const response = await axios.delete(`http://localhost:8000/api/blogs/delete/${id}`);
+      if (response.status === 200) {
+        setBlogPosts(prev => prev.filter(post => post.blogId !== id));
+        alert("Blog deleted successfully");
+      } else {
+        alert("Failed to delete blog");
+      }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      alert("Something went wrong while deleting.");
+    }
+  };
+
   
   
     return (
@@ -395,7 +419,10 @@
                           >
                           <Edit2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                           </button>
-                        <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                        <button
+                          onClick={() => handleDelete(post.blogId)}
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                          >
                           <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                         </button>
                         <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
