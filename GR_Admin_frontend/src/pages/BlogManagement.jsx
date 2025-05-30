@@ -154,7 +154,7 @@
               </div>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
                 {/* Fixed numeric handling with double parentheses */}
-                {(blogPosts.reduce((sum, post) => sum + (post?.views || 0), 0)).toLocaleString()}
+                {blogPosts.length.toLocaleString()}
               </p>
               <div className="flex items-center mt-2 text-sm">
                 <span className="text-green-500 flex items-center">
