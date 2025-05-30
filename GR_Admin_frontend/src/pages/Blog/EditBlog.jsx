@@ -158,13 +158,13 @@ useEffect(() => {
   };
   
   const handleSubmit = async (e, status = 'published') => {
-    e.preventDefault();
-    setLoading(true);
-    setSuccessMessage('');
-    setErrorMessage('');
-    
-    try {
-      const formDataToSend = new FormData();
+  e.preventDefault();
+  setLoading(true);
+  setSuccessMessage('');
+  setErrorMessage('');
+
+  try {
+    const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('introduction', formData.introduction);
       formDataToSend.append('category', formData.category);
@@ -175,61 +175,52 @@ useEffect(() => {
       formDataToSend.append('Quote1', formData.Quote1);
       formDataToSend.append('Quote2', formData.Quote2);
       formDataToSend.append('Quote3', formData.Quote3);
-
+      
       for (let i = 1; i <= 10; i++) {
         formDataToSend.append(`subTitle${i}`, formData[`subTitle${i}`]);
         formDataToSend.append(`subContent${i}`, formData[`subContent${i}`]);
       }
-      // Add all text fields
 
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataToSend.append(key, value);
-      });
-      
-      // Add files if they exist
-      if (files.blog) formDataToSend.append('blog', files.blog);
-      
-      if (files.blogCover) formDataToSend.append('blogCover', files.blogCover);
-      
-      
-      
-      // Send update request
-      const response = await fetch(`http://localhost:8000/api/blogs/update/${blogId}`, {
-        method: 'PUT',
-        body: formDataToSend,
-      });
+    // Append all form fields
+    Object.entries(formData).forEach(([key, value]) => {
+      formDataToSend.append(key, value);
+    });
 
-      const responseText = await response.text();
-      if (!response.ok) {
-        throw new Error(responseText || 'Failed to update blog post');
-      }
-      
-      setSuccessMessage(responseData.message || 'Blog post updated successfully!');
-      setTimeout(() => navigate('/blogs'), 2000);
-      
-      const responseData = await response.json();
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to update blog post');
-      }
-      
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || 'Failed to update blog post');
-      }
-      
-      const data = await response.json();
-      setSuccessMessage(data.message || 'Blog post updated successfully!');
-      
-      // Redirect after short delay
-      setTimeout(() => navigate('/blogs'), 2000);
-      
-    } catch (error) {
-      console.error('Error updating blog:', error);
-      setErrorMessage(error.message || 'Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
+    // Append files if any
+    if (files.blog) formDataToSend.append('blog', files.blog);
+    if (files.blogCover) formDataToSend.append('blogCover', files.blogCover);
+    if (files.authorImage) formDataToSend.append('authorImage', files.authorImage); // if you use author image too
+
+    // Send update request
+    const response = await fetch(`http://localhost:8000/api/blogs/update/${blogId}`, {
+      method: 'PUT',
+      body: formDataToSend,
+    });
+
+    // Parse response JSON first
+    const responseData = await response.json();
+
+    // Check if response is ok
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to update blog post');
     }
-  };
+
+    // Success
+    setSuccessMessage(responseData.message || 'Blog post updated successfully!');
+
+    // Redirect after 2 seconds
+    setTimeout(() => {
+      navigate('/blog');
+    }, 2000);
+
+  } catch (error) {
+    console.error('Error updating blog:', error);
+    setErrorMessage(error.message || 'Something went wrong. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (loading) {
     return (
