@@ -39,7 +39,7 @@ function AdminProfile() {
         // Use the current admin ID from localStorage if not provided in URL
         const currentAdminId = adminId || localStorage.getItem('adminId');
         
-        if (!currentAdminId) {
+        if (currentAdminId) {
           navigate('/login');
           return;
         }

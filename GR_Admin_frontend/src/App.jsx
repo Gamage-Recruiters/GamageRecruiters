@@ -70,12 +70,12 @@ function App() {
               <Route path="/applications" element={<JobApplicationsView />} />
               <Route path="/job-dashboard" element={<JobDashboard />} />
               <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
+              <Route path="/admins/profile" element={<AdminProfile />} />
               <Route path="/admins/view/:adminId" element={<ViewAdmin />} />
-              <Route path="/admin/profile" element={<AdminProfile />} />
-              
+        
             </Route>
           ) : (
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<Navigate to="/Login" replace />} />
           )}
         </Routes>
       </AnimatePresence>
