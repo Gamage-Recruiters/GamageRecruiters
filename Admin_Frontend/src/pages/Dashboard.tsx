@@ -57,9 +57,28 @@ const fetchJobCount = async () => {
   }
 };
 
+const fetchBlogCount = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/blogs');
+
+    const userCount = response.data.data.length;
+    setStats((prevStats) => {
+      const updatedStats = [...prevStats];
+      updatedStats[2] = {
+        ...updatedStats[2],
+        value: userCount.toString(),
+      };
+      return updatedStats;
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
    useEffect(() => {
     fetchUserCount();
     fetchJobCount();
+    fetchBlogCount();
   }, []);
 
 
