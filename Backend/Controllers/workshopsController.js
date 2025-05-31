@@ -93,23 +93,42 @@ async function updateWorkshop(req, res) {
   const { title, category, date, time, location, color, speaker, price, spots, rating } = req.body;
 
   if (!id || !title || !category || !date || !time || !location || !speaker || !price) {
-    return res.status(400).send('Required fields missing');
+    return res.status(400).json({ message: 'Required fields missing', missingFields: 
+      ['id', 'title', 'category', 'date', 'time', 'location', 'speaker', 'price']
+      .filter(field => !eval(field)) });
   }
 
   try {
+    // Log the request body for debugging
+    console.log('Update request body:', req.body);
+    console.log('Update files:', req.files);
+
+    // Format the date to MySQL format (YYYY-MM-DD)
+    let formattedDate;
+    try {
+      // Convert ISO date string to YYYY-MM-DD format
+      formattedDate = date ? new Date(date).toISOString().split('T')[0] : null;
+    } catch (err) {
+      console.error('Date parsing error:', err);
+      formattedDate = null;
+    }
+    
     const workShopImageName = req.files?.workshopImage?.[0]?.filename || null;
     
     const query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ? WHERE id = ?";
     const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, id];
 
     pool.query(query, values, (error, result) => {
-      if (error) return res.status(500).send(error);
-      if (result.affectedRows === 0) return res.status(400).send('Workshop update failed');
-      return res.status(200).send('Workshop updated successfully');
+      if (error) {
+        console.error('Database error:', error);
+        return res.status(500).json({ message: 'Database error', error: error.message });
+      }
+      if (result.affectedRows === 0) return res.status(400).json({ message: 'Workshop update failed - no rows affected' });
+      return res.status(200).json({ message: 'Workshop updated successfully' });
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).send(error);
+    console.error('Server error:', error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
   }
 }
 
