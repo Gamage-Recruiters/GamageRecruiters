@@ -7,10 +7,12 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+
 function AddWorkshop() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -56,14 +58,12 @@ function AddWorkshop() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result);
-        setFormData({
-          ...formData,
-          image: reader.result
-        });
       };
+        
       reader.readAsDataURL(file);
     }
   };
@@ -72,13 +72,36 @@ function AddWorkshop() {
     e.preventDefault();
     setLoading(true);
     
-    const workshopData = {
-      ...formData,
-      event_type: status === 'publish' ? formData.event_type : 'Upcoming Event'
-    };
+    if (!formData.title || !formData.category || !formData.date || !formData.time || !formData.location || !imageFile || !formData.speaker || !formData.description) {
+    alert('Please fill in all required fields including image.');
+    setLoading(false);
+    return;
+  }
+
+  const workshopData = new FormData();
+  workshopData.append('title', formData.title);
+  workshopData.append('category', formData.category);
+  workshopData.append('date', formData.date);
+  workshopData.append('time', formData.time);
+  workshopData.append('location', formData.location);
+  workshopData.append('color', formData.color);
+  workshopData.append('speaker', formData.speaker);
+  workshopData.append('price', formData.price);
+  workshopData.append('spots', formData.spots);
+  workshopData.append('rating', formData.rating);
+  workshopData.append('description', formData.description);
+  workshopData.append('event_type', status === 'publish' ? formData.event_type : 'Upcoming Event');
+  workshopData.append('link', formData.link);
+  workshopData.append('image', imageFile);
     
     try {
-      await axios.post('http://localhost:8000/api/workshops/add', workshopData);
+      await axios.post('http://localhost:8000/api/workshops/add', workshopData,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+       
+
+      }
+    });
       
       // Show success message
       alert(`Workshop ${status === 'publish' ? 'published' : 'saved as draft'} successfully!`);
@@ -91,7 +114,7 @@ function AddWorkshop() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const getGradientPreview = (color) => {
     return `bg-gradient-to-r ${color}`;
@@ -117,7 +140,7 @@ function AddWorkshop() {
         <div className="flex space-x-3">
           <button 
             onClick={(e) => handleSubmit(e, 'draft')} 
-            disabled={loading}
+            disabled={loading}        
             className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
             <Save className="h-4 w-4 mr-2" />
@@ -426,6 +449,7 @@ function AddWorkshop() {
                           browse
                           <input 
                             type="file" 
+                            name="workshopImage"
                             className="hidden" 
                             accept="image/*" 
                             onChange={handleImageChange}
