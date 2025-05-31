@@ -21,6 +21,9 @@ async function generateNewAccessToken (id, token) {
             exp: expTime
         }, process.env.JWT_SECRET);
 
+
+
+        
         // update the token in session ...
         const updateTokenQuery = 'UPDATE sessions SET token = ? WHERE Id = ? AND token = ?';
         return new Promise((resolve, reject) => {
