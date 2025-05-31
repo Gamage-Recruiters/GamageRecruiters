@@ -7,12 +7,10 @@ function Navbar({ onMenuClick }) {
 
   const handleClick = () => {
   console.log("Navigating to admin profile");
-  navigate('/admin/profile');
+  navigate('/admins/profile');
 };
 
   
-
-
   return (
     <nav className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
       <div className="px-4 sm:px-6 lg:px-8">
