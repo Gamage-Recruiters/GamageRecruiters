@@ -8,12 +8,6 @@
   import { useNavigate } from 'react-router-dom';
   import axios from 'axios';
 
-
-
-
-
-
-      
   // Mock blog post data based on the structure provided
   const mockBlogPosts = [
   
@@ -29,6 +23,7 @@
     const [isLoading, setIsLoading] = useState(true);
   
     const fetchPosts = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get('http://localhost:8000/api/blogs');
         setBlogPosts(response.data.data || []);
@@ -43,6 +38,8 @@
     useEffect(() => {
       fetchPosts();
     }, []);
+
+    
   
     const formatStatus = (status) => {
       if (!status) return 'Draft';
@@ -108,6 +105,7 @@
 
   
   
+  
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -125,7 +123,9 @@
               <Download className="h-4 w-4 mr-2" />
               Export
             </button>
-            <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+            <button
+              onClick={fetchPosts} 
+              className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </button>
@@ -154,7 +154,7 @@
               </div>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
                 {/* Fixed numeric handling with double parentheses */}
-                {(blogPosts.reduce((sum, post) => sum + (post?.views || 0), 0)).toLocaleString()}
+                {blogPosts.length.toLocaleString()}
               </p>
               <div className="flex items-center mt-2 text-sm">
                 <span className="text-green-500 flex items-center">
@@ -189,34 +189,34 @@
           
           {/* Total Engagement Card */}
           {/* Total Engagement Card */}
-<motion.div 
-  whileHover={{ y: -5 }}
-  className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700"
->
-  <div className="flex items-center justify-between">
-    <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Engagement</h3>
-    <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
-      <Share2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-    </div>
-  </div>
-  <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-    {/* FINAL FIX: Add double parentheses and numeric safety */}
-    {(
-      blogPosts.reduce((sum, post) => sum + (
-        (post?.likes || 0) + 
-        (post?.comments || 0) + 
-        (post?.views || 0)
-      ), 0)
-    ).toLocaleString()}
-  </p>
-  <div className="flex items-center mt-2 text-sm">
-    <span className="text-green-500 flex items-center">
-      <ChevronUp className="h-4 w-4" />
-      23%
-    </span>
-    <span className="text-gray-400 dark:text-gray-500 ml-2">from last month</span>
-  </div>
-</motion.div>
+          <motion.div 
+            whileHover={{ y: -5 }}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Engagement</h3>
+              <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
+                <Share2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              </div>
+            </div>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+              {/* FINAL FIX: Add double parentheses and numeric safety */}
+              {(
+                blogPosts.reduce((sum, post) => sum + (
+                  (post?.likes || 0) + 
+                  (post?.comments || 0) + 
+                  (post?.views || 0)
+                ), 0)
+              ).toLocaleString()}
+            </p>
+            <div className="flex items-center mt-2 text-sm">
+              <span className="text-green-500 flex items-center">
+                <ChevronUp className="h-4 w-4" />
+                23%
+              </span>
+              <span className="text-gray-400 dark:text-gray-500 ml-2">from last month</span>
+            </div>
+          </motion.div>
         </div>
 
         {/* Blog Posts Table Card */}
@@ -340,7 +340,7 @@
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <img
-                          src={post.image}
+                          src={`http://localhost:8000/uploads/blogs/images/${post.coverImage}`}
                           className="h-14 w-20 rounded-lg object-cover"
                           alt={`${post.title} thumbnail`}
                         />
@@ -382,7 +382,7 @@
                         {post.date}
                       </div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {getRelativeTime(post.date)}
+                        {getRelativeTime(post.addedAt)}
                       </div>
                     </td>
                     {/* In the table row for engagement metrics */}

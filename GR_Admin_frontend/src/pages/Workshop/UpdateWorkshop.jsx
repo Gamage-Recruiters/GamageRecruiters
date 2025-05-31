@@ -103,33 +103,52 @@ function UpdateWorkshop() {
   };
   
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-        setFormData({
-          ...formData,
-          image: reader.result
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const file = e.target.files[0];
+  if (file) {
+    // Just store the file object directly for upload
+    setFormData({
+      ...formData,
+      image: file
+    });
+    
+    // Still create preview for UI
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewImage(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+};
   
-  const handleUpdate = async (e, status) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
     setUpdateSuccess(false);
     
-    const workshopData = {
-      ...formData,
-      event_type: status === 'publish' ? formData.event_type : 'Upcoming Event'
-    };
-    
     try {
-        await axios.put(`http://localhost:8000/api/workshops/update/${id}`, workshopData);
-
+      const formDataObj = new FormData();
+      
+      // Add all text fields
+      Object.keys(formData).forEach(key => {
+        if (key === 'image') {
+          // Handle image differently based on type
+          if (formData.image instanceof File) {
+            formDataObj.append('workshopImage', formData.image);
+          } else if (typeof formData.image === 'string' && formData.image.startsWith('http')) {
+            formDataObj.append('image', formData.image);
+          }
+        } else {
+          formDataObj.append(key, formData[key]);
+        }
+      });
+      
+      await axios.put(
+        `http://localhost:8000/api/workshops/update/${id}`, 
+        formDataObj,
+        { 
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }
+      );
       
       // Show success message
       setUpdateSuccess(true);
@@ -140,7 +159,7 @@ function UpdateWorkshop() {
       }, 1500);
     } catch (error) {
       console.error('Error updating workshop:', error);
-      alert('Failed to update workshop. Please try again.');
+      alert(`Failed to update workshop: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
     }

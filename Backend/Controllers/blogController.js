@@ -373,32 +373,44 @@ async function fetchBlogLikeCount (req, res) {
 }
 
 // Fetch comments related to a blog post ...
-async function fetchBlogComments (req, res) {
+const fetchBlogComments = async (req, res) => {
   const { blogId } = req.params;
 
-  if(!blogId) {
+  if (!blogId) {
     return res.status(400).send('Blog ID is required');
   }
 
   try {
-    const fetchBlogCommentsQuery = 'SELECT b.Id, b.userId, b.comment, b.commentedDate, u.firstName, u.lastName, u.email FROM blogcomments b INNER JOIN users u ON b.userId = u.userId WHERE b.blogId = ?';
-    pool.query(fetchBlogCommentsQuery, blogId, (error, result) => {
-      if(error) {
+    const fetchBlogCommentsQuery = `
+      SELECT 
+        b.Id, b.userId, b.comment, b.commentedDate, 
+        u.firstName, u.lastName, u.email
+      FROM blogcomments b
+      INNER JOIN users u ON b.userId = u.userId
+      WHERE b.blogId = ?
+    `;
+
+    pool.query(fetchBlogCommentsQuery, [blogId], (error, result) => {
+      if (error) {
         console.error(error);
-        return res.status(400).send(error);
+        return res.status(500).send('Database query failed');
       }
 
-      if(result.length === 0) {
-        return res.status(404).send('No comments found for this blog');
+      if (result.length === 0) {
+        return res.status(404).send({ message: 'No comments found for this blog' });
       }
 
       return res.status(200).json({ data: result });
     });
+
   } catch (error) {
     console.error(error);
-    return res.status(500).send(error);
+    return res.status(500).send('Internal server error');
   }
-}
+};
+
+
+
 
 // Add a comment to a blog post ...
 async function addCommentToBlog (req, res) {
