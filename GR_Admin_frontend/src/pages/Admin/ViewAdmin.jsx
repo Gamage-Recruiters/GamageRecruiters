@@ -41,7 +41,7 @@ function ViewAdmin() {
           <div>
             <label className="font-semibold block mb-1">Profile Image</label>
             <img
-              src={`http://localhost:8000/uploads/${admin.image}`}
+              src={`http://localhost:8000/uploads/admin/images/${admin.image}`}
               alt="Admin"
               className="w-32 h-32 object-cover rounded-md border"
             />
