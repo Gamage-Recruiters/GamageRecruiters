@@ -56,6 +56,7 @@ function App() {
               <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
               <Route path="/workshops/add"  element={<AddWorkshop />} />
               <Route path="/workshops/edit/:id"  element={<UpdateWorkshop />} />
+              <Route path="/EditAdmin"  element={<EditAdmin />} />
 
             </Route>
           ) : (

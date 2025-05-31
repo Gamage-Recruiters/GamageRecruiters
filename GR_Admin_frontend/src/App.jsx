@@ -72,6 +72,7 @@ function App() {
               <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
               <Route path="/admins/view/:adminId" element={<ViewAdmin />} />
               <Route path="/admin/profile" element={<AdminProfile />} />
+              <Route path="/kasun" element={<EditAdmin />} />
 
 
 
