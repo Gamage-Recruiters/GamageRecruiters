@@ -21,7 +21,7 @@ const Dashboard = () => {
     { title: "Applications", value: "4,300", icon: <FaClipboardList className="text-red-500 text-3xl" /> },
   ]);
 
- const fetchUsers = async () => {
+ const fetchUserCount = async () => {
   try {
     const response = await axios.get('http://localhost:8000/user/all');
 
@@ -39,10 +39,27 @@ const Dashboard = () => {
   }
 };
 
+const fetchJobCount = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/jobs');
 
+    const userCount = response.data.jobs.length;
+    setStats((prevStats) => {
+      const updatedStats = [...prevStats];
+      updatedStats[1] = {
+        ...updatedStats[1],
+        value: userCount.toString(),
+      };
+      return updatedStats;
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
 
    useEffect(() => {
-    fetchUsers();
+    fetchUserCount();
+    fetchJobCount();
   }, []);
 
 
