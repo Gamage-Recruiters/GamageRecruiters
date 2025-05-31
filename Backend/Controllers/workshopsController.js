@@ -112,12 +112,19 @@ async function updateWorkshop(req, res) {
       console.error('Date parsing error:', err);
       formattedDate = null;
     }
+
+    // Get image from either files or req.body.image if it's a URL
+    let workshopImage;
     
-    const workShopImageName = req.files?.workshopImage?.[0]?.filename || null;
+    if (req.files && req.files.workshopImage && req.files.workshopImage[0]) {
+      workshopImage = req.files.workshopImage[0].filename;
+    } else if (req.body.image && req.body.image.startsWith('http')) {
+      workshopImage = req.body.image;
+    }
     
     const query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ? WHERE id = ?";
-    const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, id];
-
+    const values = [title, category, formattedDate, time, location, workshopImage, color, speaker, price, spots, rating, id];
+    
     pool.query(query, values, (error, result) => {
       if (error) {
         console.error('Database error:', error);
