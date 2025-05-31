@@ -3,9 +3,9 @@ const jwt = require('jsonwebtoken');
 const { pool } = require('../config/dbConnection');
 
 async function register (req, res) {
-    const { name, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, email, password } = req.body;
+    const { name, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, email, password,image } = req.body;
 
-    if(!name || !gender || !role || !primaryPhoneNumber || !secondaryPhoneNumber || !status || !email || !password) {
+    if(!name || !gender || !role || !primaryPhoneNumber || !secondaryPhoneNumber || !status || !email || !password || !image) {
         return res.status(400).send('Name, Email and Password cannot be empty!');
     }
 
@@ -28,8 +28,8 @@ async function register (req, res) {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             // Store the details in database
-            const adminStoreDataQuery = 'INSERT INTO admin (name, email, password, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-            pool.query(adminStoreDataQuery, [name, email, hashedPassword, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, imageName], (error, result) => {
+            const adminStoreDataQuery = 'INSERT INTO admin (name, email, password, role, primaryPhoneNumber, secondaryPhoneNumber, status, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            pool.query(adminStoreDataQuery, [name, email, hashedPassword, role, primaryPhoneNumber, secondaryPhoneNumber, status, imageName], (error, result) => {
                 if(error) {
                     return res.status(400).send(error);
                 }

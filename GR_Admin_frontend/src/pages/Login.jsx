@@ -24,7 +24,7 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/admin/login', { 
+      const response = await axios.post('http://localhost:5000/dmian/login', { 
         email: email, 
         password: password 
       });
