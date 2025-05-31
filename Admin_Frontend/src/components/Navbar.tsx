@@ -7,11 +7,8 @@ interface NavbarProps {
 
 function Navbar({ onMenuClick }: NavbarProps) {
   const [searchFocused, setSearchFocused] = useState(false);
-  const navigate = useNavigate();
+  
 
-  const handleSettingsClick = () => {
-    navigate('/EditAdmin');
-  };
 
 
   return (
@@ -47,7 +44,7 @@ function Navbar({ onMenuClick }: NavbarProps) {
               <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800"></span>
             </button>
             
-            <button  onClick={handleSettingsClick} className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200">
+            <button  className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200">
               <Settings className="h-5 w-5" />
             </button>
             

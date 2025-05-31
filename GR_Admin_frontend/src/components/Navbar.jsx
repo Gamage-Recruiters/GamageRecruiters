@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import { Menu, Bell, User, Search, Settings } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 function Navbar({ onMenuClick }) {
   const [searchFocused, setSearchFocused] = useState(false);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+  console.log("Navigating to admin profile");
+  navigate('/admin/profile');
+};
+
   
+
+
   return (
     <nav className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
       <div className="px-4 sm:px-6 lg:px-8">
@@ -42,7 +51,7 @@ function Navbar({ onMenuClick }) {
             </button>
             
             <div className="flex items-center pl-2">
-              <button className="flex items-center space-x-3 py-1 px-3 rounded-full text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white group">
+              <button  onClick={handleClick} className="flex items-center space-x-3 py-1 px-3 rounded-full text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white group">
                 <div className="relative">
                   <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-medium overflow-hidden">
                     <User className="h-5 w-5" />
@@ -58,5 +67,6 @@ function Navbar({ onMenuClick }) {
     </nav>
   );
 }
+
 
 export default Navbar;
