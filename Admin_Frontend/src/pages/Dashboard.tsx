@@ -3,14 +3,6 @@ import { motion } from "framer-motion";
 import { FaUsers, FaBriefcase, FaBlog, FaStar, FaClipboardList } from "react-icons/fa";
 import axios from "axios";
 
-// const stats = [
-//   { title: "Total Clients", value: "1,250", icon: <FaUsers className="text-blue-500 text-3xl" /> },
-//   { title: "Active Jobs", value: "245", icon: <FaBriefcase className="text-green-500 text-3xl" /> },
-//   { title: "Blog Posts", value: "98", icon: <FaBlog className="text-purple-500 text-3xl" /> },
-//   { title: "Trusted Partners", value: "32", icon: <FaStar className="text-yellow-500 text-3xl" /> },
-//   { title: "Applications", value: "4,300", icon: <FaClipboardList className="text-red-500 text-3xl" /> },
-// ];
-
 const Dashboard = () => {
 
    const [stats, setStats] = useState([
