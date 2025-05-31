@@ -51,6 +51,13 @@ function UpdateWorkshop() {
     { name: 'Pink', value: 'from-red-500 to-pink-600' }
   ];
 
+  // gives the full image url with the support of a fallback placholder
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "https://via.placeholder.com/400x200?text=Workshop";
+    if (imagePath.startsWith('http')) return imagePath;
+    return `http://localhost:8000/uploads/workshops/images/${imagePath}`;
+  };
+  
   // Fetch workshop data
   useEffect(() => {
     const fetchWorkshopData = async () => {
@@ -78,7 +85,7 @@ function UpdateWorkshop() {
         });
   
         if (workshopData.image) {
-          setPreviewImage(workshopData.image);
+          setPreviewImage(getImageUrl(workshopData.image));
         }
   
         setFetchError(null);
