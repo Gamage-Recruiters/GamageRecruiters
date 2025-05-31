@@ -1,54 +1,77 @@
 const {pool} = require('../config/dbConnection');
 
 // Get all Blog Posts ...
-async function getAllBlogs(req, res) {
-  try {
-    const blogsQuery = 'SELECT * FROM blogs';
-    pool.query(blogsQuery, (error, result) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).send(error);
-      }
+function getAllBlogs(req, res) {
+  const query = `
+    SELECT 
+      b.*, 
+      COALESCE(l.likeCount, 0) AS likes,
+      COALESCE(c.commentCount, 0) AS comment
+    FROM blogs b
+    LEFT JOIN (
+      SELECT blogId, COUNT(*) AS likeCount
+      FROM bloglikes
+      WHERE liked = 1
+      GROUP BY blogId
+    ) l ON b.blogId = l.blogId
+    LEFT JOIN (
+      SELECT blogId, COUNT(*) AS commentCount
+      FROM blogcomments
+      GROUP BY blogId
+    ) c ON b.blogId = c.blogId
+    ORDER BY b.addedAt DESC
 
-      if(result.length === 0) {
-        return res.status(404).send('No Blogs Found');
-      }
+  `;
 
-      return res.status(200).json({ message: 'Blogs Found', data: result });
-    })
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send(error);
-  }
-} 
+  pool.query(query, (error, result) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).send('Database error');
+    }
+
+    return res.status(200).json({ data: result });
+  });
+}
+
 
 // Get a specific blog ...
-async function getSpecificBlogPost (req, res) {
+async function getSpecificBlogPost(req, res) {
   const { blogId } = req.params;
 
-  if(!blogId) {
+  if (!blogId) {
     return res.status(400).send('Blog ID is required');
   }
 
   try {
-    const blogQuery = 'SELECT * FROM blogs WHERE blogId = ?';
-    pool.query(blogQuery, blogId, (error, result) => {
-      if(error) {
-        console.error(error);
-        return res.status(500).send(error);
+    // Step 1: Increment the views count
+    const incrementViewQuery = 'UPDATE blogs SET views = views + 1 WHERE blogId = ?';
+    pool.query(incrementViewQuery, [blogId], (incrementError) => {
+      if (incrementError) {
+        console.error('Error updating views:', incrementError);
+        // Don't stop the request just because views failed to increment
       }
 
-      if(result.length === 0) {
-        return res.status(404).send('Blog not found');
-      }
+      // Step 2: Fetch the blog
+      const blogQuery = 'SELECT * FROM blogs WHERE blogId = ?';
+      pool.query(blogQuery, [blogId], (error, result) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).send(error);
+        }
 
-      return res.status(200).json({ message: 'Blog Found', data: result });
+        if (result.length === 0) {
+          return res.status(404).send('Blog not found');
+        }
+
+        return res.status(200).json({ message: 'Blog Found', data: result[0] });
+      });
     });
   } catch (error) {
     console.error(error);
     return res.status(500).send(error);
   }
 }
+
 
 // Create a New Blog Post ...
 async function createNewBlog (req, res) {
