@@ -39,6 +39,7 @@ const CandidateDetailsView = () => {
 
   // Fetch data on component mount
   useEffect(() => {
+    axios.defaults.withCredentials = true;
     fetchJobs();
     fetchAllApplications();
     fetchStatistics();
