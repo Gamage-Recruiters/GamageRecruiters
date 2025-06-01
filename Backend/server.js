@@ -27,7 +27,8 @@ const urlCaptureRouter = require('./Routers/urlCaptureRouter');
 require('dotenv').config();
 
 require('./auth/googleAuth');
-require('./auth/passportAuthFacebook');
+require('./auth/facebookAuth');
+
 require('./auth/passportAuthLinkedIn');
 
 const app = express();
