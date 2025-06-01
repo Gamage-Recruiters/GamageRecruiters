@@ -53,13 +53,14 @@ const BlogEditor = () => {
   
   const [files, setFiles] = useState({
     blog: null,
-    blogCover: null
+    blogCover: null,
+    authorImage: null
   });
   
   const [previewImages, setPreviewImages] = useState({
     blog: null,
     blogCover: null,
-    author: 'http://localhost:8000/api/placeholder/100/100'
+    authorImage: null
   });
   
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
@@ -123,6 +124,10 @@ const BlogEditor = () => {
       
       if (files.blogCover) {
         formDataToSend.append('blogCover', files.blogCover);
+      }
+
+      if (files.authorImage) {
+        formDataToSend.append('authorImage', files.authorImage);
       }
       
       // Send data to backend
@@ -704,7 +709,7 @@ const BlogEditor = () => {
                   <div className="flex items-center space-x-4">
                     <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 border-2 border-indigo-200 dark:border-indigo-800">
                       <img 
-                        src={previewImages.author}
+                        src={previewImages.authorImage }
                         alt="Author" 
                         className="w-full h-full object-cover"
                       />
@@ -719,7 +724,18 @@ const BlogEditor = () => {
                         type="file" 
                         className="hidden" 
                         accept="image/*" 
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            setFiles(prev => ({ ...prev, authorImage: file }));
+                            setPreviewImages(prev => ({
+                              ...prev,
+                              authorImage: URL.createObjectURL(file)
+                            }));
+                          }
+                        }}
                       />
+
                     </div>
                     <div>
                       <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
