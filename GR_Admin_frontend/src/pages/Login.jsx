@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import { Lock, Briefcase, User } from 'lucide-react';
-import 'react-toastify/dist/ReactToastify.css';
+import { Lock, Briefcase, User } from "lucide-react";
+import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if(email === '' || password === '') {
+
+    if (email === "" || password === "") {
       toast.error("Please fill in all fields");
       return;
     }
@@ -24,26 +24,18 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/dmian/login', { 
+      const response = await axios.post('http://localhost:8000/admin/login', { 
         email: email, 
         password: password 
+      }, {
+        withCredentials: true
       });
       
       if (response.data && response.status === 200) {
-        // Store token if provided by the backend
-        if (response.data.token) {
-          if (rememberMe) {
-            localStorage.setItem('authToken', response.data.token);
-          } else {
-            sessionStorage.setItem('authToken', response.data.token);
-          }
-        }
-        
         toast.success("Login successful!");
         setEmail('');
         setPassword('');
         
-        // Delay navigation slightly to allow toast to be seen
         setTimeout(() => {
           navigate('/dashboard');
         }, 1000);
@@ -52,11 +44,8 @@ function Login() {
       let errorMessage = "Login failed. Please check your credentials.";
       
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         errorMessage = error.response.data.message || errorMessage;
       } else if (error.request) {
-        // The request was made but no response was received
         errorMessage = "Server not responding. Please try again later.";
       }
       
@@ -69,7 +58,7 @@ function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-4">
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -77,17 +66,19 @@ function Login() {
         className="bg-white rounded-xl shadow-2xl w-full max-w-md p-8 overflow-hidden"
       >
         <div className="text-center mb-8">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
             className="inline-flex items-center justify-center p-4 rounded-full bg-blue-100 mb-4"
-            onClick={() => navigate("/Dashboard")}>
-              
+            onClick={() => navigate("/Dashboard")}
+          >
             <Briefcase className="h-8 w-8 text-blue-600" />
           </motion.div>
-          
-          <h2 className="text-3xl font-bold text-gray-900">GAMAGE RECRUITERS</h2>
+
+          <h2 className="text-3xl font-bold text-gray-900">
+            GAMAGE RECRUITERS
+          </h2>
           <p className="text-gray-600 mt-2 flex items-center justify-center gap-1">
             <Lock className="h-4 w-4" /> Admin Portal Access
           </p>
@@ -141,13 +132,19 @@ function Login() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 cursor-pointer">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-900 cursor-pointer"
+              >
                 Remember me
               </label>
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+              <a
+                href="#"
+                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+              >
                 Forgot password?
               </a>
             </div>
@@ -158,13 +155,31 @@ function Login() {
             disabled={isLoading}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all ${isLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all ${
+              isLoading ? "opacity-75 cursor-not-allowed" : ""
+            }`}
           >
             {isLoading ? (
               <div className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Processing...
               </div>
@@ -173,10 +188,16 @@ function Login() {
             )}
           </motion.button>
         </form>
-        
+
         <div className="mt-6 text-center text-sm">
           <p className="text-gray-600">
-            Need support? <a href="#" className="font-medium text-blue-600 hover:text-blue-500">Contact admin</a>
+            Need support?{" "}
+            <a
+              href="#"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Contact admin
+            </a>
           </p>
         </div>
       </motion.div>
