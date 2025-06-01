@@ -1,4 +1,5 @@
 const express = require("express");
+const adminAuth = require('../middlewares/adminAuth');
 const {
   viewJobs,
   viewLatestJobs,
@@ -14,9 +15,8 @@ const {
 const router = express.Router();
 
 
-
 // In your router file
-router.get("/statistics", getJobStatistics);
+router.get("/statistics", adminAuth, getJobStatistics);
 
 
 // View all Jobs ...
@@ -35,19 +35,16 @@ router.get("/applied/:userId", viewJobsByUser);
 router.get("/applied/count/:userId", viewAppliedJobCountByUser);
 
 // Add a New Job
-router.post("/addjob", addJob);
+router.post("/addjob", adminAuth, addJob);
 
 // Update a Job
-router.put("/update/:jobId", updateJob);
+router.put("/update/:jobId", adminAuth, updateJob);
 
 // Delete a Job
-router.delete("/delete/:jobId", deleteJob);
+router.delete("/delete/:jobId", adminAuth, deleteJob);
 
 // Fetch job applications resumes for a job
-router.get("/resumes/:jobId", getAllCVsRelatedToAJob);
-
-
-
+router.get("/resumes/:jobId", adminAuth, getAllCVsRelatedToAJob);
 
 module.exports = router;
 
