@@ -11,6 +11,7 @@ const { createToken } = require('../auth/token/jwtToken');
 dotenv.config();
 
 async function register(req, res) {
+
     const { firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, profileDescription } = req.body;
 
     if (!firstName || !lastName || !gender || !birthDate || !email || !password) {
@@ -21,9 +22,6 @@ async function register(req, res) {
         // If existing, access the file names of the cv and image ...
 
         const imageName = req.files?.photo?.[0]?.filename || null;
-
-        // console.log('cvName:', cvName);
-        console.log('imageName:', imageName);
 
         // Encrypt the password ...
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -41,27 +39,55 @@ async function register(req, res) {
                     }
                     return reject({ code: 400, message: 'Error registering user' });
                 }
+
                 resolve(result);
             });
         });
 
 
-        // Generate Token ...
-        const token = createToken(values);
-        console.log(token)
 
-        // Pass a Cookie to frontend ...
-        res.cookie('token', token, {
-            httpOnly: true,
-            sameSite: 'Lax',
-            secure: false,
-            maxAge: 100 * 60 * 60, // 1 hour ...
-        }).status(200).json({ message: "user Registerd and Logged Successfuly", username:firstName });
 
+
+        // validate registered user Again  -  Auto Logging
+        try {
+
+            const userQuery = 'SELECT * FROM users WHERE email = ?';
+            pool.query(userQuery, [email], async (error, result) => {
+                if (error) {
+                    return res.status(404).send('User Not Found');
+                }
+                if (!result || result.length === 0) {
+                    return res.status(404).send('User Not Found');
+                }
+
+                // Verify the password ...
+                const verifyPasswordResult = await bcrypt.compare(password, result[0].password);
+
+                if (!verifyPasswordResult) {
+                    return res.status(401).send('Invalid Password');
+                }
+
+                // Generate Token ...
+                const token = createToken(result[0]);
+      
+
+                // Pass a Cookie to frontend ...
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    sameSite: 'Lax',
+                    secure: false,
+                    maxAge: 100 * 60 * 60, // 1 hour ...
+                }).status(200).json({ message: "user Logged Successfuly, Please Redirect. ", username: firstName });
+
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "User Not Registered" });
+        }
 
     } catch (error) {
         console.log(error);
-        return res.status(error.code).json({message:error.message});
+        return res.status(error.code).json({ message: error.message });
     }
 }
 
@@ -94,7 +120,7 @@ async function login(req, res) {
 
             // Generate Token ...
             const token = createToken(result[0]);
-            console.log(token)
+     
 
             // Pass a Cookie to frontend ...
             res.cookie('token', token, {
@@ -102,7 +128,7 @@ async function login(req, res) {
                 sameSite: 'Lax',
                 secure: false,
                 maxAge: 100 * 60 * 60, // 1 hour ...
-            }).status(200).json({ message: "user Logged Successfuly" });
+            }).status(200).json({ message: "user Logged Successfuly, Please Redirect. " });
 
         });
     } catch (error) {

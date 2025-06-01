@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 
 function createToken(userData) {
 
+    // console.log("this is payload " , userData)
+
 
     const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour ...
 

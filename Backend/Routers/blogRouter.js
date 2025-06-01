@@ -4,7 +4,7 @@ const upload = require('../middlewares/fileUploading');
 const blogRouter = require('../Controllers/blogController');
 
 // Route to get all the blogs ...
-router.get('/', blogRouter.getAllBlogs);
+router.get('/',   blogRouter.getAllBlogs);
 
 // Route to get a specific blog ...
 router.get('/:blogId', blogRouter.getSpecificBlogPost);

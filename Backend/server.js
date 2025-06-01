@@ -25,7 +25,8 @@ const contactRouter = require('./Routers/contactRouter');
 const urlCaptureRouter = require('./Routers/urlCaptureRouter');
 
 require('dotenv').config();
-require('./auth/passportAuthGoogle');
+
+require('./auth/googleAuth');
 require('./auth/passportAuthFacebook');
 require('./auth/passportAuthLinkedIn');
 
