@@ -55,7 +55,7 @@ async function login (req, res) {
     }
 
     try {
-        // check whether the admin user is existing or not ...
+        // check whether the admin user is existing or not
         const adminUserQuery = 'SELECT * FROM admin WHERE email = ?';
         pool.query(adminUserQuery, email, async (error, result) => {
             if (error) {
@@ -68,19 +68,21 @@ async function login (req, res) {
 
             const adminId = result[0].adminId;
             const adminPassword = result[0].password;
-            // Check password validity ...
+
+            // Check password validity
             const verifyPassword = await bcrypt.compare(password, adminPassword);
 
             if(!verifyPassword) {
                 return res.status(401).send('Password is Incorrect');
             }
 
-            // Set expiration time manually ...
-            const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour ...
+            // Set expiration time manually 
+            const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour
 
-            // Generate jwt token ...
+            // Generate jwt token
             const token = jwt.sign({
                 id: result[0].adminId,
+                role: 'admin',
                 exp: expTime,
             }, process.env.JWT_SECRET);
 
@@ -89,23 +91,18 @@ async function login (req, res) {
                 httpOnly: true,
                 sameSite: 'none',
                 secure: true,
-                maxAge: 100 * 60 * 60, // 1 hour ...
+                maxAge: 1000 * 60 * 60, // 1 hour
             });
 
-            // Store Admin Data in the database Session ...
-            const sessionQuery = 'INSERT INTO admin_sessions (Id, token, createdAt, status, role) VALUES (?, ?, ?, ?, ?)';
-            const values = [ adminId, token, new Date(), 'Active', 'Admin' ];
-            pool.query(sessionQuery, values, (error, data) => {
-                if(error) {
-                    console.log(error);
-                    return res.status(400).send('Error creating session');
-                }
+            // Remove password from result before sending
+            const adminData = {...result[0]};
+            delete adminData.password;
 
-                if(data.affectedRows === 0) {
-                    return res.status(400).send('Data Insertion Error');
-                }
-
-                return res.status(200).json({ message: 'Login Successful', token: token, data: data });
+            return res.status(200).json({ 
+                message: 'Login Successful', 
+                token: token, 
+                data: adminData,
+                expiresAt: expTime
             });
         })
     } catch (error) {
@@ -260,60 +257,14 @@ async function updateAdminUserDetails (req, res) {
 
 async function logout(req, res) {
     try {
-        const token = req.cookies.token;
+        // clear the cookie for token
+        res.clearCookie('token', {
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+        });
 
-        if (!token) {
-            return res.status(400).send('No token found');
-        }
-
-        // Decode token to check if it's an admin
-        try{
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            const id = decoded.id;
-
-            // Check if this is an admin token
-            const adminQuery = 'SELECT * FROM admin WHERE adminId = ?';
-            pool.query(adminQuery, [id], (error, result) => {
-                if (error) {
-                    console.log(error);
-                    return res.status(400).send('Error checking user type');
-                }
-
-                let deleteSessionQuery;
-                if (result.length > 0) {
-                    // It's an admin
-                    deleteSessionQuery = 'DELETE FROM admin_sessions WHERE token = ?';
-                } else {
-                    // It's a regular user
-                    deleteSessionQuery = 'DELETE FROM sessions WHERE token = ?';
-                }
-
-                pool.query(deleteSessionQuery, [token], (error, result) => {
-                    if (error) {
-                        console.log(error);
-                        return res.status(400).send('Error deleting session');
-                    }
-
-                    // Clear the token cookie
-                    res.clearCookie('token', {
-                        httpOnly: true,
-                        sameSite: 'none',
-                        secure: true,
-                    });
-
-                    return res.status(200).json({ message: 'Logout successful' });
-                });
-            });
-        } catch (error) {
-            console.log(error);
-            // If token verification fails, clear the cookie
-            res.clearCookie('token', {
-                httpOnly: true,
-                sameSite: 'none',
-                secure: true,
-            });
-            return res.status(200).json({ message: 'Logout successful' });
-        } 
+        return res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
         console.log(error);
         return res.status(500).send('Server Error');

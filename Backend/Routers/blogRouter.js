@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../middlewares/fileUploading');
+const adminAuth = require('../middlewares/adminAuth');
 const blogRouter = require('../Controllers/blogController');
 
 // Route to get all the blogs ...
@@ -10,13 +11,13 @@ router.get('/', blogRouter.getAllBlogs);
 router.get('/:blogId', blogRouter.getSpecificBlogPost);
 
 // Route to add a blog ...
-router.post('/add', upload, blogRouter.createNewBlog);
+router.post('/add', adminAuth, upload, blogRouter.createNewBlog);
 
 // Route to update a blog ...
-router.put('/update/:blogId', upload, blogRouter.updateBlog);
+router.put('/update/:blogId', adminAuth, upload, blogRouter.updateBlog);
 
 // Route to delete a blog ...
-router.delete('/delete/:blogId', blogRouter.deleteBlog);
+router.delete('/delete/:blogId', adminAuth, blogRouter.deleteBlog);
 
 // Route to fetch blog like count ...
 router.get('/like-count/:blogId', blogRouter.fetchBlogLikeCount);
