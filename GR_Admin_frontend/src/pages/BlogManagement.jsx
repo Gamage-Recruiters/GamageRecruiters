@@ -340,7 +340,7 @@
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <img
-                          src={`http://localhost:8000/uploads/blogs/images/${post.coverImage}`}
+                          src={`http://localhost:8000/uploads/blogs/images/${post.blogImage}`}
                           className="h-14 w-20 rounded-lg object-cover"
                           alt={`${post.title} thumbnail`}
                         />
@@ -351,7 +351,7 @@
                           <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center mt-1">
                             <span className="flex items-center">
                               <img 
-                                src={post.author.image} 
+                                src={`http://localhost:8000/uploads/blogs/authors/${post.authorImage}`} 
                                 alt={post.author.name}
                                 className="h-5 w-5 rounded-full mr-1"
                               />
