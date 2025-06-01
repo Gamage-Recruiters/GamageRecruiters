@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Upload, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { image } from 'framer-motion/client';
+import axios from 'axios';
 
 function AddAdmin() {
   const navigate = useNavigate();
@@ -9,14 +11,15 @@ function AddAdmin() {
   const [formData, setFormData] = useState({
     name: '',
     gender: '',
-    phoneNumber1: '',
-    phoneNumber2: '',
+    primaryPhoneNumber: '',
+    secondaryPhoneNumber: '',
     email: '',
     password: '',
     status: 'active',
-    role: ''
+    role: '',
+    image:'',
+    adminPhoto: null
   });
-  const [profilePic, setProfilePic] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [errors, setErrors] = useState({});
 
@@ -36,24 +39,29 @@ function AddAdmin() {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfilePic(file);
-      
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const file = e.target.files[0];
+  if (file) {
+    setFormData({
+      ...formData,
+      adminPhoto: file,
+      image: file.name
+    });
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
 
   const validateForm = () => {
     const newErrors = {};
     
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.gender) newErrors.gender = 'Gender selection is required';
-    if (!formData.phoneNumber1) newErrors.phoneNumber1 = 'Primary phone number is required';
+    if (!formData.primaryPhoneNumber) newErrors.primaryPhoneNumber = 'Primary phone number is required';
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
@@ -74,17 +82,34 @@ function AddAdmin() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (validateForm()) {
-      console.log('Form submitted:', { ...formData, profilePic });
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (validateForm()) {
+    try {
+      const data = new FormData();
+
+      for (const key in formData) {
+        data.append(key, formData[key]);
+      }
+
+      const response = await axios.post('http://localhost:8000/admin/register', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('Response:', response.data);
       alert('Admin added successfully!');
       navigate('/admins');
-    } else {
-      console.log('Form has errors');
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Something went wrong while submitting the form!');
     }
-  };
+  } else {
+    console.log('Form has errors');
+  }
+};
 
   return (
     <motion.div
@@ -180,13 +205,13 @@ function AddAdmin() {
               </label>
               <input
                 type="tel"
-                name="phoneNumber1"
-                value={formData.phoneNumber1}
+                name="primaryPhoneNumber"
+                value={formData.primaryPhoneNumber}
                 onChange={handleChange}
-                className={`px-4 py-2 w-full border ${errors.phoneNumber1 ? 'border-red-500' : 'border-gray-600'} bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
+                className={`px-4 py-2 w-full border ${errors.primaryPhoneNumber ? 'border-red-500' : 'border-gray-600'} bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500`}
                 placeholder="Enter primary phone number"
               />
-              {errors.phoneNumber1 && <p className="mt-1 text-sm text-red-500">{errors.phoneNumber1}</p>}
+              {errors.primaryPhoneNumber && <p className="mt-1 text-sm text-red-500">{errors.primaryPhoneNumber}</p>}
             </div>
 
             <div>
@@ -195,8 +220,8 @@ function AddAdmin() {
               </label>
               <input
                 type="tel"
-                name="phoneNumber2"
-                value={formData.phoneNumber2}
+                name="secondaryPhoneNumber"
+                value={formData.secondaryPhoneNumber}
                 onChange={handleChange}
                 className="px-4 py-2 w-full border border-gray-600 bg-gray-700 text-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Enter secondary phone number"
