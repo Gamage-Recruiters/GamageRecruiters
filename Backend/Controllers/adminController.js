@@ -28,7 +28,7 @@ async function register (req, res) {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             // Store the details in database
-            const adminStoreDataQuery = 'INSERT INTO admin (name, email, password, role, primaryPhoneNumber, secondaryPhoneNumber, status, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            const adminStoreDataQuery = 'INSERT INTO admin (name, email, password, role, primaryPhoneNumber, secondaryPhoneNumber, status, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
             pool.query(adminStoreDataQuery, [name, email, hashedPassword, role, primaryPhoneNumber, secondaryPhoneNumber, status, imageName], (error, result) => {
                 if(error) {
                     return res.status(400).send(error);
