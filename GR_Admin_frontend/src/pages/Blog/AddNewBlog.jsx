@@ -5,6 +5,7 @@ import {
   Heading1, Heading2, Bookmark, Layout, Camera, Paperclip,
   FileText, Check, AlertTriangle, User
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const BlogEditor = () => {
   const fileInputRef = useRef(null);
@@ -14,6 +15,7 @@ const BlogEditor = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -161,7 +163,9 @@ const BlogEditor = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+            <button
+              onClick={() => navigate(-1)} 
+              className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition">
               <ArrowLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
             </button>
             <div>
