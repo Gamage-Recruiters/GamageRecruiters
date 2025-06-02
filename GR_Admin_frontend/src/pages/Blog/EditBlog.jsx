@@ -83,7 +83,7 @@ useEffect(() => {
       if (!response.ok) throw new Error('Failed to fetch blog');
       
       const resJson = await response.json();
-      const blog = resJson.data[0]; // Access the first blog object
+      const blog = resJson.data; // Access the first blog object
 
       const processedTags = Array.isArray(blog.tags) ? blog.tags.join(', ') : blog.tags || '';
 
@@ -107,10 +107,13 @@ useEffect(() => {
       });
 
       setPreviewImages({
-        blog: blog.blogImage || null,
-        blogCover: blog.coverImage || null,
-        author: 'http://localhost:8000/api/placeholder/100/100' // Default placeholder
+        blog: blog.blogImage ? `http://localhost:8000/uploads/blogs/images/${blog.blogImage}` : null,
+        blogCover: blog.coverImage ? `http://localhost:8000/uploads/blogs/covers/${blog.coverImage}` : null,
+        author: blog.authorImage
+          ? `http://localhost:8000/uploads/blogs/authors/${blog.authorImage}`
+          : 'http://localhost:8000/api/placeholder/100/100'
       });
+
 
       setLoading(false);
     } catch (error) {
