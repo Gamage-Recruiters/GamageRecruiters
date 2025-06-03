@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -63,22 +64,19 @@ function Sidebar({ isOpen, setIsOpen }) {
   const handleLogout = async () => {
     try {
       // Call logout API
-      const response = await fetch('/api/admin/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+      const response = await axios.post('http://localhost:8000/admin/logout', {}, {
+        withCredentials: true
       });
       
-      if (response.ok) {
+      if (response.status === 200) {
         // Clear any local storage/session storage items
         localStorage.removeItem('adminToken');
         sessionStorage.removeItem('adminData');
         
         // Redirect to login page
-        navigate('/login');
+        navigate('/');
       } else {
-        console.error('Logout failed');
+        console.error('Logout failed', response.data);
       }
     } catch (error) {
       console.error('Logout error:', error);
