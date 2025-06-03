@@ -63,7 +63,7 @@ app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/up
 app.use('/uploads/blogs/images', express.static(path.join(__dirname, '/uploads/blogs/images')));
 app.use('/uploads/blogs/covers', express.static(path.join(__dirname, '/uploads/blogs/covers')));
 app.use('/uploads/blogs/authors', express.static(path.join(__dirname, '/uploads/blogs/authors')));
-app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/uploads/appliedJobs/resumes')));
+app.use('/uploads/resumes', express.static(path.join(__dirname, '/uploads/resumes')));
 app.use('/uploads/workshops/images', express.static(path.join(__dirname, '/uploads/workshops/images')));
 
 app.use(session({ 
