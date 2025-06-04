@@ -39,14 +39,6 @@ function Navbar({ onMenuClick }) {
           </div>
 
           <div className="flex items-center space-x-1 md:space-x-4">
-            <button className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white relative focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800"></span>
-            </button>
-            
-            <button className="p-2 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200">
-              <Settings className="h-5 w-5" />
-            </button>
             
             <div className="flex items-center pl-2">
               <button  onClick={handleClick} className="flex items-center space-x-3 py-1 px-3 rounded-full text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white group">

@@ -9,7 +9,9 @@ function ViewAdmin() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/admin/${adminId}`)
+    axios.get(`http://localhost:8000/admin/${adminId}`, { 
+      withCredentials: true  
+    })
       .then((res) => {
         setAdmin(res.data.data[0]);
         console.log(res.data.data[0])
