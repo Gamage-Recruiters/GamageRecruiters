@@ -40,7 +40,7 @@ const testimonials = [
       rating: 5
     },
     {
-      id: 4,
+      id: 5,
       company: "Gnanam Food (PVT)Ltd",
       logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCgHY4mRTDRj0DEKOsx98NfZdLfhD_knYSyw&s",
       quote: "Working with Gamage Recruiters was a game-changer! They didn’t just send resumes — they delivered top-tier talent with precision and speed. Sharp, professional, and truly in sync with our hiring goals. Highly recommended!",

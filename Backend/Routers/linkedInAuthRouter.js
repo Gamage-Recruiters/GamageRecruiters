@@ -11,6 +11,6 @@ router.get('/linkedin/login', linkedInAuthController.loginWithLinkedIn );
 router.get('/auth/linkedin', passport.authenticate('linkedin', { scope: ['email', 'public_profile'] }));
 
 // LinkedIn Auth Callback Route ...
-router.get('/auth/linkedin/callback', passport.authenticate('linkedin', { failureRedirect: process.env.FAILURE_REDIRECT_URL, session: false }), linkedInAuthController.loginLinkedInCallback);
+router.get('/auth/linkedin/callback', passport.authenticate('linkedin', { failureRedirect: process.env.FAILURE_REDIRECT_URL}), linkedInAuthController.loginLinkedInCallback);
 
 module.exports = router;

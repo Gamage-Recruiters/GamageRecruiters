@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../middlewares/fileUploading');
+const { verifyToken } = require('../auth/token/jwtToken');
 const adminAuth = require('../middlewares/adminAuth');
 const jobApplicationController = require('../Controllers/jobApplicationController');
 const jobApplicationExtendedController = require('../Controllers/jobApplicationExtendedController');
 
 // Basic routes for job applications
 // Apply for a job (with file upload)
-router.route('/apply').post(upload, jobApplicationController.applyJob);
+router.route('/apply').post(verifyToken, upload, jobApplicationController.applyJob);
 
 // Get specific application by ID
 router.route('/application/:applicationId').get(jobApplicationController.getApplication);
@@ -22,7 +23,7 @@ router.route('/applications').get(adminAuth, jobApplicationController.getApplica
 router.route('/:jobId').get(adminAuth, jobApplicationController.getApplicationByJobId);
 
 // Update a specific job application
-router.route('/update/:applicationId').put(adminAuth, upload, jobApplicationController.updateApplication);
+router.route('/update/:applicationId').put(verifyToken, upload, jobApplicationController.updateApplication);
 
 // Delete a specific job application
 router.route('/delete/:applicationId').delete(adminAuth,  jobApplicationController.deleteApplication);

@@ -1,7 +1,5 @@
 const dotenv = require('dotenv');
 const { pool } = require('../config/dbConnection');
-const { setLoggedUserIdAndMethod } = require('../utils/setLocalStorageData');
-const { addNewUserIfSessionUserNotFound, generateNewTokenForPlatformLogins } = require('../middlewares/userMiddleware');
 const splitStrings = require('../utils/splitStrings');
 
 dotenv.config(); 
@@ -19,69 +17,91 @@ async function loginWithLinkedIn (req, res) {
 
 async function loginLinkedInCallback (req, res) {
     try {
-        // Store user in session ...
-        req.session.user = req.user; 
-        // console.log("User stored in session:", req.session.user);
+        // Get user profile from Passport
+        const profile = req.user;
 
-        // Fetch the URL from localStorage ...
-        const url = fetchFrontendApplicationRunningURL();
-
+        // Store LinkedIn login in database
         const sql = 'INSERT INTO LoginsThroughPlatforms (accountId, photo, name, email, loggedAt, platform) VALUES (?, ?, ?, ?, ?, ?)';
-        const values = [req.session.user.id, req.session.user.photo, req.session.user.name, req.session.user.email, new Date(), 'LinkedIn'];
+        const values = [profile.id, profile.photos?.[0]?.value, profile.displayName, profile.emails?.[0]?.value, new Date(), 'LinkedIn'];
+        
         pool.query(sql, values, (error, data) => {
             if(error) {
                 return res.status(400).send('Error Saving Data');
             } 
-
-            setLoggedUserIdAndMethod(req.session.user.id, 'LinkedIn');
-
+            
+            // Check if user exists in our database
             const userQuery = 'SELECT * FROM Users WHERE email = ?';
-            pool.query(userQuery, [req.session.user.email], async (error, result) => {
+            pool.query(userQuery, [profile.emails?.[0]?.value], async (error, result) => {
                 if(error) {
                     console.log(error);
                     return res.status(400).send(error);
-                } 
+                }
 
+                let userData;
+
+                // If user doesn't exist, create a new one
                 if(result.length === 0) {
-                    console.log('User not found, creating new user ...');
-                    const userName = splitStrings(req.session.user.name);
-                    try {
-                        const userData = await addNewUserIfSessionUserNotFound(userName[0], userName[1], req.session.user.email);
-                        if(!userData) {
-                            return res.status(400).send('Error Occured While Creating a new user');
-                        } 
+                    console.log('User not found, creating new user...');
+                    const nameParts = profile.displayName.split(' ');
+                    const firstName = nameParts[0] || '';
+                    const lastName = nameParts.length > 1 ? nameParts[1] : '';
+                    
+                    // Insert new user
+                    const insertQuery = 'INSERT INTO users (firstName, lastName, email, photo, linkedInId, createdAt) VALUES (?, ?, ?, ?, ?, ?)';
+                    const insertValues = [
+                        firstName,
+                        lastName,
+                        profile.emails?.[0]?.value,
+                        profile.photos?.[0]?.value,
+                        profile.id,
+                        new Date()
+                    ];
 
-                        // console.log('User Data:', userData);
-                        const token = await generateNewTokenForPlatformLogins(userData.userId);
-
-                        if(!token) {
-                            return res.status(404).send('Error Occured. Cannot proceed.');
+                    pool.query(insertQuery, insertValues, (insertError, insertResult) => {
+                        if(insertError) {
+                            console.log(insertError);
+                            return res.status(400).send('Error creating new user');
                         }
-
-                        return res.redirect(`${url}/dashboard`);
-                    } catch (error) {
-                        console.error(error);
-                        return res.status(500).send(error);
-                    }
+                        
+                        // Get the new user data
+                        pool.query('SELECT * FROM users WHERE linkedInId = ?', [profile.id], (userError, userData) => {
+                            if(userError || userData.length === 0) {
+                                return res.status(400).send('Error retrieving user data');
+                            }
+                            
+                            // Generate JWT token
+                            const token = createToken(userData[0]);
+                            
+                            // Redirect to frontend with token
+                            res.cookie('token', token, {
+                                httpOnly: true,
+                                sameSite: 'Lax',
+                                secure: false,
+                                maxAge: 100 * 60 * 60, // 1 hour ...
+                            });
+                            
+                            return res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+                        });
+                    });
+                } else {
+                  // User exists, generate token and redirect
+                    const token = createToken(result[0]);
+                    
+                    res.cookie('token', token, {
+                        httpOnly: true,
+                        sameSite: 'Lax',
+                        secure: false,
+                        maxAge: 100 * 60 * 60, // 1 hour ...
+                    });
+                    
+                    return res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
                 }
-
-                const userData = result[0];
-                console.log('User data:', userData);
-
-                const token = await generateNewTokenForPlatformLogins(userData.userId);
-
-                if(!token) {
-                    return res.status(404).send('Error Occured. Cannot proceed.');
-                }
-                
-                // Redirect to frontend after setting session and save data ...
-                return res.redirect(`${url}/dashboard`);
             });
         });
     } catch (error) {
         console.log(error);
         return res.status(500).send(error);
     }
-} 
+}
 
 module.exports = { loginWithLinkedIn, loginLinkedInCallback }
