@@ -75,7 +75,7 @@ async function login (req, res) {
             }
 
             // Set expiration time manually ...
-            const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour ...
+            const expTime = Math.floor(Date.now() / 1000) + 24 * 60 * 60; // 24 hours
 
             // Generate jwt token ...
             const token = jwt.sign({
@@ -89,7 +89,7 @@ async function login (req, res) {
                 httpOnly: true,
                 sameSite: 'none',
                 secure: true,
-                maxAge: 100 * 60 * 60, // 1 hour ...
+                maxAge: 24 * 60 * 60 * 1000, // 24 hours
             });
 
             return res.status(200).json({ 
