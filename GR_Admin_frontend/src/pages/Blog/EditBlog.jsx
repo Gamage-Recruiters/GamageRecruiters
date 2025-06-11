@@ -79,11 +79,15 @@ const EditBlog = () => {
 useEffect(() => {
   const fetchBlogData = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/blogs/${blogId}`);
+      const response = await fetch(`http://localhost:8000/api/blogs/${blogId}`, {
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error('Failed to fetch blog');
       
       const resJson = await response.json();
-      const blog = resJson.data; // Access the first blog object
+
+      console.log('API response:', resJson);
+      const blog = resJson.data[0]; // Access the first blog object
 
       const processedTags = Array.isArray(blog.tags) ? blog.tags.join(', ') : blog.tags || '';
 
@@ -198,6 +202,7 @@ useEffect(() => {
     const response = await fetch(`http://localhost:8000/api/blogs/update/${blogId}`, {
       method: 'PUT',
       body: formDataToSend,
+      credentials: 'include'
     });
 
     // Parse response JSON first

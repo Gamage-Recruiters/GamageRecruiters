@@ -90,7 +90,9 @@
     if (!confirmDelete) return;
 
     try {
-      const response = await axios.delete(`http://localhost:8000/api/blogs/delete/${id}`);
+      const response = await axios.delete(`http://localhost:8000/api/blogs/delete/${id}`, {
+        withCredentials: true
+      });
       if (response.status === 200) {
         setBlogPosts(prev => prev.filter(post => post.blogId !== id));
         alert("Blog deleted successfully");
