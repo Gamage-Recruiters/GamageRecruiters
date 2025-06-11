@@ -372,18 +372,25 @@ function Dashboard() {
       return;
     }
 
-    if(user.cv) {
-      const cvURL = `${baseURL}/uploads/cvs/${user.cv}`;
-      // console.log('cv-url', cvURL);
-      setCVLink(cvURL);
+    if(user && user.cv) {
+      try {
+        const cvURL = `${baseURL}/uploads/cvs/${user.cv}`;
+        setCVLink(cvURL);
+      } catch (error) {
+        setCVLink('');
+      }
     } else {
       setCVLink('');
     }
-    if(user.photo) {
-      const photoURL = `${baseURL}/uploads/users/images/${user.photo}`;
-      // console.log('image-url', photoURL);
-      setImageLink(photoURL);
+     if(user && user.photo) {
+      try {
+        const photoURL = `${baseURL}/uploads/users/images/${user.photo}`;
+        setImageLink(photoURL);
+      } catch (error) {
+        setImageLink('');
+      }
     } else {
+      console.log('No user photo available');
       setImageLink('');
     }
     
@@ -392,7 +399,7 @@ function Dashboard() {
         setIsFirstVisit(false);
       }, 3000);
     }
-  }, [loggedUserId]);
+  }, [loggedUserId, user]);
   
   // Handlers
   const handleFormChange = (e) => {
