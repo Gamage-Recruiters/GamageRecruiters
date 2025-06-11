@@ -148,7 +148,7 @@ function BlogPage() {
             >
               <div className="aspect-[4/3] overflow-hidden rounded-t-xl">
                 <img 
-                  src={blog.blogImage ? `http://localhost:8000/uploads/blogs/images/${blog.blogImage}` : 'https://via.placeholder.com/400'} 
+                  src={blog.blogImage ? `${baseURL}/uploads/blogs/images/${blog.blogImage}` : 'https://via.placeholder.com/400'} 
                   alt={blog.title}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />

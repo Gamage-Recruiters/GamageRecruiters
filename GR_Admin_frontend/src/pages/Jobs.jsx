@@ -5,6 +5,7 @@ import {
   Star, Moon, Sun, Zap, TrendingUp, Coffee, X, ArrowLeft, Save
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import baseURL from '../config/baseUrlConfig';
 
 function Jobs() {
   const [jobs, setJobs] = useState([]);
@@ -31,7 +32,7 @@ function Jobs() {
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:8000/api/jobs');
+        const response = await fetch(`${baseURL}/api/jobs`);
         if (!response.ok) {
           throw new Error('Failed to fetch jobs');
         }
@@ -57,7 +58,7 @@ function Jobs() {
   const fetchJobDetails = async (jobId) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/jobs/${jobId}`);
+      const response = await fetch(`${baseURL}/api/jobs/${jobId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch job details');
       }
@@ -82,7 +83,7 @@ function Jobs() {
     
     try {
       setIsSubmitting(true);
-      const response = await fetch(`http://localhost:8000/api/jobs/update/${editedJob.jobId}`, {
+      const response = await fetch(`${baseURL}/api/jobs/update/${editedJob.jobId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +153,7 @@ function Jobs() {
   const handleDeleteJob = async (jobId) => {
     if (window.confirm('Are you sure you want to delete this job?')) {
       try {
-        const response = await fetch(`http://localhost:8000/api/jobs/delete/${jobId}`, {
+        const response = await fetch(`${baseURL}/api/jobs/delete/${jobId}`, {
           method: 'DELETE',
         });
         

@@ -64,7 +64,7 @@ function Sidebar({ isOpen, setIsOpen }) {
   const handleLogout = async () => {
     try {
       // Call logout API
-      const response = await axios.post('http://localhost:8000/admin/logout', {}, {
+      const response = await axios.post(`${baseURL}/admin/logout`, {}, {
         withCredentials: true
       });
       

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import baseURL from '../../config/baseUrlConfig';
 
 function ViewAdmin() {
   const { adminId } = useParams();
@@ -9,7 +10,7 @@ function ViewAdmin() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/admin/${adminId}`, { 
+    axios.get(`${baseURL}/admin/${adminId}`, { 
       withCredentials: true  
     })
       .then((res) => {
@@ -43,7 +44,7 @@ function ViewAdmin() {
           <div>
             <label className="font-semibold block mb-1">Profile Image</label>
             <img
-              src={`http://localhost:8000/uploads/admin/images/${admin.image}`}
+              src={`${baseURL}/uploads/admin/images/${admin.image}`}
               alt="Admin"
               className="w-32 h-32 object-cover rounded-md border"
             />

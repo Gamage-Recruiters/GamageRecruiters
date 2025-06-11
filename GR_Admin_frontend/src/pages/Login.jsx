@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { Lock, Briefcase, User } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
+import baseURL from "../config/baseUrlConfig";
 
 function Login() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8000/admin/login', { 
+      const response = await axios.post(`${baseURL}/admin/login`, { 
         email: email, 
         password: password 
       }, {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Minus, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
+import baseURL from '../../config/baseUrlConfig';
 
 const EditJob = ({ onUpdateJob }) => {
   const { jobId } = useParams();
@@ -27,7 +28,7 @@ const EditJob = ({ onUpdateJob }) => {
   useEffect(() => {
     const fetchJobData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/jobs/${jobId}`);
+        const response = await axios.get(`${baseURL}/api/jobs/${jobId}`);
     
         if (response.data && response.data.data) {
           const job = response.data.data;
@@ -122,7 +123,7 @@ const EditJob = ({ onUpdateJob }) => {
       };
       
       
-      await axios.put(`http://localhost:8000/api/jobs/update/${jobId}`, cleanedFormData);
+      await axios.put(`${baseURL}/api/jobs/update/${jobId}`, cleanedFormData);
       
       if (onUpdateJob) {
         onUpdateJob(cleanedFormData);

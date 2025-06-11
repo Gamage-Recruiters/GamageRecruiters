@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Users, Calendar, MapPin, ExternalLink, Star, RefreshCw, AlertTriangle, Moon, Search, Filter, ChevronDown } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import baseURL from '../config/baseUrlConfig';
 
 function Workshops() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ function Workshops() {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get('http://localhost:8000/api/workshops');
+      const response = await axios.get(`${baseURL}/api/workshops`);
       
       // Handle different response structures
       if (response.data) {
@@ -146,7 +147,7 @@ function Workshops() {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "https://via.placeholder.com/400x200?text=Workshop";
     if (imagePath.startsWith('http')) return imagePath;
-    return `http://localhost:8000/uploads/workshops/images/${imagePath}`;
+    return `${baseURL}/uploads/workshops/images/${imagePath}`;
   };
 
   return (

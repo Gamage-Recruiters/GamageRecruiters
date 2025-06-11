@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import baseURL from '../../config/baseUrlConfig';
 
 function UpdateWorkshop() {
   const { id } = useParams();
@@ -55,7 +56,7 @@ function UpdateWorkshop() {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "https://via.placeholder.com/400x200?text=Workshop";
     if (imagePath.startsWith('http')) return imagePath;
-    return `http://localhost:8000/uploads/workshops/images/${imagePath}`;
+    return `${baseURL}/uploads/workshops/images/${imagePath}`;
   };
   
   // Fetch workshop data
@@ -63,7 +64,7 @@ function UpdateWorkshop() {
     const fetchWorkshopData = async () => {
       setFetchLoading(true);
       try {
-        const response = await axios.get(`http://localhost:8000/api/workshops/${id}`);
+        const response = await axios.get(`${baseURL}/api/workshops/${id}`);
         console.log('Workshop data:', response.data);
         const workshopData = response.data.data[0];
   
@@ -150,7 +151,7 @@ function UpdateWorkshop() {
       });
       
       await axios.put(
-        `http://localhost:8000/api/workshops/update/${id}`, 
+        `${baseURL}/api/workshops/update/${id}`, 
         formDataObj,
         { 
           headers: { 'Content-Type': 'multipart/form-data' }
@@ -653,7 +654,7 @@ function UpdateWorkshop() {
             onClick={() => {
               if (window.confirm('Are you sure you want to delete this workshop? This action cannot be undone.')) {
                 // Add your delete logic here
-                axios.delete(`http://localhost:8000/api/workshops/${id}`)
+                axios.delete(`${baseURL}/api/workshops/${id}`)
                   .then(() => {
                     alert('Workshop deleted successfully');
                     navigate('/workshops');

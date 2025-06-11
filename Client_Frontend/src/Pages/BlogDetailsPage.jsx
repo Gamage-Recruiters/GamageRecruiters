@@ -302,7 +302,7 @@ function BlogDetailsPage() {
       <div className="relative h-96 md:h-[500px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
         <img 
-          src={blogPost.coverImage ? `http://localhost:8000/uploads/blogs/covers/${blog.coverImage}` : ''} 
+          src={blog.coverImage ? `${baseURL}/uploads/blogs/covers/${blog.coverImage}` : ''} 
           alt={blogPost.title} 
           className="w-full h-full object-cover"
         />

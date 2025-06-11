@@ -6,6 +6,7 @@ import {
   FiAlertCircle, FiChevronDown, FiBriefcase, FiClock, FiEye
 } from 'react-icons/fi';
 import { createPortal } from 'react-dom';
+import baseURL from '../../config/baseUrlConfig';
 
 const CandidateDetailsView = () => {
   // State management
@@ -23,8 +24,6 @@ const CandidateDetailsView = () => {
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const dropdownTriggerRef = useRef(null);
-
-  const baseUrl = 'http://localhost:8000';
 
   // to calculate dropdown position
   useEffect(() => {
@@ -48,7 +47,7 @@ const CandidateDetailsView = () => {
   // Fetch all jobs
   const fetchJobs = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/api/jobs`);
+    const response = await axios.get(`${baseURL}/api/jobs`);
     setJobs(response.data.jobs || []); // Changed from data.data to data.jobs
     console.log("Jobs response:", response.data); // Add this for debugging
   } catch (err) {
@@ -61,7 +60,7 @@ const CandidateDetailsView = () => {
   const fetchAllApplications = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${baseUrl}/api/jobapplications/applications`);
+      const response = await axios.get(`${baseURL}/api/jobapplications/applications`);
       setApplications(response.data.data || []);
       setLoading(false);
     } catch (err) {
@@ -79,7 +78,7 @@ const CandidateDetailsView = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get(`${baseUrl}/api/jobapplications/jobs/${jobId}/applications`);
+      const response = await axios.get(`${baseURL}/api/jobapplications/jobs/${jobId}/applications`);
       setApplications(response.data.data || []);
       setLoading(false);
     } catch (err) {
@@ -92,7 +91,7 @@ const CandidateDetailsView = () => {
   // Fetch job statistics
   const fetchStatistics = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/api/jobs/statistics`);
+      const response = await axios.get(`${baseURL}/api/jobs/statistics`);
       setStatistics(response.data.data || []);
     } catch (err) {
       console.error('Error fetching job statistics:', err);
@@ -134,7 +133,7 @@ const CandidateDetailsView = () => {
   // Download individual resume
   const downloadResume = async (applicationId) => {
     try {
-      window.open(`${baseUrl}/api/jobapplications/applications/download/${applicationId}`, '_blank');
+      window.open(`${baseURL}/api/jobapplications/applications/download/${applicationId}`, '_blank');
       showToastMessage('Resume download started', 'success');
     } catch (err) {
       console.error('Error downloading resume:', err);
@@ -145,7 +144,7 @@ const CandidateDetailsView = () => {
   // Download all resumes for a job
   const downloadAllResumes = async (jobId) => {
     try {
-      window.open(`${baseUrl}/api/jobapplications/jobs/${jobId}/applications/download-all`, '_blank');
+      window.open(`${baseURL}/api/jobapplications/jobs/${jobId}/applications/download-all`, '_blank');
       showToastMessage('Bulk download started', 'success');
     } catch (err) {
       console.error('Error downloading all resumes:', err);
@@ -156,7 +155,7 @@ const CandidateDetailsView = () => {
   // Delete individual application
   const deleteApplication = async (applicationId) => {
     try {
-      await axios.delete(`${baseUrl}/api/jobapplications/delete/${applicationId}`);
+      await axios.delete(`${baseURL}/api/jobapplications/delete/${applicationId}`);
       setApplications(applications.filter(app => app.applicationId !== applicationId));
       showToastMessage('Application deleted successfully', 'success');
       fetchStatistics(); // Refresh statistics after deletion
@@ -169,7 +168,7 @@ const CandidateDetailsView = () => {
   // Delete all applications for a job
   const deleteAllApplications = async (jobId) => {
     try {
-      await axios.delete(`${baseUrl}/api/jobapplications/jobs/${jobId}/applications/delete-all`);
+      await axios.delete(`${baseURL}/api/jobapplications/jobs/${jobId}/applications/delete-all`);
       if (filterJobId === jobId || filterJobId === 'all') {
         // If we're viewing the job that was deleted or all jobs, refresh the view
         fetchApplicationsByJob(filterJobId);
@@ -186,7 +185,7 @@ const CandidateDetailsView = () => {
   const deleteSelectedApplications = async () => {
     try {
       for (const applicationId of selectedApplications) {
-        await axios.delete(`${baseUrl}/api/jobapplications/delete/${applicationId}`);
+        await axios.delete(`${baseURL}/api/jobapplications/delete/${applicationId}`);
       }
       setApplications(applications.filter(app => !selectedApplications.includes(app.applicationId)));
       setSelectedApplications([]);

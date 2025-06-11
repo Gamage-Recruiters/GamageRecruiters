@@ -16,6 +16,7 @@ import {
   Award
 } from 'lucide-react';
 import axios from 'axios';
+import baseURL from '../../config/baseUrlConfig';
 
 const AddJob = () => {
   const navigate = useNavigate();
@@ -98,7 +99,7 @@ const AddJob = () => {
       };
       
       // Send data to API endpoint
-      const response = await axios.post('http://localhost:8000/api/jobs/addjob', jobData);
+      const response = await axios.post(`${baseURL}/api/jobs/addjob`, jobData);
       
       if (response.data) {
         // Show success toast notification

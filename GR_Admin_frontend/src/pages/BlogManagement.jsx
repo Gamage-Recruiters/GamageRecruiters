@@ -7,6 +7,7 @@
   } from 'lucide-react';
   import { useNavigate } from 'react-router-dom';
   import axios from 'axios';
+  import baseURL from '../config/baseUrlConfig';
 
   // Mock blog post data based on the structure provided
   const mockBlogPosts = [
@@ -25,7 +26,7 @@
     const fetchPosts = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('http://localhost:8000/api/blogs');
+        const response = await axios.get(`${baseURL}/api/blogs`);
         setBlogPosts(response.data.data || []);
         console.log('Complete fetching blog posts:', response.data.data);
       } catch (error) {
@@ -90,7 +91,7 @@
     if (!confirmDelete) return;
 
     try {
-      const response = await axios.delete(`http://localhost:8000/api/blogs/delete/${id}`, {
+      const response = await axios.delete(`${baseURL}/api/blogs/delete/${id}`, {
         withCredentials: true
       });
       if (response.status === 200) {
@@ -342,7 +343,7 @@
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <img
-                          src={`http://localhost:8000/uploads/blogs/images/${post.blogImage}`}
+                          src={`${baseURL}/uploads/blogs/images/${post.blogImage}`}
                           className="h-14 w-20 rounded-lg object-cover"
                           alt={`${post.title} thumbnail`}
                         />
@@ -353,7 +354,7 @@
                           <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center mt-1">
                             <span className="flex items-center">
                               <img 
-                                src={`http://localhost:8000/uploads/blogs/authors/${post.authorImage}`} 
+                                src={`${baseURL}/uploads/blogs/authors/${post.authorImage}`} 
                                 alt={post.author.name}
                                 className="h-5 w-5 rounded-full mr-1"
                               />
