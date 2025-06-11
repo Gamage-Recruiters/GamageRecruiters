@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon, ChevronRightIcon, BuildingOfficeIcon, MapPinIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import JobCard from '../components/JobCard';
 import baseURL from '../config/axiosPortConfig';
+import { useLocation } from 'react-router-dom';
 
 // Mock data - will be replaced with actual API calls
 // const jobs = [
@@ -102,7 +103,7 @@ const daysAgo = (dateString) => {
 };
 
 function JobListings() {
-  const [searchTerm, setSearchTerm] = useState('');
+ 
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [selectedJobType, setSelectedJobType] = useState('All Types');
   const [selectedSalaryRange, setSelectedSalaryRange] = useState('All Ranges');
@@ -111,7 +112,16 @@ function JobListings() {
   const [displayMode, setDisplayMode] = useState('grid');
   const [isLoading, setIsLoading] = useState(true);
   const [jobs, setJobs] = useState([]);
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const initialSearch = params.get('search') || '';
+  const [searchTerm, setSearchTerm] = useState('initialSearch');
   
+  useEffect(() => {
+  setSearchTerm(initialSearch);
+}, [initialSearch]);
+
   useEffect(() => {
     loadJobs();
     // Simulate API loading

@@ -8,7 +8,7 @@ import TestimonialsSection from '../components/Patners/TestimonialsSection';
 import baseURL from "../config/axiosPortConfig";
 import generateRandomColor from '../scripts/generateRandomColor';
 import { useChangeDateFormat } from '../hooks/customHooks';
-
+import { useNavigate } from 'react-router-dom';
 
 
 // Statistics for counter animation
@@ -70,6 +70,11 @@ export default function Home() {
   // Animation for typing effect
   const [displayText, setDisplayText] = useState("");
   const fullText = "Find Your Dream Career in Sri Lanka";
+
+  //search bar state
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
+
 
   // Counter animation
   useEffect(() => {
@@ -371,18 +376,32 @@ export default function Home() {
             </p>
 
             {/* Animated Search Bar */}
+
+            <form 
+             onSubmit={e => {
+             e.preventDefault();
+             if (searchTerm.trim()) {
+             navigate(`/jobs?search=${encodeURIComponent(searchTerm)}`);
+          }
+       }}
+         className="mt-10 mx-auto max-w-2xl"
+          >
             <div className="mt-10 mx-auto max-w-2xl">
               <div className="flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full p-2 border border-white border-opacity-20 transition-all duration-500 hover:bg-opacity-20">
                 <input
                   type="text"
                   placeholder="Search for jobs, skills, or companies..."
                   className="flex-1 bg-transparent text-white border-none outline-none px-4 py-2"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
                 />
-                <button className="bg-white text-indigo-900 rounded-full px-6 py-2 font-semibold transform transition duration-300 hover:scale-105">
+                <button type="submit" className="bg-white text-indigo-900 rounded-full px-6 py-2 font-semibold transform transition duration-300 hover:scale-105">
+                  
                   Search
                 </button>
               </div>
             </div>
+            </form>
 
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
