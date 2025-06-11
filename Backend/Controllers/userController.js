@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const { pool } = require('../config/dbConnection');
 const { setTimeStatus } = require('../utils/changeDateFormat');
 const subscriptionNotifyEmailSending = require('../middlewares/subscriptionNotifyEmailSending');
-const { localStorage } = require('../utils/localStorage');
 const deleteUploadedFile =require('../utils/deleteUplodedFile');
 
 async function uploadUserImage(req, res) {
@@ -271,29 +270,15 @@ async function deleteUser (req, res) {
             return res.status(400).send('Deletion Failed');
         }
 
-        console.log(userId);
-
-        const removeSessionQuery = 'DELETE FROM sessions WHERE Id = ?';
-        pool.query(removeSessionQuery, userId, (error, result) => {
+        // Replace with direct user deletion:
+        const sql = 'DELETE FROM users WHERE userId = ?';
+        pool.query(sql, userId, (error, result) => {
             if(error) {
                 console.log(error);
-                return res.status(400).send(error);
-            } 
-
-            if(result.affectedRows === 0) {
                 return res.status(400).send('Deletion Failed');
-            }
-
-            const sql = 'DELETE FROM users WHERE userId = ?';
-            pool.query(sql, userId, (error, result) => {
-                if(error) {
-                    console.log(error);
-                    return res.status(400).send('Deletion Failed');
-                } 
-
-                localStorage.clear();
-                return res.status(200).json({ message: 'User Deleted Successfully', data: result });
-            });
+            } 
+            
+            return res.status(200).json({ message: 'User Deleted Successfully', data: result });
         });
     } catch (error) {
         console.log(error);
@@ -388,17 +373,17 @@ async function getUserRecentJobActivity (req, res) {
     }
 } 
 
-async function getLastActiveStatus (req, res) {
+async function getLastActiveStatus(req, res) {
     const { userId } = req.params;
 
-    if(!userId) {
+    if (!userId) {
         return res.status(400).send('userId Required');
     }
 
     try {
-        const jobActivityQuery = 'SELECT createdAt FROM sessions WHERE Id = ? ORDER BY createdAt DESC LIMIT 1 OFFSET 1';
-        pool.query(jobActivityQuery, userId, (error, result) => {
-            if(error) {
+        const query = 'SELECT lastActive FROM users WHERE userId = ?';
+        pool.query(query, [userId], (error, result) => {
+            if (error) {
                 console.log(error);
                 return res.status(400).send(error);
             }
@@ -407,9 +392,8 @@ async function getLastActiveStatus (req, res) {
                 return res.status(404).send('No active status found for this user');
             }
 
-            const lastActiveStatus = setTimeStatus(result[0].createdAt);
-            // console.log(lastActiveStatus);
-            return res.status(200).json({ message: 'Last Active Status Found', jobStatus: lastActiveStatus });
+            const lastActiveStatus = result[0].lastActive ? setTimeStatus(result[0].lastActive) : null;
+            return res.status(200).json({ message: 'Last Active Status Found', lastActive: lastActiveStatus });
         });
     } catch (error) {
         console.log(error);
@@ -582,18 +566,26 @@ async function getAllUsersCountInCurrentMonth (req, res) {
     try {
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth() + 1;
-        const ActiveUsersCountInThisMonthQuery = 'SELECT COUNT(DISTINCT  sessions.Id) FROM sessions INNER JOIN users ON sessions.Id = users.userId WHERE sessions.status = ? AND MONTH(users.createdAt) = ?';
-        pool.query(ActiveUsersCountInThisMonthQuery, ['Active', currentMonth], (error, result) => {
-            if(error) {
+        const activeTimeWindow = new Date(Date.now() - (30 * 60 * 1000)); // Consider users active if they were active in the last 30 minutes
+        
+        // Query active users created in current month using lastActive column
+        const activeUsersQuery = `
+            SELECT COUNT(DISTINCT userId) as activeCount 
+            FROM users 
+            WHERE MONTH(createdAt) = ? 
+            AND lastActive > ?
+        `;
+        
+        pool.query(activeUsersQuery, [currentMonth, activeTimeWindow], (error, result) => {
+            if (error) {
                 console.log(error);
                 return res.status(400).send(error);
             }
 
-            if(result.length === 0) {
-                return res.status(404).send('No Active Users Found');
-            }
-
-            return res.status(200).json({ message: 'Monthly Active Users Found', activeUsersCount: result[0]['COUNT(DISTINCT  sessions.Id)'] });
+            return res.status(200).json({
+                message: 'Monthly Active Users Found',
+                activeUsersCount: result[0].activeCount 
+            });
         });
     } catch (error) {
         console.log(error);

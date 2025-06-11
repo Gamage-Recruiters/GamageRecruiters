@@ -1,3 +1,6 @@
 .vscode
 .idea
 .git
+Client_Frontend/src/.DS_Store
+Client_Frontend/.env
+Client_Frontend/src/Pages/.DS_Store

@@ -134,7 +134,9 @@ function JobDetails() {
     console.log(formData);
 
     try {
-      const submitApplicationResponse = await axios.post(`${baseURL}/api/jobapplications/apply`, formData);
+      const submitApplicationResponse = await axios.post(`${baseURL}/api/jobapplications/apply`, formData,
+        {withCredentials: true}
+      );
       console.log(submitApplicationResponse);
       if(submitApplicationResponse.status == 200) {
         toast.success('Job Application Submitted Successfully');

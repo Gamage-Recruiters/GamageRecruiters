@@ -1,6 +1,5 @@
 const { pool } = require('../config/dbConnection');
 const path = require('path');
-const deleteUploadedFile = require('../utils/deleteUplodedFile');
 
 // Apply for a job (with resume file upload)
 async function applyJob(req, res) {
@@ -26,91 +25,47 @@ async function applyJob(req, res) {
     try {
         // Check whether the job exists ...
         const jobApplicationQuery = 'SELECT * FROM jobs WHERE jobName = ? AND company = ?';
-        pool.query(jobApplicationQuery, [job, company], (error, jobResult) => {
-            if (error) {
+        pool.query(jobApplicationQuery, [job, company], (error, result) => {
+            if(error) {
                 console.log(error);
                 return res.status(400).send(error);
             }
 
-            if (jobResult.length === 0) {
+            if (result.length === 0) {
                 return res.status(404).send('No job applications found for the specified job and company.');
-            }
+            } 
 
-            const jobId = jobResult[0].jobId;
+            // console.log(result);
+            // Add the application details to database ...
+            const jobId = result[0].jobId;
             // console.log(jobId);
-            // Check if the user exists ...
+            // check if the user exists ...
             const userQuery = 'SELECT * FROM users WHERE email = ?';
-            pool.query(userQuery, email, (error, userResult) => {
+            pool.query(userQuery, email, (error, result) => {
                 if (error) {
                     console.log(error);
                     return res.status(400).send(error);
                 }
 
-                if (userResult.length === 0) {
+                if(result.length === 0) {
                     return res.status(401).send('User Not Found. You must login first.');
-                }
+                } 
 
-                if (userResult[0].firstName !== firstName || userResult[0].lastName !== lastName) {
+                if(result[0].firstName !== firstName && result[0].lastName !== lastName) {
                     return res.status(400).send('Names are not matching. Cannot proceed');
                 }
 
-                const userId = userResult[0].userId;
-
-                // Check if the user has already applied for this job
-                const checkExistingQuery = 'SELECT * FROM jobapplications WHERE userId = ? AND jobId = ?';
-                pool.query(checkExistingQuery, [userId, jobId], async (error, existingResult) => {
+                // User exists, proceed to insert the application ...
+                const userId = result[0].userId;
+                const insertDataQuery = 'INSERT INTO jobapplications (firstName, lastName, email, phoneNumber, resume, appliedDate, jobId, userId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+                pool.query(insertDataQuery, [firstName, lastName, email, phoneNumber, resumeName, new Date(), jobId, userId], (error, result) => {
                     if (error) {
                         console.log(error);
                         return res.status(500).send(error);
                     }
-                    
-                    if (existingResult.length > 0) {
-                        // User has already applied for this job - update the application
-                        const existingApplication = existingResult[0];
-                        const oldResumeName = existingApplication.resume;
-                        
-                        // Delete the old resume file if it exists
-                        if (oldResumeName) {
-                            try {
-                                await deleteUploadedFile('resume', oldResumeName);
-                                console.log(`Deleted old resume: ${oldResumeName}`);
-                            } catch (err) {
-                                console.log(`Warning: Could not delete old resume: ${err.message}`);
-                                // Continue even if file deletion fails
-                            }
-                        }
-                        
-                        // Update the application with new resume
-                        const updateQuery = 'UPDATE jobapplications SET resume = ?, appliedDate = ? WHERE userId = ? AND jobId = ?';
-                        pool.query(updateQuery, [resumeName, new Date(), userId, jobId], (error, updateResult) => {
-                            if (error) {
-                                console.log(error);
-                                return res.status(500).send(error);
-                            }
-                            
-                            return res.status(200).json({
-                                message: 'Your application has been updated successfully!',
-                                data: updateResult,
-                                updated: true
-                            });
-                        });
-                    } else {
-                        // New application - insert
-                        const insertDataQuery = 'INSERT INTO jobapplications (firstName, lastName, email, phoneNumber, resume, appliedDate, jobId, userId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-                        pool.query(insertDataQuery, [firstName, lastName, email, phoneNumber, resumeName, new Date(), jobId, userId], (error, insertResult) => {
-                            if (error) {
-                                console.log(error);
-                                return res.status(500).send(error);
-                            }
 
-                            console.log(insertResult);
-                            return res.status(200).json({
-                                message: 'Job application submitted successfully!',
-                                data: insertResult,
-                                updated: false
-                            });
-                        });
-                    }
+                    console.log(result);
+                    return res.status(200).json({ message: 'Job application submitted successfully!', data: result });
                 });
             });
         });

@@ -3,6 +3,7 @@ const router = express.Router();
 const upload = require('../middlewares/fileUploading');
 const adminAuth = require('../middlewares/adminAuth');
 const blogRouter = require('../Controllers/blogController');
+const { verifyToken } = require('../auth/token/jwtToken');
 
 // Route to get all the blogs ...
 router.get('/', blogRouter.getAllBlogs);
@@ -26,13 +27,13 @@ router.get('/like-count/:blogId', blogRouter.fetchBlogLikeCount);
 router.get('/comments/:blogId', blogRouter.fetchBlogComments);
 
 // Route to add a comment to a blog post ...
-router.post('/comments/add', blogRouter.addCommentToBlog);
+router.post('/comments/add', verifyToken, blogRouter.addCommentToBlog);
 
 // Route to add a like to a blog post ...
-router.post('/likes/add', blogRouter.LikeToBlog);
+router.post('/likes/add', verifyToken, blogRouter.LikeToBlog);
 
 // Route to remove a like related to a post ...
-router.post('/likes/remove', blogRouter.DislikeToBlog);
+router.post('/likes/remove', verifyToken, blogRouter.DislikeToBlog);
 
 // Route to get the like state related to a user for a specific post ...
 router.get('/state/:blogId/:userId', blogRouter.fetchUserLikeStateForBlog);

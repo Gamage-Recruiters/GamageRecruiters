@@ -26,7 +26,7 @@ const ProfileOverview = ({ user }) => {
     }
 
     if(user.photo) {
-      const photoURL = `${baseURL}/uploads/images/${user.photo}`;
+      const photoURL = `${baseURL}/uploads/users/images/${user.photo}`;
       setImageLink(photoURL);
     } else {
       setImageLink('');
@@ -138,7 +138,9 @@ const ProfileOverview = ({ user }) => {
     }).then(async (result) => {
         if(result.isConfirmed) {
           try {
-            const logoutResponse = await axios.get(`${baseURL}/auth/logout`);
+            const logoutResponse = await axios.get(`${baseURL}/auth/logout`, {
+              withCredentials: true
+            });
             console.log(logoutResponse);
             if(logoutResponse.status == 200) {
               Swal.fire({

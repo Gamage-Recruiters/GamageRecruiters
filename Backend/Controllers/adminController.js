@@ -3,9 +3,9 @@ const jwt = require('jsonwebtoken');
 const { pool } = require('../config/dbConnection');
 
 async function register (req, res) {
-    const { name, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, email, password,image } = req.body;
+    const { name, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, email, password } = req.body;
 
-    if(!name || !gender || !role || !primaryPhoneNumber || !secondaryPhoneNumber || !status || !email || !password || !image) {
+    if(!name || !gender || !role || !primaryPhoneNumber || !secondaryPhoneNumber || !status || !email || !password) {
         return res.status(400).send('Name, Email and Password cannot be empty!');
     }
 
@@ -28,8 +28,8 @@ async function register (req, res) {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             // Store the details in database
-            const adminStoreDataQuery = 'INSERT INTO admin (name, email, password, role, primaryPhoneNumber, secondaryPhoneNumber, status, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-            pool.query(adminStoreDataQuery, [name, email, hashedPassword, role, primaryPhoneNumber, secondaryPhoneNumber, status, imageName], (error, result) => {
+            const adminStoreDataQuery = 'INSERT INTO admin (name, email, password, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            pool.query(adminStoreDataQuery, [name, email, hashedPassword, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, imageName], (error, result) => {
                 if(error) {
                     return res.status(400).send(error);
                 }
@@ -55,7 +55,7 @@ async function login (req, res) {
     }
 
     try {
-        // check whether the admin user is existing or not
+        // check whether the admin user is existing or not ...
         const adminUserQuery = 'SELECT * FROM admin WHERE email = ?';
         pool.query(adminUserQuery, email, async (error, result) => {
             if (error) {
@@ -66,24 +66,22 @@ async function login (req, res) {
                 return res.status(404).send('Data Not Found');
             }
 
-            const adminId = result[0].adminId;
             const adminPassword = result[0].password;
-
-            // Check password validity
+            // Check password validity ...
             const verifyPassword = await bcrypt.compare(password, adminPassword);
 
             if(!verifyPassword) {
                 return res.status(401).send('Password is Incorrect');
             }
 
-            // Set expiration time manually 
-            const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour
+            // Set expiration time manually ...
+            const expTime = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour ...
 
-            // Generate jwt token
+            // Generate jwt token ...
             const token = jwt.sign({
                 id: result[0].adminId,
-                role: 'admin',
                 exp: expTime,
+                role: 'Admin'
             }, process.env.JWT_SECRET);
 
             // Pass a Cookie to frontend ...
@@ -91,18 +89,13 @@ async function login (req, res) {
                 httpOnly: true,
                 sameSite: 'none',
                 secure: true,
-                maxAge: 1000 * 60 * 60, // 1 hour
+                maxAge: 100 * 60 * 60, // 1 hour ...
             });
-
-            // Remove password from result before sending
-            const adminData = {...result[0]};
-            delete adminData.password;
 
             return res.status(200).json({ 
                 message: 'Login Successful', 
                 token: token, 
-                data: adminData,
-                expiresAt: expTime
+                adminId: result[0].adminId 
             });
         })
     } catch (error) {
@@ -257,7 +250,7 @@ async function updateAdminUserDetails (req, res) {
 
 async function logout(req, res) {
     try {
-        // clear the cookie for token
+        // Clear the token cookie, no need to check database sessions
         res.clearCookie('token', {
             httpOnly: true,
             sameSite: 'none',

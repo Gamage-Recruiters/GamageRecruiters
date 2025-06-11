@@ -1,29 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
+import axios from 'axios';
+import baseURL from '../config/axiosPortConfig';
 
 const ProtectedRoute = ({ children }) => {
-  const isUserAuthenticated = localStorage.getItem('IsUserAuthenticated');
-  const isLoginAuthenticated = localStorage.getItem('IsLoginAuthenticated');
-  const isSignupAuthenticated = localStorage.getItem('IsSignupAuthenticated');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  console.log('Is User Authenticated:', isUserAuthenticated);
-  console.log('Is SignUp Authenticated:', isLoginAuthenticated);
-  console.log('Is Login Authenticated:', isSignupAuthenticated);
-  
-  // return isAuthenticated ? children : <Navigate to="/login" />;
-  if (isLoginAuthenticated === 'true' || isSignupAuthenticated === 'true' || isUserAuthenticated === 'true') {
-    return children;
-  } else {
-    if(isLoginAuthenticated !== 'true' || isUserAuthenticated !== 'true') {
-      return <Navigate to="/login" />;
-    } 
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/auth/check`, {
+          withCredentials: true
+        });
+        
+        if (response.status === 200 && response.data.success) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.log("Auth check failed:", error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkAuth();
+  }, []);
 
-    if(isSignupAuthenticated !== 'true') {
-      return <Navigate to="/signup" />;
-    }
-
-    return <Navigate to="/" />;
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
+  
+  return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
 export default ProtectedRoute;

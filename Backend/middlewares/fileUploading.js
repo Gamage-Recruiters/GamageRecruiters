@@ -9,7 +9,7 @@ const cvPath = path.join(__dirname, '../uploads/cvs');
 const blogImagePath = path.join(__dirname, '../uploads/blogs/images');
 const blogCoverPath = path.join(__dirname, '../uploads/blogs/covers');
 const jobApplicationPath = path.join(__dirname, '../uploads/resumes');
-const authorImagePath = path.join(__dirname,  '../uploads/blogs/authors');
+const authorImagePath = path.join(__dirname,  '../uploads/users/images');
 const workShopImagePath = path.join(__dirname, '../uploads/workshops/images');
 
 // Ensure directories exist

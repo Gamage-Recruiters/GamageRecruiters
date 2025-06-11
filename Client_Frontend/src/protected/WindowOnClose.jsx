@@ -9,7 +9,9 @@ const WindowOnClose = () => {
     useEffect(() => {
       // Function to handle session termination when the window or browser is closed
       const handleWindowClose = async (event) => {
-        const logoutResponse = await axios.get(`${baseURL}/auth/logout`);
+        const logoutResponse = await axios.get(`${baseURL}/auth/logout`, {
+          withCredentials: true // This is crucial!
+        });
         console.log(logoutResponse);
         if(logoutResponse.status === 200) {
             localStorage.clear(); 

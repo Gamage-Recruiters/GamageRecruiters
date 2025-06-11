@@ -50,7 +50,7 @@ const TabContext = ({ children, defaultTab }) => {
 // Activity Badge Component
 const ActivityBadge = ({ count }) => (
   <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-    {count}
+  {count}
   </div>
 );
 
@@ -218,19 +218,156 @@ function Dashboard() {
   const [cvLink, setCVLink] = useState('');
   const [imageLink, setImageLink] = useState('');
 
+  //fetch 1
+  const fetchLoggedUserData = useCallback(async () => {
+    try {
+      // First get the user ID from the JWT token
+      const authCheckResponse = await axios.get(`${baseURL}/auth/check`, {
+        withCredentials: true // This sends the token cookie
+    });
+
+    if (authCheckResponse.status === 200) {
+      // Get the user ID from the decoded token
+      const userId = authCheckResponse.data.data.id;
+      setLoggedUserId(userId);
+      
+      // Now fetch the complete user profile using the ID
+      const userResponse = await axios.get(`${baseURL}/user/${userId}`, {
+        withCredentials: true
+      });
+      
+      if (userResponse.status === 200) {
+        // Add logging to see what data structure is coming back
+        console.log("User response data:", userResponse.data);
+
+        // Handle multiple possible response formats
+        const userData = userResponse.data.user || 
+                         (userResponse.data.users) || 
+                         (userResponse.data.data && userResponse.data.data[0]) ||
+                         {};
+
+        console.log("User data being set:", userData);
+        setUser(userData);
+        setProfileCompletionPercentage(useSetUserProfileCompletion(userData));
+      } else {
+        console.log("Failed to load user data");
+        navigate("/login");
+      }
+    } else {
+      console.log("Invalid or expired token");
+      navigate("/login");
+    } 
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    navigate("/login");
+  }
+}, [navigate]);
+
+//fetch 2
+  const fetchAppliedJobCount = useCallback(async (id) => {
+  try {
+    const countResponse = await axios.get(`${baseURL}/api/jobs/applied/count/${id}`, {
+      withCredentials: true // This sends the JWT cookie
+    });
+
+    if (countResponse.status === 200) {
+      setNotifications(countResponse.data.data[0]["COUNT(applicationId)"]);
+    } else {
+      console.log("API error: Failed to load job count");
+      toast.error("API error: Failed to load job count");
+    }
+  } catch (error) {
+    console.error("Error fetching job count:", error);
+    navigate("/login"); // Redirect on error
+  }
+}, [notifications, navigate]);
+
+ 
+//fetch 3
+
+  const fetchLastActiveStatusForUser = useCallback(async (id) => {
+  try {
+    const lastActiveStatusResponse = await axios.get(`${baseURL}/user/last-active-status/${id}`, {
+      withCredentials: true
+    });
+
+    if (lastActiveStatusResponse.status === 200) {
+      setLastActive(lastActiveStatusResponse.data.jobStatus);
+    } else {
+      console.log("API error: Failed to load last active status");
+      toast.error("API error: Failed to load last active status");
+      navigate("/login");
+    }
+  } catch (error) {
+    console.error("Error fetching last active status:", error);
+    navigate("/login");
+  }
+}, [lastActive, navigate]);
+
+//fetch 4
+  const fetchLastProfileActivity = useCallback(async (id) => {
+  try {
+    const recentActivityResponse = await axios.get(`${baseURL}/user/recent-activity/${id}`, {
+      withCredentials: true
+    });
+
+    if (recentActivityResponse.status === 200) {
+      setLastProfileActivity(recentActivityResponse.data.recentActivity || "");
+      setLastProfileActivityTime(recentActivityResponse.data.timeStatus || "");
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      // No activity found, just clear the fields or show a message
+      setLastProfileActivity("");
+      setLastProfileActivityTime("");
+      // Optionally show a toast or ignore
+    } else {
+      console.error("Error fetching recent profile activity:", error);
+      navigate("/login"); // Only redirect on real errors
+    }
+  }
+}, [navigate]);
+  //fetch 5
+  const checkIfFirstVisit = useCallback(() => {
+    const hasVisitedBefore = localStorage.getItem('hasVisitedDashboard');
+    if (!hasVisitedBefore) {
+      setIsFirstVisit(true);
+      localStorage.setItem('hasVisitedDashboard', 'true');
+    } else {
+      setIsFirstVisit(false);
+    }
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await axios.get(`${baseURL}/auth/logout`, {
+        withCredentials: true
+      });
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      navigate("/login");
+    }
+  }, [navigate]);
+
   // Simulate first visit welcome
   useEffect(() => {
-    fetchLoggedUserData();
-
+    async function loadUserData() { 
+      await fetchLoggedUserData();
+      checkIfFirstVisit(); // Use our new function
+    }
+    loadUserData();
+  }, [fetchLoggedUserData, checkIfFirstVisit]);
+    
+  useEffect(() => { 
     if(loggedUserId) {
       console.log(loggedUserId);
       fetchAppliedJobCount(loggedUserId);
-      fetchAppliedJobCount(loggedUserId);
-      fetchJobApplicationStatusForUser(loggedUserId);
+      // fetchJobApplicationStatusForUser(loggedUserId);
       fetchLastActiveStatusForUser(loggedUserId);
       fetchLastProfileActivity(loggedUserId);
-      // fetchUserLoginAttempts(loggedUserId);
-    } else {
+    } 
+    else {
       console.log('UserId Error');
       return;
     }
@@ -242,9 +379,8 @@ function Dashboard() {
     } else {
       setCVLink('');
     }
-
     if(user.photo) {
-      const photoURL = `${baseURL}/uploads/images/${user.photo}`;
+      const photoURL = `${baseURL}/uploads/users/images/${user.photo}`;
       // console.log('image-url', photoURL);
       setImageLink(photoURL);
     } else {
@@ -256,7 +392,7 @@ function Dashboard() {
         setIsFirstVisit(false);
       }, 3000);
     }
-  }, [isFirstVisit]);
+  }, [loggedUserId]);
   
   // Handlers
   const handleFormChange = (e) => {
@@ -387,174 +523,8 @@ function Dashboard() {
     );
   }; 
 
-  const fetchLoggedUserData = useCallback (async () => {
-      try {
-        // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
-        const loggedUserResponse = await axios.get(`${baseURL}/session/profile-data`);
-        // console.log(loggedUserResponse.data);
-        // console.log(loggedUserResponse.data.data[0]);
-        if(loggedUserResponse.status === 200) {
-          setUser(loggedUserResponse.data.data.user[0]);
-          setLoggedUserId(loggedUserResponse.data.data.user[0].userId);
-          // console.log(loggedUserResponse.data.data.token);
-          setAccessToken(loggedUserResponse.data.data.token);
-          const percentage = useSetUserProfileCompletion(loggedUserResponse.data.data.user[0]);
-          setProfileCompletionPercentage(percentage);
-          const response = await verifyToken(loggedUserResponse.data.data.token);
-          if(response === 'Token is Valid') {
-            console.log('Token Authentication Successfull');
-            return;
-          } else if(response === 'Token is Expired') {
-            console.log('Token Expired');
-            const generateNewTokenResponse = handleToken(loggedUserResponse.data.data.token);
-            console.log(generateNewTokenResponse);
-            if(generateNewTokenResponse === 'Token Authentication Successfull') {
-              console.log('Token Authentication Successfull');
-              const newToken = localStorage.getItem('AccessToken');
-              setAccessToken(newToken);
-            } else {
-              console.log('Failed to generate new token');
-              return;
-            }
-          } else if(response === 'Token is Invalid') {
-            console.log('Token Invalid');
-            localStorage.clear();
-            navigate('/login');
-            return;
-          } else if(response === 'Token is not provided') {
-            console.log('Token Not Provided');
-            return;
-          } else {
-            console.log('Error Occurred While checking Token Validity');
-            return;
-          }
-          // if (!handleToken(loggedUserResponse.data.data.token)) {
-          //   console.log('Token is not valid');
-          //   return;
-          // } else {
-          //   console.log('Token Authentication Successfull');
-          //   localStorage.setItem('AccessToken', loggedUserResponse.data.data.token);
-          //   return;
-          // }
-        } else {
-          console.log('Failed To Load User Data');
-          return;
-        }
-      } catch (error) {
-        console.log(error);
-        return;
-      }
-  }, [user, loggedUserId, accessToken, profileCompletionPercentage])
 
-  const fetchAppliedJobCount = useCallback (async (id) => {
-    try {
-      const countResponse = await axios.get(`${baseURL}/api/jobs/applied/count/${id}`);
-      // console.log(countResponse.data);
-      if(countResponse.status == 200) {
-        // console.log(countResponse.data.data[0]["COUNT(applicationId)"]);
-        setNotifications(countResponse.data.data[0]["COUNT(applicationId)"]);
-      } else {
-        toast.error('Failed to load count');
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  }, [notifications]); 
 
-  const fetchJobApplicationStatusForUser = useCallback (async (id) => {
-    try {
-      const jobApplicationStatusResponse = await axios.get(`${baseURL}/user/application-status/${id}`);
-      // console.log(jobApplicationStatusResponse.data);
-      if(jobApplicationStatusResponse.status == 200) {
-        // console.log(jobApplicationStatusResponse.data.jobStatus);
-        // console.log(jobApplicationStatusResponse.data.data);
-        setJobStatus(jobApplicationStatusResponse.data.jobStatus);
-        setJobData(jobApplicationStatusResponse.data.data[0]);
-      } else if (jobApplicationStatusResponse.status == 404) {
-        // console.log('Job application not found');
-        setJobStatus('');
-        setJobData('');
-        return;
-      } else {
-        console.log('Failed to load job application status');
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }, [jobStatus, jobData]);
-
-  const fetchLastActiveStatusForUser = useCallback (async (id) => {
-    try {
-      const lastActiveStatusResponse = await axios.get(`${baseURL}/user/last-active-status/${id}`);
-      // console.log(lastActiveStatusResponse.data);
-      if(lastActiveStatusResponse.status == 200) {
-        // console.log(lastActiveStatusResponse.data.jobStatus);
-        // console.log(lastActiveStatusResponse.data.data);
-        setLastActive(lastActiveStatusResponse.data.jobStatus);
-      } else {
-        console.log('Failed to load last active status');
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }, [lastActive]);
-
-  const fetchLastProfileActivity = useCallback (async (id) => {
-    try {
-      const recentActivityResponse = await axios.get(`${baseURL}/user/recent-activity/${id}`);
-      // console.log(recentActivityResponse.data);
-      if(recentActivityResponse.status == 200) {
-        // console.log(recentActivityResponse.data.recentActivity);
-        
-        if(recentActivityResponse.data.recentActivity != null) {
-          setLastProfileActivity(recentActivityResponse.data.recentActivity);
-        } else {
-          setLastProfileActivity('');
-        } 
-
-        if(recentActivityResponse.data.timeStatus != null) {
-          setLastProfileActivityTime(recentActivityResponse.data.timeStatus);
-        } else {
-          setLastProfileActivityTime('');
-        }
-        
-      } else {
-        console.log('Failed to load recent activity');
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }, [lastProfileActivity, lastProfileActivityTime]);
-
-  const fetchUserLoginAttempts = useCallback (async (id) => {
-    try {
-      const userLoginAttemptsResponse = await axios.get(`${baseURL}/session/login-attempts/${id}`);
-      // console.log(userLoginAttemptsResponse.data);
-      if(userLoginAttemptsResponse.status == 200) {
-        // console.log(userLoginAttemptsResponse.data.data);
-        if(userLoginAttemptsResponse.data.data > 1) {
-          setIsFirstVisit(false);
-        } else {
-          setIsFirstVisit(true);
-        }
-      } else {
-        console.log('Error Fetching user login attempts');
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }, [isFirstVisit]);
-  
   return (
     <div className="bg-gradient-to-br from-gray-50 to-indigo-50 min-h-screen p-4 md:p-6 transition-all duration-300">
      <ToastContainer/>
@@ -845,14 +815,16 @@ function Dashboard() {
       
       
       <div className="fixed bottom-6 right-6">
-      <button className="w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200">
-        <LogOut size={20} />
-      </button>
-    </div>
+        <button 
+        onClick={handleLogout}
+        className="w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200">
+          <LogOut size={20} />
+        </button>
+      </div>
 
 
       {/* Add CSS animations */}
-      <style jsx>{`
+      <style>{`
         .fade-in {
           animation: fadeIn 0.5s ease-out;
         }
@@ -873,6 +845,5 @@ function Dashboard() {
       `}</style>
     </div>
   );
-} 
-
-export default memo(Dashboard);
+}
+export default memo(Dashboard)
