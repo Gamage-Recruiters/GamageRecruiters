@@ -89,8 +89,9 @@ const AccountSettings = ({ user }) => {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const terminateAccountResponse = await axios.delete(`${baseURL}/user/delete-profile/${user.userId}`);
-          console.log(terminateAccountResponse.data);
+          const terminateAccountResponse = await axios.delete(`${baseURL}/user/delete-profile/${user.userId}`,{
+            withCredentials: true
+          });
           if(terminateAccountResponse.status == 200) {
             Swal.fire({
               icon: 'success',
