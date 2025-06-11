@@ -26,9 +26,9 @@ const EditProfileForm = ({ user, setUser }) => {
     e.preventDefault();
     console.log(formData);
     Swal.fire({
-          title: 'Confirmation About Changing User Password',
-          text: 'Are you sure you want to change the password ?',
-          icon: 'warning',
+          title: 'Update Profile Information',
+          text: 'Are you sure you want to update your profile details?',
+          icon: 'question',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
@@ -51,16 +51,18 @@ const EditProfileForm = ({ user, setUser }) => {
                 facebookLink: formData.facebookLink, 
                 portfolioLink: formData.portfolioLink, 
                 profileDescription: formData.profileDescription
+              },{
+                withCredentials: true,
               });
-              console.log(updateResponse);
-              console.log(updateResponse.data.message);
+
               if(updateResponse.status == 200) {
                 Swal.fire({
                   icon: 'success',
-                  title: 'User Data Updated!',
-                  text: 'User Password Updated Successfully!',
+                  title: 'Profile Updated!',
+                  text: 'Your profile information has been updated successfully!',
                   confirmButtonColor: '#3085d6',
                 });
+                setUser(formData);
               } else {
                 toast.error('Update Failed');
                 return;
@@ -73,7 +75,7 @@ const EditProfileForm = ({ user, setUser }) => {
           }
         });
     // alert("Profile updated successfully!");
-  }, []);
+  }, [formData, setUser]);
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
