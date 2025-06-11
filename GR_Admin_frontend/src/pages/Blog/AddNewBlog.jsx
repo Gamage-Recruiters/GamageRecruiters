@@ -136,6 +136,8 @@ const BlogEditor = () => {
       const response = await fetch('http://localhost:8000/api/blogs/add', {
         method: 'POST',
         body: formDataToSend,
+        credentials: 'include', 
+        withCredentials: true
       });
       
       if (!response.ok) {
