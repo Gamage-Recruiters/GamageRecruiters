@@ -64,7 +64,9 @@ function UpdateWorkshop() {
     const fetchWorkshopData = async () => {
       setFetchLoading(true);
       try {
-        const response = await axios.get(`${baseURL}/api/workshops/${id}`);
+        const response = await axios.get(`${baseURL}/api/workshops/${id}`, {
+          withCredentials: true
+        });
         console.log('Workshop data:', response.data);
         const workshopData = response.data.data[0];
   
@@ -154,7 +156,8 @@ function UpdateWorkshop() {
         `${baseURL}/api/workshops/update/${id}`, 
         formDataObj,
         { 
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true
         }
       );
       
@@ -654,7 +657,9 @@ function UpdateWorkshop() {
             onClick={() => {
               if (window.confirm('Are you sure you want to delete this workshop? This action cannot be undone.')) {
                 // Add your delete logic here
-                axios.delete(`${baseURL}/api/workshops/${id}`)
+                axios.delete(`${baseURL}/api/workshops/${id}`, {
+                  withCredentials: true
+                })
                   .then(() => {
                     alert('Workshop deleted successfully');
                     navigate('/workshops');
