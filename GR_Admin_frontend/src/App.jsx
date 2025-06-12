@@ -68,7 +68,6 @@ function App() {
               <Route path="/applications/:applicationId" element={<ApplicationDetailView />} />
               <Route path="/jobs/:jobId/applications" element={<JobApplicationsView />} />
               <Route path="/applications" element={<JobApplicationsView />} />
-              <Route path="/job-dashboard" element={<JobDashboard />} />
               <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
               <Route path="/admins/profile" element={<AdminProfile />} />
               <Route path="/admins/view/:adminId" element={<ViewAdmin />} />
