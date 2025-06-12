@@ -32,7 +32,9 @@ function Jobs() {
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${baseURL}/api/jobs`);
+        const response = await fetch(`${baseURL}/api/jobs`, {
+          credentials: 'include'
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch jobs');
         }
@@ -58,7 +60,9 @@ function Jobs() {
   const fetchJobDetails = async (jobId) => {
     try {
       setLoading(true);
-      const response = await fetch(`${baseURL}/api/jobs/${jobId}`);
+      const response = await fetch(`${baseURL}/api/jobs/${jobId}`, {
+        credentials: 'include'
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch job details');
       }
@@ -89,6 +93,7 @@ function Jobs() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(editedJob),
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -155,6 +160,7 @@ function Jobs() {
       try {
         const response = await fetch(`${baseURL}/api/jobs/delete/${jobId}`, {
           method: 'DELETE',
+          credentials: 'include'
         });
         
         if (!response.ok) {

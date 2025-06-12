@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import baseURL from '../config/baseUrlConfig';
 
 export default function ViewClient() {
   const { userId } = useParams();
@@ -11,7 +12,9 @@ export default function ViewClient() {
   useEffect(() => {
     const fetchClient = async () => {
       try {
-        const res = await axios.get(`${baseURL}/user/${userId}`);
+        const res = await axios.get(`${baseURL}/user/${userId}`, {
+          withCredentials: true
+        });
         setClient(res.data.user
         );
       } catch (err) {
