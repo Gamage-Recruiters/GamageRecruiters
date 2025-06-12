@@ -25,6 +25,7 @@ const AccountSettings = ({ user }) => {
 
   const handlePasswordSubmit = useCallback(async (e) => {
     e.preventDefault();
+    setError("");
 
     if (passwordData.newPassword.length < 6) {
       setError("Password must be at least 6 characters long.");
@@ -37,8 +38,8 @@ const AccountSettings = ({ user }) => {
     } 
 
     Swal.fire({
-      title: 'Confirmation About Changing User Password',
-      text: 'Are you sure you want to change the password ?',
+      title: 'Change Password',
+      text: 'Are you sure you want to change your password?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -47,35 +48,50 @@ const AccountSettings = ({ user }) => {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const changePasswordResponse = await axios.post(`${baseURL}/user/change-password`, { oldPassword: passwordData.currentPassword, newPassword: passwordData.newPassword, userId: user.userId });
-          console.log(changePasswordResponse.data);
-          if(changePasswordResponse.status == 200) {
+          const response = await axios.post(
+            `${baseURL}/user/change-password`,
+            {
+              oldPassword: passwordData.currentPassword,
+              newPassword: passwordData.newPassword,
+              userId: user.userId
+            },
+            {
+              withCredentials: true,
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          if (response.status === 200) {
             Swal.fire({
               icon: 'success',
-              title: 'Password Changed!',
-              text: 'User Password Changed Successfully!',
+              title: 'Success!',
+              text: 'Password changed successfully!',
               confirmButtonColor: '#3085d6',
             });
-            setError("");
-            // alert("Password changed successfully!"); // Replace with actual logic
+            
             setPasswordData({
               currentPassword: "",
               newPassword: "",
               confirmPassword: ""
             });
-            navigate('/dashboard');
-          } else {
-            setError('Password Change Failed');
-            return;
+            
+            window.location.reload();
           }
         } catch (error) {
-          setError('Password Change Failed');
-          console.log(error);
-          return;
+          console.error('Password Change Error:', error);
+          setError(error.response?.data || 'Password change failed. Please check your current password.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: error.response?.data || 'Password change failed',
+            confirmButtonColor: '#d33',
+          });
         }
       }
     });
-  }, [passwordData]);
+  }, [passwordData, user.userId, navigate]);
 
   const handleTerminateAccount = () => {
     Swal.fire({
