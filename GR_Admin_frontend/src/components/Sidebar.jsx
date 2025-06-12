@@ -20,6 +20,7 @@ import {
   Sun,
   UserCircle
 } from 'lucide-react';
+import baseURL from '../config/baseUrlConfig';
 
 function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
