@@ -15,7 +15,9 @@ const Dashboard = () => {
 
  const fetchUserCount = async () => {
   try {
-    const response = await axios.get(`${baseURL}/user/all`);
+    const response = await axios.get(`${baseURL}/user/all`, {
+      withCredentials: true
+    });
 
     const userCount = response.data.data.length;
     setStats((prevStats) => {
@@ -33,7 +35,9 @@ const Dashboard = () => {
 
 const fetchJobCount = async () => {
   try {
-    const response = await axios.get(`${baseURL}/api/jobs`);
+    const response = await axios.get(`${baseURL}/api/jobs`, {
+      withCredentials: true
+    });
 
     const userCount = response.data.jobs.length;
     setStats((prevStats) => {
@@ -51,7 +55,9 @@ const fetchJobCount = async () => {
 
 const fetchBlogCount = async () => {
   try {
-    const response = await axios.get(`${baseURL}/api/blogs`);
+    const response = await axios.get(`${baseURL}/api/blogs`, {
+      withCredentials: true
+    });
 
     const userCount = response.data.data.length;
     setStats((prevStats) => {
@@ -69,7 +75,9 @@ const fetchBlogCount = async () => {
 
 const fetchJobApplicationCount = async () => {
   try {
-    const response = await axios.get(`${baseURL}/api/jobapplications/applications`);
+    const response = await axios.get(`${baseURL}/api/jobapplications/applications`, {
+      withCredentials: true
+    });
 
     const userCount = response.data.data.length;
     setStats((prevStats) => {
