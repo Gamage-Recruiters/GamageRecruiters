@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiDownload, FiTrash2, FiRefreshCw, FiSearch, FiEye, FiFileText, FiFilePlus, FiUsers, FiBarChart2, FiAlertCircle } from 'react-icons/fi';
+import baseURL from '../config/baseUrlConfig';
 
 export default function JobDashboard() {
   const [jobs, setJobs] = useState([]);
@@ -18,7 +19,7 @@ export default function JobDashboard() {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:8000/api/jobs');
+      const res = await axios.get(`${baseURL}/api/jobs`);
       setJobs(res.data.data || []);
       setError(null);
     } catch (err) {
@@ -33,7 +34,7 @@ export default function JobDashboard() {
   const fetchJobStats = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:8000/api/jobapplications/jobs/statistics');
+      const res = await axios.get(`${baseURL}/api/jobapplications/jobs/statistics`);
       console.log("statistic data" ,res);
       console.log("statistic data" ,res.data.data);
       setStats(res.data.data || []);
@@ -50,7 +51,7 @@ export default function JobDashboard() {
   const fetchApplicationsByJob = async (jobId) => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:8000/api/jobapplications/jobs/${jobId}/applications`);
+      const res = await axios.get(`${baseURL}/api/jobapplications/jobs/${jobId}/applications`);
       setApplications(res.data.data || []);
       setError(null);
     } catch (err) {
@@ -71,7 +72,7 @@ export default function JobDashboard() {
   // Download single resume
   const downloadResume = async (applicationId) => {
     try {
-      window.open(`http://localhost:8000/api/jobapplications/applications/download/${applicationId}`, '_blank');
+      window.open(`${baseURL}/api/jobapplications/applications/download/${applicationId}`, '_blank');
     } catch (err) {
       console.error('Error downloading resume:', err);
       setError('Failed to download resume. Please try again.');
@@ -81,7 +82,7 @@ export default function JobDashboard() {
   // Download all resumes as zip
   const downloadAllResumes = async (jobId) => {
     try {
-      window.open(`http://localhost:8000/api/jobapplications/jobs/${jobId}/applications/download-all`, '_blank');
+      window.open(`${baseURL}/api/jobapplications/jobs/${jobId}/applications/download-all`, '_blank');
     } catch (err) {
       console.error('Error downloading all resumes:', err);
       setError('Failed to download all resumes. Please try again.');
@@ -92,7 +93,7 @@ export default function JobDashboard() {
   const deleteAllApplications = async (jobId) => {
     try {
       setLoading(true);
-      await axios.delete(`http://localhost:8000/api/jobapplications/jobs/${jobId}/applications/delete-all`);
+      await axios.delete(`${baseURL}/api/jobapplications/jobs/${jobId}/applications/delete-all`);
       setApplications([]);
       fetchJobStats(); // Refresh stats after deletion
       setError(null);

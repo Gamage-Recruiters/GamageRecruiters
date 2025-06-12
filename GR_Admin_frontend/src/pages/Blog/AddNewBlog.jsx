@@ -6,6 +6,7 @@ import {
   FileText, Check, AlertTriangle, User
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import baseURL from '../../config/baseUrlConfig';
 
 const BlogEditor = () => {
   const fileInputRef = useRef(null);
@@ -133,7 +134,7 @@ const BlogEditor = () => {
       }
       
       // Send data to backend
-      const response = await fetch('http://localhost:8000/api/blogs/add', {
+      const response = await fetch(`${baseURL}/api/blogs/add`, {
         method: 'POST',
         body: formDataToSend,
         credentials: 'include', 

@@ -11,7 +11,7 @@ export default function ViewClient() {
   useEffect(() => {
     const fetchClient = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/user/${userId}`);
+        const res = await axios.get(`${baseURL}/user/${userId}`);
         setClient(res.data.user
         );
       } catch (err) {

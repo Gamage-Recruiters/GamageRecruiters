@@ -6,6 +6,7 @@ import {
   Heading1, Heading2, Bookmark, Layout, Camera, Paperclip,
   FileText, Check, AlertTriangle, User
 } from 'lucide-react';
+import baseURL from '../../config/baseUrlConfig';
 
 const EditBlog = () => {
   const { blogId } = useParams();
@@ -79,7 +80,7 @@ const EditBlog = () => {
 useEffect(() => {
   const fetchBlogData = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/blogs/${blogId}`, {
+      const response = await fetch(`${baseURL}/api/blogs/${blogId}`, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch blog');
@@ -111,11 +112,11 @@ useEffect(() => {
       });
 
       setPreviewImages({
-        blog: blog.blogImage ? `http://localhost:8000/uploads/blogs/images/${blog.blogImage}` : null,
-        blogCover: blog.coverImage ? `http://localhost:8000/uploads/blogs/covers/${blog.coverImage}` : null,
+        blog: blog.blogImage ? `${baseURL}/uploads/blogs/images/${blog.blogImage}` : null,
+        blogCover: blog.coverImage ? `${baseURL}/uploads/blogs/covers/${blog.coverImage}` : null,
         author: blog.authorImage
-          ? `http://localhost:8000/uploads/blogs/authors/${blog.authorImage}`
-          : 'http://localhost:8000/api/placeholder/100/100'
+          ? `${baseURL}/uploads/blogs/authors/${blog.authorImage}`
+          : `${baseURL}/api/placeholder/100/100`
       });
 
 
@@ -199,7 +200,7 @@ useEffect(() => {
     if (files.authorImage) formDataToSend.append('authorImage', files.authorImage); // if you use author image too
 
     // Send update request
-    const response = await fetch(`http://localhost:8000/api/blogs/update/${blogId}`, {
+    const response = await fetch(`${baseURL}/api/blogs/update/${blogId}`, {
       method: 'PUT',
       body: formDataToSend,
       credentials: 'include'

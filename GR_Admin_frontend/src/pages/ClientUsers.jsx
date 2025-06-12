@@ -7,7 +7,7 @@ import {
 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import baseURL from '../config/baseUrlConfig';
 
 function ClientUsers() {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ function ClientUsers() {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/user/all');
+        const response = await axios.get(`${baseURL}/user/all`);
         const allUsers = response.data.data;
 
         // Optionally add a fake status to each user
@@ -47,7 +47,7 @@ function ClientUsers() {
     if (!window.confirm('Are you sure you want to delete this client?')) return;
   
     try {
-      await axios.delete(`http://localhost:8000/user/delete-profile/${userId}`);
+      await axios.delete(`${baseURL}/user/delete-profile/${userId}`);
       setClients(prev => prev.filter(client => client.userId !== userId));
     } catch (err) {
       console.error('Failed to delete user:', err);

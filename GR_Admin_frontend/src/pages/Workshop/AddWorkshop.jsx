@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import baseURL from '../../config/baseUrlConfig';
 
 function AddWorkshop() {
   const navigate = useNavigate();
@@ -95,11 +95,9 @@ function AddWorkshop() {
   workshopData.append('image', imageFile);
     
     try {
-      await axios.post('http://localhost:8000/api/workshops/add', workshopData,{
+      await axios.post(`${baseURL}/api/workshops/add`, workshopData,{
         headers: {
           'Content-Type': 'multipart/form-data'
-       
-
       }
     });
       

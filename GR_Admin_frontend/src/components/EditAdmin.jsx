@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import baseURL from '../config/baseUrlConfig';
 
 function EditAdmin() {
   const { adminId } = useParams();
@@ -19,7 +20,7 @@ function EditAdmin() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/admin/${adminId}`)
+    axios.get(`${baseURL}/admin/${adminId}`)
       .then((res) => {
         const admin = res.data.data[0];
         setFormData({
@@ -74,7 +75,7 @@ function EditAdmin() {
     }
 
     try {
-      const response = await axios.put(`http://localhost:8000/admin/update/${adminId}`, form, {
+      const response = await axios.put(`${baseURL}/admin/update/${adminId}`, form, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       

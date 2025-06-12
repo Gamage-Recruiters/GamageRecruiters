@@ -1,5 +1,5 @@
 const { createToken } = require('../../auth/token/jwtToken');
-
+const { fetchFrontendApplicationRunningURL } = require('../../utils/retrieveLocalStorageData');
 
 function authorize(req, res) {
     try {
@@ -17,7 +17,8 @@ function authorize(req, res) {
             secure: false,
             maxAge: 100 * 60 * 60, // 1 hour ...
         });
-        return res.redirect('http://localhost:5173/dashboard');
+        const frontendURL = fetchFrontendApplicationRunningURL();
+        return res.redirect(`${frontendURL}/dashboard`);
 
     } catch (error) {
         console.log(error)

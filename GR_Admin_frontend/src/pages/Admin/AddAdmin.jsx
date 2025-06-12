@@ -4,6 +4,7 @@ import { ArrowLeft, Upload, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { image } from 'framer-motion/client';
 import axios from 'axios';
+import baseURL from '../../config/baseUrlConfig';
 
 function AddAdmin() {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ function AddAdmin() {
         data.append(key, formData[key]);
       }
 
-      const response = await axios.post('http://localhost:8000/admin/register', data, {
+      const response = await axios.post(`${baseURL}/admin/register`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

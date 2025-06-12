@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaUsers, FaBriefcase, FaBlog, FaStar, FaClipboardList } from "react-icons/fa";
 import axios from "axios";
+import baseURL from "../config/baseUrlConfig";
 
 const Dashboard = () => {
   const [stats, setStats] = useState([
@@ -14,7 +15,7 @@ const Dashboard = () => {
 
  const fetchUserCount = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/user/all');
+    const response = await axios.get(`${baseURL}/user/all`);
 
     const userCount = response.data.data.length;
     setStats((prevStats) => {
@@ -32,7 +33,7 @@ const Dashboard = () => {
 
 const fetchJobCount = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/jobs');
+    const response = await axios.get(`${baseURL}/api/jobs`);
 
     const userCount = response.data.jobs.length;
     setStats((prevStats) => {
@@ -50,7 +51,7 @@ const fetchJobCount = async () => {
 
 const fetchBlogCount = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/blogs');
+    const response = await axios.get(`${baseURL}/api/blogs`);
 
     const userCount = response.data.data.length;
     setStats((prevStats) => {
@@ -68,7 +69,7 @@ const fetchBlogCount = async () => {
 
 const fetchJobApplicationCount = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/jobapplications/applications');
+    const response = await axios.get(`${baseURL}/api/jobapplications/applications`);
 
     const userCount = response.data.data.length;
     setStats((prevStats) => {
