@@ -657,7 +657,7 @@ function UpdateWorkshop() {
             onClick={() => {
               if (window.confirm('Are you sure you want to delete this workshop? This action cannot be undone.')) {
                 // Add your delete logic here
-                axios.delete(`${baseURL}/api/workshops/${id}`, {
+                axios.delete(`${baseURL}/api/workshops/delete/${id}`, {
                   withCredentials: true
                 })
                   .then(() => {
