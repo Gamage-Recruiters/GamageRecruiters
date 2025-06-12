@@ -267,18 +267,55 @@ async function deleteUser (req, res) {
         const userId = req.params.userId;
 
         if(!userId) {
-            return res.status(400).send('Deletion Failed');
+            return res.status(400).send('Deletion Failed. Specifiy a userId.');
         }
 
-        // Replace with direct user deletion:
-        const sql = 'DELETE FROM users WHERE userId = ?';
-        pool.query(sql, userId, (error, result) => {
-            if(error) {
-                console.log(error);
-                return res.status(400).send('Deletion Failed');
-            } 
-            
-            return res.status(200).json({ message: 'User Deleted Successfully', data: result });
+        // had to delete all the related table records for user.
+        // delete acitivityLogs records
+        const deleteActivityLogsQuery = 'DELETE FROM activitylogs WHERE userId = ?';
+        pool.query(deleteActivityLogsQuery, [userId], (activityError, activityResult) => {
+            if(activityError) {
+                console.log(activityError);
+                return res.status(400).send('Failed to delete activity logs');
+            }
+
+            // delete blogcommnet records for user
+            const deleteBlogCommentsQuery = 'DELETE FROM blogcomments WHERE userId = ?';
+            pool.query(deleteBlogCommentsQuery, [userId], (blogcommentError, blogcommetResult) => {
+                if(blogcommentError) {
+                    console.log(blogcommentError);
+                    return res.status(400).send('Failed to delete blog comments for the user.');
+                }
+                
+                // delete bloglikes records for user
+                const deleteBlogLikesQuery = 'DELETE FROM bloglikes WHERE userId = ?';
+                pool.query(deleteBlogLikesQuery, [userId], (blogLikesError, blogLikesResult) => {
+                    if(blogLikesError) {
+                        console.log(blogLikesError);
+                        return res.status(400).send('Failed to delete blog likes for the user.');
+                    }
+
+                    // delete job applications records for user
+                    const deleteJobApplicationsQuery = 'DELETE FROM jobapplications WHERE userId = ?';
+                    pool.query(deleteJobApplicationsQuery, [userId], (jobApplicationsError, jobApplicationsResult) => {
+                        if(jobApplicationsError) {
+                            console.log(jobApplicationsError);
+                            return res.status(400).send('Failed to delete job applications for the user.');
+                        }
+
+                        // delete user
+                        const deleteUserQuery = 'DELETE FROM users WHERE userId = ?';
+                        pool.query(deleteUserQuery, [userId], (error, result) => {
+                            if(error) {
+                                console.log(error);
+                                return res.status(400).send('Deletion Failed');
+                            } 
+                            
+                            return res.status(200).json({ message: 'User Deleted Successfully', data: result });
+                        });
+                    });
+                });
+            });
         });
     } catch (error) {
         console.log(error);
