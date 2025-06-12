@@ -2,7 +2,7 @@ import { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
-
+import { useLocation } from "react-router-dom";
 const services = [
   {
     title: 'Staffing and Recruiting',
@@ -279,6 +279,19 @@ function Services() {
   // For rotating text animation
   const phrases = ["Talent", "Success", "Growth", "Innovation", "Excellence"];
   const [currentPhrase, setCurrentPhrase] = useState(0);
+
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash === "#faq") {
+      // Wait for DOM to render
+      setTimeout(() => {
+        const el = document.getElementById("faq");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 200); // 200ms is usually enough
+    }
+  }, [location]);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -502,7 +515,7 @@ function Services() {
       </div>
 
       {/* Testimonials Section */}
-      <div className="py-24 sm:py-32 bg-gray-50">
+      <div  className="py-24 sm:py-32 bg-gray-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -651,7 +664,7 @@ function Services() {
       </div>
 
       {/* FAQ Section */}
-      <div className="py-24 sm:py-32 bg-gray-50">
+      <div id="faq" className="py-24 sm:py-32 bg-gray-50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
