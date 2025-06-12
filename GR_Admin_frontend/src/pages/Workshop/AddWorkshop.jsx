@@ -92,14 +92,15 @@ function AddWorkshop() {
   workshopData.append('description', formData.description);
   workshopData.append('event_type', status === 'publish' ? formData.event_type : 'Upcoming Event');
   workshopData.append('link', formData.link);
-  workshopData.append('image', imageFile);
+  workshopData.append('workshopImage', imageFile);
     
     try {
       await axios.post(`${baseURL}/api/workshops/add`, workshopData,{
         headers: {
           'Content-Type': 'multipart/form-data'
-      }
-    });
+        },
+        withCredentials: true
+      });
       
       // Show success message
       alert(`Workshop ${status === 'publish' ? 'published' : 'saved as draft'} successfully!`);
