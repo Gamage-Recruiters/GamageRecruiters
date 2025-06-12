@@ -23,12 +23,14 @@ import ResetPassword from './Pages/ResetPassword';
 import TestimonialsSection from './Pages/TestimonialsSection';
 import WindowOnClose from './protected/WindowOnClose';
 import ProtectedRoute from './protected/ProtectedRoute';
+import ScrollToTop from "./components/ScrollToTop";
 
 
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <WindowOnClose/>
       <div className="flex flex-col min-h-screen">
         <Toaster position="top-center" />
@@ -54,6 +56,10 @@ function App() {
             <Route path="/blog/:blogId" element={<ProtectedRoute><BlogDetailsPage /></ProtectedRoute>} />
             <Route path="/workshop" element={<WorkshopsAndSeminarsPage />} />
             <Route path="/testimonials" element={<TestimonialsSection />} />
+
+            
+            
+
           </Routes>
         </main>
         <Footer />
