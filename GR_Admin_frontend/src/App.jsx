@@ -25,7 +25,6 @@ import UpdateWorkshop from './pages/Workshop/UpdateWorkshop';
 import InquiryManagement from './pages/InquiryManagement';
 import ApplicationDetailView from './pages/ApplicationDetailView';
 import JobApplicationsView from './pages/JobApplicationsView';
-import JobDashboard from './components/JobDashboard';
 import ViewClient from './components/ViewClient';
 
 import EditAdmin from './components/EditAdmin';
