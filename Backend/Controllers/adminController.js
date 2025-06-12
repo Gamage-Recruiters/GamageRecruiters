@@ -5,8 +5,8 @@ const { pool } = require('../config/dbConnection');
 async function register (req, res) {
     const { name, gender, role, primaryPhoneNumber, secondaryPhoneNumber, status, email, password } = req.body;
 
-    if(!name || !gender || !role || !primaryPhoneNumber || !secondaryPhoneNumber || !status || !email || !password) {
-        return res.status(400).send('Name, Email and Password cannot be empty!');
+    if(!name || !gender || !role || !primaryPhoneNumber || !status || !email || !password) {
+        return res.status(400).send('Name, Gender, PrimaryPhoneNumber, Email, Password and Role cannot be empty!');
     }
 
     try {
