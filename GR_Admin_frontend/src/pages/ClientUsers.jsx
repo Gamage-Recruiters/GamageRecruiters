@@ -22,7 +22,9 @@ function ClientUsers() {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get(`${baseURL}/user/all`);
+        const response = await axios.get(`${baseURL}/user/all`, {
+          withCredentials: true
+        });
         const allUsers = response.data.data;
 
         // Optionally add a fake status to each user
@@ -47,7 +49,9 @@ function ClientUsers() {
     if (!window.confirm('Are you sure you want to delete this client?')) return;
   
     try {
-      await axios.delete(`${baseURL}/user/delete-profile/${userId}`);
+      await axios.delete(`${baseURL}/user/delete-profile/${userId}`, {
+        withCredentials: true
+      });
       setClients(prev => prev.filter(client => client.userId !== userId));
     } catch (err) {
       console.error('Failed to delete user:', err);
