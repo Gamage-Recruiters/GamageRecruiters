@@ -560,7 +560,7 @@ const CandidateDetailsView = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
-                        {application.jobName || getJobName(application.jobType)}
+                        {application.jobName || getJobName(application.jobId)}
                       </div>
                       <div className="text-sm text-gray-400">
                         {application.company}
