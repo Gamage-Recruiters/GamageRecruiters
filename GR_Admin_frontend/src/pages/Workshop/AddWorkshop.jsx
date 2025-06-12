@@ -98,8 +98,9 @@ function AddWorkshop() {
       await axios.post(`${baseURL}/api/workshops/add`, workshopData,{
         headers: {
           'Content-Type': 'multipart/form-data'
-      }
-    });
+        },
+        withCredentials: true
+      });
       
       // Show success message
       alert(`Workshop ${status === 'publish' ? 'published' : 'saved as draft'} successfully!`);
