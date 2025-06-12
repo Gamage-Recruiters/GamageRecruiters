@@ -20,7 +20,9 @@ function EditAdmin() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get(`${baseURL}/admin/${adminId}`)
+    axios.get(`${baseURL}/admin/${adminId}`, {
+      withCredentials: true
+    })
       .then((res) => {
         const admin = res.data.data[0];
         setFormData({
@@ -76,6 +78,7 @@ function EditAdmin() {
 
     try {
       const response = await axios.put(`${baseURL}/admin/update/${adminId}`, form, {
+        withCredentials: true,
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
