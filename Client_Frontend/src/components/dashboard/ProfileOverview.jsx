@@ -72,7 +72,9 @@ const ProfileOverview = ({ user }) => {
     console.log(formData);
 
     try {
-      const updateUserImageResponse = await axios.put(`${baseURL}/user/upload-user-image`, formData);
+      const updateUserImageResponse = await axios.put(`${baseURL}/user/upload-user-image`, formData, {
+        withCredentials: true
+      });
       console.log(updateUserImageResponse.data);
       if(updateUserImageResponse.status == 200) {
         toast.success('User Image Uploaded Successfully');
