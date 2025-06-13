@@ -23,6 +23,13 @@ const WorkshopsAndSeminarsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Helper function to format image URLs correctly
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '/api/placeholder/400/300';
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${baseURL}/uploads/workshops/images/${imagePath}`;
+  };
+
   useEffect(() => {
     // Fetch workshops data from the backend API
     const fetchWorkshops = async () => {
@@ -205,7 +212,7 @@ const WorkshopsAndSeminarsPage = () => {
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${event.color || 'from-purple-600 to-indigo-600'} opacity-80 z-10`}></div>
                 <img 
-                  src={event.image || '/api/placeholder/400/300'} 
+                  src={getImageUrl(event.image)} 
                   alt={event.title} 
                   className="h-96 w-full object-cover transform transition duration-700 group-hover:scale-110"
                   onError={(e) => {e.target.src = '/api/placeholder/400/300'}}
@@ -314,7 +321,7 @@ const WorkshopsAndSeminarsPage = () => {
                 <div className="relative">
                   <div className={`absolute inset-0 bg-gradient-to-b ${event.color || 'from-purple-600 to-indigo-600'} opacity-30`}></div>
                   <img
-                    src={event.image || '/api/placeholder/400/200'}
+                    src={getImageUrl(event.image)}
                     alt={event.title}
                     className="h-48 w-full object-cover"
                     onError={(e) => {e.target.src = '/api/placeholder/400/200'}}
