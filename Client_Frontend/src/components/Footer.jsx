@@ -20,7 +20,7 @@ const navigation = {
     { name: 'Login', href: '/login' },
     { name: 'Sign Up', href: '/signup' },
     { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Application', href: '/application' },
+    //{ name: 'Application', href: '/application' },
   ],
   social: [
     {
