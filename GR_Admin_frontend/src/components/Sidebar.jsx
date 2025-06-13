@@ -285,16 +285,6 @@ function Sidebar({ isOpen, setIsOpen }) {
         
         {/* Bottom Controls */}
         <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-          {/* Settings */}
-          <Link
-            to="/settings"
-            className="flex items-center px-4 py-2 text-sm rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 group"
-          >
-            <div className="p-1 mr-3 rounded-md text-gray-500 dark:text-gray-400">
-              <Settings className="h-4 w-4" />
-            </div>
-            <span className="font-medium">Settings</span>
-          </Link>
           
           {/* Dark Mode Toggle */}
           <button
