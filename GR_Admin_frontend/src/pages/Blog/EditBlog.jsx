@@ -61,12 +61,13 @@ const EditBlog = () => {
   const [files, setFiles] = useState({
     blog: null,
     blogCover: null,
-    author: null
+    authorImage: null
   });
   
   const [previewImages, setPreviewImages] = useState({
     blog: null,
-    author: null
+    blogCover: null,
+    authorImage: null
   });
   
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
