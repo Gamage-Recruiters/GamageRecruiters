@@ -119,6 +119,9 @@ function JobListings() {
   const initialSearch = params.get('search') || '';
   const [searchTerm, setSearchTerm] = useState('initialSearch');
   const [sortOption, setSortOption] = useState('newest');
+
+
+  const [newsletterEmail, setNewsletterEmail] = useState('');
   
   useEffect(() => {
   setSearchTerm(initialSearch);
@@ -522,10 +525,24 @@ const sortedJobs = [...filteredJobs].sort((a, b) => {
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="email"
+                value={newsletterEmail}
+                onChange={e => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="flex-grow rounded-lg border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600"
+                
               />
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300">
+              <button 
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300"
+              onClick={() => {
+            if (!newsletterEmail) {
+              toast.error('Please enter your email');
+            } else {
+              toast.success('SuccessFully Subscribed!');
+              setNewsletterEmail('');
+            }
+          }}
+          >
+          
                 Subscribe
               </button>
             </div>
