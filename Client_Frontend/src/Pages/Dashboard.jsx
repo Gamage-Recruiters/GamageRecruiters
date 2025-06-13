@@ -286,23 +286,23 @@ function Dashboard() {
 //fetch 3
 
   const fetchLastActiveStatusForUser = useCallback(async (id) => {
-  try {
-    const lastActiveStatusResponse = await axios.get(`${baseURL}/user/last-active-status/${id}`, {
-      withCredentials: true
-    });
+    try {
+      const lastActiveStatusResponse = await axios.get(`${baseURL}/user/last-active-status/${id}`, {
+        withCredentials: true
+      });
 
-    if (lastActiveStatusResponse.status === 200) {
-      setLastActive(lastActiveStatusResponse.data.jobStatus);
-    } else {
-      console.log("API error: Failed to load last active status");
-      toast.error("API error: Failed to load last active status");
-      navigate("/login");
+      if (lastActiveStatusResponse.status === 200) {
+        // Update to use the correct property from response
+        setLastActive(lastActiveStatusResponse.data.lastActive || 'Never');
+      } else {
+        console.log("API error: Failed to load last active status");
+        toast.error("API error: Failed to load last active status");
+      }
+    } catch (error) {
+      console.error("Error fetching last active status:", error);
+      setLastActive('Never'); // Set a default value on error
     }
-  } catch (error) {
-    console.error("Error fetching last active status:", error);
-    navigate("/login");
-  }
-}, [lastActive, navigate]);
+  }, []);
 
 //fetch 4
   const fetchLastProfileActivity = useCallback(async (id) => {
@@ -581,7 +581,7 @@ function Dashboard() {
                 <div className="mt-2 flex items-center">
                   <StatusIndicator status={userStatus} />
                   <span className="mx-2">•</span>
-                  <span className="text-sm">Last active: {lastActive}</span>
+                  <span className="text-sm">Last active: {lastActive || 'Never'}</span>
                 </div>
               </div>
               <div className="relative">
