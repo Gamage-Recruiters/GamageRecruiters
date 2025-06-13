@@ -25,7 +25,7 @@ function InquiryManagement() {
   async function getContactData() {
     try {
 
-      await axios.get(`${import.meta.env.VITE_API_BASE_URL}contact/getinquiry`).then((results) => {
+      await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/contact/getinquiry`).then((results) => {
 
 
         setLoading(false);
