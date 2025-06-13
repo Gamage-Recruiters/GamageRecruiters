@@ -34,17 +34,32 @@ function Sidebar({ isOpen, setIsOpen }) {
   
   // Simulating fetching admin data
   useEffect(() => {
-    // This would be replaced with an actual API call
-    // For example: fetchAdminData(adminId)
     const fetchData = async () => {
       try {
-        // Mock data - replace with actual API call
-        const data = {
-          name: 'John Doe',
-          role: 'Super Admin',
-          image: null
-        };
-        setAdminData(data);
+        // Get adminId from localStorage
+        const currentAdminId = localStorage.getItem('adminId');
+        
+        if (!currentAdminId) {
+          console.error('No admin ID found in localStorage');
+          return;
+        }
+        
+        const response = await fetch(`${baseURL}/admin/${currentAdminId}`, {
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch admin data');
+        }
+        
+        const result = await response.json();
+        const adminObject = result.data[0];
+        
+        setAdminData({
+          name: adminObject?.name || 'Admin User',
+          role: adminObject?.role || 'Administrator',
+          image: adminObject?.image ? `/uploads/admin/${adminObject.image}` : null
+        });
       } catch (error) {
         console.error('Error fetching admin data:', error);
       }
@@ -159,7 +174,7 @@ function Sidebar({ isOpen, setIsOpen }) {
         {/* Admin Profile Summary */}
         <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
           <Link 
-            to="/admin/profile" 
+            to="/admins/profile" 
             className="flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-lg"
           >
             {adminData.image ? (

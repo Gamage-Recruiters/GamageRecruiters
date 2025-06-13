@@ -9,6 +9,7 @@ import {
   Calendar, 
   Loader2 
 } from 'lucide-react';
+import baseURL from '../../config/baseUrlConfig';
 
 function AdminProfile() {
   const navigate = useNavigate();
@@ -39,31 +40,35 @@ function AdminProfile() {
         // Use the current admin ID from localStorage if not provided in URL
         const currentAdminId = adminId || localStorage.getItem('adminId');
         
-        if (currentAdminId) {
-          navigate('/login');
+        if (!currentAdminId) {
+          navigate('/');
           return;
         }
         
-        const response = await fetch(`/api/admin/${currentAdminId}`);
+        const response = await fetch(`${baseURL}/admin/${currentAdminId}`, {
+          credentials: 'include'
+        });
         
         if (!response.ok) {
           throw new Error('Failed to fetch admin data');
         }
         
         const data = await response.json();
-        setAdminData(data);
+        // Extract the first admin object from the data array
+        const adminObject = data.data[0];
+        setAdminData(adminObject);
         setFormData({
-          name: data.name || '',
-          email: data.email || '',
-          gender: data.gender || '',
-          role: data.role || '',
-          status: data.status || '',
-          primaryPhoneNumber: data.primaryPhoneNumber || '',
-          secondaryPhoneNumber: data.secondaryPhoneNumber || '',
+          name: adminObject?.name || '',
+          email: adminObject?.email || '',
+          gender: adminObject?.gender || '',
+          role: adminObject?.role || '',
+          status: adminObject?.status || '',
+          primaryPhoneNumber: adminObject?.primaryPhoneNumber || '',
+          secondaryPhoneNumber: adminObject?.secondaryPhoneNumber || '',
           adminPhoto: null
         });
         
-        if (data.image) {
+        if (adminObject?.image) {
           setPreviewImage(`/uploads/admin/${data.image}`);
         }
       } catch (error) {
@@ -129,9 +134,10 @@ function AdminProfile() {
         formDataObj.append('adminPhoto', formData.adminPhoto);
       }
       
-      const response = await fetch(`/api/admin/update/${currentAdminId}`, {
+      const response = await fetch(`${baseURL}/admin/update/${currentAdminId}`, {
         method: 'PUT',
         body: formDataObj,
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -143,10 +149,24 @@ function AdminProfile() {
       setIsEditing(false);
       
       // Refresh admin data
-      const updatedDataResponse = await fetch(`/api/admin/${currentAdminId}`);
+      const updatedDataResponse = await fetch(`${baseURL}/admin/${currentAdminId}`, {
+        credentials: 'include'
+      });
+
       if (updatedDataResponse.ok) {
         const updatedData = await updatedDataResponse.json();
-        setAdminData(updatedData);
+        const updatedAdminObject = updatedData.data[0];
+        setAdminData(updatedAdminObject);
+        setFormData({
+          name: updatedAdminObject?.name || '',
+          email: updatedAdminObject?.email || '',
+          gender: updatedAdminObject?.gender || '',
+          role: updatedAdminObject?.role || '',
+          status: updatedAdminObject?.status || '',
+          primaryPhoneNumber: updatedAdminObject?.primaryPhoneNumber || '',
+          secondaryPhoneNumber: updatedAdminObject?.secondaryPhoneNumber || '',
+          adminPhoto: null
+        });
       }
     } catch (error) {
       console.error('Error updating profile:', error);

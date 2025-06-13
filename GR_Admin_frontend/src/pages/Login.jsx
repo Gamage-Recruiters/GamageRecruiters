@@ -33,6 +33,9 @@ function Login() {
       });
       
       if (response.data && response.status === 200) {
+        // Store the adminId in localStorage
+        localStorage.setItem('adminId', response.data.adminId);
+  
         toast.success("Login successful!");
         setEmail('');
         setPassword('');
