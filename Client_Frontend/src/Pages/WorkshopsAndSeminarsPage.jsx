@@ -67,12 +67,21 @@ const WorkshopsAndSeminarsPage = () => {
 
   // Filter events based on search and category
   const filteredUpcomingEvents = upcomingEvents.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         event.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (event.speaker && event.speaker.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = activeFilter === "All" || event.category === activeFilter;
-    return matchesSearch && matchesCategory;
-  });
+  const title = (event.title || "").toLowerCase();
+  const category = (event.category || "").toLowerCase();
+  const speaker = (event.speaker || "").toLowerCase();
+  const search = searchTerm.toLowerCase();
+
+  const matchesSearch =
+   !search || // If search is empty, match all
+    title.includes(search) ||
+    category.includes(search) ||
+    speaker.includes(search);
+
+  const matchesCategory = activeFilter.toLowerCase()  === "all" || category === activeFilter.toLowerCase();
+
+  return matchesSearch && matchesCategory;
+});
 
   const loadMore = () => {
     setVisibleCount(prev => Math.min(prev + 3, filteredUpcomingEvents.length));
@@ -231,11 +240,9 @@ const WorkshopsAndSeminarsPage = () => {
                       </div>
                       <span className="text-sm">{event.speaker || 'Expert Speaker'}</span>
                     </div>
-                    <span className="font-bold">${parseFloat(event.price || 0).toFixed(2)}</span>
+                    
                   </div>
-                  <a href={event.link || "#"} target="_blank" rel="noopener noreferrer" className="mt-4 w-full py-2.5 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-lg font-medium transition-all duration-300 transform group-hover:scale-105 text-center">
-                    View Details
-                  </a>
+                  
                 </div>
               </div>
             ))}
@@ -248,14 +255,15 @@ const WorkshopsAndSeminarsPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative max-w-3xl mx-auto">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+              <Search className="h-5 w-5 text-gray-400 cursor-pointer"/>
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              placeholder="Search by title, category, or speaker..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              placeholder="Search by title, category, or speaker..."
+              
             />
           </div>
 
