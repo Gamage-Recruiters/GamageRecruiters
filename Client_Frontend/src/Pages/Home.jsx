@@ -532,7 +532,7 @@ export default function Home() {
               <div key={event.id} className="group relative overflow-hidden rounded-xl shadow-lg transform transition duration-500 hover:-translate-y-2 hover:shadow-xl">
                 <div className={`absolute inset-0 bg-gradient-to-r ${event.color} opacity-80 z-10`}></div>
                 <img
-                  src={event.image}
+                  src={event.image ? `${baseURL}/uploads/workshops/images/${event.image}` : 'fallback-image-url'}
                   alt={event.title}
                   className="h-64 w-full object-cover transform transition duration-700 group-hover:scale-110"
                 />
