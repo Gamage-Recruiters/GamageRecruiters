@@ -8,6 +8,7 @@ import JobCard from '../components/JobCard';
 import baseURL from '../config/axiosPortConfig';
 import { useLocation } from 'react-router-dom';
 
+
 // Mock data - will be replaced with actual API calls
 // const jobs = [
 //   {
@@ -117,6 +118,10 @@ function JobListings() {
   const params = new URLSearchParams(location.search);
   const initialSearch = params.get('search') || '';
   const [searchTerm, setSearchTerm] = useState('initialSearch');
+  const [sortOption, setSortOption] = useState('newest');
+
+
+  const [newsletterEmail, setNewsletterEmail] = useState('');
   
   useEffect(() => {
   setSearchTerm(initialSearch);
@@ -157,7 +162,8 @@ function JobListings() {
     const matchesSearch = 
       job.jobName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase());
+      job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase())||
+       (Array.isArray(job.qualifications) && job.qualifications.some(q => q.toLowerCase().includes(searchTerm.toLowerCase())))
     
     const matchesLocation = selectedLocation === 'All Locations' || job.location === selectedLocation;
     const matchesJobType = selectedJobType === 'All Types' || job.jobType === selectedJobType;
@@ -183,6 +189,42 @@ function JobListings() {
 
     return matchesSearch && matchesLocation && matchesJobType && matchesSalary;
   });
+
+
+  // Helper to parse salary range for sorting
+const parseSalary = (salaryRange) => {
+  if (!salaryRange) return { min: 0, max: 0 };
+  // Remove LKR, $, commas, and spaces
+  const clean = salaryRange.replace(/LKR|USD|\$|,|\s/gi, '');
+  if (clean.includes('-')) {
+    const [min, max] = clean.split('-').map(Number);
+    return { min, max };
+  } else if (clean.endsWith('+')) {
+    const min = Number(clean.replace('+', ''));
+    return { min, max: min };
+  } else {
+    const num = Number(clean);
+    return { min: num, max: num };
+  }
+};
+
+  // Sort jobs before rendering
+const sortedJobs = [...filteredJobs].sort((a, b) => {
+  const aSalary = parseSalary(a.salaryRange);
+  const bSalary = parseSalary(b.salaryRange);
+
+  if (sortOption === 'newest') {
+    return new Date(b.postedDate) - new Date(a.postedDate);
+  } else if (sortOption === 'oldest') {
+    return new Date(a.postedDate) - new Date(b.postedDate);
+  } else if (sortOption === 'salary-high') {
+    return bSalary.max - aSalary.max;
+  } else if (sortOption === 'salary-low') {
+    return aSalary.min - bSalary.min;
+  }
+  return 0;
+});
+
 
   // Clear all filters
   const clearFilters = () => {
@@ -399,12 +441,12 @@ function JobListings() {
         {/* Results count and sorting */}
         <div className="flex justify-between items-center mb-6">
           <p className="text-sm text-gray-600">
-            {isLoading ? 'Loading jobs...' : `Showing ${filteredJobs.length} jobs`}
+            {isLoading ? 'Loading jobs...' : `Showing ${sortedJobs.length} jobs`}
           </p>
-          
           <select
             className="text-sm border-0 py-1 pl-2 pr-8 text-gray-900 focus:ring-0 cursor-pointer"
-            defaultValue="newest"
+            value={sortOption}
+            onChange={e => setSortOption(e.target.value)}
           >
             <option value="newest" className='cursor-pointer'>Newest First</option>
             <option value="oldest" className='cursor-pointer'>Oldest First</option>
@@ -412,6 +454,7 @@ function JobListings() {
             <option value="salary-low" className='cursor-pointer'>Lowest Salary</option>
           </select>
         </div>
+
 
         {/* Job listings */}
         {isLoading ? (
@@ -421,7 +464,7 @@ function JobListings() {
         ) : (
           <>
             <div className={`grid ${displayMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
-              {filteredJobs.map((job) => (
+              {sortedJobs.map((job) => (
                 <EnhancedJobCard job={job} key={job.jobId}/>
                 // <Link key={job.jobId} to={`/jobs/:${job.jobId}`} className="block">
                 //   <EnhancedJobCard job={job} />
@@ -429,7 +472,7 @@ function JobListings() {
               ))}
             </div>
 
-            {filteredJobs.length === 0 && (
+            {sortedJobs.length === 0 && (
               <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -482,10 +525,24 @@ function JobListings() {
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="email"
+                value={newsletterEmail}
+                onChange={e => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="flex-grow rounded-lg border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600"
+                
               />
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300">
+              <button 
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300"
+              onClick={() => {
+            if (!newsletterEmail) {
+              toast.error('Please enter your email');
+            } else {
+              toast.success('SuccessFully Subscribed!');
+              setNewsletterEmail('');
+            }
+          }}
+          >
+          
                 Subscribe
               </button>
             </div>

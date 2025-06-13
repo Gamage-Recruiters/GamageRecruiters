@@ -61,7 +61,7 @@ async function getWorkshopById(req, res) {
 
 // Create New Workshop
 async function createWorkshop(req, res) {
-  const { title, category, date, time, location, image, color, speaker, price, spots, rating } = req.body;
+  const { title, category, date, time, location, image, color, speaker, price, spots, rating,link,description, event_type } = req.body;
 
   if (!title || !category || !date || !time || !location || !speaker || !price) {
     return res.status(400).send('Required fields missing');
@@ -73,8 +73,8 @@ async function createWorkshop(req, res) {
 
     console.log('Image Name:', workShopImageName);
 
-    const query = "INSERT INTO workshops (title, category, date, time, location,image, color, speaker, price, spots, rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating];
+    const query = "INSERT INTO workshops (title, category, date, time, location,image, color, speaker, price, spots, rating, link, description, event_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating,link, description, event_type];
 
     pool.query(query, values, (error, result) => {
       if (error) return res.status(500).send(error);
