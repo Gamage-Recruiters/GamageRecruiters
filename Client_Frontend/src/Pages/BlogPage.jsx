@@ -95,6 +95,11 @@ function BlogPage() {
     }
   }
 
+  // Filter blog posts based on selected category
+  const filteredBlogPosts = selectedCategory === 'All' 
+    ? blogPosts 
+    : blogPosts.filter(blog => blog.category === selectedCategory);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -141,7 +146,7 @@ function BlogPage() {
 
         {/* Blog Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        { blogPosts.length !== 0 ? blogPosts.map(blog => (
+        { filteredBlogPosts.length !== 0 ? filteredBlogPosts.map(blog => (
             <article 
               key={blog.blogId}
               className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300"
@@ -176,7 +181,7 @@ function BlogPage() {
               </div>
             </article>
           )) : (
-            <p className='text-center'>No Blogs Found!</p>
+            <p className='text-center'>No Blogs Found for this Category!</p>
           )}
         </div>
 
