@@ -34,62 +34,70 @@ function BlogDetailsPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loadUserData = async () => {
+  // Load blog data first regardless of user login
+  if (blogId) {
+    fetchBlogData(blogId);
+    fetchBlogLikeCount(blogId);
+    fetchBlogComments(blogId);
+  }
+
+  // Then check for logged in user
+  const loadUserData = async () => {
+    try {
       const loggedUserData = await fetchLoggedUserData();
   
-      if (loggedUserData) {
+      if (loggedUserData && loggedUserData.user && loggedUserData.user[0]) {
         setLoggedUser(loggedUserData.user[0]);
         console.log(loggedUserData.user[0].userId);
         setLoggedUserId(loggedUserData.user[0].userId);
+        
+        // Only fetch like state if user is logged in
+        if (blogId && loggedUserData.user[0].userId) {
+          fetchLikeStateforUsertoBlog(blogId, loggedUserData.user[0].userId);
+        }
       } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Login Require',
-          text: 'Please login first!',
-          confirmButtonColor: '#3085d6',
-        }).then((result) => {
-          if(result.isConfirmed) {
-            navigate('/login');
-          }
-        });
+        // User is not logged in - this is a valid state
+        setLoggedUser({});
+        setLoggedUserId('');
       }
-    };
-  
-    loadUserData();
-
-    if (blogId) {
-      fetchBlogData(blogId);
-      fetchBlogLikeCount(blogId);
-      fetchBlogComments(blogId);
-      if(loggedUserId) {
-        fetchLikeStateforUsertoBlog(blogId, loggedUserId);
-      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      // Don't redirect, just clear user data
+      setLoggedUser({});
+      setLoggedUserId('');
     }
-  }, [blogId]);  
+  };
+
+  loadUserData();
+}, [blogId]);  
 
   const fetchBlogData = useCallback(async (id) => {
     setLoading(true);
     try {
       const blogResponse = await axios.get(`${baseURL}/api/blogs/${id}`);
-      // console.log(blogResponse.data);
-      if(blogResponse.status == 200) {
-        setBlogPost(blogResponse.data.data[0]);
-        setLoading(false);
-        const blog = blogResponse.data.data[0];
-        const fullBlogString = `${blog.title} ${blog.introduction} ${blog.subTitle1} ${blog.subContent1} ${blog.subTitle2} ${blog.subContent2} ${blog.subTitle3} ${blog.subContent3} ${blog.subTitle4} ${blog.subContent4} ${blog.subTitle5} ${blog.subContent5} ${blog.subTitle6} ${blog.subContent6} ${blog.subTitle7} ${blog.subContent7} ${blog.subTitle8} ${blog.subContent8} ${blog.subTitle9} ${blog.subContent9} ${blog.subTitle10} ${blog.subContent10} ${blog.Quote1} ${blog.Quote2} ${blog.Quote3}`
+      if(blogResponse.status === 200 && blogResponse.data.data[0]) {
+        const blogData = blogResponse.data.data[0];
+        setBlogPost(blogData);
+        
+        const fullBlogString = `${blogData.title} ${blogData.introduction} ${blogData.subTitle1} ${blogData.subContent1} ${blogData.subTitle2} ${blogData.subContent2} ${blogData.subTitle3} ${blogData.subContent3} ${blogData.subTitle4} ${blogData.subContent4} ${blogData.subTitle5} ${blogData.subContent5} ${blogData.subTitle6} ${blogData.subContent6} ${blogData.subTitle7} ${blogData.subContent7} ${blogData.subTitle8} ${blogData.subContent8} ${blogData.subTitle9} ${blogData.subContent9} ${blogData.subTitle10} ${blogData.subContent10} ${blogData.Quote1} ${blogData.Quote2} ${blogData.Quote3}`;
+      
         setBlogReadTime(generateBlogReadingTime(fullBlogString));
+        
         // get the blog tags ...
-        blogTags = blog.tags.split(', ');
+        const blogTags = blogData.tags ? blogData.tags.split(',').map(tag => tag.trim()) : [];
+        setBlogTagsData(blogTags);
       } else {
-        console.log('Unable to fetch blog data');
-        setLoading(false);
-        return;
+        toast.error('Blog post not found');
+        setBlogPost(null);
       }
     } catch (error) {
-      console.log(error);
-      return;
+      console.error('Error fetching blog:', error);
+      toast.error('Error loading blog post');
+      setBlogPost(null);
+    } finally {
+      setLoading(false);
     }
-  }, [blogPost, loading, blogReadTime]); 
+  }, []); 
 
   const fetchLikeStateforUsertoBlog = useCallback(async (idBlog, idUser) => {
     try {
@@ -172,7 +180,7 @@ function BlogDetailsPage() {
     }
 
     try {
-      const addCommentResponse = await axios.post(`${baseURL}/api/blogs/comments/add`, { blogId: blogId, comment: comment, userId: loggedUserId });
+      const addCommentResponse = await axios.post(`${baseURL}/api/blogs/comments/add`, { blogId: blogId, comment: comment, userId: loggedUserId },{withCredentials: true});
       console.log(addCommentResponse.data);
       if(addCommentResponse.status == 201) {
         const commentRelatedData = {
@@ -230,7 +238,7 @@ function BlogDetailsPage() {
     }
 
     try {
-      const likeBlogResponse = await axios.post(`${baseURL}/api/blogs/likes/add`, { blogId: blogId, userId: loggedUserId });
+      const likeBlogResponse = await axios.post(`${baseURL}/api/blogs/likes/add`, { blogId: blogId, userId: loggedUserId },{withCredentials: true});
       // console.log(likeBlogResponse.data);
       if(likeBlogResponse.status == 201) {
         console.log('Liked Blog');
@@ -251,7 +259,7 @@ function BlogDetailsPage() {
     }
 
     try {
-      const dislikeBlogResponse = await axios.post(`${baseURL}/api/blogs/likes/remove`, { blogId: blogId, userId: loggedUserId });
+      const dislikeBlogResponse = await axios.post(`${baseURL}/api/blogs/likes/remove`, { blogId: blogId, userId: loggedUserId }, {withCredentials: true});
       // console.log(dislikeBlogResponse.data);
       if(dislikeBlogResponse.status == 200) {
         console.log('Disliked Blog');
@@ -302,7 +310,7 @@ function BlogDetailsPage() {
       <div className="relative h-96 md:h-[500px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
         <img 
-          src={blog.coverImage ? `${baseURL}/uploads/blogs/covers/${blog.coverImage}` : ''} 
+          src={blogPost.coverImage ? `${baseURL}/uploads/blogs/covers/${blogPost.coverImage}` : ''}  
           alt={blogPost.title} 
           className="w-full h-full object-cover"
         />
@@ -481,13 +489,15 @@ function BlogDetailsPage() {
         
         {/* Tags */}
         <div className="mt-12 pt-8 border-t border-gray-200">
-          {blogTagsData.length == 0 ? (<p className='text-center'>No Tags Found for this Blog!</p>) : (
+          {blogTagsData.length === 0 ? (
+            <p className='text-center'>No Tags Found for this Blog!</p>
+          ) : (
             <div>
               <h3 className="text-sm font-semibold uppercase text-gray-500 mb-4">Tagged with</h3>
               <div className="flex flex-wrap gap-2">
-                {blogTags.map(tag => (
+                {blogTagsData.map((tag, index) => (
                   <Link 
-                    key={tag} 
+                    key={index} 
                     to={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
                     className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full hover:bg-gray-200 transition-colors"
                   >
@@ -503,16 +513,34 @@ function BlogDetailsPage() {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors" onClick={handleLikeState}>
-                { likedBlog == false ? (
-                  <div className='flex justify-content-center'>
-                    <ThumbsUp size={18} className="mt-1"/>
-                    <span className='ml-3'>Like</span>
-                  </div>
-                ) : (
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors" 
+                onClick={() => {
+                  if (!loggedUserId) {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Login Required',
+                      text: 'Please login to like posts',
+                      confirmButtonColor: '#3085d6',
+                    }).then((result) => {
+                      if(result.isConfirmed) {
+                        navigate('/login');
+                      }
+                    });
+                    return;
+                  }
+                  handleLikeState();
+                }}
+              >
+                {likedBlog ? (
                   <div className='flex justify-content-center'>
                     <ThumbsUp size={18} className="text-blue-500 fill-blue-500 mt-1"/>
                     <span className='ml-3'>Liked</span>
+                  </div>
+                ) : (
+                  <div className='flex justify-content-center'>
+                    <ThumbsUp size={18} className="mt-1"/>
+                    <span className='ml-3'>Like</span>
                   </div>
                 )}
               </button>
@@ -532,16 +560,33 @@ function BlogDetailsPage() {
             
             {/* Comment Form */}
             <div className="mb-8">
-              <textarea
-                placeholder="Share your thoughts..."
-                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black resize-none h-32"
-                onChange={(e) => setComment(e.target.value)}
-              />
-              <div className="flex justify-end mt-4">
-                <button className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors" onClick={handleAddComment}>
-                  Post Comment
-                </button>
-              </div>
+              {loggedUserId ? (
+                <>
+                  <textarea
+                    placeholder="Share your thoughts..."
+                    className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black resize-none h-32"
+                    onChange={(e) => setComment(e.target.value)}
+                  />
+                  <div className="flex justify-end mt-4">
+                    <button 
+                      className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors" 
+                      onClick={handleAddComment}
+                    >
+                      Post Comment
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-gray-600 mb-2">Please login to comment</p>
+                  <Link 
+                    to="/login" 
+                    className="text-indigo-600 hover:text-indigo-800 font-medium"
+                  >
+                    Login here
+                  </Link>
+                </div>
+              )}
             </div>
             
             {/* Comments */}
