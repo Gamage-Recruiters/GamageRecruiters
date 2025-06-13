@@ -176,7 +176,7 @@ async function updateBlog(req, res) {
           subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
           tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
           Quote1 = ?, Quote2 = ?, Quote3 = ?,
-          blogImage = ?, addedAt = ?, category = ?, coverImage = ?
+          blogImage = ?, addedAt = ?, category = ?, coverImage = ?, authorImage = ?
         WHERE blogId = ?
       `;
 
@@ -194,7 +194,7 @@ async function updateBlog(req, res) {
         normalized.subTitle10, normalized.subContent10,
         normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
         normalized.Quote1, normalized.Quote2, normalized.Quote3,
-        blogImageName, new Date(), normalized.category, blogCoverName,
+        blogImageName, new Date(), normalized.category, blogCoverName, authorImageName,
         blogId
       ];
     } else if (!blogImageName && blogCoverName) {
@@ -208,7 +208,7 @@ async function updateBlog(req, res) {
           subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
           tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
           Quote1 = ?, Quote2 = ?, Quote3 = ?,
-          addedAt = ?, category = ?, coverImage = ?
+          addedAt = ?, category = ?, coverImage = ?, authorImage = ?
         WHERE blogId = ?
       `;
 
@@ -226,7 +226,7 @@ async function updateBlog(req, res) {
         normalized.subTitle10, normalized.subContent10,
         normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
         normalized.Quote1, normalized.Quote2, normalized.Quote3,
-        new Date(), normalized.category, blogCoverName,
+        new Date(), normalized.category, blogCoverName, authorImageName,
         blogId
       ];
     } else if (blogImageName && !blogCoverName) {
@@ -240,7 +240,7 @@ async function updateBlog(req, res) {
           subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
           tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
           Quote1 = ?, Quote2 = ?, Quote3 = ?,
-          blogImage = ?, addedAt = ?, category = ?
+          blogImage = ?, addedAt = ?, category = ?, authorImage = ?
         WHERE blogId = ?
       `;
 
@@ -258,7 +258,7 @@ async function updateBlog(req, res) {
         normalized.subTitle10, normalized.subContent10,
         normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
         normalized.Quote1, normalized.Quote2, normalized.Quote3,
-        blogImageName, new Date(), normalized.category,
+        blogImageName, new Date(), normalized.category, authorImageName,
         blogId
       ];
     } else {
@@ -272,7 +272,7 @@ async function updateBlog(req, res) {
           subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
           tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
           Quote1 = ?, Quote2 = ?, Quote3 = ?,
-          addedAt = ?, category = ?
+          addedAt = ?, category = ?, authorImage = ?
         WHERE blogId = ?
       `;
 
@@ -290,7 +290,7 @@ async function updateBlog(req, res) {
         normalized.subTitle10, normalized.subContent10,
         normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
         normalized.Quote1, normalized.Quote2, normalized.Quote3,
-        new Date(), normalized.category,
+        new Date(), normalized.category, authorImageName,
         blogId
       ];
     }
