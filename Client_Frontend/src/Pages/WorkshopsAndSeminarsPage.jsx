@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, Clock, MapPin, ArrowRight, Search, Filter, Users, Star, ChevronDown, X, Bookmark, Share2 } from 'lucide-react';
 import baseURL from '../config/axiosPortConfig';
 
+
 // Categories for filtering
 const categories = [
   "All", "Leadership", "Marketing", "Finance", "Technology", 
