@@ -73,7 +73,7 @@ async function createWorkshop(req, res) {
 
     console.log('Image Name:', workShopImageName);
 
-    const query = "INSERT INTO workshops (title, category, date, time, location,image, color, speaker, price, spots, rating, link, description, event_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const query = "INSERT INTO workshops (title, category, date, time, location,image, color, speaker, price, spots, rating, link, description, event_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating,link, description, event_type];
 
     pool.query(query, values, (error, result) => {
@@ -90,7 +90,7 @@ async function createWorkshop(req, res) {
 // Update Workshop
 async function updateWorkshop(req, res) {
   const { id } = req.params;
-  const { title, category, date, time, location, color, speaker, price, spots, rating } = req.body;
+  const { title, category, date, time, location, color, speaker, price, spots, rating, description, event_type, link } = req.body;
 
   if (!id || !title || !category || !date || !time || !location || !speaker || !price) {
     return res.status(400).send('Required fields missing');
@@ -99,8 +99,9 @@ async function updateWorkshop(req, res) {
   try {
     const workShopImageName = req.files?.workshopImage?.[0]?.filename || null;
     
-    const query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ? WHERE id = ?";
-    const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, id];
+    const query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?";
+    const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, description, event_type, link, id];
+
 
     pool.query(query, values, (error, result) => {
       if (error) return res.status(500).send(error);
