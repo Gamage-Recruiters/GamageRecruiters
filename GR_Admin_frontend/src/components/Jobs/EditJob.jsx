@@ -123,7 +123,9 @@ const EditJob = ({ onUpdateJob }) => {
       };
       
       
-      await axios.put(`${baseURL}/api/jobs/update/${jobId}`, cleanedFormData);
+      await axios.put(`${baseURL}/api/jobs/update/${jobId}`, cleanedFormData, {
+        withCredentials: true
+      });
       
       if (onUpdateJob) {
         onUpdateJob(cleanedFormData);
