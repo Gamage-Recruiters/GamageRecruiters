@@ -109,9 +109,13 @@ function AddWorkshop() {
       navigate('/workshops');
     } catch (error) {
       console.error('Error adding workshop:', error);
-      alert('Failed to create workshop. Please try again.');
-    } finally {
-      setLoading(false);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        alert(`Failed to create workshop: ${error.response.data}`);
+      } else {
+        alert(`Failed to create workshop: ${error.message}`);
+      }
     }
   }
 
@@ -193,7 +197,7 @@ function AddWorkshop() {
                       type="text"
                       id="date"
                       name="date"
-                      placeholder="e.g. June 15, 2025"
+                      placeholder="e.g. 2025-04-09"
                       value={formData.date}
                       onChange={handleInputChange}
                       className="pl-10 pr-4 py-2 w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
@@ -297,7 +301,7 @@ function AddWorkshop() {
                       type="text"
                       id="price"
                       name="price"
-                      placeholder="e.g. $199"
+                      placeholder="e.g. 199"
                       value={formData.price}
                       onChange={handleInputChange}
                       className="pl-10 pr-4 py-2 w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
@@ -317,7 +321,7 @@ function AddWorkshop() {
                       type="text"
                       id="spots"
                       name="spots"
-                      placeholder="e.g. 20 spots remaining"
+                      placeholder="e.g. 20"
                       value={formData.spots}
                       onChange={handleInputChange}
                       className="pl-10 pr-4 py-2 w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
