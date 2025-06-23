@@ -58,7 +58,15 @@ function UpdateWorkshop() {
     if (imagePath.startsWith('http')) return imagePath;
     return `${baseURL}/uploads/workshops/images/${imagePath}`;
   };
-  
+  function formatDateForInput(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date)) return '';
+    // Pad month and day with leading zeros
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
+  }
   // Fetch workshop data
   useEffect(() => {
     const fetchWorkshopData = async () => {
@@ -73,7 +81,7 @@ function UpdateWorkshop() {
         setFormData({
           title: workshopData.title || '',
           category: workshopData.category || '',
-          date: workshopData.date || '',
+          date: formatDateForInput(workshopData.date) || '',
           time: workshopData.time || '',
           location: workshopData.location || '',
           image: workshopData.image || '',
@@ -290,10 +298,9 @@ function UpdateWorkshop() {
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <input
-                      type="text"
+                      type="date"
                       id="date"
                       name="date"
-                      placeholder="e.g. June 15, 2025"
                       value={formData.date}
                       onChange={handleInputChange}
                       className="pl-10 pr-4 py-2 w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"

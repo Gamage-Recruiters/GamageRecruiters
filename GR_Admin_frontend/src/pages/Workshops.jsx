@@ -121,8 +121,6 @@ function Workshops() {
         month: 'short', 
         day: 'numeric',
         year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
       });
     } catch (error) {
       return dateString || 'Date not available';
@@ -363,7 +361,14 @@ function Workshops() {
                         <div className="mt-4 space-y-3 text-sm">
                           <div className="flex items-center text-gray-400">
                             <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span>{workshop.date ? formatDate(workshop.date) : 'Date not specified'}</span>
+                            <span>
+                              {workshop.date ? formatDate(workshop.date) : 'Date not specified'}
+                              {workshop.time && (
+                                <span className="ml-2 text-gray-300">
+                                  | {workshop.time}
+                                </span>
+                              )}
+                            </span>
                           </div>
                           {workshop.location && (
                             <div className="flex items-center text-gray-400">

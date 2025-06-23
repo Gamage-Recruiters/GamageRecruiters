@@ -7,7 +7,12 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import baseURL from '../../config/baseUrlConfig';
-
+function getTodayDateString() {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${today.getFullYear()}-${month}-${day}`;
+}
 function AddWorkshop() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -18,7 +23,7 @@ function AddWorkshop() {
   const [formData, setFormData] = useState({
     title: '',
     category: '',
-    date: '',
+    date: getTodayDateString(),
     time: '',
     location: '',
     image: '',
@@ -202,10 +207,9 @@ function AddWorkshop() {
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <input
-                      type="text"
+                      type="date"
                       id="date"
                       name="date"
-                      placeholder="e.g. 2025-04-09"
                       value={formData.date}
                       onChange={handleInputChange}
                       className="pl-10 pr-4 py-2 w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
