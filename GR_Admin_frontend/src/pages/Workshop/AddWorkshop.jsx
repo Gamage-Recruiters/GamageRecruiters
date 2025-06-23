@@ -13,6 +13,7 @@ function AddWorkshop() {
   const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(""); 
   
   const [formData, setFormData] = useState({
     title: '',
@@ -71,6 +72,7 @@ function AddWorkshop() {
   const handleSubmit = async (e, status) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage(""); // Reset error message
     
     if (!formData.title || !formData.category || !formData.date || !formData.time || !formData.location || !imageFile || !formData.speaker || !formData.description) {
     alert('Please fill in all required fields including image.');
@@ -108,6 +110,7 @@ function AddWorkshop() {
       // Redirect to workshops list
       navigate('/workshops');
     } catch (error) {
+      setLoading(false);
       console.error('Error adding workshop:', error);
       if (error.response) {
         console.error('Response data:', error.response.data);
@@ -141,6 +144,11 @@ function AddWorkshop() {
           </div>
         </div>
         <div className="flex space-x-3">
+          {errorMessage && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+              {errorMessage}
+            </div>
+          )}
           <button 
             onClick={(e) => handleSubmit(e, 'draft')} 
             disabled={loading}        
