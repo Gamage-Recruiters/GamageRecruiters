@@ -10,7 +10,6 @@ import Jobs from './pages/Jobs';
 import Applications from './pages/Applications';
 import Workshops from './pages/Workshops';
 import Blog from './pages/BlogManagement';
-import Partners from './pages/Partners';
 import ClientDetailsPage from './pages/Client/ClientView';
 import ViewAllJobs from './components/Jobs/ViewAllJobs';
 import AddJob from './components/Jobs/AddJob';
@@ -55,7 +54,6 @@ function App() {
               <Route path="/applications" element={<Applications />} />
               <Route path="/workshops" element={<Workshops />} />
               <Route path="/blog" element={<Blog />} />
-              <Route path="/partners" element={<Partners />} />
               <Route path="/candidate" element={<CandidateDetailsView />} />
               <Route path="/clients/:clientId" element={<ClientDetailsPage />} />
               <Route path="/blog/add" element={<AddNewBlog />} />

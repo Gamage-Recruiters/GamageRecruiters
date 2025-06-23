@@ -73,7 +73,7 @@ async function createWorkshop(req, res) {
 
     console.log('Image Name:', workShopImageName);
 
-    const query = "INSERT INTO workshops (title, category, date, time, location,image, color, speaker, price, spots, rating, link, description, event_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const query = "INSERT INTO workshops (title, category, date, time, location,image, color, speaker, price, spots, rating, link, description, event_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating,link, description, event_type];
 
     pool.query(query, values, (error, result) => {
@@ -90,13 +90,13 @@ async function createWorkshop(req, res) {
 // Update Workshop
 async function updateWorkshop(req, res) {
   const { id } = req.params;
-  const { title, category, date, time, location, color, speaker, price, spots, rating } = req.body;
+  const { title, category, date, time, location, color, speaker, price, spots, rating, description, event_type, link } = req.body;
 
   if (!id || !title || !category || !date || !time || !location || !speaker || !price) {
     return res.status(400).send('Required fields missing');
   }
 
-  try {
+ try {
     let query, values;
     const workShopImageName = req.files?.workshopImage?.[0]?.filename;
 
@@ -109,6 +109,11 @@ async function updateWorkshop(req, res) {
       query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?";
       values = [title, category, date, time, location, color, speaker, price, spots, rating, description, event_type, link, id];
     }
+
+    // then run the query with connection.query(query, values, callback)
+} catch (error) {
+    console.error("Error updating workshop:", error);
+
 
     pool.query(query, values, (error, result) => {
       if (error) return res.status(500).send(error);

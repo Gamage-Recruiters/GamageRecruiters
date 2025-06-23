@@ -21,58 +21,80 @@ const VerifyEmail = ({ email, dummyEmail }) => {
     }, [email, dummyEmail]);
 
     const resendOTP = useCallback(async (e) => {
-        e.preventDefault();
-        if(!otp) {
-            toast.error('OTP Must be entered');
-            return;
+    e.preventDefault();
+    if(!userEmail) {
+        toast.error('Email is required');
+        return;
+    }
+
+    try {
+        // Change from /user/sendOTP to /auth/sendOTP
+        const sendOTPResponse = await axios.post(`${baseURL}/auth/sendOTP`, { 
+            email: userEmail 
+        });
+        
+        if(sendOTPResponse.status === 200) {
+            toast.success('An OTP has been sent to your email');
+        } else {
+            toast.error('OTP Sending Failed');
         }
+    } catch (error) {
+        console.error('Send OTP error:', error);
+        toast.error('Failed to send OTP');
+    }
+}, [userEmail]);
 
-        try {
-            console.log(userEmail);
-            const sendOTPResponse = await axios.post(`${baseURL}/user/sendOTP`, { email: userEmail });
-            if(sendOTPResponse.status == 200) {
-                toast.success('An OTP has been sent to your email');
-                const verifyOTPResponse = await axios.post(`${baseURL}/user/verifyOTP`, { otp: otp, oldEmail: dummy, email: userEmail });
-                if(verifyOTPResponse.status == 200) {
-                    toast.success('User Registration Successful');
-                    navigate('/login');
-                } else {
-                    toast.error('User Registration Failed');
-                    return;
-                }
-            } else {
-                toast.error('OTP Sending Failed');
-                return;
-            }
-        } catch (error) {
-            console.log(error);
-            return;
-        }
-    }, [otp, userEmail, dummy, navigate]); 
+   const verifyOTP = useCallback(async (e) => {
+    e.preventDefault(); 
 
-    const verifyOTP = useCallback(async (e) => {
-        e.preventDefault(); 
+    if(!otp) {
+        toast.error('OTP Must be entered');
+        return;
+    }
 
-        if(!otp) {
-            toast.error('OTP Must be entered');
-            return;
-        }
+    if(!userEmail || !dummy) {
+        toast.error('Email information is missing');
+        return;
+    }
 
-        try {
-            console.log(otp, userEmail, dummy);
-            const verifyOTPResponse = await axios.post(`${baseURL}/auth/verifyOTP`, { otp: otp, oldEmail: dummy, email: userEmail });
-            if(verifyOTPResponse.status == 200) {
-                toast.success('User Registration Successfull');
+    try {
+        console.log("Sending verification request:", {
+            otp: otp.toString(),
+            oldEmail: dummy,
+            email: userEmail
+        });
+        
+        const verifyOTPResponse = await axios.post(`${baseURL}/auth/verifyOTP`, {
+            otp: otp.toString(),
+            oldEmail: dummy,
+            email: userEmail
+        });
+
+        console.log("Verification response:", verifyOTPResponse.data);
+
+        if(verifyOTPResponse.data.success) {
+            toast.success('Email verification successful');
+            // Add a small delay before navigation
+            setTimeout(() => {
                 navigate('/login');
-            } else {
-                toast.error('User Registration Failed');
-                return;
-            }
-        } catch (error) {
-            console.log(error);
-            return;
+            }, 1500);
+        } else {
+            toast.error(verifyOTPResponse.data.message || 'Verification failed');
         }
-    }, [otp, userEmail, dummy, navigate]);
+    } catch (error) {
+        console.error('Verification error:', error);
+        
+        // Handle different error scenarios
+        if (error.response?.data?.message) {
+            toast.error(error.response.data.message);
+        } else {
+            toast.error('OTP verification failed. Please try again.');
+        }
+        
+        // Reset OTP field on error
+        setOTP('');
+    }
+}, [otp, userEmail, dummy, navigate]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 via-indigo-800 to-purple-200">
