@@ -97,10 +97,18 @@ async function updateWorkshop(req, res) {
   }
 
   try {
-    const workShopImageName = req.files?.workshopImage?.[0]?.filename || null;
-    
-    const query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ? WHERE id = ?";
-    const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, id];
+    let query, values;
+    const workShopImageName = req.files?.workshopImage?.[0]?.filename;
+
+    if (workShopImageName) {
+      // If a new image is uploaded, update the image column
+      query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?";
+      values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, description, event_type, link, id];
+    } else {
+      // If no new image, don't update the image column
+      query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?";
+      values = [title, category, date, time, location, color, speaker, price, spots, rating, description, event_type, link, id];
+    }
 
     pool.query(query, values, (error, result) => {
       if (error) return res.status(500).send(error);
