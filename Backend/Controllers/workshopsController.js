@@ -96,11 +96,23 @@ async function updateWorkshop(req, res) {
     return res.status(400).send('Required fields missing');
   }
 
-  try {
-    const workShopImageName = req.files?.workshopImage?.[0]?.filename || null;
-    
-    const query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?";
-    const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, description, event_type, link, id];
+ try {
+    let query, values;
+    const workShopImageName = req.files?.workshopImage?.[0]?.filename;
+
+    if (workShopImageName) {
+      // If a new image is uploaded, update the image column
+      query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?";
+      values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, description, event_type, link, id];
+    } else {
+      // If no new image, don't update the image column
+      query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?";
+      values = [title, category, date, time, location, color, speaker, price, spots, rating, description, event_type, link, id];
+    }
+
+    // then run the query with connection.query(query, values, callback)
+} catch (error) {
+    console.error("Error updating workshop:", error);
 
 
     pool.query(query, values, (error, result) => {
