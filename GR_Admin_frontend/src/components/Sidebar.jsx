@@ -107,7 +107,6 @@ function Sidebar({ isOpen, setIsOpen }) {
     { path: '/candidate', icon: FileText, label: 'Applications View' },
     { path: '/workshops', icon: Calendar, label: 'Workshops' },
     { path: '/blog', icon: BookOpen, label: 'Blog' },
-    { path: '/partners', icon: Handshake, label: 'Partners' },
     { path: '/inquiries', icon: Mail, label: 'Inquiries' },
   ];
 

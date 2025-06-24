@@ -112,46 +112,63 @@ function SignupPage() {
     } 
 
     const formData = new FormData();
-
+    
+    // Add all required fields
     formData.append('firstName', firstName);
     formData.append('lastName', lastName);
-    formData.append('email', emailValue);
+    formData.append('email', email); // Use actual email instead of emailValue
     formData.append('gender', gender);
     formData.append('birthDate', birthDate);
     formData.append('password', password);
-    formData.append('address', address);
-    formData.append('address2', address2);
-    formData.append('phoneNumber1', phoneNumber1);
-    formData.append('phoneNumber2', phoneNumber2);
-    formData.append('portfolioLink', portfolioLink);
-    formData.append('linkedInLink', linkedInLink);
-    formData.append('facebookLink', facebookLink);
+    formData.append('address', address || '');
+    formData.append('address2', address2 || '');
+    formData.append('phoneNumber1', phoneNumber1 || '');
+    formData.append('phoneNumber2', phoneNumber2 || '');
+    formData.append('portfolioLink', portfolioLink || '');
+    formData.append('linkedInLink', linkedInLink || '');
+    formData.append('facebookLink', facebookLink || '');
     formData.append('profileDescription', profileDescription);
-    formData.append('cv', cv);
-    formData.append('photo', photo);
+    //formData.append('cv', cv);
+    //formData.append('photo', photo);
+
+    if (photo) {
+      formData.append('photo', photo);
+    }
 
     try {
-      const signupResponse = await axios.post(`${baseURL}/auth/register`, formData);
-      if(signupResponse.status == 201) {
-        const sendOTPResponse = await axios.post(`${baseURL}/auth/sendOTP`, { email: email });
-        if(sendOTPResponse.status == 200) {
-          toast.success('An OTP has been sent to your email');
-          localStorage.setItem('IsSignupAuthenticated', true);
-          setLoadUI(false);
-          setLoadVerifyOTP(true);
-        } else {
-          toast.error('Error Sending OTP');
-          return;
+      const signupResponse = await axios.post(`${baseURL}/auth/register`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         }
-      } else {
-        toast.error('User Registration Failed');
-        return;
+      });
+
+      if(signupResponse.status === 200 || signupResponse.status === 201) {
+        try {
+          // Send OTP after successful registration
+          const sendOTPResponse = await axios.post(`${baseURL}/auth/sendOTP`, {
+            email: email
+          });
+
+          if(sendOTPResponse.status === 200) {
+            setLoadUI(false);
+            setLoadVerifyOTP(true);
+            localStorage.setItem('IsSignupAuthenticated', true);
+            toast.success('Registration successful! Please verify your email');
+          } else {
+            toast.error('Failed to send verification email');
+          }
+        } catch (otpError) {
+          console.error('OTP sending error:', otpError);
+          toast.error('Failed to send verification email. Please try again.');
+        }
       }
     } catch (error) {
-      console.log(error);
-      return;
+      console.error('Registration error:', error.response?.data || error.message);
+      toast.error(error.response?.data || 'Registration failed');
     }
-  }, [firstName, lastName, gender, email, password, confirmPassword, profileDescription]);
+  }, [firstName, lastName, gender, email, password, birthDate, address, address2, 
+      phoneNumber1, phoneNumber2, portfolioLink, linkedInLink, facebookLink, 
+      profileDescription, photo]);
 
   // const handleFileChange = (e) => {
   //   console.log(e.target.files);
@@ -161,11 +178,11 @@ function SignupPage() {
   //   });
   // };
 
-  const handleCVChange = useCallback((e) => {
-    console.log(e.target.files[0]);
-    setCV(e.target.files[0]);
-    setCVName(e.target.files[0].name);
-  }, [cv, cvName]);
+  // const handleCVChange = useCallback((e) => {
+  //   console.log(e.target.files[0]);
+  //   setCV(e.target.files[0]);
+  //   setCVName(e.target.files[0].name);
+  // }, [cv, cvName]);
 
   const handlePhotoChange = useCallback((e) => {
     console.log(e.target.files[0]);
@@ -685,7 +702,7 @@ function SignupPage() {
       </div>
       ) }
 
-      { !loadUI && loadVerifyOTP && (<VerifyEmail email={email} dummyEmail={emailValue}/>) }
+      { !loadUI && loadVerifyOTP && (<VerifyEmail email={email} dummyEmail={email}/>) }
     </div>
   );
 }

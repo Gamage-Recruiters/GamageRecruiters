@@ -151,23 +151,25 @@ async function sendEmailVerificationOTP(req, res) {
     const { email } = req.body;
 
     if (!email) {
-        return res.status(400).send('Email is required');
+        return res.status(400).json({ message: 'Email is required' });
     }
-
-    console.log(email);
 
     try {
         const otp = generateOTP();
-        otpCache[email] = otp;
+        // Store OTP as string
+        otpCache[email] = otp.toString();
 
-        // Send the email ...
-        sendOTP(email, otp);
-        console.log(otp);
-        res.cookie('otpCache', otpCache, { maxAge: 3000, httpOnly: true });
-        res.status(200).json({ message: "OTP sent successfully", otp: otp });
+        // Send the email
+        await sendOTP(email, otp);
+        console.log("OTP stored for", email, ":", otp);
+        
+        res.status(200).json({ 
+            success: true,
+            message: "OTP sent successfully" 
+        });
     } catch (error) {
-        // console.log(error);
-        return res.status(500).send(error);
+        console.error('Error sending OTP:', error);
+        return res.status(500).json({ message: 'Failed to send OTP' });
     }
 }
 
@@ -175,37 +177,51 @@ async function verifyEmailVerificationOTP(req, res) {
     const { otp, oldEmail, email } = req.body;
 
     if (!otp || !oldEmail || !email) {
-        return res.status(400).send('Something went wrong with required data');
+        return res.status(400).json({ message: 'Missing required data' });
     }
 
-    console.log(otp, oldEmail, email);
+    console.log("Received verification request:", {
+        storedOTP: otpCache[email],
+        receivedOTP: otp,
+        oldEmail,
+        email
+    });
 
     try {
-        // Check if email exists in the cache ...
-        if (!otpCache.hasOwnProperty(email)) {
-            return res.status(404).send("Email not found");
+        // First check if OTP exists
+        if (!otpCache[email]) {
+            return res.status(400).json({ message: "OTP expired or not found" });
         }
 
-        // Check if the OTP matches the one stored in the cache ...
-        if (otpCache[email] === otp) {
-            // res.status(200).send("OTP Verified Successfully");
-            console.log("OTP Verified Successfully");
-            delete otpCache[email]; // Remove the OTP from the cache after successful verification.
-            const sql = 'UPDATE users SET email = ? WHERE email = ?';
-            pool.query(sql, [email, oldEmail], (error, result) => {
-                if (error) {
-                    // console.log(error);
-                    return res.status(400).send('User Registration Failed');
-                }
+        // Convert both OTPs to strings for comparison
+        if (otpCache[email].toString() !== otp.toString()) {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
 
-                return res.status(200).json({ message: 'User Registration Successfull', data: result });
+        // Update the email in database
+        const updateSql = 'UPDATE users SET email = ? WHERE email = ?';
+        pool.query(updateSql, [email, oldEmail], (updateError, updateResult) => {
+            if (updateError) {
+                console.error('Database error:', updateError);
+                return res.status(500).json({ message: 'Database error occurred' });
+            }
+
+            if (updateResult.affectedRows === 0) {
+                return res.status(400).json({ message: 'User not found' });
+            }
+
+            // Clear OTP from cache after successful update
+            delete otpCache[email];
+
+            return res.status(200).json({ 
+                success: true,
+                message: 'Email verification successful'
             });
-        } else {
-            return res.status(401).send("Invalid OTP");
-        }
+        });
+
     } catch (error) {
-        // console.log(error);
-        return res.status(500).send(error);
+        console.error('Server error:', error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
 

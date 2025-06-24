@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Download, Trash2, Eye, X, ChevronLeft, ChevronRight, Calendar, Phone, Mail, MessageSquare, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import baseURL from '../config/baseUrlConfig';
 // Mock data for testing purposes - remove in production
 
 function InquiryManagement() {
@@ -58,7 +59,7 @@ function InquiryManagement() {
     
     try {
 
-      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}contact/deleteinquiry/${contactID}`).then((results) => {
+      await axios.delete(`${baseURL}/api/contact/deleteinquiry/${contactID}`).then((results) => {
 
 
 

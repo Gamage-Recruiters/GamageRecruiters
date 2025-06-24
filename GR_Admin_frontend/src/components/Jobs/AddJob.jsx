@@ -99,7 +99,9 @@ const AddJob = () => {
       };
       
       // Send data to API endpoint
-      const response = await axios.post(`${baseURL}/api/jobs/addjob`, jobData);
+      const response = await axios.post(`${baseURL}/api/jobs/addjob`, jobData, {
+        withCredentials: true
+      });
       
       if (response.data) {
         // Show success toast notification

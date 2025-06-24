@@ -73,7 +73,7 @@ async function createWorkshop(req, res) {
 
     console.log('Image Name:', workShopImageName);
 
-    const query = "INSERT INTO workshops (title, category, date, time, location,image, color, speaker, price, spots, rating, link, description, event_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const query = "INSERT INTO workshops (title, category, date, time, location,image, color, speaker, price, spots, rating, link, description, event_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating,link, description, event_type];
 
     pool.query(query, values, (error, result) => {
@@ -96,7 +96,7 @@ async function updateWorkshop(req, res) {
     return res.status(400).send('Required fields missing');
   }
 
-  try {
+ try {
     let query, values;
     const workShopImageName = req.files?.workshopImage?.[0]?.filename;
 
