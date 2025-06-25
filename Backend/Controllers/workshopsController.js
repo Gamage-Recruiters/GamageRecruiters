@@ -101,18 +101,14 @@ async function updateWorkshop(req, res) {
     const workShopImageName = req.files?.workshopImage?.[0]?.filename;
 
     if (workShopImageName) {
-      // If a new image is uploaded, update the image column
-      query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?";
+      // If a new image is uploaded, update it
+      query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, image = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?" ;
       values = [title, category, date, time, location, workShopImageName, color, speaker, price, spots, rating, description, event_type, link, id];
     } else {
-      // If no new image, don't update the image column
+      // If no new image, don't update the image field
       query = "UPDATE workshops SET title = ?, category = ?, date = ?, time = ?, location = ?, color = ?, speaker = ?, price = ?, spots = ?, rating = ?, description = ?, event_type = ?, link = ? WHERE id = ?";
       values = [title, category, date, time, location, color, speaker, price, spots, rating, description, event_type, link, id];
     }
-
-    // then run the query with connection.query(query, values, callback)
-} catch (error) {
-    console.error("Error updating workshop:", error);
 
 
     pool.query(query, values, (error, result) => {
