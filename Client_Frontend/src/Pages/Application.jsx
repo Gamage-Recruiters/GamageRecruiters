@@ -51,7 +51,7 @@ function Application() {
 
   const fetchJobApplicationData = useCallback(async (id) => {
     try {
-      const fetchJobApplicationData = await axios.get(`${baseURL}/api/jobapplications/application/${id}`);
+      const fetchJobApplicationData = await axios.get(`${baseURL}/api/jobapplications/application/${id}`,{withCredentials: true});
       console.log(fetchJobApplicationData.data);
       if(fetchJobApplicationData.status == 200) {
         console.log(fetchJobApplicationData.data.data);
@@ -77,11 +77,11 @@ function Application() {
   const viewCurrentCV = useCallback(() => {
     console.log(currentCV);
     let cvLink
-    const patternRelatedToPath = 'uploads\\appliedJobs\\resumes\\';
+    const patternRelatedToPath = 'uploads\\resumes\\';
     if(currentCV.includes(patternRelatedToPath)) {
       cvLink = `${baseURL}/${currentCV}`;
     } else {
-      cvLink = `${baseURL}/uploads/appliedJobs/resumes/${currentCV}`;
+      cvLink = `${baseURL}/uploads/resumes/${currentCV}`;
     }
     console.log(cvLink);
     window.open(cvLink, '_blank');
@@ -141,7 +141,7 @@ function Application() {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const updateApplicationResponse = await axios.put(`${baseURL}/api/jobapplications/update/${jobApplicationId}`, formData);
+          const updateApplicationResponse = await axios.put(`${baseURL}/api/jobapplications/update/${jobApplicationId}`, formData,{withCredentials:true});
           console.log(updateApplicationResponse.data);
           if(updateApplicationResponse.status == 200) {
             Swal.fire({
