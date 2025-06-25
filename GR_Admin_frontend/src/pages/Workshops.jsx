@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Users, Calendar, MapPin, ExternalLink, Star, RefreshCw, AlertTriangle, Moon, Search, Filter, ChevronDown } from 'lucide-react';
+import { Plus, Users, Calendar, MapPin, ExternalLink, Star, RefreshCw, AlertTriangle, Moon, Search, Filter, ChevronDown, DollarSign } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import baseURL from '../config/baseUrlConfig';
@@ -91,14 +91,10 @@ function Workshops() {
   const upcomingCount = Array.isArray(workshops) ? 
     workshops.filter(w => w.event_type === 'Upcoming Event').length : 
     0;
-    
-  const totalRegistrations = Array.isArray(workshops) ? 
-    workshops.reduce((sum, w) => sum + ((w.capacity || 0) - (w.spots || 0)), 0) :
+
+  const pastCount = Array.isArray(workshops) ?
+    workshops.filter(w => w.event_type === 'Past Event').length : 
     0;
-    
-  const averageRating = Array.isArray(workshops) && workshops.length > 0 ? 
-    (workshops.reduce((sum, w) => sum + (w.rating || 0), 0) / workshops.length).toFixed(1) :
-    '0.0';
 
   const categoryColors = {
     'Technology': 'bg-blue-500',
@@ -300,8 +296,6 @@ function Workshops() {
                 {filteredWorkshops.map((workshop, index) => {
                   const isPast = workshop.event_type === 'Past Event';
                   const spots = workshop.spots || 0;
-                  const capacity = workshop.capacity || 100;
-                  const percentFull = capacity > 0 ? Math.round(((capacity - spots) / capacity) * 100) : 100;
                   
                   return (
                     <motion.div
@@ -379,7 +373,7 @@ function Workshops() {
                           <div className="flex items-center text-gray-400">
                             <Users className="h-4 w-4 mr-2 flex-shrink-0" />
                             <span>
-                              {capacity - spots} / {capacity} registered
+                              {spots} spots
                             </span>
                           </div>
                           {workshop.speaker && (
@@ -390,40 +384,15 @@ function Workshops() {
                               <span>{workshop.speaker}</span>
                             </div>
                           )}
-                        </div>
-
-                        {!isPast && (
-                          <div className="mt-6">
-                            <div className="relative pt-1">
-                              <div className="flex mb-2 items-center justify-between">
-                                <div>
-                                  <span className={`text-xs font-semibold inline-block ${
-                                    percentFull >= 90 ? 'text-red-400' : 'text-indigo-400'
-                                  }`}>
-                                    {percentFull}% Full
-                                  </span>
-                                </div>
-                                {workshop.price > 0 && (
-                                  <div className="text-right">
-                                    <span className="text-xs font-semibold text-gray-300">
-                                      ${parseFloat(workshop.price).toFixed(2)}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-700">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${percentFull}%` }}
-                                  transition={{ duration: 0.8, ease: "easeOut" }}
-                                  className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center ${
-                                    percentFull >= 90 ? 'bg-red-500' : 'bg-indigo-500'
-                                  }`}
-                                />
-                              </div>
+                          {workshop.price > 0 && (
+                            <div className="flex items-center text-gray-400">
+                              <DollarSign className="h-4 w-4 mr-2 flex-shrink-0" />
+                              <span>
+                                Rs {parseFloat(workshop.price).toFixed(2)}
+                              </span>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
 
                         <div className="mt-6 flex justify-between space-x-2">
                           {workshop.id && (  
@@ -456,9 +425,9 @@ function Workshops() {
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div>
               <h3 className="text-xl font-semibold text-gray-100">Workshop Analytics</h3>
-              <p className="text-gray-400 mt-1">Quick stats about your workshop performance</p>
+              <p className="text-gray-400 mt-1">Quick stats about your workshops</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 md:mt-0 w-full md:w-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 md:mt-0 w-full md:w-auto">
               <motion.div 
                 whileHover={{ y: -5 }}
                 className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:border-indigo-500 transition-all"
@@ -477,18 +446,8 @@ function Workshops() {
                 whileHover={{ y: -5 }}
                 className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:border-yellow-500 transition-all"
               >
-                <p className="text-sm text-gray-400">Average Rating</p>
-                <div className="flex items-center">
-                  <p className="text-2xl font-bold text-yellow-400">{averageRating}</p>
-                  <Star className="h-4 w-4 text-yellow-400 ml-1 fill-yellow-400" />
-                </div>
-              </motion.div>
-              <motion.div 
-                whileHover={{ y: -5 }}
-                className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:border-indigo-500 transition-all"
-              >
-                <p className="text-sm text-gray-400">Total Registrations</p>
-                <p className="text-2xl font-bold text-indigo-400">{totalRegistrations}</p>
+                <p className="text-sm text-gray-400">Past Events</p>
+                <p className="text-2xl font-bold text-gray-400">{pastCount}</p>
               </motion.div>
             </div>
           </div>

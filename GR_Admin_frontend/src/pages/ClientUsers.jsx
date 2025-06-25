@@ -98,14 +98,6 @@ function ClientUsers() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Client Management</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage and view all client accounts</p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-            <Download className="h-4 w-4 mr-2" /> Export
-          </button>
-          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-            <RefreshCw className="h-4 w-4 mr-2" /> Refresh
-          </button>
-        </div>
       </div>
 
       {/* Stats */}
