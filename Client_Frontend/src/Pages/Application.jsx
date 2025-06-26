@@ -51,7 +51,7 @@ function Application() {
 
   const fetchJobApplicationData = useCallback(async (id) => {
     try {
-      const fetchJobApplicationData = await axios.get(`${baseURL}/api/jobapplications/application/${id}`,{withCredentials: true});
+      const fetchJobApplicationData = await axios.get(`${baseURL}/api/jobapplications/application/${id}/user`,{withCredentials: true});
       console.log(fetchJobApplicationData.data);
       if(fetchJobApplicationData.status == 200) {
         console.log(fetchJobApplicationData.data.data);

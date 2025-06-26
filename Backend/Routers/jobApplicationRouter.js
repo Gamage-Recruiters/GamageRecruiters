@@ -10,8 +10,11 @@ const jobApplicationExtendedController = require('../Controllers/jobApplicationE
 // Apply for a job (with file upload)
 router.route('/apply').post(verifyToken, upload, jobApplicationController.applyJob);
 
-// Get specific application by ID
-router.route('/application/:applicationId').get(jobApplicationController.getApplication);
+// Get specific application by ID - Admin
+router.route('/application/:applicationId').get(adminAuth, jobApplicationController.getApplication);
+
+// Get specific application by ID - User route 
+router.route('/application/:applicationId/user').get(verifyToken, jobApplicationController.getApplication);
 
 // Get specific application by userID
 router.route('/applications/user/:userId').get(jobApplicationController.getApplicationByUser);
