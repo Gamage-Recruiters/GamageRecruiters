@@ -26,7 +26,10 @@ router.route('/:jobId').get(jobApplicationController.getApplicationByJobId);
 router.route('/update/:applicationId').put(verifyToken, upload, jobApplicationController.updateApplication);
 
 // Delete a specific job application
-router.route('/delete/:applicationId').delete(jobApplicationController.deleteApplication);
+router.route('/delete/:applicationId').delete(adminAuth, jobApplicationController.deleteApplication);
+
+// Delete a specific job application for client
+router.route('/user/delete/:applicationId').delete(verifyToken, jobApplicationController.deleteApplication);
 
 // Extended functionality routes - Job Management View
 // Get all applications for a specific job

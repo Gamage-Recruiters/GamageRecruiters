@@ -184,7 +184,7 @@ function Application() {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const removeApplicationResponse = await axios.delete(`${baseURL}/api/jobapplications/delete/${jobApplicationId}`);
+          const removeApplicationResponse = await axios.delete(`${baseURL}/api/jobapplications/user/delete/${jobApplicationId}`, {withCredentials: true});
           console.log(removeApplicationResponse.data);
           if(removeApplicationResponse.status == 200) {
             Swal.fire({
