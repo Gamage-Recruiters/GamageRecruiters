@@ -164,6 +164,11 @@ function JobDetails() {
         return;
       }
     } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data);
+      } else {
+        toast.error('An error occurred while submitting your application');
+      }
       console.log(error);
       return;
     }
