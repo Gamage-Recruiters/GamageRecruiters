@@ -10,8 +10,11 @@ const jobApplicationExtendedController = require('../Controllers/jobApplicationE
 // Apply for a job (with file upload)
 router.route('/apply').post(verifyToken, upload, jobApplicationController.applyJob);
 
-// Get specific application by ID
-router.route('/application/:applicationId').get(jobApplicationController.getApplication);
+// Get specific application by ID - Admin
+router.route('/application/:applicationId').get(adminAuth, jobApplicationController.getApplication);
+
+// Get specific application by ID - User route 
+router.route('/application/:applicationId/user').get(verifyToken, jobApplicationController.getApplication);
 
 // Get specific application by userID
 router.route('/applications/user/:userId').get(jobApplicationController.getApplicationByUser);
@@ -26,7 +29,10 @@ router.route('/:jobId').get(jobApplicationController.getApplicationByJobId);
 router.route('/update/:applicationId').put(verifyToken, upload, jobApplicationController.updateApplication);
 
 // Delete a specific job application
-router.route('/delete/:applicationId').delete(jobApplicationController.deleteApplication);
+router.route('/delete/:applicationId').delete(adminAuth, jobApplicationController.deleteApplication);
+
+// Delete a specific job application for client
+router.route('/user/delete/:applicationId').delete(verifyToken, jobApplicationController.deleteApplication);
 
 // Extended functionality routes - Job Management View
 // Get all applications for a specific job

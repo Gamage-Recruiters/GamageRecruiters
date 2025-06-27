@@ -51,7 +51,7 @@ function Application() {
 
   const fetchJobApplicationData = useCallback(async (id) => {
     try {
-      const fetchJobApplicationData = await axios.get(`${baseURL}/api/jobapplications/application/${id}`,{withCredentials: true});
+      const fetchJobApplicationData = await axios.get(`${baseURL}/api/jobapplications/application/${id}/user`,{withCredentials: true});
       console.log(fetchJobApplicationData.data);
       if(fetchJobApplicationData.status == 200) {
         console.log(fetchJobApplicationData.data.data);
@@ -184,7 +184,7 @@ function Application() {
     }).then(async (result) => {
       if(result.isConfirmed) {
         try {
-          const removeApplicationResponse = await axios.delete(`${baseURL}/api/jobapplications/delete/${jobApplicationId}`);
+          const removeApplicationResponse = await axios.delete(`${baseURL}/api/jobapplications/user/delete/${jobApplicationId}`, {withCredentials: true});
           console.log(removeApplicationResponse.data);
           if(removeApplicationResponse.status == 200) {
             Swal.fire({

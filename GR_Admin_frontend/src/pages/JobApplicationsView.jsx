@@ -37,7 +37,9 @@ const JobApplicationsView = () => {
   const fetchApplicationsForJob = async (jobId) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${baseURL}/api/jobs/${jobId}/applications`);
+      const response = await axios.get(`${baseURL}/api/jobs/${jobId}/applications`, {
+        withCredentials: true
+      });
       setApplications(response.data.data);
       setError(null);
     } catch (err) {
@@ -57,7 +59,8 @@ const JobApplicationsView = () => {
   const downloadCV = async (applicationId, fileName) => {
     try {
       const response = await axios.get(`${baseURL}/api/applications/download/${applicationId}`, {
-        responseType: 'blob'
+        responseType: 'blob',
+        withCredentials: true
       });
       
       // Create a download link and trigger it
@@ -79,7 +82,8 @@ const JobApplicationsView = () => {
     
     try {
       const response = await axios.get(`${baseURL}/api/jobs/${selectedJob.jobId}/applications/download-all`, {
-        responseType: 'blob'
+        responseType: 'blob',
+        withCredentials: true
       });
       
       // Create a download link and trigger it
@@ -104,7 +108,9 @@ const JobApplicationsView = () => {
 
   const deleteApplication = async (applicationId) => {
     try {
-      await axios.delete(`${baseURL}/api/applications/delete/${applicationId}`);
+      await axios.delete(`${baseURL}/api/applications/delete/${applicationId}`, {
+        withCredentials: true
+      });
       // Refresh applications list
       fetchApplicationsForJob(selectedJob.jobId);
       setError(null);
@@ -120,7 +126,9 @@ const JobApplicationsView = () => {
     if (!selectedJob) return;
     
     try {
-      await axios.delete(`${baseURL}/api/jobs/${selectedJob.jobId}/applications/delete-all`);
+      await axios.delete(`${baseURL}/api/jobs/${selectedJob.jobId}/applications/delete-all`, {
+        withCredentials: true
+      });
       // Clear applications list
       setApplications([]);
       setError(null);
