@@ -709,18 +709,6 @@ function Dashboard() {
                       <span className="text-sm text-gray-600">Applications</span>
                       <span className="text-sm font-medium">{ notifications ? notifications : 0 }</span>
                     </div>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Eye size={14} className="mr-1" /> 
-                      <span>{appliedJobs.reduce((total, job) => total + (job.viewCount || 0), 0)} profile views</span>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-green-50 rounded-lg p-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Interview Rate</span>
-                      <span className="text-sm font-medium">33%</span>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">1 of 3 applications</div>
                   </div>
                   
                   <div className="pt-4">

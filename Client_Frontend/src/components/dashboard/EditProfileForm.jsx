@@ -168,6 +168,7 @@ const EditProfileForm = ({ user, setUser }) => {
               value={useChangeDateFormat(formData.birthDate)}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
             />
           </div>
 
@@ -181,6 +182,7 @@ const EditProfileForm = ({ user, setUser }) => {
               placeholder="Enter Your Gender"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
             >
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -200,6 +202,7 @@ const EditProfileForm = ({ user, setUser }) => {
               placeholder="Enter Your Address"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
             />
           </div>
 
@@ -229,6 +232,7 @@ const EditProfileForm = ({ user, setUser }) => {
             onChange={handleChange}
             rows="3"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            required
           />
         </div>
 
