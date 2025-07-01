@@ -204,9 +204,26 @@ function SignupPage() {
   }
 
   const nextStep = () => {
-    if (currentStep === 4 && password !== confirmPassword) {
-      setPasswordError('Passwords do not match');
-      return;
+    if (currentStep === 4) {
+      if (password !== confirmPassword) {
+        setPasswordError('Passwords do not match');
+        return;
+      }
+
+      if (password.length <= 5 || password.length >= 10) {
+        toast.error('Password length must be between 6 and 9 characters');
+        return;
+      }
+
+      if (!verifyPassword(password)) {
+        toast.error('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+        return;
+      }
+
+      if (!verifyEmail(email)) {
+        toast.error('Please enter a valid email address');
+        return;
+      }
     }
     setCurrentStep(Math.min(currentStep + 1, totalSteps));
   }
