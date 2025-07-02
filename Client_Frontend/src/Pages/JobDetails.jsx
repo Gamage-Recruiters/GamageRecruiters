@@ -243,7 +243,17 @@ function JobDetails() {
               <span className="bg-blue-600 h-6 w-1 rounded-full mr-3"></span>
               Key Responsibilities
             </h3>
-            <p>{job.responsibilities}</p>
+            <p>
+              {(() => {
+                try {
+                  const arr = JSON.parse(job.responsibilities);
+                  if (Array.isArray(arr)) return arr.join(', ');
+                } catch {
+                  return job.responsibilities;
+                }
+                return job.responsibilities;
+              })()}
+            </p>
             {/* <ul className="mt-4 space-y-2">
               {job.responsibilities.map((resp, index) => (
                 <li key={index} className="flex">
@@ -261,7 +271,17 @@ function JobDetails() {
               <span className="bg-green-600 h-6 w-1 rounded-full mr-3"></span>
               Requirements
             </h3>
-            <p>{job.requirements}</p>
+            <p>
+              {(() => {
+                try {
+                  const arr = JSON.parse(job.requirements);
+                  if (Array.isArray(arr)) return arr.join(', ');
+                } catch {
+                  return job.requirements;
+                }
+                return job.requirements;
+              })()}
+            </p>
             {/* <ul className="mt-4 space-y-2">
               {job.requirements.map((req, index) => (
                 <li key={index} className="flex">
@@ -279,7 +299,17 @@ function JobDetails() {
               <span className="bg-purple-600 h-6 w-1 rounded-full mr-3"></span>
               Benefits & Perks
             </h3>
-            <p>{job.benefits}</p>
+            <p>
+              {(() => {
+                try {
+                  const arr = JSON.parse(job.benefits);
+                  if (Array.isArray(arr)) return arr.join(', ');
+                } catch {
+                  return job.benefits;
+                }
+                return job.benefits;
+              })()}
+            </p>
             {/* <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
               {job.benefits.map((benefit, index) => (
                 <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
