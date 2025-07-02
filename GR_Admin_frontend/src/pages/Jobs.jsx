@@ -68,8 +68,15 @@ function Jobs() {
       }
       const result = await response.json();
       if (result.data) {
-        setSelectedJob(result.data);
-        setEditedJob(result.data);
+        // Process the data before setting it
+        const processedJob = {
+          ...result.data,
+          responsibilities: normalizeField(result.data.responsibilities),
+          requirements: normalizeField(result.data.requirements),
+          benefits: normalizeField(result.data.benefits)
+        };
+        setSelectedJob(processedJob);
+        setEditedJob(processedJob);
       } else {
         throw new Error('No job data found');
       }
@@ -80,13 +87,22 @@ function Jobs() {
       setLoading(false);
     }
   };
+
   const normalizeField = (field) => {
     if (!field) return '';
-    if (Array.isArray(field)) return field.join('\n');
+    
+    // If it's already an array, join with newlines
+    if (Array.isArray(field)){
+      return field.join('\n');
+    } 
+    
     try {
-      // If it's a JSON array string, parse and join
-      const arr = JSON.parse(field);
-      if (Array.isArray(arr)) return arr.join('\n');
+      // Try to parse JSON
+      const parsedArray = JSON.parse(field);
+      if (Array.isArray(parsedArray)) {
+        // Return array items joined by newlines
+        return parsedArray.join('\n');
+      }
     } catch {
       // Not JSON, return as is
     }
