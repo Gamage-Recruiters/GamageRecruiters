@@ -264,12 +264,12 @@ function JobDetails() {
             <p>
               {(() => {
                 try {
-                  const arr = JSON.parse(job.responsibilities);
+                  const arr = JSON.parse(job?.responsibilities);
                   if (Array.isArray(arr)) return arr.join(', ');
                 } catch {
-                  return job.responsibilities;
+                  return job?.responsibilities;
                 }
-                return job.responsibilities;
+                return job?.responsibilities;
               })()}
             </p>
             {/* <ul className="mt-4 space-y-2">
@@ -292,12 +292,12 @@ function JobDetails() {
             <p>
               {(() => {
                 try {
-                  const arr = JSON.parse(job.requirements);
+                  const arr = JSON.parse(job?.requirements);
                   if (Array.isArray(arr)) return arr.join(', ');
                 } catch {
-                  return job.requirements;
+                  return job?.requirements;
                 }
-                return job.requirements;
+                return job?.requirements;
               })()}
             </p>
             {/* <ul className="mt-4 space-y-2">
@@ -320,12 +320,12 @@ function JobDetails() {
             <p>
               {(() => {
                 try {
-                  const arr = JSON.parse(job.benefits);
+                  const arr = JSON.parse(job?.benefits);
                   if (Array.isArray(arr)) return arr.join(', ');
                 } catch {
-                  return job.benefits;
+                  return job?.benefits;
                 }
-                return job.benefits;
+                return job?.benefits;
               })()}
             </p>
             {/* <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -340,7 +340,7 @@ function JobDetails() {
 
         <div className="bg-white rounded-lg shadow-md p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">About The Company</h2>
-          <p className="text-gray-700 leading-relaxed">{job.companyDescription}</p>
+          <p className="text-gray-700 leading-relaxed">{job?.companyDescription}</p>
         </div>
 
         {isApplying ? (
