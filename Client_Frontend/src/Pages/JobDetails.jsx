@@ -50,6 +50,7 @@ import SessionTimeout from "../protected/SessionTimeout";
 function JobDetails() {
   const { jobId } = useParams();
   const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
   // const job = jobs.find((job) => job.id === parseInt(jobId));
   const [isApplying, setIsApplying] = useState(false);
 
@@ -63,15 +64,18 @@ function JobDetails() {
   useEffect (() => {
     if(!jobId) {
       toast.error('Error Loading Job .. Id is missing.');
+      setLoading(false);
+      return;
     } 
 
     fetchJobData(jobId);
   }, [jobId])
 
   const fetchJobData = useCallback(async (id) => {
-
+    setLoading(true);
     if(!id) {
       toast.error('Error Occured');
+      setLoading(false);
       return;
     }
 
@@ -83,12 +87,14 @@ function JobDetails() {
       } else {
         toast.error('Error Loading Job');
         console.log(fetchDataByIdResponse.statusText);
+        setJob(null);
         return;
       }
     } catch (error) {
-      console.log(error.message);
+      setJob(null);
       return;
     }
+    setLoading(false);
   }, []);
 
   const handleCVChange = useCallback((e) => {
@@ -177,6 +183,18 @@ function JobDetails() {
   const moveBack = useCallback(() => {
     navigate('/jobs');
   }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+        <SessionTimeout />
+        <div className="text-center p-8 bg-white rounded-lg shadow-md">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-bold text-gray-700">Loading job details...</h2>
+        </div>
+      </div>
+    );
+  }
 
   if (!job) {
     return (
