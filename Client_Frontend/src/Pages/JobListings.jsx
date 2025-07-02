@@ -165,7 +165,7 @@ function JobListings() {
       job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase())||
        (Array.isArray(job.qualifications) && job.qualifications.some(q => q.toLowerCase().includes(searchTerm.toLowerCase())))
     
-    const matchesLocation = selectedLocation === 'All Locations' || job.location === selectedLocation;
+    const matchesLocation = selectedLocation === 'All Locations' || job.location === selectedLocation || job.jobLocation === selectedLocation;
     const matchesJobType = selectedJobType === 'All Types' || job.jobType === selectedJobType;
     
     // Implement proper salary range filtering
