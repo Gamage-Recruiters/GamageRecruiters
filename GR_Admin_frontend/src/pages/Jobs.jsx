@@ -112,12 +112,21 @@ function Jobs() {
   const handleUpdateJob = async () => {
     if (!editedJob) return;
 
-    // Normalize fields before sending to backend
+    // Format array fields before sending to backend
+    const formatFieldForBackend = (field) => {
+      if (!field || field.trim() === '') {
+        return JSON.stringify([]);  // Return empty array as JSON string
+      }
+      // Split by newlines and filter out empty lines
+      const items = field.split('\n').filter(item => item.trim() !== '');
+      return JSON.stringify(items);
+    };
+
     const jobToSave = {
       ...editedJob,
-      requirements: normalizeField(editedJob.requirements),
-      responsibilities: normalizeField(editedJob.responsibilities),
-      benefits: normalizeField(editedJob.benefits),
+      requirements: formatFieldForBackend(editedJob.requirements),
+      responsibilities: formatFieldForBackend(editedJob.responsibilities),
+      benefits: formatFieldForBackend(editedJob.benefits),
     };
 
     try {
@@ -135,13 +144,27 @@ function Jobs() {
         throw new Error('Failed to update job');
       }
 
+      // Update the jobs list with the saved job
       setJobs(prevJobs =>
         prevJobs.map(job =>
-          job.jobId === editedJob.jobId ? jobToSave : job
+          job.jobId === editedJob.jobId ? {
+            ...job,
+            ...jobToSave,
+            // Keep the formatted JSON strings for display
+            requirements: editedJob.requirements,
+            responsibilities: editedJob.responsibilities,
+            benefits: editedJob.benefits
+          } : job
         )
       );
 
-      setSelectedJob(jobToSave);
+      // Update the selected job
+      setSelectedJob({
+        ...jobToSave,
+        requirements: editedJob.requirements,
+        responsibilities: editedJob.responsibilities,
+        benefits: editedJob.benefits
+      });
       setIsEditMode(false);
 
     } catch (err) {
