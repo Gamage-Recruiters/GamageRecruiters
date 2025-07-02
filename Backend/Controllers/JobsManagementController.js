@@ -329,19 +329,36 @@ async function deleteJob(req, res) {
   const { jobId } = req.params; // Job ID from URL
 
   try {
-    const sql = "DELETE FROM jobs WHERE jobId = ?";
-    pool.query(sql, [jobId], (error, result) => {
-      if (error) {
-        console.log(error);
-        return res.status(400).send("Error deleting job");
+    // deleting all the job applications for the job
+    const deleteApplicationsQuery = "DELETE FROM jobapplications WHERE jobId = ?";
+
+    pool.query(deleteApplicationsQuery, [jobId], (appError, appResult) => {
+      if (appError) {
+        console.log("Error deleting job applications:", appError);
+        return res.status(500).send("Error deleting job applications");
       }
 
-      if (result.affectedRows === 0) {
-        return res.status(404).send("Job not found");
-      }
+      console.log(`Deleted ${appResult.affectedRows} job applications for ${jobId}`);
 
-      return res.status(200).json({ message: "Job deleted successfully" });
-    });
+      // deleting the job itself
+      const deleteJobQuery = "DELETE FROM jobs WHERE jobId = ?";
+      pool.query(deleteJobQuery, [jobId], (jobError, jobResult) => {
+        if (jobError) {
+          console.log("Error deleting the job:", jobError);
+          return res.status(400).send("Error deleting job");
+        }
+
+        if (jobResult.affectedRows === 0) {
+          return res.status(404).send("Job not found");
+        }
+
+        return res.status(200).json({
+          message: "Job and all associated applications deleted successfully",
+          deletedApplications: appResult.affectedRows,
+          deletedJobs: jobResult.affectedRows
+        })
+      })
+    })
   } catch (error) {
     console.log(error);
     return res.status(500).send("Server error");
