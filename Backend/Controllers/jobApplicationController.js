@@ -48,11 +48,11 @@ async function applyJob(req, res) {
                 }
 
                 if(result.length === 0) {
-                    return res.status(401).send('User Not Found. You must login first.');
+                    return res.status(401).send('Email is not found.');
                 } 
 
-                if(result[0].firstName !== firstName && result[0].lastName !== lastName) {
-                    return res.status(400).send('Names are not matching. Cannot proceed');
+                if(result[0].firstName !== firstName || result[0].lastName !== lastName) {
+                    return res.status(400).send('Please use the same name as in your profile');
                 }
 
                 // User exists, proceed to insert the application ...

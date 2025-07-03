@@ -14,7 +14,7 @@ const ProfileOverview = ({ user }) => {
   const [cv, setCV] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [cvSelected, setCVSelected] = useState(false);
-
+  const [showImageModal, setShowImageModal] = useState(false);
   const navigate = useNavigate();
   const [isUpdating, setIsUpdating] = useState(false);
   useEffect(() => {
@@ -33,6 +33,13 @@ const ProfileOverview = ({ user }) => {
     }
   }, [user])
 
+  const handleOpenImageModal = () => setShowImageModal(true);
+  const handleCloseImageModal = () => {
+    setShowImageModal(false);
+    setSelectedImage(null);
+    setImage(null);
+  };
+
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -50,45 +57,31 @@ const ProfileOverview = ({ user }) => {
   }, [cv, cvSelected]);
 
   const handleUploadImage = useCallback(async () => {
+  if (!selectedImage) {
+    toast.error('Please select an image to proceed');
+    return;
+  }
 
-    if(!image) {
-      toast.error('Please select an image to proceed');
-      return;
+  const formData = new FormData();
+  formData.append('id', user.userId);
+  formData.append('photo', selectedImage);
+
+  try {
+    const updateUserImageResponse = await axios.put(`${baseURL}/user/upload-user-image`, formData, {
+      withCredentials: true
+    });
+    if (updateUserImageResponse.status === 200) {
+      toast.success('User Image Uploaded Successfully');
+      window.location.reload();
+    } else {
+      toast.error('User Image Upload Failed');
     }
-
-    // if(!useCheckValidImageFile(image)) {
-    //   toast.error('Invalid File Type');
-    //   return;
-    // }
-
-    const formData = new FormData();
-
-    formData.append('id', user.userId);
-
-    if(image) {
-      formData.append('photo', selectedImage);
-    }
-
-    console.log(formData);
-
-    try {
-      const updateUserImageResponse = await axios.put(`${baseURL}/user/upload-user-image`, formData, {
-        withCredentials: true
-      });
-      console.log(updateUserImageResponse.data);
-      if(updateUserImageResponse.status == 200) {
-        toast.success('User Image Uploaded Successfully');
-        console.log(updateUserImageResponse.data.image);
-        window.location.reload();
-      } else {
-        toast.error('User Image Upload Failed');
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  }, [image, selectedImage]);
+  } catch (error) {
+    toast.error('User Image Upload Failed');
+  } finally {
+    handleCloseImageModal();
+  }
+}, [selectedImage, user.userId]);
 
   const handleCVUpdate = useCallback(async () => {
     if(!cv) {
@@ -185,6 +178,41 @@ const ProfileOverview = ({ user }) => {
   return (
     <div className="bg-white rounded-xl shadow-md p-6 transition-all">
       <ToastContainer/>
+      {/* Image Upload Modal */}
+      {showImageModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg p-6 w-80 relative">
+            <button
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+              onClick={handleCloseImageModal}
+            >
+              ×
+            </button>
+            <h2 className="text-lg font-semibold mb-4">Update Profile Image</h2>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="mb-3"
+            />
+            {image && (
+              <img
+                src={image}
+                alt="Preview"
+                className="w-24 h-24 rounded-full object-cover mx-auto mb-3"
+              />
+            )}
+            <button
+              className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
+              onClick={handleUploadImage}
+              disabled={!selectedImage}
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
         {/* Profile Image */}
         <div className="relative group">
@@ -194,7 +222,7 @@ const ProfileOverview = ({ user }) => {
             className="w-24 h-24 rounded-full object-cover border-4 border-indigo-100 group-hover:border-indigo-300 transition-all"
           />
           <div className="absolute bottom-0 right-0 bg-indigo-500 p-1 rounded-full text-white">
-            <Edit3 size={14} onClick={handleUploadImage} style={{ cursor: "pointer" }}/>
+            <Edit3 size={14} onClick={handleOpenImageModal} style={{ cursor: "pointer" }}/>
           </div>
         </div>
 
@@ -202,7 +230,7 @@ const ProfileOverview = ({ user }) => {
         <div className="flex-1">
           <h2 className="text-2xl font-bold text-gray-900">{user.firstName && user.lastName ? useConCatName(user.firstName, user.lastName) : ''}</h2>
           <p className="text-gray-600 mt-1">{user.profileDescription}</p>
-          <input type="file" name="image" onChange={handleImageChange} className="cursor-pointer"/>
+          {/* <input type="file" name="image" onChange={handleImageChange} className="cursor-pointer"/> */}
           {/* Social Links */}
           <div className="flex flex-wrap gap-3 mt-3">
             {user.portfolioLink && (

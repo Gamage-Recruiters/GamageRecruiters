@@ -68,8 +68,15 @@ function Jobs() {
       }
       const result = await response.json();
       if (result.data) {
-        setSelectedJob(result.data);
-        setEditedJob(result.data);
+        // Process the data before setting it
+        const processedJob = {
+          ...result.data,
+          responsibilities: normalizeField(result.data.responsibilities),
+          requirements: normalizeField(result.data.requirements),
+          benefits: normalizeField(result.data.benefits)
+        };
+        setSelectedJob(processedJob);
+        setEditedJob(processedJob);
       } else {
         throw new Error('No job data found');
       }
@@ -81,10 +88,47 @@ function Jobs() {
     }
   };
 
+  const normalizeField = (field) => {
+    if (!field) return '';
+    
+    // If it's already an array, join with newlines
+    if (Array.isArray(field)){
+      return field.join('\n');
+    } 
+    
+    try {
+      // Try to parse JSON
+      const parsedArray = JSON.parse(field);
+      if (Array.isArray(parsedArray)) {
+        // Return array items joined by newlines
+        return parsedArray.join('\n');
+      }
+    } catch {
+      // Not JSON, return as is
+    }
+    return field;
+  };
   // Handle updating job
   const handleUpdateJob = async () => {
     if (!editedJob) return;
-    
+
+    // Format array fields before sending to backend
+    const formatFieldForBackend = (field) => {
+      if (!field || field.trim() === '') {
+        return JSON.stringify([]);  // Return empty array as JSON string
+      }
+      // Split by newlines and filter out empty lines
+      const items = field.split('\n').filter(item => item.trim() !== '');
+      return JSON.stringify(items);
+    };
+
+    const jobToSave = {
+      ...editedJob,
+      requirements: formatFieldForBackend(editedJob.requirements),
+      responsibilities: formatFieldForBackend(editedJob.responsibilities),
+      benefits: formatFieldForBackend(editedJob.benefits),
+    };
+
     try {
       setIsSubmitting(true);
       const response = await fetch(`${baseURL}/api/jobs/update/${editedJob.jobId}`, {
@@ -92,24 +136,37 @@ function Jobs() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(editedJob),
+        body: JSON.stringify(jobToSave),
         credentials: 'include'
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to update job');
       }
-      
-      // Update the job in local state
-      setJobs(prevJobs => 
-        prevJobs.map(job => 
-          job.jobId === editedJob.jobId ? editedJob : job
+
+      // Update the jobs list with the saved job
+      setJobs(prevJobs =>
+        prevJobs.map(job =>
+          job.jobId === editedJob.jobId ? {
+            ...job,
+            ...jobToSave,
+            // Keep the formatted JSON strings for display
+            requirements: editedJob.requirements,
+            responsibilities: editedJob.responsibilities,
+            benefits: editedJob.benefits
+          } : job
         )
       );
-      
-      setSelectedJob(editedJob);
+
+      // Update the selected job
+      setSelectedJob({
+        ...jobToSave,
+        requirements: editedJob.requirements,
+        responsibilities: editedJob.responsibilities,
+        benefits: editedJob.benefits
+      });
       setIsEditMode(false);
-      
+
     } catch (err) {
       console.error('Error updating job:', err);
       setError(err.message);
@@ -814,8 +871,8 @@ function Jobs() {
                       </label>
                       {isEditMode ? (
                         <textarea
-                          name="description"
-                          value={editedJob.description || ''}
+                          name="jobDescription"
+                          value={editedJob.jobDescription || ''}
                           onChange={handleInputChange}
                           rows={6}
                           className={`w-full p-2 rounded-lg resize-y ${
@@ -828,9 +885,9 @@ function Jobs() {
                         <div className={`p-3 rounded-lg ${
                           isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
                         }`}>
-                          {selectedJob.description ? (
+                          {selectedJob.jobDescription ? (
                             <p className={`whitespace-pre-line ${textColor}`}>
-                              {selectedJob.description}
+                              {selectedJob.jobDescription}
                             </p>
                           ) : (
                             <p className={mutedText}>No description provided</p>
@@ -865,7 +922,15 @@ function Jobs() {
                         }`}>
                           {selectedJob.requirements ? (
                             <p className={`whitespace-pre-line ${textColor}`}>
-                              {selectedJob.requirements}
+                              {(() => {
+                                try {
+                                  const arr = JSON.parse(selectedJob.requirements);
+                                  if (Array.isArray(arr)) return arr.join(', ');
+                                } catch {
+                                  return selectedJob.requirements;
+                                }
+                                return selectedJob.requirements;
+                              })()}
                             </p>
                           ) : (
                             <p className={mutedText}>No requirements listed</p>
@@ -874,39 +939,121 @@ function Jobs() {
                       )}
                     </div>
 
-                    {/* Application Link */}
+                    {/* Responsibilities */}
                     <div>
                       <label className={`block text-sm font-medium mb-1 ${
                         isDarkMode ? 'text-gray-300' : 'text-gray-700'
                       }`}>
-                        Application Link
+                        Responsibilities
                       </label>
                       {isEditMode ? (
-                        <input
-                          type="text"
-                          name="applicationLink"
-                          value={editedJob.applicationLink || ''}
+                        <textarea
+                          name="responsibilities"
+                          value={editedJob.responsibilities || ''}
                           onChange={handleInputChange}
-                          placeholder="https://example.com/apply"
-                          className={`w-full p-2 rounded-lg ${
+                          rows={4}
+                          placeholder="Enter job responsibilities, one per line"
+                          className={`w-full p-2 rounded-lg resize-y ${
                             isDarkMode 
                               ? 'bg-gray-700 border-gray-600 text-gray-200'
                               : 'border border-gray-200'
                           }`}
                         />
                       ) : (
-                        <div>
-                          {selectedJob.applicationLink ? (
-                            <a 
-                              href={selectedJob.applicationLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`text-violet-500 hover:underline`}
-                            >
-                              {selectedJob.applicationLink}
-                            </a>
+                        <div className={`p-3 rounded-lg ${
+                          isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                        }`}>
+                          {selectedJob.responsibilities ? (
+                            <p className={`whitespace-pre-line ${textColor}`}>
+                              {(() => {
+                                try {
+                                  const arr = JSON.parse(selectedJob.responsibilities);
+                                  if (Array.isArray(arr)) return arr.join(', ');
+                                } catch {
+                                  return selectedJob.responsibilities;
+                                }
+                                return selectedJob.responsibilities;
+                              })()}
+                            </p>
                           ) : (
-                            <p className={mutedText}>No application link provided</p>
+                            <p className={mutedText}>No responsibilities listed</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Benefits */}
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                      }`}>
+                        Benefits
+                      </label>
+                      {isEditMode ? (
+                        <textarea
+                          name="benefits"
+                          value={editedJob.benefits || ''}
+                          onChange={handleInputChange}
+                          rows={4}
+                          placeholder="Enter job benefits, one per line"
+                          className={`w-full p-2 rounded-lg resize-y ${
+                            isDarkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-200'
+                              : 'border border-gray-200'
+                          }`}
+                        />
+                      ) : (
+                        <div className={`p-3 rounded-lg ${
+                          isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                        }`}>
+                          {selectedJob.benefits ? (
+                            <p className={`whitespace-pre-line ${textColor}`}>
+                              {(() => {
+                                try {
+                                  const arr = JSON.parse(selectedJob.benefits);
+                                  if (Array.isArray(arr)) return arr.join(', ');
+                                } catch {
+                                  return selectedJob.benefits;
+                                }
+                                return selectedJob.benefits;
+                              })()}
+                            </p>
+                          ) : (
+                            <p className={mutedText}>No benefits listed</p>
+                          )}
+                        </div>
+                      )}
+                    </div>  
+
+                    {/* Company Description */}
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                      }`}>
+                        Company Description
+                      </label>
+                      {isEditMode ? (
+                        <textarea
+                          name="companyDescription"
+                          value={editedJob.companyDescription || ''}
+                          onChange={handleInputChange}
+                          rows={4}
+                          className={`w-full p-2 rounded-lg resize-y ${
+                            isDarkMode 
+                              ? 'bg-gray-700 border-gray-600 text-gray-200'
+                              : 'border border-gray-200'
+                          }`}
+                        />
+                      ) : (
+                        <div className={`p-3 rounded-lg ${
+                          isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                        }`}>
+                          {selectedJob.companyDescription ? (
+                            <p className={`whitespace-pre-line ${textColor}`}>
+                              {selectedJob.companyDescription}
+                            </p>
+                          ) : (
+                            <p className={mutedText}>No company description provided</p>
                           )}
                         </div>
                       )}

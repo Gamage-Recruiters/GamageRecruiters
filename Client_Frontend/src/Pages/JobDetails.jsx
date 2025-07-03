@@ -50,6 +50,7 @@ import SessionTimeout from "../protected/SessionTimeout";
 function JobDetails() {
   const { jobId } = useParams();
   const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
   // const job = jobs.find((job) => job.id === parseInt(jobId));
   const [isApplying, setIsApplying] = useState(false);
 
@@ -63,15 +64,18 @@ function JobDetails() {
   useEffect (() => {
     if(!jobId) {
       toast.error('Error Loading Job .. Id is missing.');
+      setLoading(false);
+      return;
     } 
 
     fetchJobData(jobId);
   }, [jobId])
 
   const fetchJobData = useCallback(async (id) => {
-
+    setLoading(true);
     if(!id) {
       toast.error('Error Occured');
+      setLoading(false);
       return;
     }
 
@@ -83,12 +87,14 @@ function JobDetails() {
       } else {
         toast.error('Error Loading Job');
         console.log(fetchDataByIdResponse.statusText);
+        setJob(null);
         return;
       }
     } catch (error) {
-      console.log(error.message);
+      setJob(null);
       return;
     }
+    setLoading(false);
   }, []);
 
   const handleCVChange = useCallback((e) => {
@@ -164,6 +170,11 @@ function JobDetails() {
         return;
       }
     } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data);
+      } else {
+        toast.error('An error occurred while submitting your application');
+      }
       console.log(error);
       return;
     }
@@ -172,6 +183,18 @@ function JobDetails() {
   const moveBack = useCallback(() => {
     navigate('/jobs');
   }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+        <SessionTimeout />
+        <div className="text-center p-8 bg-white rounded-lg shadow-md">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-bold text-gray-700">Loading job details...</h2>
+        </div>
+      </div>
+    );
+  }
 
   if (!job) {
     return (
@@ -231,14 +254,24 @@ function JobDetails() {
       <div className="mx-auto max-w-4xl px-6 py-8">
         <div className="bg-white rounded-lg shadow-md p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">About The Role</h2>
-          <p className="text-gray-700 leading-relaxed">{job.description}</p>
+          <p className="text-gray-700 leading-relaxed">{job.jobDescription}</p>
 
           <div className="mt-8">
             <h3 className="text-xl font-semibold text-gray-900 flex items-center">
               <span className="bg-blue-600 h-6 w-1 rounded-full mr-3"></span>
               Key Responsibilities
             </h3>
-            <p>{job.responsibilities}</p>
+            <p>
+              {(() => {
+                try {
+                  const arr = JSON.parse(job?.responsibilities);
+                  if (Array.isArray(arr)) return arr.join(', ');
+                } catch {
+                  return job?.responsibilities;
+                }
+                return job?.responsibilities;
+              })()}
+            </p>
             {/* <ul className="mt-4 space-y-2">
               {job.responsibilities.map((resp, index) => (
                 <li key={index} className="flex">
@@ -256,7 +289,17 @@ function JobDetails() {
               <span className="bg-green-600 h-6 w-1 rounded-full mr-3"></span>
               Requirements
             </h3>
-            <p>{job.requirements}</p>
+            <p>
+              {(() => {
+                try {
+                  const arr = JSON.parse(job?.requirements);
+                  if (Array.isArray(arr)) return arr.join(', ');
+                } catch {
+                  return job?.requirements;
+                }
+                return job?.requirements;
+              })()}
+            </p>
             {/* <ul className="mt-4 space-y-2">
               {job.requirements.map((req, index) => (
                 <li key={index} className="flex">
@@ -274,7 +317,17 @@ function JobDetails() {
               <span className="bg-purple-600 h-6 w-1 rounded-full mr-3"></span>
               Benefits & Perks
             </h3>
-            <p>{job.benefits}</p>
+            <p>
+              {(() => {
+                try {
+                  const arr = JSON.parse(job?.benefits);
+                  if (Array.isArray(arr)) return arr.join(', ');
+                } catch {
+                  return job?.benefits;
+                }
+                return job?.benefits;
+              })()}
+            </p>
             {/* <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
               {job.benefits.map((benefit, index) => (
                 <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
@@ -287,7 +340,7 @@ function JobDetails() {
 
         <div className="bg-white rounded-lg shadow-md p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">About The Company</h2>
-          <p className="text-gray-700 leading-relaxed">{job.companyDescription}</p>
+          <p className="text-gray-700 leading-relaxed">{job?.companyDescription}</p>
         </div>
 
         {isApplying ? (
