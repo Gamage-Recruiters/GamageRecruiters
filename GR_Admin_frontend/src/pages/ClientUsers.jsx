@@ -59,6 +59,39 @@ function ClientUsers() {
     }
   };
 
+    const handleExportClients = () => {
+  // Choose the clients you want to export (filtered, sorted, or all)
+  const exportData = sortedClients.length ? sortedClients : clients;
+
+  // Prepare CSV header
+  const headers = ['First Name', 'Last Name', 'Email', 'Status', 'Joined'];
+  const rows = exportData.map(client => [
+    client.firstName,
+    client.lastName,
+    client.email,
+    client.status,
+    client.createdAt,
+  ]);
+
+  // Convert to CSV string
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.map(field => `"${(field ?? '').toString().replace(/"/g, '""')}"`).join(',')),
+  ].join('\r\n');
+
+  // Create a blob and trigger download
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'clients.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+
   const filteredClients = clients.filter(client => {
     const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
     const matchesSearch = fullName.includes(searchTerm.toLowerCase()) ||
@@ -99,7 +132,9 @@ function ClientUsers() {
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage and view all client accounts</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          onClick={handleExportClients}
+          >
             <Download className="h-4 w-4 mr-2" /> Export
           </button>
           <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
