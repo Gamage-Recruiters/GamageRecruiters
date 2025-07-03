@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 const services = [
   {
     title: 'Staffing and Recruiting',
+    category: 'Recruitment',
     description: 'We provide end-to-end recruitment solutions for permanent and contract positions, ensuring businesses find the right talent.',
     features: [
       'Comprehensive candidate screening',
@@ -22,6 +23,7 @@ const services = [
   },
   {
     title: 'Interview Preparation',
+    category: 'Recruitment',
     description: 'Our expert-led coaching helps candidates succeed in job interviews with tailored strategies and confidence-building techniques.',
     features: [
       'Personalized coaching',
@@ -37,6 +39,7 @@ const services = [
   },
   {
     title: 'HR Consultancy',
+    category: 'HR Services',
     description: 'We offer strategic HR solutions to enhance organizational effectiveness and improve workforce management.',
     features: [
       'HR policy development',
@@ -52,6 +55,7 @@ const services = [
   },
   {
     title: 'Salary Benchmarking',
+    category: 'HR Services',
     description: 'Our salary benchmarking service provides market-based compensation insights to help businesses remain competitive.',
     features: [
       'Market-based salary analysis',
@@ -66,6 +70,7 @@ const services = [
   },
   {
     title: 'Global Recruitment Services',
+    category: 'Recruitment',
     description: 'We specialize in international staffing solutions, connecting businesses with global talent across industries.',
     features: [
       'International staffing solutions',
@@ -80,6 +85,7 @@ const services = [
   },
   {
     title: 'Background Verification',
+    category: 'HR Services',
     description: 'Ensure hiring integrity with our thorough background checks, covering professional, educational, and criminal records.',
     features: [
       'Pre-employment screening',
@@ -94,6 +100,7 @@ const services = [
   },
   {
     title: 'Training and Development',
+    category: 'Training',
     description: 'Enhance employee skills and leadership capabilities with our customized corporate training programs.',
     features: [
       'Corporate training programs',
@@ -471,7 +478,15 @@ function Services() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
+           {services
+            .filter(service => {
+              if (activeTab === 0) return true; // All Services
+              if (activeTab === 1) return service.category === 'Recruitment';
+              if (activeTab === 2) return service.category === 'HR Services';
+              if (activeTab === 3) return service.category === 'Training';
+              return true;
+            })
+            .map((service, index) => (
               <ServiceCard key={service.title} service={service} index={index} />
             ))}
           </div>

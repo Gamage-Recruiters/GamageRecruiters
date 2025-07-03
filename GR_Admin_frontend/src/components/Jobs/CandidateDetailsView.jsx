@@ -298,6 +298,29 @@ const CandidateDetailsView = () => {
     return formatDate(sortedApps[0].appliedDate);
   };
 
+  // View application
+  const viewResume = async (application) => {
+    console.log('Resume file:', application.resume);
+  
+    if (!application.resume) {
+      showToastMessage('No resume found for this application', 'error');
+      return;
+    }
+
+    let cvLink;
+    const patternRelatedToPath = 'uploads/resumes/';
+
+    // Check if the resume path already includes the uploads path
+    if (application.resume.includes(patternRelatedToPath)) {
+      cvLink = `${baseURL}/${application.resume}`;
+    } else {
+      cvLink = `${baseURL}/uploads/resumes/${application.resume}`;
+    }
+
+    console.log('CV Link:', cvLink);
+    window.open(cvLink, '_blank');
+    showToastMessage('Opening CV in new tab', 'success');
+  }
   return (
     <div className="bg-gray-900 min-h-screen p-6 text-gray-100">
       {/* Header */}
@@ -581,6 +604,7 @@ const CandidateDetailsView = () => {
                           <FiDownload />
                         </button>
                         <button
+                          onClick={() => viewResume(application)}
                           className="text-cyan-400 hover:text-cyan-300 transition-colors"
                           title="View Application"
                         >

@@ -168,11 +168,6 @@ const WorkshopsAndSeminarsPage = () => {
             >
               Explore Events
             </button>
-            <button 
-              className="px-6 py-3 bg-transparent border-2 border-white text-white font-medium rounded-full hover:bg-white hover:bg-opacity-10 transform transition duration-300 hover:scale-105"
-            >
-              About
-            </button>
           </div>
         </div>
 
@@ -379,20 +374,6 @@ const WorkshopsAndSeminarsPage = () => {
                   )}
 
                   <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center">
-                      <div className="flex -space-x-2 mr-2">
-                        {[...Array(3)].map((_, i) => (
-                          <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-                            <img
-                              src={`/api/placeholder/24/24`}
-                              alt="Attendee"
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <span className="text-xs text-gray-500">{Math.floor(event.spots * 0.7) || '15'} attending</span>
-                    </div>
                     
                     <button 
                       onClick={() => toggleEventDetails(event.id)}
@@ -404,7 +385,7 @@ const WorkshopsAndSeminarsPage = () => {
 
                   <div className="mt-5 pt-5 border-t border-gray-100 flex justify-between items-center">
                     <div className="text-gray-700">
-                      <span className="font-bold text-gray-900">${parseFloat(event.price || 0).toFixed(2)}</span>
+                      <span className="font-bold text-gray-900">Rs {parseFloat(event.price || 0).toFixed(2)}</span>
                     </div>
                     <a 
                       href={event.link || "#"}

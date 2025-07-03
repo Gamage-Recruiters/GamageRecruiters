@@ -80,43 +80,61 @@ function Jobs() {
       setLoading(false);
     }
   };
-
+  const normalizeField = (field) => {
+    if (!field) return '';
+    if (Array.isArray(field)) return field.join('\n');
+    try {
+      // If it's a JSON array string, parse and join
+      const arr = JSON.parse(field);
+      if (Array.isArray(arr)) return arr.join('\n');
+    } catch {
+      // Not JSON, return as is
+    }
+    return field;
+  };
   // Handle updating job
   const handleUpdateJob = async () => {
-    if (!editedJob) return;
-    
-    try {
-      setIsSubmitting(true);
-      const response = await fetch(`${baseURL}/api/jobs/update/${editedJob.jobId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editedJob),
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update job');
-      }
-      
-      // Update the job in local state
-      setJobs(prevJobs => 
-        prevJobs.map(job => 
-          job.jobId === editedJob.jobId ? editedJob : job
-        )
-      );
-      
-      setSelectedJob(editedJob);
-      setIsEditMode(false);
-      
-    } catch (err) {
-      console.error('Error updating job:', err);
-      setError(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
+  if (!editedJob) return;
+
+  // Normalize fields before sending to backend
+  const jobToSave = {
+    ...editedJob,
+    requirements: normalizeField(editedJob.requirements),
+    responsibilities: normalizeField(editedJob.responsibilities),
+    benefits: normalizeField(editedJob.benefits),
   };
+
+  try {
+    setIsSubmitting(true);
+    const response = await fetch(`${baseURL}/api/jobs/update/${editedJob.jobId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jobToSave),
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update job');
+    }
+
+    setJobs(prevJobs =>
+      prevJobs.map(job =>
+        job.jobId === editedJob.jobId ? jobToSave : job
+      )
+    );
+
+    setSelectedJob(jobToSave);
+    setIsEditMode(false);
+
+  } catch (err) {
+    console.error('Error updating job:', err);
+    setError(err.message);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   // Apply filters and search
   const filteredJobs = Array.isArray(jobs) ? jobs.filter(job => {
@@ -865,7 +883,15 @@ function Jobs() {
                         }`}>
                           {selectedJob.requirements ? (
                             <p className={`whitespace-pre-line ${textColor}`}>
-                              {selectedJob.requirements}
+                              {(() => {
+                                try {
+                                  const arr = JSON.parse(selectedJob.requirements);
+                                  if (Array.isArray(arr)) return arr.join(', ');
+                                } catch {
+                                  return selectedJob.requirements;
+                                }
+                                return selectedJob.requirements;
+                              })()}
                             </p>
                           ) : (
                             <p className={mutedText}>No requirements listed</p>
