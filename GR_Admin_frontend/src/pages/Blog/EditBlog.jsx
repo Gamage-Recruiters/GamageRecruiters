@@ -856,6 +856,7 @@ useEffect(() => {
                                 type="file" 
                                 className="hidden" 
                                 accept="image/*" 
+                                onChange={(e) => handleFileChange(e, 'authorImage')}
                               />
                             </div>
                             <div>
