@@ -17,7 +17,7 @@ export default function ViewClient() {
         });
         setClient(res.data.user
         );
-      
+
       } catch (err) {
         console.error('Error fetching client:', err);
         setError(err.response?.data?.message || 'Failed to load client details');
@@ -86,7 +86,7 @@ export default function ViewClient() {
         
         <Detail label="Profile Description" value={client.profileDescription} />
         
-        {client.cv && (
+
   <div>
     <div className="text-gray-500 text-sm">CV</div>
     <div className="text-black font-medium">
