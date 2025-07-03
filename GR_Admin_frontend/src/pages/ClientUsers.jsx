@@ -19,29 +19,28 @@ function ClientUsers() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  useEffect(() => {
+  
     const fetchClients = async () => {
-      try {
-        const response = await axios.get(`${baseURL}/user/all`, {
-          withCredentials: true
-        });
-        const allUsers = response.data.data;
-
-        // Optionally add a fake status to each user
-        const enhancedUsers = allUsers.map(user => ({
-          ...user,
-          status: Math.random() > 0.5 ? 'active' : 'inactive', // Mock status
-        }));
-
-        setClients(enhancedUsers);
-      } catch (err) {
-        console.error('Error fetching clients:', err);
-        setError('Failed to load clients');
-      } finally {
-        setLoading(false);
-      }
+    setLoading(true);
+    try {
+      const response = await axios.get(`${baseURL}/user/all`, {
+        withCredentials: true
+      });
+      const allUsers = response.data.data;
+      const enhancedUsers = allUsers.map(user => ({
+        ...user,
+        status: Math.random() > 0.5 ? 'active' : 'inactive', // Mock status
+      }));
+      setClients(enhancedUsers);
+    } catch (err) {
+      console.error('Error fetching clients:', err);
+      setError('Failed to load clients');
+    } finally {
+      setLoading(false);
+    }
     };
 
+    useEffect(() => {
     fetchClients();
   }, []);
 
@@ -59,9 +58,27 @@ function ClientUsers() {
     }
   };
 
+
+  const filteredClients = clients.filter(client => {
+    const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
+    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = filterStatus === 'all' || client.status === filterStatus;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const sortedClients = [...filteredClients].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+  });
+
+
   // Handle client export
 
-    const handleExportClients = () => {
+  const handleExportClients = () => {
   // Choose the clients you want to export (filtered, sorted, or all)
   const exportData = sortedClients.length ? sortedClients : clients;
 
@@ -91,25 +108,11 @@ function ClientUsers() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-};
+  };
 
+  
 
-  const filteredClients = clients.filter(client => {
-    const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus = filterStatus === 'all' || client.status === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const sortedClients = [...filteredClients].sort((a, b) => {
-    const dateA = new Date(a.createdAt).getTime();
-    const dateB = new Date(b.createdAt).getTime();
-    return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-  });
-
+  
   const toggleSortDirection = () => {
     setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
   };
@@ -125,6 +128,7 @@ function ClientUsers() {
     if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
     return `${Math.floor(diffInDays / 365)} years ago`;
   };
+  
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -139,7 +143,8 @@ function ClientUsers() {
           >
             <Download className="h-4 w-4 mr-2" /> Export
           </button>
-          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          onClick={fetchClients}>
             <RefreshCw className="h-4 w-4 mr-2" /> Refresh
           </button>
         </div>
@@ -296,6 +301,7 @@ function ClientUsers() {
       </div>
     </motion.div>
   );
+
 }
 
 export default ClientUsers;
