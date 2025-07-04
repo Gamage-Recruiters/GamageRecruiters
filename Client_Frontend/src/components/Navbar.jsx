@@ -17,7 +17,7 @@ const navigation = [
 const userNavigation = [
   { name: 'Login', href: '/login', icon: '→' },
   { name: 'Sign Up', href: '/signup', icon: '✦' },
-  { name: 'Dashboard', href: '/dashboard', icon: '📊' },
+  { name: 'Dashboard', href: '/dashboard', icon: '☰' },
 ];
 
 export default function Navbar() {
