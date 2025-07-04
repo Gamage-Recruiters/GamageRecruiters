@@ -20,7 +20,7 @@ import baseURL from "../config/axiosPortConfig";
 import SessionTimeout from "../protected/SessionTimeout";
 import verifyToken from "../scripts/verifyToken";
 import { useNavigate } from "react-router-dom";
-
+import Navbar from "../components/Navbar";
 // Animated Tab Context
 const TabContext = ({ children, defaultTab }) => {
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -533,7 +533,9 @@ function Dashboard() {
 
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 min-h-screen p-4 md:p-6 transition-all duration-300">
+    <>
+    <Navbar fixedColor />
+    <div className="bg-gradient-to-br from-gray-50 mt-12 to-indigo-50 min-h-screen p-4 md:p-6 transition-all duration-300">
      <ToastContainer/>
      {/* Session timeout logic will run in background */}
      <SessionTimeout />
@@ -838,6 +840,7 @@ function Dashboard() {
         }
       `}</style>
     </div>
+    </>
   );
 }
 export default memo(Dashboard)

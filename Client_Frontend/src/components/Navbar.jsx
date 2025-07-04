@@ -20,7 +20,7 @@ const userNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: '📊' },
 ];
 
-export default function Navbar() {
+export default function Navbar({ fixedColor }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState('/');
@@ -77,7 +77,9 @@ export default function Navbar() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className={`fixed w-full z-40 transition-all duration-300 ${
-        scrolled ? 'bg-black/50 backdrop-blur-lg shadow-lg' : 'bg-transparent'
+        fixedColor
+          ? 'bg-black/50 backdrop-blur-lg shadow-lg'
+          : (scrolled ? 'bg-black/50 backdrop-blur-lg shadow-lg' : 'bg-transparent')
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-2 lg:px-8" aria-label="Global">
