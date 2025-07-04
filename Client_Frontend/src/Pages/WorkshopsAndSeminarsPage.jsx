@@ -2,7 +2,7 @@ import React, { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, MapPin, ArrowRight, Search, Filter, Users, Star, ChevronDown, X, Bookmark, Share2 } from 'lucide-react';
 import baseURL from '../config/axiosPortConfig';
-
+import { toast, ToastContainer } from "react-toastify";
 
 // Categories for filtering
 const categories = [
@@ -34,7 +34,7 @@ const WorkshopsAndSeminarsPage = () => {
   //share link
   const handleCopyLink = (link) => {
     navigator.clipboard.writeText(link);
-    alert('Link copied to clipboard!');
+    toast.success('Link copied to clipboard!');
   };
 
   useEffect(() => {
@@ -139,6 +139,7 @@ const WorkshopsAndSeminarsPage = () => {
 
   return (
     <div className="bg-white min-h-screen">
+      <ToastContainer />
       {/* Hero Section with Video Background */}
       <div className="relative h-96 overflow-hidden">
         {showVideo ? (
