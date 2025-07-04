@@ -158,21 +158,21 @@ function InquiryManagement() {
               </div>
               <div className="flex items-center text-gray-400">
                 <Calendar className="h-4 w-4 mr-1" />
-                <span> 5/2/2025</span>
+                <span> {formatDate(inquiry.date)}</span>
               </div>
             </div>
 
             <div className="space-y-4">
               <div>
                 <h5 className="text-sm uppercase text-gray-500 mb-1">Subject</h5>
-                <p className="text-white font-medium"> {inquiry.subject}</p>
+                <p className="text-white font-medium"> {inquiry?.subject}</p>
               </div>
 
               <div>
                 <h5 className="text-sm uppercase text-gray-500 mb-1">Phone Number</h5>
                 <p className="text-white flex items-center">
                   <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                  {inquiry.phoneNumber}
+                  {inquiry?.phoneNumber}
                 </p>
               </div>
 
@@ -267,12 +267,12 @@ function InquiryManagement() {
                         <h3 className="text-lg font-semibold text-white truncate">{inquiry.name}</h3>
                         <div className="flex items-center text-xs text-gray-400">
                           <Calendar className="h-3 w-3 mr-1" />
-                          <span> Apr 29, 2025, 09:15 AM</span>
+                          <span>{formatDate(inquiry.date)}</span>
                         </div>
                       </div>
 
                       <div className="space-y-3 mb-4">
-                        <p className="text-sm text-gray-300 font-medium truncate">{inquiry.subject}</p>
+                        <p className="text-sm text-gray-300 font-medium truncate">{inquiry?.subject}</p>
                         <p className="text-xs text-gray-400 flex items-center">
                           <Mail className="h-3 w-3 mr-1" />
 
@@ -280,7 +280,7 @@ function InquiryManagement() {
                         </p>
                         <p className="text-xs text-gray-400 flex items-center">
                           <Phone className="h-3 w-3 mr-1" />
-                          {inquiry.phoneNumber}
+                          {inquiry?.phoneNumber}
 
 
                         </p>

@@ -17,7 +17,7 @@ function LoginPage() {
     const checkAuth = async () => {
       try {
         // Make a request to an endpoint that verifies the JWT cookie
-        const response = await axios.get(`${baseURL}/user/all`, {
+        const response = await axios.get(`${baseURL}/auth/check`, {
           withCredentials: true // Important to send cookies
         });
         
