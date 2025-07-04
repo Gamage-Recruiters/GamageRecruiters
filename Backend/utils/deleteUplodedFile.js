@@ -9,7 +9,7 @@ const paths = {
     blog: path.join(__dirname, '../uploads/blogs/images'),
     blogCover: path.join(__dirname, '../uploads/blogs/covers'),
     authorImage: path.join(__dirname, '../uploads/blogs/authors'), 
-    resume: path.join(__dirname, '../uploads/appliedJobs/resumes'),
+    resume: path.join(__dirname, '../uploads/resumes'),
     workshopImage: path.join(__dirname, '../uploads/workshops/images'),
 };
 
