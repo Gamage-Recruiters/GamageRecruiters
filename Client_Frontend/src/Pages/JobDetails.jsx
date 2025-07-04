@@ -171,7 +171,13 @@ function JobDetails() {
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        toast.error(error.response.data);
+        if ((typeof error.response.data === 'object' && error.response.data.code === 'ER_DUP_ENTRY') ||
+          // if error is an string
+          (typeof error.response.data === 'string' && error.response.data.includes('Duplicate entry'))) {
+          toast.error('You have already applied for this job');
+        } else {
+          toast.error(error.response.data);
+        }
       } else {
         toast.error('An error occurred while submitting your application');
       }
