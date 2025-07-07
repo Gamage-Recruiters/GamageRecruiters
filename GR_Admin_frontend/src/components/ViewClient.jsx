@@ -29,6 +29,17 @@ export default function ViewClient() {
     if (userId) fetchClient();
   }, [userId]);
 
+  // Helper to format date strings
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   if (loading) return (
     <div className="flex justify-center items-center h-64">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -44,7 +55,7 @@ export default function ViewClient() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <Detail label="Full Name" value={`${client.firstName || ''} ${client.lastName || ''}`} />
         <Detail label="Gender" value={client.gender} />
-        <Detail label="Birth Date" value={client.birthDate} />
+        <Detail label="Birth Date" value={formatDate(client.birthDate)} />
         <Detail label="Email" value={client.email} />
         <Detail label="Phone 1" value={client.phoneNumber1} />
         <Detail label="Phone 2" value={client.phoneNumber2} />
