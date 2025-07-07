@@ -86,25 +86,25 @@ export default function ViewClient() {
         
         <Detail label="Profile Description" value={client.profileDescription} />
         
-
-  <div>
-    <div className="text-gray-500 text-sm">CV</div>
-    <div className="text-black font-medium">
-      <a
-        href={
-          client.cv.startsWith('http')
-            ? client.cv
-            : `${baseURL}/uploads/cv/${client.cv.replace(/^.*[\\/]/, '')}`
-        }
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:text-blue-800 underline"
-      >
-        View CV
-      </a>
-    </div>
-  </div>
-)}
+        {client.cv && (
+          <div>
+            <div className="text-gray-500 text-sm">CV</div>
+            <div className="text-black font-medium">
+              <a
+                href={
+                  client.cv.startsWith('http')
+                    ? client.cv
+                    : `${baseURL}/uploads/cv/${client.cv.replace(/^.*[\\/]/, '')}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                View CV
+              </a>
+            </div>
+          </div>
+        )}
 
         
         {client.photo && (
