@@ -75,7 +75,6 @@ function Login() {
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
             className="inline-flex items-center justify-center p-4 rounded-full bg-blue-100 mb-4"
-            onClick={() => navigate("/Dashboard")}
           >
             <Briefcase className="h-8 w-8 text-blue-600" />
           </motion.div>
