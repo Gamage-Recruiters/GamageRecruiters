@@ -21,28 +21,31 @@ function ClientUsers() {
 
   
     const fetchClients = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${baseURL}/user/all`, {
-        withCredentials: true
-      });
-      const allUsers = response.data.data;
-      const enhancedUsers = allUsers.map(user => ({
-        ...user,
-        status: Math.random() > 0.5 ? 'active' : 'inactive', // Mock status
-      }));
-      setClients(enhancedUsers);
-    } catch (err) {
-      console.error('Error fetching clients:', err);
-      setError('Failed to load clients');
-    } finally {
-      setLoading(false);
-    }
+      setLoading(true);
+      try {
+        const response = await axios.get(`${baseURL}/user/all`, {
+          withCredentials: true
+        });
+        const allUsers = response.data.data;
+        const currentDate = new Date();
+        const threeWeeksAgo = new Date(currentDate);
+        threeWeeksAgo.setDate(currentDate.getDate() - 21)
+        const enhancedUsers = allUsers.map(user => ({
+          ...user,
+          status: new Date(user.lastActive) > threeWeeksAgo ? 'active' : 'inactive',
+        }));
+        setClients(enhancedUsers);
+      } catch (err) {
+        console.error('Error fetching clients:', err);
+        setError('Failed to load clients');
+      } finally {
+        setLoading(false);
+      }
     };
 
     useEffect(() => {
-    fetchClients();
-  }, []);
+      fetchClients();
+    }, []);
 
   const handleDelete = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this client?')) return;
