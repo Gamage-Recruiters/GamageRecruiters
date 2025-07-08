@@ -24,7 +24,7 @@ const JobApplicationsView = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${baseURL}/api/jobs`);
-      setJobs(response.data.data);
+      setJobs(response.data?.data);
       setError(null);
     } catch (err) {
       setError('Failed to fetch jobs. Please try again later.');
@@ -40,7 +40,7 @@ const JobApplicationsView = () => {
       const response = await axios.get(`${baseURL}/api/jobs/${jobId}/applications`, {
         withCredentials: true
       });
-      setApplications(response.data.data);
+      setApplications(response.data?.data);
       setError(null);
     } catch (err) {
       setApplications([]);

@@ -237,8 +237,6 @@ function Dashboard() {
       });
       
       if (userResponse.status === 200) {
-        // Add logging to see what data structure is coming back
-        console.log("User response data:", userResponse.data);
 
         // Handle multiple possible response formats
         const userData = userResponse.data.user || 
@@ -246,7 +244,7 @@ function Dashboard() {
                          (userResponse.data.data && userResponse.data.data[0]) ||
                          {};
 
-        console.log("User data being set:", userData);
+        // console.log("User data being set:", userData);
         setUser(userData);
         setProfileCompletionPercentage(useSetUserProfileCompletion(userData));
       } else {
@@ -361,7 +359,6 @@ function Dashboard() {
     
   useEffect(() => { 
     if(loggedUserId) {
-      console.log(loggedUserId);
       fetchAppliedJobCount(loggedUserId);
       // fetchJobApplicationStatusForUser(loggedUserId);
       fetchLastActiveStatusForUser(loggedUserId);

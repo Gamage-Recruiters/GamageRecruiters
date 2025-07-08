@@ -95,7 +95,7 @@ export default function Footer() {
 
     try {
       const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email });
-      console.log(subscribeToNewsLetterResponse.data);
+      // console.log(subscribeToNewsLetterResponse.data);
       if (subscribeToNewsLetterResponse.status == 200) {
         toast.success('Subscribed to NewsLetter Successfully');
         setEmail('');

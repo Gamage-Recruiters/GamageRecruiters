@@ -109,7 +109,6 @@ export default function Home() {
     captureURL();
     // Generate a unique random color for each job ...
     const colors = latestJobs.map(() => generateRandomColor());
-    console.log(colors);
     setJobColors(colors);
 
     const interval = setInterval(() => {
@@ -294,10 +293,9 @@ export default function Home() {
   const loadLatestJobs = async () => {
     try {
       const loadLatestJobsResponse = await axios.get(`${baseURL}/api/jobs/latest`);
-      console.log(loadLatestJobsResponse.data);
+      // console.log(loadLatestJobsResponse.data);
       if(loadLatestJobsResponse.status == 200) {
-        console.log('Jobs loaded successfully');
-        console.log(loadLatestJobsResponse.data.jobs);
+        // console.log(loadLatestJobsResponse.data.jobs);
         setLatestJobs(loadLatestJobsResponse.data.jobs);
       } else {
         toast.error('Error Loading Jobs');
@@ -313,10 +311,8 @@ export default function Home() {
   const loadEvents = async () => {
     try {
       const response = await axios.get(`${baseURL}/api/workshops/latest`);
-      console.log(response);
       if(response.status == 200) {
-        console.log('Events Loaded Successfully');
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setEvents(response.data.data);
       } else {
         toast.error('Error Loading Events');
@@ -331,13 +327,11 @@ export default function Home() {
 
   const captureURL = async () => {
     const url = window.location.origin;
-    console.log(url);
 
     try {
       const response = await axios.post(`${baseURL}/url`, { url: url });
-      console.log(response);
       if (response.status == 200) {
-        console.log('url capturing successfull');
+        // console.log('url capturing successfull');
         return;
       } else {
         console.log('url capturing failed');

@@ -100,7 +100,6 @@ function JobDetails() {
   const handleCVChange = useCallback((e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      console.log("Selected CV:", selectedFile);
       setCV(selectedFile);
     }
   }, []); 
@@ -137,13 +136,11 @@ function JobDetails() {
     formData.append("company", job.company);
     formData.append("resume", cv);
 
-    console.log(formData);
-
     try {
       const submitApplicationResponse = await axios.post(`${baseURL}/api/jobapplications/apply`, formData,
         {withCredentials: true}
       );
-      console.log(submitApplicationResponse);
+      // console.log(submitApplicationResponse);
       if(submitApplicationResponse.status == 200) {
         toast.success('Job Application Submitted Successfully');
         setIsApplying(false);

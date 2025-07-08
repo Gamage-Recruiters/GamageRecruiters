@@ -20,8 +20,7 @@ function BlogManagement() {
     setIsLoading(true);
     try {
       const response = await axios.get(`${baseURL}/api/blogs`);
-      setBlogPosts(response.data.data || []);
-      console.log('Complete fetching blog posts:', response.data.data);
+      setBlogPosts(response.data?.data || []);
     } catch (error) {
       console.error('Error fetching blog posts:', error);
     } finally {

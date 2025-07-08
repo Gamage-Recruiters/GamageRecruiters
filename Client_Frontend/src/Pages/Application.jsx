@@ -37,7 +37,6 @@ function Application() {
   const navigate = useNavigate();
   
   useEffect(() => {
-    console.log(jobApplicationId);
 
     if(jobApplicationId) {
       fetchJobApplicationData(jobApplicationId);
@@ -52,10 +51,8 @@ function Application() {
   const fetchJobApplicationData = useCallback(async (id) => {
     try {
       const fetchJobApplicationData = await axios.get(`${baseURL}/api/jobapplications/application/${id}/user`,{withCredentials: true});
-      console.log(fetchJobApplicationData.data);
       if(fetchJobApplicationData.status == 200) {
-        console.log(fetchJobApplicationData.data.data);
-        console.log(fetchJobApplicationData.data.data[0].userId);
+        // console.log(fetchJobApplicationData.data.data);
         setCurrentViewedJobApplication(fetchJobApplicationData.data.data[0]);
         setSystemUserId(fetchJobApplicationData.data.data[0].userId);
         setCurrentCV(fetchJobApplicationData.data.data[0].resume);
@@ -75,7 +72,6 @@ function Application() {
   }, [currentViewedJobApplication, systemUserId, currentCV, firstName, lastName, email, phoneNumber]); 
 
   const viewCurrentCV = useCallback(() => {
-    console.log(currentCV);
     let cvLink
     const patternRelatedToPath = 'uploads\\resumes\\';
     if(currentCV.includes(patternRelatedToPath)) {
@@ -83,16 +79,15 @@ function Application() {
     } else {
       cvLink = `${baseURL}/uploads/resumes/${currentCV}`;
     }
-    console.log(cvLink);
+    // console.log(cvLink);
     window.open(cvLink, '_blank');
   }, [currentCV]);
 
   const fetchAllJobApplicationsRelatedToUser = useCallback(async (id) => {
     try {
       const fetchUserJobApplicationsData = await axios.get(`${baseURL}/api/jobapplications/applications/user/${id}`);
-      console.log(fetchUserJobApplicationsData.data);
+      // console.log(fetchUserJobApplicationsData.data);
       if(fetchUserJobApplicationsData.status == 200) {
-        console.log(fetchUserJobApplicationsData.data.data);
         setApplications(fetchUserJobApplicationsData.data.data);
       } else {
         toast.error('Applied Jobs Loading Failed');
@@ -142,7 +137,7 @@ function Application() {
       if(result.isConfirmed) {
         try {
           const updateApplicationResponse = await axios.put(`${baseURL}/api/jobapplications/update/${jobApplicationId}`, formData,{withCredentials:true});
-          console.log(updateApplicationResponse.data);
+          // console.log(updateApplicationResponse.data);
           if(updateApplicationResponse.status == 200) {
             Swal.fire({
               icon: 'success',
@@ -185,7 +180,6 @@ function Application() {
       if(result.isConfirmed) {
         try {
           const removeApplicationResponse = await axios.delete(`${baseURL}/api/jobapplications/user/delete/${jobApplicationId}`, {withCredentials: true});
-          console.log(removeApplicationResponse.data);
           if(removeApplicationResponse.status == 200) {
             Swal.fire({
               icon: 'success',

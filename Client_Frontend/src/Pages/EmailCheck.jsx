@@ -20,7 +20,7 @@ const EmailCheck = () => {
 
         try {
             const emailCheckResponse = await axios.post(`${baseURL}/auth/email-check`, { email: email });
-            console.log(emailCheckResponse);
+            // console.log(emailCheckResponse);
             if(emailCheckResponse.status == 200) {
                 toast.success('Email Noted');
                 setLoadEmailCheck(false);

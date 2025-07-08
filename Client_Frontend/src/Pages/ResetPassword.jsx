@@ -15,7 +15,6 @@ const ResetPassword = ({ email }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log(email);
         setUserEmail(email);
     }, [email]);
 
@@ -44,7 +43,7 @@ const ResetPassword = ({ email }) => {
 
         try {
             const resetPasswordResponse = await axios.post(`${baseURL}/auth/reset-password`, { email: userEmail, newPassword: password });
-            console.log(resetPasswordResponse);
+            // console.log(resetPasswordResponse);
             if(resetPasswordResponse.status == 200) {
                 toast.success('Password Reset Successfull');
                 navigate('/login');

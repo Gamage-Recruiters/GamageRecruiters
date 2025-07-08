@@ -54,9 +54,6 @@ const WorkshopsAndSeminarsPage = () => {
         
         setWorkshops(workshopsData);
         
-        // Log the data to help diagnose structure issues
-        console.log("Workshops data:", workshopsData);
-        
         // Separate upcoming and past events
         const upcoming = workshopsData.filter(event => event.event_type === 'Upcoming Event');
         const past = workshopsData.filter(event => event.event_type === 'Past Event');

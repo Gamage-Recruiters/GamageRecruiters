@@ -42,8 +42,6 @@ function LoginPage() {
       return;
     }
 
-    console.log("Logging in", { email, password, baseURL });
-
     try {
       const loginResponse = await axios.post(`${baseURL}/auth/login`, 
         { email, password },

@@ -127,11 +127,6 @@ const TestimonialsSection = () => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  const goBack = () => {
-    // This function would be connected to your app's navigation system
-    console.log("Going back to previous page");
-  };
-
   return (
     <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">

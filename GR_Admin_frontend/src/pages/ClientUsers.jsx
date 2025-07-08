@@ -26,7 +26,7 @@ function ClientUsers() {
       const response = await axios.get(`${baseURL}/user/all`, {
         withCredentials: true
       });
-      const allUsers = response.data.data;
+      const allUsers = response.data?.data;
       const enhancedUsers = allUsers.map(user => ({
         ...user,
         status: Math.random() > 0.5 ? 'active' : 'inactive', // Mock status
@@ -286,7 +286,7 @@ function ClientUsers() {
                       <div className="text-sm text-gray-500">{client.email}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap capitalize text-sm text-gray-700 dark:text-gray-300">
-                      {client.status}
+                      {client?.status}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                       {getRelativeTime(client.createdAt)}

@@ -141,10 +141,8 @@ function JobListings() {
   const loadJobs =  useCallback(async () => {
       try {
         const loadJobsResponse = await axios.get(`${baseURL}/api/jobs`);
-        console.log(loadJobsResponse.data);
         if(loadJobsResponse.status == 200) {
-          console.log('Jobs loaded successfully');
-          console.log(loadJobsResponse.data.jobs);
+          // console.log(loadJobsResponse.data.jobs);
           setJobs(loadJobsResponse.data.jobs);
         } else {
           toast.error('Error Loading Jobs');
@@ -256,7 +254,6 @@ const sortedJobs = [...filteredJobs].sort((a, b) => {
     const navigate = useNavigate();
 
     const viewJob = useCallback((id) => {
-      console.log(id);
 
       if(id) {
         navigate(`/jobs/${id}`, { replace: true });
