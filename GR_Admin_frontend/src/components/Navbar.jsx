@@ -6,7 +6,6 @@ function Navbar({ onMenuClick }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-  console.log("Navigating to admin profile");
   navigate('/admins/profile');
 };
 

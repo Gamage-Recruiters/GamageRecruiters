@@ -88,7 +88,6 @@ useEffect(() => {
       
       const resJson = await response.json();
 
-      console.log('API response:', resJson);
       const blog = resJson.data[0]; // Access the first blog object
 
       const processedTags = Array.isArray(blog.tags) ? blog.tags.join(', ') : blog.tags || '';

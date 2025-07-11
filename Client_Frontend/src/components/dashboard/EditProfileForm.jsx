@@ -24,7 +24,6 @@ const EditProfileForm = ({ user, setUser }) => {
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
-    console.log(formData);
     Swal.fire({
           title: 'Update Profile Information',
           text: 'Are you sure you want to update your profile details?',

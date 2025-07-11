@@ -344,7 +344,7 @@ function Workshops() {
                         {workshop.rating && (
                           <div className="absolute top-4 right-4 bg-gray-900/90 rounded-full px-2 py-1 flex items-center">
                             <Star className="h-4 w-4 text-yellow-400 mr-1 fill-yellow-400" />
-                            <span className="text-xs font-bold text-gray-100">{workshop.rating}</span>
+                            <span className="text-xs font-bold text-gray-100">{workshop?.rating}</span>
                           </div>
                         )}
                       </div>

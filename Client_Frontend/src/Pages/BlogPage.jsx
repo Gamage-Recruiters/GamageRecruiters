@@ -50,7 +50,7 @@ function BlogPage() {
   const fetchBlogPages = useCallback(async () => {
     try {
       const fetchBlogsResponse = await axios.get(`${baseURL}/api/blogs`);
-      console.log(fetchBlogsResponse.data);
+      // console.log(fetchBlogsResponse.data);
       if(fetchBlogsResponse.status == 200) {
         setBlogPosts(fetchBlogsResponse.data.data);
       } else if (fetchBlogsResponse.status == 404) {
@@ -80,7 +80,7 @@ function BlogPage() {
 
     try {
       const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email });
-      console.log(subscribeToNewsLetterResponse.data);
+      // console.log(subscribeToNewsLetterResponse.data);
       if(subscribeToNewsLetterResponse.status == 200) {
         toast.success('Subscribed to NewsLetter Successfully');
         setEmail('');

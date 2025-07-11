@@ -12,7 +12,6 @@ const WindowOnClose = () => {
         const logoutResponse = await axios.get(`${baseURL}/auth/logout`, {
           withCredentials: true // This is crucial!
         });
-        console.log(logoutResponse);
         if(logoutResponse.status === 200) {
             localStorage.clear(); 
             navigate('/login');

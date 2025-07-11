@@ -31,8 +31,6 @@ function Contact() {
     try {
     await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/contact/addinquiry`, formData).then((results) => {
 
-        console.log(results);
-
         if (results.status === 201) {
           setFormStatus({ submitted: true, loading: false, error: null });
 

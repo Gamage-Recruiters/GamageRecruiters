@@ -14,7 +14,6 @@ const VerifyEmail = ({ email, dummyEmail }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log(email, dummyEmail);
         // Set values ...
         setUserEmail(email);
         setDummy(dummyEmail);
@@ -58,19 +57,17 @@ const VerifyEmail = ({ email, dummyEmail }) => {
     }
 
     try {
-        console.log("Sending verification request:", {
-            otp: otp.toString(),
-            oldEmail: dummy,
-            email: userEmail
-        });
+        // console.log("Sending verification request:", {
+        //     otp: otp.toString(),
+        //     oldEmail: dummy,
+        //     email: userEmail
+        // });
         
         const verifyOTPResponse = await axios.post(`${baseURL}/auth/verifyOTP`, {
             otp: otp.toString(),
             oldEmail: dummy,
             email: userEmail
         });
-
-        console.log("Verification response:", verifyOTPResponse.data);
 
         if(verifyOTPResponse.data.success) {
             toast.success('Email verification successful');

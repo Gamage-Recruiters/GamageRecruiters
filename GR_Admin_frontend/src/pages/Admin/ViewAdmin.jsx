@@ -15,7 +15,6 @@ function ViewAdmin() {
     })
       .then((res) => {
         setAdmin(res.data.data[0]);
-        console.log(res.data.data[0])
         setLoading(false);
       })
       .catch((err) => {
@@ -38,7 +37,7 @@ function ViewAdmin() {
         <Detail label="Role" value={admin.role} />
         <Detail label="Status" value={admin.status} />
         <Detail label="Primary Phone" value={admin.primaryPhoneNumber} />
-        <Detail label="Secondary Phone" value={admin.secondaryPhoneNumber} />
+        <Detail label="Secondary Phone" value={admin?.secondaryPhoneNumber} />
 
         {admin.image && (
           <div>

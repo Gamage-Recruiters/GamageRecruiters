@@ -148,7 +148,7 @@ const ProfileOverview = ({ user }) => {
             const logoutResponse = await axios.get(`${baseURL}/auth/logout`, {
               withCredentials: true
             });
-            console.log(logoutResponse);
+            // console.log(logoutResponse);
             if(logoutResponse.status == 200) {
               Swal.fire({
                 icon: 'success',

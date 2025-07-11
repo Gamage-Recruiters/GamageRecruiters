@@ -18,7 +18,7 @@ const Dashboard = () => {
       withCredentials: true
     });
 
-    const userCount = response.data.data.length;
+    const userCount = response.data?.data.length;
     setStats((prevStats) => {
       const updatedStats = [...prevStats];
       updatedStats[0] = {
@@ -38,7 +38,7 @@ const fetchJobCount = async () => {
       withCredentials: true
     });
 
-    const userCount = response.data.jobs.length;
+    const userCount = response.data?.jobs.length;
     setStats((prevStats) => {
       const updatedStats = [...prevStats];
       updatedStats[1] = {
@@ -78,7 +78,7 @@ const fetchJobApplicationCount = async () => {
       withCredentials: true
     });
 
-    const userCount = response.data.data.length;
+    const userCount = response.data?.data.length;
     setStats((prevStats) => {
       const updatedStats = [...prevStats];
       updatedStats[3] = {

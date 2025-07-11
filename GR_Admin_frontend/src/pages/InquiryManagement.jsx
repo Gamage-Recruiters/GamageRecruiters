@@ -33,9 +33,6 @@ function InquiryManagement() {
 
         setContactData(results.data.results);
 
-        console.log(results.data.results);
-
-
       }).catch((e) => console.log(e));
 
 
@@ -66,8 +63,6 @@ function InquiryManagement() {
         if (selectedInquiry && selectedInquiry.id === contactID) {
           setIsModalOpen(false);
         }
-
-        console.log(results.data);
 
         getContactData();
 
@@ -148,7 +143,7 @@ function InquiryManagement() {
                   <User className="h-6 w-6 text-indigo-400" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-medium text-white">{inquiry.name}</h4>
+                  <h4 className="text-lg font-medium text-white">{inquiry?.name}</h4>
                   <p className="text-gray-400 flex items-center">
                     <Mail className="h-4 w-4 mr-1" />
                     {inquiry.email}
@@ -179,7 +174,7 @@ function InquiryManagement() {
               <div>
                 <h5 className="text-sm uppercase text-gray-500 mb-1">Message</h5>
                 <div className="bg-gray-800 rounded-lg p-4 text-gray-300">
-                  <p>{inquiry.message}</p>
+                  <p>{inquiry?.message}</p>
                 </div>
               </div>
             </div>
@@ -289,7 +284,7 @@ function InquiryManagement() {
                       <div className="bg-gray-800 rounded-lg p-3 mb-4 h-16 overflow-hidden">
                         <p className="text-xs text-gray-400 line-clamp-3">
 
-                          {inquiry.message}
+                          {inquiry?.message}
 
                         </p>
                       </div>

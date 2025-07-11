@@ -49,7 +49,6 @@ function BlogDetailsPage() {
   
       if (loggedUserData && loggedUserData.user && loggedUserData.user[0]) {
         setLoggedUser(loggedUserData.user[0]);
-        console.log(loggedUserData.user[0].userId);
         setLoggedUserId(loggedUserData.user[0].userId);
         
         // Only fetch like state if user is logged in
@@ -124,7 +123,7 @@ function BlogDetailsPage() {
   const fetchLikeStateforUsertoBlog = useCallback(async (idBlog, idUser) => {
     try {
       const userLikeStateForBlogResponse = await axios.get(`${baseURL}/api/blogs/state/${idBlog}/${idUser}`);
-      console.log(userLikeStateForBlogResponse.data);
+      // console.log(userLikeStateForBlogResponse.data);
       if(userLikeStateForBlogResponse.status == 200) {
         setLikedBlog(true);
       } else {
@@ -139,7 +138,7 @@ function BlogDetailsPage() {
   const fetchBlogLikeCount = useCallback(async (id) => {
     try {
       const blogLikeCountResponse = await axios.get(`${baseURL}/api/blogs/like-count/${id}`);
-      console.log(blogLikeCountResponse.data.likeCount);
+      // console.log(blogLikeCountResponse.data.likeCount);
       if(blogLikeCountResponse.status == 200) {
         setBlogLikeCount(blogLikeCountResponse.data.likeCount);
       } else {
@@ -156,11 +155,8 @@ function BlogDetailsPage() {
   const fetchBlogComments = useCallback(async (id) => {
     try {
       const blogCommentsResponse = await axios.get(`${baseURL}/api/blogs/comments/${id}`);
-      console.log(blogCommentsResponse.data.data);
       if(blogCommentsResponse.status == 200) {
         const blogRelatedcomments = blogCommentsResponse.data.data;
-        console.log(blogRelatedcomments);
-        console.log(blogRelatedcomments.length);
         if(blogRelatedcomments.length == 0) {
           setNoOfComments(0);
           setComments([]);
@@ -189,8 +185,6 @@ function BlogDetailsPage() {
   }
 
   const handleAddComment = useCallback(async () => {
-    console.log(comment, loggedUserId, blogId);
-
     if(!comment) {
       toast.error('Please Add a comment, if you want to proceed');
       return;
@@ -203,7 +197,7 @@ function BlogDetailsPage() {
 
     try {
       const addCommentResponse = await axios.post(`${baseURL}/api/blogs/comments/add`, { blogId: blogId, comment: comment, userId: loggedUserId },{withCredentials: true});
-      console.log(addCommentResponse.data);
+      // console.log(addCommentResponse.data);
       if(addCommentResponse.status == 201) {
         const commentRelatedData = {
           Id: addCommentResponse.data.Id,
@@ -214,13 +208,11 @@ function BlogDetailsPage() {
           lastName: loggedUser.lastName,
           email: loggedUser.email
         };
-        console.log(commentRelatedData);
         comments.push(commentRelatedData);
         const sortedUpdatedComments = [...comments].sort((a, b) => {
           return new Date(b.commentedDate) - new Date(a.commentedDate);
         });
         setComments(sortedUpdatedComments);
-        console.log(comments);
         setNoOfComments(noOfComments + 1);
       } else {
         toast.error('Error occured while adding comment');
@@ -251,7 +243,6 @@ function BlogDetailsPage() {
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
   const handleLikeState = async () => {
-    console.log(likedBlog);
     if(likedBlog == true) {
       setLikedBlog(false);
       setBlogLikeCount(blogLikeCount - 1);
@@ -273,7 +264,7 @@ function BlogDetailsPage() {
       const likeBlogResponse = await axios.post(`${baseURL}/api/blogs/likes/add`, { blogId: blogId, userId: loggedUserId },{withCredentials: true});
       // console.log(likeBlogResponse.data);
       if(likeBlogResponse.status == 201) {
-        console.log('Liked Blog');
+        // console.log('Liked Blog');
       } else {
         console.log('Error Occured');
         return;
@@ -294,7 +285,7 @@ function BlogDetailsPage() {
       const dislikeBlogResponse = await axios.post(`${baseURL}/api/blogs/likes/remove`, { blogId: blogId, userId: loggedUserId }, {withCredentials: true});
       // console.log(dislikeBlogResponse.data);
       if(dislikeBlogResponse.status == 200) {
-        console.log('Disliked Blog');
+        // console.log('Disliked Blog');
       } else {
         console.log('Error Occured');
         return;

@@ -99,8 +99,7 @@ function AddAdmin() {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      console.log('Response:', response.data);
+      
       alert('Admin added successfully!');
       navigate('/admins');
     } catch (error) {

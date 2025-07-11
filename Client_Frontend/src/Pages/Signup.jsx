@@ -185,7 +185,7 @@ function SignupPage() {
   // }, [cv, cvName]);
 
   const handlePhotoChange = useCallback((e) => {
-    console.log(e.target.files[0]);
+    // console.log(e.target.files[0]);
     setPhoto(e.target.files[0]);
     setPhotoName(e.target.files[0].name);
   }, [photo, photoName]);
