@@ -30,7 +30,9 @@ import EditAdmin from './components/EditAdmin';
 import ViewAdmin from './pages/Admin/ViewAdmin';
 import AdminProfile from './pages/Admin/AdminProfile';
 
-
+// global axios configuration
+import axios from 'axios';
+axios.defaults.withCredentials = true;
 
 function App() {
   // TODO: Implement actual auth logic
