@@ -31,7 +31,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <WindowOnClose/>
+      {/* <WindowOnClose/> */}
       <div className="flex flex-col min-h-screen">
         <Toaster position="top-center" />
         <Navbar />
