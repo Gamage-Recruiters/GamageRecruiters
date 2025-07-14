@@ -153,9 +153,9 @@ function Sidebar({ isOpen, setIsOpen }) {
         className={`
           fixed top-0 left-0 h-full z-30 flex flex-col
           bg-white dark:bg-gray-800 shadow-lg md:shadow-none
-          ${isOpen ? 'w-72' : 'w-16'}  // Apply default widths for mobile/initial render
-          md:relative // On medium screens and up, make it relative in the flex layout
-          md:w-auto // Reset width control to Framer Motion variants on medium screens+
+          ${isOpen ? 'w-72' : 'w-16'}  
+          md:relative 
+          md:w-auto 
           
           /* Hide scrollbar for webkit browsers */
           [&::-webkit-scrollbar]:hidden
@@ -230,7 +230,7 @@ function Sidebar({ isOpen, setIsOpen }) {
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 py-4 overflow-y-auto scrollbar-hide">
+        <div className="flex-1 py-4 overflow-y-auto">
           <style jsx>{`
             .scrollbar-hide {
               -ms-overflow-style: none;
@@ -349,25 +349,6 @@ function Sidebar({ isOpen, setIsOpen }) {
 
         {/* Bottom Controls */}
         <div className={`p-3 border-t border-gray-100 dark:border-gray-700 ${isOpen ? '' : 'flex flex-col items-center'}`}>
-
-          {/* Settings Button */}
-          {/* Note: This was missing in the expanded mode of your previous code. Adding it for consistency. */}
-          <Link
-            to="/settings"
-            className={`w-full flex items-center py-2 text-sm rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 group mt-1
-              ${isOpen ? 'px-4' : 'justify-center w-auto px-2'}
-            `}
-          >
-            <div className={`p-1 rounded-md text-gray-500 dark:text-gray-400 ${isOpen ? 'mr-3' : 'mr-0'}`}>
-              <Settings className="h-4 w-4" />
-            </div>
-            <span className={`font-medium ${!isOpen ? 'hidden' : ''}`}>Settings</span>
-            {!isOpen && (
-              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap z-50">
-                Settings
-              </div>
-            )}
-          </Link>
 
           {/* Dark Mode Toggle */}
           <button
