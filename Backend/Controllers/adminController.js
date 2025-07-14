@@ -89,6 +89,7 @@ async function login (req, res) {
                 httpOnly: true,
                 sameSite: 'none',
                 secure: true,
+                path: '/',
                 maxAge: 24 * 60 * 60 * 1000, // 24 hours
             });
 
