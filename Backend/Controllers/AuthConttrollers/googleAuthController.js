@@ -15,6 +15,7 @@ function authorize(req, res) {
             httpOnly: true,
             sameSite: 'Lax',
             secure: false,
+            path: '/',
             maxAge: 100 * 60 * 60, // 1 hour ...
         });
         const frontendURL = fetchFrontendApplicationRunningURL();

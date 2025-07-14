@@ -73,6 +73,7 @@ async function register(req, res) {
                     httpOnly: true,
                     sameSite: 'Lax',
                     secure: false,
+                    path: '/', // Add this line
                     maxAge: 60 * 60 * 1000, // 1 hour ...
                 }).status(200).json({ 
                     message: "User registered and logged in successfully", 
@@ -130,6 +131,7 @@ async function login(req, res) {
                 httpOnly: true,
                 sameSite: 'Lax',
                 secure: false,
+                path: '/', 
                 maxAge: 60 * 60 * 1000, // 1 hour ...
             }).status(200).json({ 
                 message: "User logged in successfully",
