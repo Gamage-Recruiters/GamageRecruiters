@@ -16,7 +16,7 @@ function authorize(req, res) {
             sameSite: 'Lax',
             secure: false,
             path: '/',
-            maxAge: 100 * 60 * 60, // 1 hour ...
+            maxAge: 1000 * 60 * 60, // 1 hour ...
         });
         const frontendURL = fetchFrontendApplicationRunningURL();
         return res.redirect(`${frontendURL}/dashboard`);
