@@ -112,6 +112,12 @@ function Jobs() {
   const handleUpdateJob = async () => {
     if (!editedJob) return;
 
+     // Validate required fields
+    if (!editedJob.jobName || !editedJob.company || !editedJob.jobType) {
+      setError('Job Title, Company, and Job Type are required.');
+      return;
+    }
+
     // Format array fields before sending to backend
     const formatFieldForBackend = (field) => {
       if (!field || field.trim() === '') {
@@ -289,14 +295,14 @@ function Jobs() {
 
   // Job type icon mapping
   const getJobTypeIcon = (jobType) => {
-    if (!jobType) return <Briefcase className="h-4 w-4" />;
-    
+    if (!jobType) return <Briefcase className="h-4 w-4 text-white" />;
+
     const type = jobType.toLowerCase();
-    if (type.includes('full')) return <Coffee className="h-4 w-4" />;
-    if (type.includes('part')) return <Clock className="h-4 w-4" />;
-    if (type.includes('contract')) return <Zap className="h-4 w-4" />;
-    if (type.includes('freelance')) return <TrendingUp className="h-4 w-4" />;
-    return <Briefcase className="h-4 w-4" />;
+    if (type.includes('full')) return <Coffee className="h-4 w-4 text-white" />;
+    if (type.includes('part')) return <Clock className="h-4 w-4 text-white" />;
+    if (type.includes('contract')) return <Zap className="h-4 w-4 text-white" />;
+    if (type.includes('freelance')) return <TrendingUp className="h-4 w-4 text-white" />;
+    return <Briefcase className="h-4 w-4 text-white" />;
   };
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-gray-50';
@@ -484,18 +490,22 @@ function Jobs() {
                   </div>
 
                   <div className="mt-4 space-y-2">
-                    <div className={`flex items-center text-sm ${mutedText}`}>
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {job.jobLocation || 'Remote'}
-                    </div>
+                    {job.jobLocation && (
+                      <div className={`flex items-center text-sm ${mutedText}`}>
+                        <MapPin className="h-4 w-4 mr-2" />
+                        {job.jobLocation}
+                      </div>
+                    )}
                     <div className={`flex items-center text-sm ${mutedText}`}>
                       {getJobTypeIcon(job.jobType)}
                       <span className="ml-2">{job.jobType || 'Full-time'}</span>
                     </div>
-                    <div className={`flex items-center text-sm ${mutedText}`}>
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      {job.salaryRange || 'Competitive'}
-                    </div>
+                    {job.salaryRange && (
+                      <div className={`flex items-center text-sm ${mutedText}`}>
+                        <DollarSign className="h-4 w-4 mr-2" />
+                        {job.salaryRange}
+                      </div>
+                    )}
                   </div>
 
                   <div className={`mt-4 pt-3 flex justify-between items-center border-t ${borderColor}`}>
@@ -762,7 +772,7 @@ function Jobs() {
                           <div className="flex items-center">
                             <MapPin className={`h-4 w-4 mr-2 ${mutedText}`} />
                             <p className={textColor}>
-                              {selectedJob.jobLocation || 'Remote'}
+                              {selectedJob.jobLocation ? selectedJob.jobLocation : ''}
                             </p>
                           </div>
                         )}
@@ -827,7 +837,7 @@ function Jobs() {
                         <div className="flex items-center">
                           <DollarSign className={`h-4 w-4 mr-2 ${mutedText}`} />
                           <p className={textColor}>
-                            {selectedJob.salaryRange || 'Competitive'}
+                            {selectedJob.salaryRange ? selectedJob.salaryRange : ''}
                           </p>
                         </div>
                       )}
