@@ -457,7 +457,7 @@ async function fetchBlogComments (req, res) {
   }
 
   try {
-    const fetchBlogCommentsQuery = 'SELECT b.Id, b.userId, b.comment, b.commentedDate, u.firstName, u.lastName, u.email FROM blogcomments b INNER JOIN users u ON b.userId = u.userId WHERE b.blogId = ?';
+    const fetchBlogCommentsQuery = 'SELECT b.Id, b.userId, b.comment, b.commentedDate, u.firstName, u.lastName, u.email, u.photo FROM blogcomments b INNER JOIN users u ON b.userId = u.userId WHERE b.blogId = ?';
     pool.query(fetchBlogCommentsQuery, blogId, (error, result) => {
       if(error) {
         console.error(error);

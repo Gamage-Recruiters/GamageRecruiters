@@ -369,7 +369,7 @@ function BlogDetailsPage() {
       <div className="max-w-4xl mx-auto px-6 -mt-8 relative z-30">
         <div className="bg-white rounded-xl shadow-md p-6 flex items-center gap-4">
           <img 
-            src={blogPost.author.image} 
+            src={`${baseURL}/uploads/blogs/authors/${blogPost.authorImage}`} 
             alt={blogPost.author} 
             className="w-16 h-16 rounded-full object-cover border-2 border-white"
           />
@@ -735,7 +735,7 @@ function BlogDetailsPage() {
                 <div key={comment.Id} className="bg-white p-4 rounded-lg shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
                     <img 
-                      src="https://source.unsplash.com/random/40x40?portrait=1" 
+                      src={`${baseURL}/uploads/users/images/${comment.photo}`} 
                       alt="Commenter" 
                       className="w-10 h-10 rounded-full object-cover"
                     />
