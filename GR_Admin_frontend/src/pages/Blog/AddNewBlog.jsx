@@ -179,14 +179,6 @@ const BlogEditor = () => {
           
           <div className="flex space-x-3">
             <button 
-              onClick={(e) => handleSubmit(e, 'draft')} 
-              disabled={loading}
-              className="hidden sm:flex items-center px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm border border-gray-200 dark:border-gray-700"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              Save Draft
-            </button>
-            <button 
               onClick={(e) => handleSubmit(e, 'published')} 
               disabled={loading}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
@@ -803,7 +795,7 @@ const BlogEditor = () => {
             </div>
             
             {/* Publishing Options */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            {/* <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
               <div className="p-6">
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-4">Publishing Options</h3>
                 
@@ -856,29 +848,7 @@ const BlogEditor = () => {
                   </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Action Buttons (Mobile) */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:hidden">
-              <div className="grid grid-cols-2 gap-3">
-                <button 
-                  onClick={(e) => handleSubmit(e, 'draft')} 
-                  disabled={loading}
-                  className="flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Draft
-                </button>
-                <button 
-                  onClick={(e) => handleSubmit(e, 'published')} 
-                  disabled={loading}
-                  className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all"
-                >
-                  <Send className="h-4 w-4 mr-2" />
-                  Publish
-                </button>
-              </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
