@@ -123,9 +123,13 @@ function JobListings() {
 
   const [newsletterEmail, setNewsletterEmail] = useState('');
   
+  const locations = ["All Locations", ...new Set(jobs.map(job => job.jobLocation).filter(location => location && location.trim() !== ''))];
+
+  const jobTypes = ["All Types", ...new Set(jobs.map(job => job.jobType).filter(type => type && type.trim() !== ''))];
+  
   useEffect(() => {
-  setSearchTerm(initialSearch);
-}, [initialSearch]);
+    setSearchTerm(initialSearch);
+  }, [initialSearch]);
 
   useEffect(() => {
     loadJobs();
