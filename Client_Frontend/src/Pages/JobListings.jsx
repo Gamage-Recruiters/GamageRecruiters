@@ -282,7 +282,7 @@ const sortedJobs = [...filteredJobs].sort((a, b) => {
             <div className="mt-2 flex flex-wrap gap-2">
               <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
                 <MapPinIcon className="w-3 h-3 mr-1" />
-                {job.location}
+                {job.jobLocation}
               </span>
               <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
                 {job.jobType}
