@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from 'axios';
 import baseURL from '../config/axiosPortConfig';
 import { verifyEmail } from '../scripts/verifyData';
 
@@ -82,7 +84,8 @@ l5.58978,7.82155l0.867949,1.218704l7.26506,10.166271h-2.981339L11.436522,13.3384
 export default function Footer() {
   const [email, setEmail] = useState('');
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
     if (!email) {
       toast.error('Please enter your email');
       return;
@@ -94,19 +97,31 @@ export default function Footer() {
     }
 
     try {
-      const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email });
+      const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email }, {withCredentials: true});
       // console.log(subscribeToNewsLetterResponse.data);
-      if (subscribeToNewsLetterResponse.status == 200) {
-        toast.success('Subscribed to NewsLetter Successfully');
-        setEmail('');
+      if (subscribeToNewsLetterResponse.data && 
+        typeof subscribeToNewsLetterResponse.data === 'string' && 
+        subscribeToNewsLetterResponse.data.includes('already')) {
+        toast.info('You are already subscribed to our newsletter');
       } else {
-        toast.error('An error occured. Please try again');
-        return;
+        toast.success('Subscribed to Newsletter Successfully');
       }
-    } catch (error) {
-      console.log(error);
-      return;
-    }
+      setEmail('');
+      } catch (error) {
+        console.log(error);
+        // Handle specific error cases
+        if (error.response) {
+          if (error.response.status === 404) {
+            toast.error('Email not registered. Please sign up first.');
+          } else if (error.response.data) {
+            toast.error(error.response.data);
+          } else {
+            toast.error('Subscription failed. Please try again.');
+          }
+        } else {
+          toast.error('Connection error. Please try again later.');
+        }
+      }
   }
 
   return (
