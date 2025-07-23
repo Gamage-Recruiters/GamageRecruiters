@@ -12,7 +12,7 @@ async function register(req, res) {
 
     const { firstName, lastName, gender, birthDate, address, address2, phoneNumber1, phoneNumber2, linkedInLink, facebookLink, portfolioLink, email, password, profileDescription } = req.body;
 
-    if (!firstName || !lastName || !gender || !birthDate || !email || !password) {
+    if (!firstName || !gender || !birthDate || !email || !password) {
         return res.status(400).send('Please fill all the required fields');
     }
 
