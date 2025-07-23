@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { memo, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -10,49 +10,14 @@ import { useChangeDateFormat } from "../hooks/customHooks";
 import baseURL from "../config/axiosPortConfig";
 import SessionTimeout from "../protected/SessionTimeout";
 
-// const jobData = [
-//   {
-//     id: 1,
-//     title: "Senior Software Engineer",
-//     company: "Tech Solutions Ltd",
-//     location: "Colombo",
-//     jobType: "Full-time",
-//     salaryRange: "$3000-$5000",
-//     postedDate: "March 5, 2025",
-//     description:
-//       "Looking for an experienced software engineer to lead our development team. Join our innovative company to create cutting-edge solutions that transform the way businesses operate in the digital space.",
-//     responsibilities: [
-//       "Develop and maintain software applications",
-//       "Lead a team of junior developers",
-//       "Ensure best coding practices are followed",
-//       "Collaborate with product managers to define feature requirements",
-//       "Participate in code reviews and architectural decisions"
-//     ],
-//     requirements: [
-//       "5+ years of experience in software development",
-//       "Proficiency in React, Node.js, and TypeScript",
-//       "Strong problem-solving skills",
-//       "Experience with cloud platforms (AWS/Azure/GCP)",
-//       "Bachelor's degree in Computer Science or related field"
-//     ],
-//     benefits: [
-//       "Competitive salary and performance bonuses",
-//       "Flexible work arrangements",
-//       "Health insurance and wellness programs",
-//       "Professional development opportunities",
-//       "Modern office with great facilities"
-//     ],
-//     companyDescription: "Tech Solutions Ltd is a leading software development company specializing in enterprise solutions. With over 10 years in the industry, we've helped hundreds of businesses transform their digital presence."
-//   },
-//   // Add more job listings as needed
-// ];
-
 function JobDetails() {
   const { jobId } = useParams();
+  const location = useLocation();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
-  // const job = jobs.find((job) => job.id === parseInt(jobId));
   const [isApplying, setIsApplying] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecking, setAuthChecking] = useState(false);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -97,6 +62,46 @@ function JobDetails() {
     setLoading(false);
   }, []);
 
+  // to check the authentication status
+  const checkAuthentication = useCallback(async () => {
+    try {
+      const response = await axios.get(`${baseURL}/auth/check`, {
+        withCredentials: true
+      })
+
+      if (response.status === 200 && response.data.success) {
+        setIsAuthenticated(true);
+        return true;
+      } else {
+        setIsAuthenticated(false);
+        return false;
+      }
+    } catch(err) {
+      console.log("Auth check failed:", err);
+      setIsAuthenticated(false);
+      return false;
+    }
+  }, []);
+
+  // Handle the 'apply for the postion' button click
+  const handleApplyClick = useCallback(async () => {
+    setAuthChecking(true);
+    const isLoggedIn = await checkAuthentication();
+    setAuthChecking(false);
+
+    if (!isLoggedIn) {
+      // store the lcoation for later redirection from login
+      const currentPath = location.pathname + location.search;
+      localStorage.setItem('redirectAfterLogin', currentPath);
+      navigate('/login');
+      return;
+    }
+
+    // User is authenticated, showing application form
+    setIsApplying(true);
+  }, [checkAuthentication, location, navigate])
+
+
   const handleCVChange = useCallback((e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -106,6 +111,18 @@ function JobDetails() {
   
   const handleApplyJob = useCallback(async (e) => {
     e.preventDefault();
+
+    // Double-check authentication before submission
+    const isLoggedIn = await checkAuthentication();
+    if (!isLoggedIn) {
+      toast.error('Session expired. Please log in again.');
+      setTimeout(() => {
+        const currentPath = location.pathname + location.search;
+        localStorage.setItem('redirectAfterLogin', currentPath);
+        navigate('/login');
+      }, 2000);
+      return;
+    }
 
     if(!firstName || !lastName || !email || !phoneNumber) {
       toast.error('Please All the required fields');
@@ -140,7 +157,7 @@ function JobDetails() {
       const submitApplicationResponse = await axios.post(`${baseURL}/api/jobapplications/apply`, formData,
         {withCredentials: true}
       );
-      // console.log(submitApplicationResponse);
+
       if(submitApplicationResponse.status == 200) {
         toast.success('Job Application Submitted Successfully');
         setIsApplying(false);
@@ -181,7 +198,7 @@ function JobDetails() {
       console.log(error);
       return;
     }
-  }, [navigate, firstName, lastName, email, phoneNumber, cv, job]);
+  }, [checkAuthentication, navigate, firstName, lastName, email, phoneNumber, cv, job]);
 
   const moveBack = useCallback(() => {
     navigate('/jobs');
@@ -420,10 +437,11 @@ function JobDetails() {
         ) : (
           <div className="flex justify-center">
             <button
-              onClick={() => setIsApplying(true)}
+              onClick={handleApplyClick}
+              disabled={authChecking}
               className="px-8 py-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 text-lg font-semibold shadow-lg flex items-center justify-center gap-2"
             >
-              Apply for this Position
+              {authChecking ? 'Checking...' : 'Apply for this Position'}
             </button>
           </div>
         )}

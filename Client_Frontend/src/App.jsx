@@ -42,7 +42,7 @@ function App() {
             <Route path="/services" element={<Services />} />
             <Route path="/jobs" element={<JobListings />} />
             <Route path="/subsidiaries" element={<Subsidiaries />} />
-            <Route path="/jobs/:jobId" element={<ProtectedRoute><JobDetails /></ProtectedRoute>} />
+            <Route path="/jobs/:jobId" element={<JobDetails />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path='/verifyEmail' element={<ProtectedRoute><VerifyEmail/></ProtectedRoute>} />
