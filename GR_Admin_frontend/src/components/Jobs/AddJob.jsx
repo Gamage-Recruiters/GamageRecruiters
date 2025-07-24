@@ -309,7 +309,7 @@ const AddJob = () => {
               {/* Salary Range */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-blue-400 flex items-center gap-1">
-                  <span>Salary Range</span>
+                  <span>Salary</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -321,7 +321,7 @@ const AddJob = () => {
                     value={formData.salaryRange}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-xl bg-gray-700/50 text-gray-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300"
-                    placeholder="e.g. LKR 80,000 - 100,000"
+                    placeholder="e.g. LKR 80,000"
                   />
                 </div>
               </div>
