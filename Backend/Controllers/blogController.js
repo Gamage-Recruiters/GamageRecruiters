@@ -180,6 +180,11 @@ async function updateBlog(req, res) {
       const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
       const authorImageName = req.files?.authorImage?.[0]?.filename || null;
     
+      // Use existing images if no new ones are uploaded
+      const finalBlogImage = blogImageName || oldBlogImage;
+      const finalCoverImage = blogCoverName || oldCoverImage;
+      const finalAuthorImage = authorImageName || oldAuthorImage;
+      
       // Delete old images if new ones are uploaded
       try{
         if (blogImageName && oldBlogImage && blogImageName !== oldBlogImage) {
@@ -200,138 +205,38 @@ async function updateBlog(req, res) {
         console.error('Error deleting old images:', deleteError);
         // Continue with update even if deletion fails
       }
-      let updateBlogQuery;
-      let values;
 
-      if (blogImageName && blogCoverName) {
-        updateBlogQuery = `
-          UPDATE blogs SET
-            title = ?, introduction = ?, 
-            subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
-            subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
-            subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
-            subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
-            subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
-            tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
-            Quote1 = ?, Quote2 = ?, Quote3 = ?,
-            blogImage = ?, addedAt = ?, category = ?, coverImage = ?, authorImage = ?
-          WHERE blogId = ?
-        `;
+      const updateBlogQuery = `
+        UPDATE blogs SET
+          title = ?, introduction = ?, 
+          subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
+          subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
+          subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
+          subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
+          subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
+          tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
+          Quote1 = ?, Quote2 = ?, Quote3 = ?,
+          blogImage = ?, addedAt = ?, category = ?, coverImage = ?, authorImage = ?
+        WHERE blogId = ?
+      `;
 
-        values = [
-          normalized.title, normalized.introduction,
-          normalized.subTitle1, normalized.subContent1,
-          normalized.subTitle2, normalized.subContent2,
-          normalized.subTitle3, normalized.subContent3,
-          normalized.subTitle4, normalized.subContent4,
-          normalized.subTitle5, normalized.subContent5,
-          normalized.subTitle6, normalized.subContent6,
-          normalized.subTitle7, normalized.subContent7,
-          normalized.subTitle8, normalized.subContent8,
-          normalized.subTitle9, normalized.subContent9,
-          normalized.subTitle10, normalized.subContent10,
-          normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
-          normalized.Quote1, normalized.Quote2, normalized.Quote3,
-          blogImageName, new Date(), normalized.category, blogCoverName, authorImageName,
-          blogId
-        ];
-      } else if (!blogImageName && blogCoverName) {
-        updateBlogQuery = `
-          UPDATE blogs SET
-            title = ?, introduction = ?, 
-            subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
-            subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
-            subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
-            subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
-            subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
-            tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
-            Quote1 = ?, Quote2 = ?, Quote3 = ?,
-            addedAt = ?, category = ?, coverImage = ?, authorImage = ?
-          WHERE blogId = ?
-        `;
-
-        values = [
-          normalized.title, normalized.introduction,
-          normalized.subTitle1, normalized.subContent1,
-          normalized.subTitle2, normalized.subContent2,
-          normalized.subTitle3, normalized.subContent3,
-          normalized.subTitle4, normalized.subContent4,
-          normalized.subTitle5, normalized.subContent5,
-          normalized.subTitle6, normalized.subContent6,
-          normalized.subTitle7, normalized.subContent7,
-          normalized.subTitle8, normalized.subContent8,
-          normalized.subTitle9, normalized.subContent9,
-          normalized.subTitle10, normalized.subContent10,
-          normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
-          normalized.Quote1, normalized.Quote2, normalized.Quote3,
-          new Date(), normalized.category, blogCoverName, authorImageName,
-          blogId
-        ];
-      } else if (blogImageName && !blogCoverName) {
-        updateBlogQuery = `
-          UPDATE blogs SET
-            title = ?, introduction = ?, 
-            subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
-            subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
-            subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
-            subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
-            subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
-            tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
-            Quote1 = ?, Quote2 = ?, Quote3 = ?,
-            blogImage = ?, addedAt = ?, category = ?, authorImage = ?
-          WHERE blogId = ?
-        `;
-
-        values = [
-          normalized.title, normalized.introduction,
-          normalized.subTitle1, normalized.subContent1,
-          normalized.subTitle2, normalized.subContent2,
-          normalized.subTitle3, normalized.subContent3,
-          normalized.subTitle4, normalized.subContent4,
-          normalized.subTitle5, normalized.subContent5,
-          normalized.subTitle6, normalized.subContent6,
-          normalized.subTitle7, normalized.subContent7,
-          normalized.subTitle8, normalized.subContent8,
-          normalized.subTitle9, normalized.subContent9,
-          normalized.subTitle10, normalized.subContent10,
-          normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
-          normalized.Quote1, normalized.Quote2, normalized.Quote3,
-          blogImageName, new Date(), normalized.category, authorImageName,
-          blogId
-        ];
-      } else {
-        updateBlogQuery = `
-          UPDATE blogs SET
-            title = ?, introduction = ?, 
-            subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
-            subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
-            subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
-            subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
-            subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
-            tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
-            Quote1 = ?, Quote2 = ?, Quote3 = ?,
-            addedAt = ?, category = ?, authorImage = ?
-          WHERE blogId = ?
-        `;
-
-        values = [
-          normalized.title, normalized.introduction,
-          normalized.subTitle1, normalized.subContent1,
-          normalized.subTitle2, normalized.subContent2,
-          normalized.subTitle3, normalized.subContent3,
-          normalized.subTitle4, normalized.subContent4,
-          normalized.subTitle5, normalized.subContent5,
-          normalized.subTitle6, normalized.subContent6,
-          normalized.subTitle7, normalized.subContent7,
-          normalized.subTitle8, normalized.subContent8,
-          normalized.subTitle9, normalized.subContent9,
-          normalized.subTitle10, normalized.subContent10,
-          normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
-          normalized.Quote1, normalized.Quote2, normalized.Quote3,
-          new Date(), normalized.category, authorImageName,
-          blogId
-        ];
-      }
+      const values = [
+        normalized.title, normalized.introduction,
+        normalized.subTitle1, normalized.subContent1,
+        normalized.subTitle2, normalized.subContent2,
+        normalized.subTitle3, normalized.subContent3,
+        normalized.subTitle4, normalized.subContent4,
+        normalized.subTitle5, normalized.subContent5,
+        normalized.subTitle6, normalized.subContent6,
+        normalized.subTitle7, normalized.subContent7,
+        normalized.subTitle8, normalized.subContent8,
+        normalized.subTitle9, normalized.subContent9,
+        normalized.subTitle10, normalized.subContent10,
+        normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
+        normalized.Quote1, normalized.Quote2, normalized.Quote3,
+        finalBlogImage, new Date(), normalized.category, finalCoverImage, finalAuthorImage,
+        blogId
+      ];
 
       console.log('Update query values:', values);
 
