@@ -114,9 +114,9 @@ useEffect(() => {
       setPreviewImages({
         blog: blog.blogImage ? `${baseURL}/uploads/blogs/images/${blog.blogImage}` : null,
         blogCover: blog.coverImage ? `${baseURL}/uploads/blogs/covers/${blog.coverImage}` : null,
-        author: blog.authorImage
+        authorImage: blog.authorImage
           ? `${baseURL}/uploads/blogs/authors/${blog.authorImage}`
-          : `${baseURL}/api/placeholder/100/100`
+          : null 
       });
 
 
@@ -150,18 +150,18 @@ useEffect(() => {
   const handleFileChange = (e, fileType) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImages({
-          ...previewImages,
-          [fileType]: reader.result
-        });
-      };
-      reader.readAsDataURL(file);
-      setFiles({
-        ...files,
+      // Update files state
+      setFiles(prev => ({
+        ...prev,
         [fileType]: file
-      });
+      }));
+      
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setPreviewImages(prev => ({
+        ...prev,
+        [fileType]: previewUrl
+      }));
     }
   };
   
@@ -839,17 +839,29 @@ useEffect(() => {
                         <div className="space-y-4">
                           <div className="flex items-center space-x-4">
                             <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 border-2 border-indigo-200 dark:border-indigo-800">
-                              <img 
-                                src={previewImages.author}
-                                alt="Author" 
-                                className="w-full h-full object-cover"
-                              />
-                              <div 
-                                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                                onClick={() => authorImageRef.current.click()}
-                              >
-                                <Plus className="h-6 w-6 text-white" />
-                              </div>
+                              {previewImages.authorImage ? (
+                                <>
+                                  <img 
+                                    src={previewImages.authorImage}
+                                    alt="Author" 
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div 
+                                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                                    onClick={() => authorImageRef.current.click()}
+                                  >
+                                    <Camera className="h-4 w-4 text-white" />
+                                  </div>
+                                </>
+                              ) : (
+                                <div 
+                                  className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                  onClick={() => authorImageRef.current.click()}
+                                >
+                                  <Plus className="h-6 w-6 text-gray-400" />
+                                </div>
+                              )}
+                              
                               <input 
                                 ref={authorImageRef}
                                 type="file" 
