@@ -40,6 +40,7 @@ function BlogDetailsPage() {
     fetchBlogData(blogId);
     fetchBlogLikeCount(blogId);
     fetchBlogComments(blogId);
+    incrementViewCount(blogId);
   }
 
   // Then check for logged in user
@@ -152,6 +153,14 @@ function BlogDetailsPage() {
     }
   }, [blogLikeCount]);
 
+  const incrementViewCount = useCallback(async (id) => {
+    try {
+      await axios.post(`${baseURL}/api/blogs/view/${id}`);
+    } catch (error) {
+      console.error('Error incrementing view count:', error);
+    }
+  }, []);
+
   const fetchBlogComments = useCallback(async (id) => {
     try {
       const blogCommentsResponse = await axios.get(`${baseURL}/api/blogs/comments/${id}`);
@@ -223,14 +232,7 @@ function BlogDetailsPage() {
       return;
     }
   }, [comment, loggedUserId, blogId, comments, noOfComments]);
-
-  const handleFollowAuthor = () => {
-    if(followAuthor == true) {
-      setFollowAuthor(false);
-    } else {
-      setFollowAuthor(true);
-    }
-  } 
+ 
   const handleShareClick = () => {
     setSharePopupOpen(true);
   };
@@ -377,9 +379,7 @@ function BlogDetailsPage() {
             <h3 className="font-bold text-lg">{blogPost.author}</h3>
             <p className="text-gray-600 text-sm">{blogPost.authorPosition}, {blogPost.authorCompany}</p>
           </div>
-          <button className="ml-auto px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors" onClick={handleFollowAuthor}>
-            {followAuthor ? 'following' : 'follow'}
-          </button>
+          
         </div>
       </div>
       
