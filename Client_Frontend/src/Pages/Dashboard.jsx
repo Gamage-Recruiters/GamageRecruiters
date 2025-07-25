@@ -320,19 +320,15 @@ function Dashboard() {
       withCredentials: true
     });
 
-    if (recentActivityResponse.status === 200) {
-      setLastProfileActivity(recentActivityResponse.data.recentActivity || "");
-      setLastProfileActivityTime(recentActivityResponse.data.timeStatus || "");
-    }
+    // Will always get a 200 response now
+    setLastProfileActivity(recentActivityResponse.data.recentActivity || "");
+    setLastProfileActivityTime(recentActivityResponse.data.timeStatus || "");
+    
   } catch (error) {
-    if (error.response && error.response.status === 404) {
-      // No activity found, just clear the fields or show a message
-      setLastProfileActivity("");
-      setLastProfileActivityTime("");
-      // Optionally show a toast or ignore
-    } else {
-      console.error("Error fetching recent profile activity:", error);
-      navigate("/login"); // Only redirect on real errors
+    console.error("Error fetching recent profile activity:", error);
+    // Only navigate away on serious errors, not just missing data
+    if (!error.response || error.response.status !== 404) {
+      navigate("/login");
     }
   }
 }, [navigate]);
@@ -392,21 +388,30 @@ function Dashboard() {
     }
      if(user && user.photo) {
       try {
-        const photoURL = `${baseURL}/uploads/users/images/${user.photo}`;
-        setImageLink(photoURL);
+        // Check if it's a Google image URL or local file
+        if(user.photo.startsWith('http')) {
+          setImageLink(user.photo); // Use the URL directly
+          console.log('Setting Google image URL in Dashboard:', user.photo);
+        } else {
+          // Local uploaded image
+          const photoURL = `${baseURL}/uploads/users/images/${user.photo}`;
+          setImageLink(photoURL);
+          console.log('Setting local image URL in Dashboard:', photoURL);
+        }
       } catch (error) {
+        console.error('Error setting image link:', error);
         setImageLink('');
       }
-    } else {
-      console.log('No user photo available');
-      setImageLink('');
-    }
+      } else {
+        console.log('No user photo available');
+        setImageLink('');
+      }
     
-    if (isFirstVisit) {
-      setTimeout(() => {
-        setIsFirstVisit(false);
-      }, 3000);
-    }
+      if (isFirstVisit) {
+        setTimeout(() => {
+          setIsFirstVisit(false);
+        }, 3000);
+      }
   }, [loggedUserId, user]);
   
   // Handlers
@@ -595,15 +600,20 @@ function Dashboard() {
                 </div>
               </div>
               <div className="relative">
-                <img 
-                  src={imageLink || null} 
-                  alt={useConCatName(user.firstName, user.lastName)} 
-                  className="w-16 h-16 rounded-full border-4 border-white border-opacity-20"
-                />
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-4 border-white border-opacity-20">
+                  <img 
+                    src={imageLink || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E"} 
+                    alt={useConCatName(user.firstName, user.lastName)} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E";
+                    }}
+                  />
+                </div>
                 <div className="absolute bottom-0 right-0 bg-green-500 rounded-full w-4 h-4 border-2 border-white"></div>
               </div>
             </div>
-            
             <div className="relative z-10">
               <div className="flex flex-wrap items-center text-sm opacity-90 gap-4">
                 <div className="flex items-center">

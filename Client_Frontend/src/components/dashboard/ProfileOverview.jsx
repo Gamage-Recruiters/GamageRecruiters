@@ -26,10 +26,20 @@ const ProfileOverview = ({ user }) => {
     }
 
     if(user.photo) {
-      const photoURL = `${baseURL}/uploads/users/images/${user.photo}`;
-      setImageLink(photoURL);
+      console.log("Photo starts with http:", user.photo.startsWith('http'));
+      
+      if(user.photo.startsWith('http')) {
+        console.log("Setting Google image URL:", user.photo);
+        setImageLink(user.photo);
+      } else {
+        // Local uploaded image
+        const photoURL = `${baseURL}/uploads/users/images/${user.photo}`;
+        console.log("Setting local image URL:", photoURL);
+        setImageLink(photoURL);
+      }
     } else {
       setImageLink('');
+      console.log("No photo available");
     }
   }, [user])
 
@@ -216,11 +226,17 @@ const ProfileOverview = ({ user }) => {
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
         {/* Profile Image */}
         <div className="relative group">
-          <img
-            src={ image ? image : imageLink || "https://via.placeholder.com/150"}
-            alt="Profile"
-            className="w-24 h-24 rounded-full object-cover border-4 border-indigo-100 group-hover:border-indigo-300 transition-all"
-          />
+          <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-4 border-indigo-100 group-hover:border-indigo-300 transition-all">
+            <img
+              src={image ? image : imageLink || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E"}
+              alt="Profile"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E";
+              }}
+            />
+          </div>
           <div className="absolute bottom-0 right-0 bg-indigo-500 p-1 rounded-full text-white">
             <Edit3 size={14} onClick={handleOpenImageModal} style={{ cursor: "pointer" }}/>
           </div>

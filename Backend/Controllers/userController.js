@@ -454,7 +454,12 @@ async function getRecentProfileActivity(req, res) {
             }
 
             if (result.length === 0) {
-                return res.status(404).send('No recent activity found for this user');
+                 // Return 200 with empty data instead of 404
+                return res.status(200).json({ 
+                    message: 'No recent activity found',
+                    recentActivity: '',
+                    timeStatus: '' 
+                });
             } 
 
             const recentActivity = result[0].activity;

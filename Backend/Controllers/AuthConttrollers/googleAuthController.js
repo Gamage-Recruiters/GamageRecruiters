@@ -6,9 +6,21 @@ function authorize(req, res) {
         const token = createToken(req.user);
 
         // Update the last active timestamp
-        const updateQuery = 'UPDATE users SET lastActive = ? WHERE userId = ?';
         const pool = require('../../config/dbConnection').pool;
-        pool.query(updateQuery, [new Date(), req.user.userId]);
+
+        // Check if Google profile has a photo
+        if (req.user._json && req.user._json.picture) {
+            const updateQuery = 'UPDATE users SET lastActive = ?, photo = ? WHERE userId = ?';
+            pool.query(updateQuery, [new Date(), req.user._json.picture, req.user.userId], (err) => {
+                if (err) {
+                    console.error('Error updating user profile with Google image:', err);
+                }
+            });
+        } else {
+            // Just update lastActive if no photo
+            const updateQuery = 'UPDATE users SET lastActive = ? WHERE userId = ?';
+            pool.query(updateQuery, [new Date(), req.user.userId]);
+        }
 
         // Pass a Cookie to frontend ...
         res.cookie('token', token, {
