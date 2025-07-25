@@ -281,27 +281,29 @@ function JobDetails() {
               <span className="bg-blue-600 h-6 w-1 rounded-full mr-3"></span>
               Key Responsibilities
             </h3>
-            <p>
-              {(() => {
-                try {
-                  const arr = JSON.parse(job?.responsibilities);
-                  if (Array.isArray(arr)) return arr.join(', ');
-                } catch {
-                  return job?.responsibilities;
+            
+            {(() => {
+              try {
+                const arr = JSON.parse(job?.responsibilities);
+                if (Array.isArray(arr)) {
+                  return (
+                    <ul className="mt-4 space-y-2">
+                      {arr.map((resp, index) => (
+                        <li key={index} className="flex">
+                          <span className="bg-blue-100 text-blue-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
+                            {index + 1}
+                          </span>
+                          <span className="text-gray-700">{resp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  );
                 }
+              } catch {
                 return job?.responsibilities;
-              })()}
-            </p>
-            {/* <ul className="mt-4 space-y-2">
-              {job.responsibilities.map((resp, index) => (
-                <li key={index} className="flex">
-                  <span className="bg-blue-100 text-blue-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
-                    {index + 1}
-                  </span>
-                  <span className="text-gray-700">{resp}</span>
-                </li>
-              ))}
-            </ul> */}
+              }
+              return job?.responsibilities;
+            })()}
           </div>
 
           <div className="mt-8">
@@ -309,27 +311,28 @@ function JobDetails() {
               <span className="bg-green-600 h-6 w-1 rounded-full mr-3"></span>
               Requirements
             </h3>
-            <p>
-              {(() => {
-                try {
-                  const arr = JSON.parse(job?.requirements);
-                  if (Array.isArray(arr)) return arr.join(', ');
-                } catch {
-                  return job?.requirements;
+            {(() => {
+              try {
+                const arr = JSON.parse(job?.requirements);
+                if (Array.isArray(arr)) {
+                  return (
+                    <ul className="mt-4 space-y-2">
+                      {arr.map((resp, index) => (
+                        <li key={index} className="flex">
+                          <span className="bg-blue-100 text-blue-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
+                            {index + 1}
+                          </span>
+                          <span className="text-gray-700">{resp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  );
                 }
+              } catch {
                 return job?.requirements;
-              })()}
-            </p>
-            {/* <ul className="mt-4 space-y-2">
-              {job.requirements.map((req, index) => (
-                <li key={index} className="flex">
-                  <span className="bg-green-100 text-green-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
-                    {index + 1}
-                  </span>
-                  <span className="text-gray-700">{req}</span>
-                </li>
-              ))}
-            </ul> */}
+              }
+              return job?.requirements;
+            })()}
           </div>
 
           <div className="mt-8">
@@ -341,20 +344,26 @@ function JobDetails() {
               {(() => {
                 try {
                   const arr = JSON.parse(job?.benefits);
-                  if (Array.isArray(arr)) return arr.join(', ');
+                  if (Array.isArray(arr)) {
+                    return (
+                      <ul className="mt-4 space-y-2">
+                        {arr.map((resp, index) => (
+                          <li key={index} className="flex">
+                            <span className="bg-blue-100 text-blue-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
+                              {index + 1}
+                            </span>
+                            <span className="text-gray-700">{resp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    );
+                  }
                 } catch {
                   return job?.benefits;
                 }
                 return job?.benefits;
               })()}
             </p>
-            {/* <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-              {job.benefits.map((benefit, index) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                  <div className="text-gray-700">{benefit}</div>
-                </div>
-              ))}
-            </div> */}
           </div>
         </div>
 
