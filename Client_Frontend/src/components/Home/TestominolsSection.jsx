@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const TestominolsSection = () => {
     const leftScrollRef = useRef(null);
-    const [readmore, setReadmore] = useState(false);
+    const [expandedIndex, setExpandedIndex] = useState(null);
 
     useEffect(() => {
         const animateLeftScroll = () => {
@@ -155,117 +155,54 @@ const TestominolsSection = () => {
                 </div>
                 <div
                     ref={leftScrollRef}
-                    className="flex overflow-x-auto py-4 scrollbar-none" // Updated this line for scroll behavior
+                    className="flex overflow-x-auto py-4 scrollbar-none"
                 >
                     <div className="flex space-x-8 ">
                         {
                             testimonials.map((testimonial, index) => (
-                                <div className={`bg-white rounded-xl shadow-md p-8 transform transition duration-500 hover:-translate-y-2 hover:shadow-xl border border-gray-100
-                                    w-full sm:w-[400px] md:w-[400px] lg:w-[500px]
-                                    ${readmore ? 'h-auto' : 'sm:h-[300px] md:h-[300px] lg:h-[300px]'}
+                                <div key={index} className={`bg-white rounded-xl shadow-md p-8 transform transition duration-500 hover:-translate-y-2 hover:shadow-xl border border-gray-100
+                                    w-[400px] flex-shrink-0
+                                    ${expandedIndex === index ? 'h-auto' : 'h-[320px]'}
+                                    flex flex-col
                                   `}
                                 >
                                     <div className="flex items-center mb-6">
                                         <img
                                             src={testimonial.image}
                                             alt={testimonial.name}
-                                            className="w-12 h-12 rounded-full mr-4 object-cover"
+                                            className="w-12 h-12 rounded-full mr-4 object-cover flex-shrink-0"
                                         />
-                                        <div>
-                                            <h4 className="text-lg font-semibold text-gray-900">{testimonial.name}</h4>
-                                            <p className="text-sm text-indigo-600">{testimonial.role} at {testimonial.company}</p>
+                                        <div className="min-w-0 flex-1">
+                                            <h4 className="text-lg font-semibold text-gray-900 truncate">{testimonial.name}</h4>
+                                            <p className="text-sm text-indigo-600 break-words">{testimonial.role} at {testimonial.company}</p>
                                         </div>
                                     </div>
-                                    {readmore === false ? (
-                                        <p className="text-gray-600 italic line-clamp-4">"{testimonial.quote}"</p>
-                                    ) :
-                                        (<p className="text-gray-600 italic">"{testimonial.quote}"</p>
-
+                                    <div className="flex-grow overflow-hidden">
+                                        {expandedIndex !== index ? (
+                                            <p className="text-gray-600 italic line-clamp-4 break-words leading-relaxed">"{testimonial.quote}"</p>
+                                        ) : (
+                                            <p className="text-gray-600 italic break-words leading-relaxed">"{testimonial.quote}"</p>
                                         )}
-                                    {readmore === false ? (
-                                        <div className="flex items-center text-indigo-600 font-medium" onClick={() => setReadmore(true)} style={{ cursor: 'pointer' }} >
-                                            Read more ...
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center text-indigo-600 font-medium" onClick={() => setReadmore(false)} style={{ cursor: 'pointer' }} >
-                                            Read less ...
-                                        </div>
-                                    )}
+                                    </div>
+                                    <div className="mt-4 pt-4 border-t border-gray-100">
+                                        {expandedIndex !== index ? (
+                                            <div className="flex items-center text-indigo-600 font-medium cursor-pointer hover:text-indigo-800 transition-colors" onClick={() => setExpandedIndex(index)}>
+                                                Read more ...
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center text-indigo-600 font-medium cursor-pointer hover:text-indigo-800 transition-colors" onClick={() => setExpandedIndex(null)}>
+                                                Read less ...
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             ))
                         }
                     </div>
                 </div>
             </div>
-        </div >
-
-
+        </div>
     );
 };
 
 export default TestominolsSection;
-
-
-{/* <div className="bg-gradient-to-r from-indigo-50 to-blue-50 py-20 overflow-hidden">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                        <span className="relative">
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
-                                Trusted Partners
-                            </span>
-                            <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-indigo-600 to-blue-500 transform scale-x-75 rounded-full mx-auto w-24"></span>
-                        </span>
-                    </h2>
-                    <p className="mt-6 text-xl leading-8 text-gray-600 max-w-2xl mx-auto">
-                        We collaborate with industry leaders to bring you the best opportunities across Sri Lanka
-                    </p>
-                </div>
-
-               
- <div className="mb-8 relative">
-    <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-indigo-50 to-transparent z-10"></div>
-    <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-blue-50 to-transparent z-10"></div>
-
-    <div
-        ref={leftScrollRef}
-        className="flex overflow-x-hidden whitespace-nowrap py-4"
-    >
-        <div className="flex space-x-8 inline-block">
-            {duplicatedTestominols.map((testimonial, index) => (
-                <div
-                    key={index}
-                    className="bg-white rounded-xl shadow-md p-6 transition duration-500 hover:-translate-y-2 hover:shadow-xl border border-gray-100 
-                w-[600px] h-[300px] flex flex-col justify-between"
-                >
-                    
-                    <div>
-                        <div className="flex items-center mb-4">
-                            <img
-                                src={testimonial.image}
-                                alt={testimonial.name}
-                                className="w-12 h-12 rounded-full mr-4 object-cover"
-                            />
-                            <div>
-                                <h4 className="text-lg font-semibold text-gray-900">{testimonial.name}</h4>
-                                <p className="text-sm text-indigo-600">{testimonial.role} at {testimonial.company}</p>
-                            </div>
-                        </div>
-
-                        
-                        <p className="text-gray-600 italic line-clamp-4 overflow-hidden break-words text-left">
-                            "{testimonial.quote}"
-                        </p>
-                    </div>
-                    <div className="mt-auto">
-                        <button className="text-indigo-600 font-semibold hover:underline">Read more...</button>
-                    </div>
-                </div>
-
-
-            ))}
-        </div>
-    </div>
-</div>
-            </div >
-        </div > */}
