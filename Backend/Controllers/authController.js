@@ -227,6 +227,37 @@ async function verifyEmailVerificationOTP(req, res) {
     }
 }
 
+async function verifyPasswordResetOTP(req, res) {
+    const { otp, email } = req.body;
+
+    if (!otp || !email) {
+        return res.status(400).json({ message: 'Missing required data' });
+    }
+
+    try {
+        // Check if OTP exists
+        if (!otpCache[email]) {
+            return res.status(400).json({ message: "OTP expired or not found" });
+        }
+
+        // Convert both OTPs to strings for comparison
+        if (otpCache[email].toString() !== otp.toString()) {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
+
+        // Clear OTP from cache
+        delete otpCache[email];
+        
+        return res.status(200).json({
+            success: true,
+            message: 'Verification successful'
+        });
+    } catch (error) {
+        console.error('Server error:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 async function emailCheck(req, res) {
     const { email } = req.body;
 
@@ -309,4 +340,4 @@ async function logout(req, res) {
 }
 
 
-module.exports = { register, login, sendEmailVerificationOTP, verifyEmailVerificationOTP, emailCheck, resetPassword, logout }
+module.exports = { register, login, sendEmailVerificationOTP, verifyEmailVerificationOTP, emailCheck, resetPassword, logout, verifyPasswordResetOTP };

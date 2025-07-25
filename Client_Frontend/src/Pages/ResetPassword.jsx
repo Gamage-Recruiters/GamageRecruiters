@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import axios from 'axios';
 import { Lock, ArrowRight } from "lucide-react";
@@ -13,10 +13,22 @@ const ResetPassword = ({ email }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [userEmail, setUserEmail] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         setUserEmail(email);
     }, [email]);
+
+    useEffect(() => {
+        // Check if user is verified to be here
+        if (!location.state?.verified || !location.state?.token) {
+            toast.error('Unauthorized access');
+            navigate('/emailCheck');
+            return;
+        }
+        
+        setUserEmail(email || localStorage.getItem('resetEmail'));
+    }, [email, location.state, navigate]);
 
     const handlePasswordReset = useCallback(async (e) => {
         e.preventDefault();
@@ -42,11 +54,13 @@ const ResetPassword = ({ email }) => {
         }
 
         try {
-            const resetPasswordResponse = await axios.post(`${baseURL}/auth/reset-password`, { email: userEmail, newPassword: password });
+            const resetPasswordResponse = await axios.post(`${baseURL}/auth/reset-password`, { email: userEmail, newPassword: password, token: location.state?.token });
             // console.log(resetPasswordResponse);
             if(resetPasswordResponse.status == 200) {
                 toast.success('Password Reset Successfull');
-                navigate('/login');
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1500);
             } else {
                 toast.error('Password Reset Failed');
                 return;
@@ -56,7 +70,7 @@ const ResetPassword = ({ email }) => {
             console.log(error);
             return;
         }
-    }, [password, confirmPassword]);
+    }, [password, confirmPassword, userEmail, location.state?.token, navigate]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 via-indigo-800 to-purple-200">
