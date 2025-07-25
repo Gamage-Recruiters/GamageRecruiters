@@ -69,7 +69,7 @@ function AdminProfile() {
         });
         
         if (adminObject?.image) {
-          setPreviewImage(`/uploads/admin/${data.image}`);
+          setPreviewImage(`${baseURL}/uploads/admin/images/${adminObject.image}`);
         }
       } catch (error) {
         console.error('Error fetching admin data:', error);
