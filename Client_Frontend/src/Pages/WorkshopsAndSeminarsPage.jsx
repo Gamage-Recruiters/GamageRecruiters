@@ -319,9 +319,8 @@ const WorkshopsAndSeminarsPage = () => {
             {filteredUpcomingEvents.slice(0, visibleCount).map((event) => (
               <div 
                 key={event.id}
-                className={`bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl ${
-                  expandedEvent === event.id ? 'md:col-span-2 md:row-span-2' : ''
-                }`}
+                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl "
+                  
               >
                 <div className="relative">
                   <div className={`absolute inset-0 bg-gradient-to-b ${event.color || 'from-purple-600 to-indigo-600'} opacity-30`}></div>
