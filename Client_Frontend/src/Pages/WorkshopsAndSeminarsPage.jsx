@@ -23,6 +23,7 @@ const WorkshopsAndSeminarsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sharePopupId, setSharePopupId] = useState(null);
+  const [savedEvents, setSavedEvents] = useState([]);
 
   // Helper function to format image URLs correctly
   const getImageUrl = (imagePath) => {
@@ -333,9 +334,21 @@ const WorkshopsAndSeminarsPage = () => {
                   />
                   )}
                   <div className="absolute top-4 right-4 flex space-x-2">
-                    <button className="p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all">
-                      <Bookmark size={16} />
-                    </button>
+                    <button
+                      className={`p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all ${
+                         savedEvents.includes(event.id) ? 'text-purple-600' : ''
+                    }`}
+                    onClick={() => {
+                     setSavedEvents(prev =>
+                       prev.includes(event.id)
+                          ? prev.filter(id => id !== event.id)
+                          : [...prev, event.id]
+           );
+              }}
+             title={savedEvents.includes(event.id) ? "Unsave" : "Save"}
+              >
+               <Bookmark size={16} className={savedEvents.includes(event.id) ? "text-yellow-400" : ""}/>
+             </button>
                     <button
                       className="p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all relative"
                       onClick={() => setSharePopupId(sharePopupId === event.id ? null : event.id)}
