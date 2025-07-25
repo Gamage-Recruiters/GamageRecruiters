@@ -38,6 +38,8 @@ router.post('/likes/remove', verifyToken, blogRouter.DislikeToBlog);
 // Route to get the like state related to a user for a specific post ...
 router.get('/state/:blogId/:userId', blogRouter.fetchUserLikeStateForBlog);
 
+// Route to increment blog view count
+router.post('/view/:blogId', blogRouter.incrementBlogView);
 // // POST - Create a Blog
 // router.post('/', upload.single('image'), createBlog);
 
