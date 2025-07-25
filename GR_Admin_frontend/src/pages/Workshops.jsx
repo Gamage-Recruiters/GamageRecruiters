@@ -403,12 +403,6 @@ function Workshops() {
                               >
                                 Edit
                               </button>
-                              <button 
-                                className="flex-1 px-3 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 transition-colors flex items-center justify-center"
-                              >
-                                <span>View Details</span>
-                                <ExternalLink className="h-4 w-4 ml-1" />
-                              </button>
                             </div>
                           )}
                         </div>
