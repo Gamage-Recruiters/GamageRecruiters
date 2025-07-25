@@ -34,6 +34,18 @@ function LoginPage() {
     checkAuth();
   }, [navigate]);
   
+  const handleLoginSuccess = useCallback(() => {
+    // Check if there's a redirect path stored
+    const redirectPath = localStorage.getItem('redirectAfterLogin');
+    
+    if (redirectPath) {
+      localStorage.removeItem('redirectAfterLogin');
+      navigate(redirectPath);
+    } else {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
   const handleLogin = useCallback(async (e) => {
     e.preventDefault();
     
@@ -50,7 +62,7 @@ function LoginPage() {
       // console.log(loginResponse);
       if(loginResponse.status === 200) {
         toast.success('User Login Successful');
-        navigate('/dashboard');
+        handleLoginSuccess();
       } else {
         toast.error('User Login Failed');
         return;
