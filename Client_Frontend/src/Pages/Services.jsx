@@ -140,7 +140,13 @@ const industries = [
   { name: 'Retail', icon: '🛍️' },
   { name: 'Construction', icon: '🏗️' },
   { name: 'Education', icon: '🎓' },
-  { name: 'Telecommunications', icon: '📱' }
+  { name: 'Telecommunications', icon: '📱' },
+  { name: 'Sales & Marketing', icon: '📈' },
+  { name: 'Human Resources', icon: '🧑‍💼' },
+  { name: 'Hospitality & Tourism', icon: '🏨' },
+  { name: 'Pharmaceutical & Biotech', icon: '💊' },
+  { name: 'Solar & Energy', icon: '🔆' },
+  
 ];
 
 const ServiceCard = ({ service, index }) => {
