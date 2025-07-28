@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Minus, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
+import baseURL from '../../config/baseUrlConfig';
 
 const EditJob = ({ onUpdateJob }) => {
   const { jobId } = useParams();
@@ -27,7 +28,7 @@ const EditJob = ({ onUpdateJob }) => {
   useEffect(() => {
     const fetchJobData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/jobs/${jobId}`);
+        const response = await axios.get(`${baseURL}/api/jobs/${jobId}`);
     
         if (response.data && response.data.data) {
           const job = response.data.data;
@@ -122,7 +123,11 @@ const EditJob = ({ onUpdateJob }) => {
       };
       
       
-      await axios.put(`http://localhost:8000/api/jobs/update/${jobId}`, cleanedFormData);
+      await axios.put(`${baseURL}/api/jobs/update/${jobId}`, cleanedFormData, {
+        withCredentials: true
+      });
+
+      alert('Job updated successfully!');
       
       if (onUpdateJob) {
         onUpdateJob(cleanedFormData);
@@ -219,12 +224,11 @@ const EditJob = ({ onUpdateJob }) => {
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Location<span className="text-red-500">*</span>
+              Location
             </label>
             <input
               type="text"
               name="jobLocation"
-              required
               value={formData.jobLocation}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
@@ -233,7 +237,7 @@ const EditJob = ({ onUpdateJob }) => {
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Job Type<span className="text-red-500">*</span>
+              Job Type
             </label>
             <select
               name="jobType"
@@ -252,12 +256,11 @@ const EditJob = ({ onUpdateJob }) => {
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Salary Range<span className="text-red-500">*</span>
+              Salary Range
             </label>
             <input
               type="text"
               name="salaryRange"
-              required
               value={formData.salaryRange}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
@@ -266,11 +269,10 @@ const EditJob = ({ onUpdateJob }) => {
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Status<span className="text-red-500">*</span>
+              Status
             </label>
             <select
               name="status"
-              required
               value={formData.status}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
@@ -296,11 +298,10 @@ const EditJob = ({ onUpdateJob }) => {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Job Description<span className="text-red-500">*</span>
+            Job Description
           </label>
           <textarea
             name="jobDescription"
-            required
             value={formData.jobDescription}
             onChange={handleChange}
             rows={4}
@@ -311,7 +312,7 @@ const EditJob = ({ onUpdateJob }) => {
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Responsibilities<span className="text-red-500">*</span>
+              Responsibilities
             </label>
             <button
               type="button"
@@ -348,7 +349,7 @@ const EditJob = ({ onUpdateJob }) => {
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Requirements<span className="text-red-500">*</span>
+              Requirements
             </label>
             <button
               type="button"
@@ -421,11 +422,10 @@ const EditJob = ({ onUpdateJob }) => {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Company Description<span className="text-red-500">*</span>
+            Company Description
           </label>
           <textarea
             name="companyDescription"
-            required
             value={formData.companyDescription}
             onChange={handleChange}
             rows={3}

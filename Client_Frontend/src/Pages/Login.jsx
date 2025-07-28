@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { AtSign, Lock, ArrowRight } from "lucide-react";
 import axios from "axios";
@@ -7,31 +7,46 @@ import baseURL from "../config/axiosPortConfig";
 import verifyToken from "../scripts/verifyToken.js";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function LoginPage() {
+function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); 
 
   useEffect(() => {
-    localStorage.setItem('IsLoginAuthenticated', true);
-    const accessToken = localStorage.getItem('AccessToken');
-
-    const verifyAccessToken = async (token) => {
-      if(accessToken) {
-        const response = verifyToken(token);
-        console.log(response);
-        if(response === 'Token is Valid') {
-          navigate("/dashboard");
+    // Check if user is already authenticated via JWT cookie
+    const checkAuth = async () => {
+      try {
+        // Make a request to an endpoint that verifies the JWT cookie
+        const response = await axios.get(`${baseURL}/auth/check`, {
+          withCredentials: true // Important to send cookies
+        });
+        
+        if (response.status === 200) {
+          // User is authenticated
+           navigate("/dashboard");
         }
-
-        localStorage.removeItem('AccessToken');
+      } catch (error) {
+        // Not authenticated or token expired - stay on login page
+        console.log("Not authenticated or token expired");
       }
-    }
-
-    verifyAccessToken(accessToken);
-  }, []);
+    };
+    
+    checkAuth();
+  }, [navigate]);
   
-  const handleLogin = async (e) => {
+  const handleLoginSuccess = useCallback(() => {
+    // Check if there's a redirect path stored
+    const redirectPath = localStorage.getItem('redirectAfterLogin');
+    
+    if (redirectPath) {
+      localStorage.removeItem('redirectAfterLogin');
+      navigate(redirectPath);
+    } else {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
+  const handleLogin = useCallback(async (e) => {
     e.preventDefault();
     
     if(!email || !password) {
@@ -39,80 +54,57 @@ export default function LoginPage() {
       return;
     }
 
-    console.log("Logging in", { email, password, baseURL });
-
     try {
-      const loginResponse = await axios.post(`${baseURL}/auth/login`, { email: email, password: password }, { withCredentials: true });
+      const loginResponse = await axios.post(`${baseURL}/auth/login`, 
+        { email, password },
+        { withCredentials: true }
+      );
       // console.log(loginResponse);
       if(loginResponse.status === 200) {
-        localStorage.setItem('IsUserAuthenticated', true);
         toast.success('User Login Successful');
-        navigate('/dashboard');
+        handleLoginSuccess();
       } else {
         toast.error('User Login Failed');
         return;
       }
     } catch (error) {
-      console.log(error);
-      return;
+      toast.error('Login Failed: ' + (error.response?.data || 'Unknown error'));
+      console.error(error);
     }
-  };
+  }, [email, password, navigate]);
 
-  const loginViaGmail = async (e) => {
+
+  ///login via mail
+  const loginViaGmail = useCallback((e) => {
     e.preventDefault();
-    try {
-      const loginViaGmailResponse = await axios.get(`${baseURL}/google/login`);
-      console.log(loginViaGmailResponse);
-      if(loginViaGmailResponse.status == 200) {
-        console.log(loginViaGmailResponse.data);
-        localStorage.setItem('IsUserAuthenticated', true);
-        window.location.href = loginViaGmailResponse.data.data; // Redirect to Google OAuth ...
-      } else {
-        toast.error('Something Went Wrong');
-      }
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  };
+    // Direct browser redirect - no AJAX
+    window.location.href = `${baseURL}/auth/google`;
+  }, []);
 
-  const loginViaFacebook = async (e) => {
-    e.preventDefault();
+  const loginViaFacebook = useCallback((e) => {
+  e.preventDefault();
+  
+  window.location.href = `${baseURL}/auth/facebook`;
+}, []); 
 
-    try {
-      const loginViaFacebookResponse = await axios.get(`${baseURL}/facebook/login`);
-      console.log(loginViaFacebookResponse);
-      if(loginViaFacebookResponse.status == 200) {
-        console.log(loginViaFacebookResponse.data);
-        localStorage.setItem('IsUserAuthenticated', true);
-        window.location.href = loginViaFacebookResponse.data.data; // Redirect to Facebook OAuth ...
-      } else {
-        toast.error('Something Went Wrong');
-      }
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  } 
+  // const loginViaLinkedIn = useCallback(async (e) => {
+  //   e.preventDefault();
 
-  const loginViaLinkedIn = async (e) => {
-    e.preventDefault();
-
-    try {
-      const loginViaLinkedInResponse = await axios.get(`${baseURL}/linkedin/login`);
-      console.log(loginViaLinkedInResponse);
-      if(loginViaLinkedInResponse.status == 200) {
-        console.log(loginViaLinkedInResponse.data);
-        localStorage.setItem('IsUserAuthenticated', true);
-        window.location.href = loginViaLinkedInResponse.data.data; // Redirect to LinkedIn OAuth ...
-      } else {
-        toast.error('Something Went Wrong');
-      }
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  }
+  //   try {
+  //     const loginViaLinkedInResponse = await axios.get(`${baseURL}/linkedin/login`);
+  //     console.log(loginViaLinkedInResponse);
+  //     if(loginViaLinkedInResponse.status == 200) {
+  //       console.log(loginViaLinkedInResponse.data);
+  //       localStorage.setItem('IsUserAuthenticated', true);
+  //       window.location.href = loginViaLinkedInResponse.data.data; // Redirect to LinkedIn OAuth ...
+  //     } else {
+  //       toast.error('Something Went Wrong');
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     return;
+  //   }
+  // }, []);
   
   return (
     
@@ -189,9 +181,9 @@ export default function LoginPage() {
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
               <span className="text-lg font-bold text-blue-600" onClick={loginViaFacebook}>F</span>
             </div>
-            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
+            {/* <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
               <span className="text-lg font-bold text-blue-400" onClick={loginViaLinkedIn}>L</span>
-            </div>
+            </div> */}
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200">
               <span className="text-lg font-bold text-red-500" onClick={loginViaGmail}>G</span>
             </div>
@@ -201,3 +193,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default memo(LoginPage);

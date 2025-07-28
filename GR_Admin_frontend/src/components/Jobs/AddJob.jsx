@@ -16,6 +16,7 @@ import {
   Award
 } from 'lucide-react';
 import axios from 'axios';
+import baseURL from '../../config/baseUrlConfig';
 
 const AddJob = () => {
   const navigate = useNavigate();
@@ -98,7 +99,9 @@ const AddJob = () => {
       };
       
       // Send data to API endpoint
-      const response = await axios.post('http://localhost:8000/api/jobs/addjob', jobData);
+      const response = await axios.post(`${baseURL}/api/jobs/addjob`, jobData, {
+        withCredentials: true
+      });
       
       if (response.data) {
         // Show success toast notification
@@ -208,7 +211,7 @@ const AddJob = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Job Title */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-blue-400 flex items-center gap-1">
+                <label className="text-sm font-medium text-blue-400 flex items-center gap-1">
                   <span>Job Title</span>
                   <span className="text-red-400">*</span>
                 </label>
@@ -230,7 +233,7 @@ const AddJob = () => {
 
               {/* Company Name */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-blue-400 flex items-center gap-1">
+                <label className="text-sm font-medium text-blue-400 flex items-center gap-1">
                   <span>Company Name</span>
                   <span className="text-red-400">*</span>
                 </label>
@@ -252,9 +255,8 @@ const AddJob = () => {
 
               {/* Location */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-blue-400 flex items-center gap-1">
+                <label className="text-sm font-medium text-blue-400 flex items-center gap-1">
                   <span>Location</span>
-                  <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -263,7 +265,6 @@ const AddJob = () => {
                   <input
                     type="text"
                     name="jobLocation"
-                    required
                     value={formData.jobLocation}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-xl bg-gray-700/50 text-gray-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300"
@@ -274,7 +275,7 @@ const AddJob = () => {
 
               {/* Job Type */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-blue-400 flex items-center gap-1">
+                <label className="text-sm font-medium text-blue-400 flex items-center gap-1">
                   <span>Job Type</span>
                   <span className="text-red-400">*</span>
                 </label>
@@ -307,9 +308,8 @@ const AddJob = () => {
 
               {/* Salary Range */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-blue-400 flex items-center gap-1">
-                  <span>Salary Range</span>
-                  <span className="text-red-400">*</span>
+                <label className="text-sm font-medium text-blue-400 flex items-center gap-1">
+                  <span>Salary</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -318,20 +318,18 @@ const AddJob = () => {
                   <input
                     type="text"
                     name="salaryRange"
-                    required
                     value={formData.salaryRange}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-xl bg-gray-700/50 text-gray-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300"
-                    placeholder="e.g. LKR 80,000 - 100,000"
+                    placeholder="e.g. LKR 80,000"
                   />
                 </div>
               </div>
 
               {/* Status */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-blue-400 flex items-center gap-1">
+                <label className="text-sm font-medium text-blue-400 flex items-center gap-1">
                   <span>Status</span>
-                  <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -339,7 +337,6 @@ const AddJob = () => {
                   </div>
                   <select
                     name="status"
-                    required
                     value={formData.status}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-xl bg-gray-700/50 text-gray-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 appearance-none"
@@ -368,13 +365,11 @@ const AddJob = () => {
             <div className="space-y-6">
               {/* Job Description */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-blue-400 flex items-center gap-1">
+                <label className="text-sm font-medium text-blue-400 flex items-center gap-1">
                   <span>Job Description</span>
-                  <span className="text-red-400">*</span>
                 </label>
                 <textarea
                   name="jobDescription"
-                  required
                   value={formData.jobDescription}
                   onChange={handleChange}
                   rows="4"
@@ -386,13 +381,11 @@ const AddJob = () => {
 
               {/* Company Description */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-blue-400 flex items-center gap-1">
+                <label className="text-sm font-medium text-blue-400 flex items-center gap-1">
                   <span>Company Description</span>
-                  <span className="text-red-400">*</span>
                 </label>
                 <textarea
                   name="companyDescription"
-                  required
                   value={formData.companyDescription}
                   onChange={handleChange}
                   rows="3"

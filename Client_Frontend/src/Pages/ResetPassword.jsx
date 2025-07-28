@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useCallback, memo } from 'react';
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import axios from 'axios';
 import { Lock, ArrowRight } from "lucide-react";
@@ -13,13 +13,24 @@ const ResetPassword = ({ email }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [userEmail, setUserEmail] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        console.log(email);
         setUserEmail(email);
     }, [email]);
 
-    const handlePasswordReset = async (e) => {
+    useEffect(() => {
+        // Check if user is verified to be here
+        if (!location.state?.verified || !location.state?.token) {
+            toast.error('Unauthorized access');
+            navigate('/emailCheck');
+            return;
+        }
+        
+        setUserEmail(email || localStorage.getItem('resetEmail'));
+    }, [email, location.state, navigate]);
+
+    const handlePasswordReset = useCallback(async (e) => {
         e.preventDefault();
 
         if(!password || !confirmPassword) {
@@ -43,20 +54,23 @@ const ResetPassword = ({ email }) => {
         }
 
         try {
-            const resetPasswordResponse = await axios.post(`${baseURL}/auth/reset-password`, { email: userEmail, newPassword: password });
-            console.log(resetPasswordResponse);
+            const resetPasswordResponse = await axios.post(`${baseURL}/auth/reset-password`, { email: userEmail, newPassword: password, token: location.state?.token });
+            // console.log(resetPasswordResponse);
             if(resetPasswordResponse.status == 200) {
                 toast.success('Password Reset Successfull');
-                navigate('/login');
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1500);
             } else {
                 toast.error('Password Reset Failed');
                 return;
             }
         } catch (error) {
+            toast.error('Password Reset Failed');
             console.log(error);
             return;
         }
-    }
+    }, [password, confirmPassword, userEmail, location.state?.token, navigate]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 via-indigo-800 to-purple-200">
@@ -114,4 +128,4 @@ const ResetPassword = ({ email }) => {
     );
 }
 
-export default ResetPassword;
+export default memo(ResetPassword);

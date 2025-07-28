@@ -6,6 +6,7 @@ import {
   Heading1, Heading2, Bookmark, Layout, Camera, Paperclip,
   FileText, Check, AlertTriangle, User
 } from 'lucide-react';
+import baseURL from '../../config/baseUrlConfig';
 
 const EditBlog = () => {
   const { blogId } = useParams();
@@ -60,12 +61,13 @@ const EditBlog = () => {
   const [files, setFiles] = useState({
     blog: null,
     blogCover: null,
-    author: null
+    authorImage: null
   });
   
   const [previewImages, setPreviewImages] = useState({
     blog: null,
-    author: null
+    blogCover: null,
+    authorImage: null
   });
   
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
@@ -79,10 +81,13 @@ const EditBlog = () => {
 useEffect(() => {
   const fetchBlogData = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/blogs/${blogId}`);
+      const response = await fetch(`${baseURL}/api/blogs/${blogId}`, {
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error('Failed to fetch blog');
       
       const resJson = await response.json();
+
       const blog = resJson.data[0]; // Access the first blog object
 
       const processedTags = Array.isArray(blog.tags) ? blog.tags.join(', ') : blog.tags || '';
@@ -107,10 +112,13 @@ useEffect(() => {
       });
 
       setPreviewImages({
-        blog: blog.blogImage || null,
-        blogCover: blog.coverImage || null,
-        author: 'http://localhost:8000/api/placeholder/100/100' // Default placeholder
+        blog: blog.blogImage ? `${baseURL}/uploads/blogs/images/${blog.blogImage}` : null,
+        blogCover: blog.coverImage ? `${baseURL}/uploads/blogs/covers/${blog.coverImage}` : null,
+        authorImage: blog.authorImage
+          ? `${baseURL}/uploads/blogs/authors/${blog.authorImage}`
+          : null 
       });
+
 
       setLoading(false);
     } catch (error) {
@@ -142,29 +150,29 @@ useEffect(() => {
   const handleFileChange = (e, fileType) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImages({
-          ...previewImages,
-          [fileType]: reader.result
-        });
-      };
-      reader.readAsDataURL(file);
-      setFiles({
-        ...files,
+      // Update files state
+      setFiles(prev => ({
+        ...prev,
         [fileType]: file
-      });
+      }));
+      
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setPreviewImages(prev => ({
+        ...prev,
+        [fileType]: previewUrl
+      }));
     }
   };
   
   const handleSubmit = async (e, status = 'published') => {
-    e.preventDefault();
-    setLoading(true);
-    setSuccessMessage('');
-    setErrorMessage('');
-    
-    try {
-      const formDataToSend = new FormData();
+  e.preventDefault();
+  setLoading(true);
+  setSuccessMessage('');
+  setErrorMessage('');
+
+  try {
+    const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('introduction', formData.introduction);
       formDataToSend.append('category', formData.category);
@@ -175,61 +183,53 @@ useEffect(() => {
       formDataToSend.append('Quote1', formData.Quote1);
       formDataToSend.append('Quote2', formData.Quote2);
       formDataToSend.append('Quote3', formData.Quote3);
-
+      
       for (let i = 1; i <= 10; i++) {
         formDataToSend.append(`subTitle${i}`, formData[`subTitle${i}`]);
         formDataToSend.append(`subContent${i}`, formData[`subContent${i}`]);
       }
-      // Add all text fields
 
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataToSend.append(key, value);
-      });
-      
-      // Add files if they exist
-      if (files.blog) formDataToSend.append('blog', files.blog);
-      
-      if (files.blogCover) formDataToSend.append('blogCover', files.blogCover);
-      
-      
-      
-      // Send update request
-      const response = await fetch(`http://localhost:8000/api/blogs/update/${blogId}`, {
-        method: 'PUT',
-        body: formDataToSend,
-      });
+    // Append all form fields
+    Object.entries(formData).forEach(([key, value]) => {
+      formDataToSend.append(key, value);
+    });
 
-      const responseText = await response.text();
-      if (!response.ok) {
-        throw new Error(responseText || 'Failed to update blog post');
-      }
-      
-      setSuccessMessage(responseData.message || 'Blog post updated successfully!');
-      setTimeout(() => navigate('/blogs'), 2000);
-      
-      const responseData = await response.json();
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to update blog post');
-      }
-      
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || 'Failed to update blog post');
-      }
-      
-      const data = await response.json();
-      setSuccessMessage(data.message || 'Blog post updated successfully!');
-      
-      // Redirect after short delay
-      setTimeout(() => navigate('/blogs'), 2000);
-      
-    } catch (error) {
-      console.error('Error updating blog:', error);
-      setErrorMessage(error.message || 'Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
+    // Append files if any
+    if (files.blog) formDataToSend.append('blog', files.blog);
+    if (files.blogCover) formDataToSend.append('blogCover', files.blogCover);
+    if (files.authorImage) formDataToSend.append('authorImage', files.authorImage); // if you use author image too
+
+    // Send update request
+    const response = await fetch(`${baseURL}/api/blogs/update/${blogId}`, {
+      method: 'PUT',
+      body: formDataToSend,
+      credentials: 'include'
+    });
+
+    // Parse response JSON first
+    const responseData = await response.json();
+
+    // Check if response is ok
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to update blog post');
     }
-  };
+
+    // Success
+    setSuccessMessage(responseData.message || 'Blog post updated successfully!');
+
+    // Redirect after 2 seconds
+    setTimeout(() => {
+      navigate('/blog');
+    }, 2000);
+
+  } catch (error) {
+    console.error('Error updating blog:', error);
+    setErrorMessage(error.message || 'Something went wrong. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (loading) {
     return (
@@ -839,22 +839,35 @@ useEffect(() => {
                         <div className="space-y-4">
                           <div className="flex items-center space-x-4">
                             <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 border-2 border-indigo-200 dark:border-indigo-800">
-                              <img 
-                                src={previewImages.author}
-                                alt="Author" 
-                                className="w-full h-full object-cover"
-                              />
-                              <div 
-                                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                                onClick={() => authorImageRef.current.click()}
-                              >
-                                <Plus className="h-6 w-6 text-white" />
-                              </div>
+                              {previewImages.authorImage ? (
+                                <>
+                                  <img 
+                                    src={previewImages.authorImage}
+                                    alt="Author" 
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div 
+                                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                                    onClick={() => authorImageRef.current.click()}
+                                  >
+                                    <Camera className="h-4 w-4 text-white" />
+                                  </div>
+                                </>
+                              ) : (
+                                <div 
+                                  className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                  onClick={() => authorImageRef.current.click()}
+                                >
+                                  <Plus className="h-6 w-6 text-gray-400" />
+                                </div>
+                              )}
+                              
                               <input 
                                 ref={authorImageRef}
                                 type="file" 
                                 className="hidden" 
                                 accept="image/*" 
+                                onChange={(e) => handleFileChange(e, 'authorImage')}
                               />
                             </div>
                             <div>

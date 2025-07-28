@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import { 
   User, Briefcase, Edit3, Settings,
   ChevronRight, Shield, Award, Bell, 
@@ -20,7 +20,7 @@ import baseURL from "../config/axiosPortConfig";
 import SessionTimeout from "../protected/SessionTimeout";
 import verifyToken from "../scripts/verifyToken";
 import { useNavigate } from "react-router-dom";
-
+import Navbar from "../components/Navbar";
 // Animated Tab Context
 const TabContext = ({ children, defaultTab }) => {
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -50,7 +50,7 @@ const TabContext = ({ children, defaultTab }) => {
 // Activity Badge Component
 const ActivityBadge = ({ count }) => (
   <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-    {count}
+  {count}
   </div>
 );
 
@@ -103,7 +103,7 @@ const AnimatedCard = ({ children, delay = 0 }) => {
 };
 
 // Main Dashboard Component
-export default function Dashboard() {
+function Dashboard() {
   const [userStatus, setUserStatus] = useState("Active");
   const [notifications, setNotifications] = useState(0);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
@@ -144,67 +144,78 @@ export default function Dashboard() {
   // });
   
   // Enhanced applied jobs data
-  const [appliedJobs, setAppliedJobs] = useState([
-    {
-      id: "j001",
-      title: "Senior Frontend Developer",
-      company: "TechCorp Solutions",
-      companyLogo: "/api/placeholder/48/48",
-      location: "Colombo",
-      salary: "$80,000 - $95,000",
-      type: "Full-time",
-      appliedDate: "2025-02-28",
-      status: "Interview Scheduled",
-      statusColor: "bg-green-100 text-green-800",
-      interviewDate: "2025-03-15",
-      description: "Leading frontend development for enterprise applications...",
-      nextSteps: "Prepare for technical interview scheduled on March 15th",
-      viewCount: 5
-    },
-    {
-      id: "j002",
-      title: "Full Stack Engineer",
-      company: "DataSys International",
-      companyLogo: "/api/placeholder/48/48",
-      location: "Remote",
-      salary: "$75,000 - $90,000",
-      type: "Contract",
-      appliedDate: "2025-02-15",
-      status: "Application Viewed",
-      statusColor: "bg-blue-100 text-blue-800",
-      viewCount: 3
-    },
-    {
-      id: "j003",
-      title: "UX/UI Designer",
-      company: "Creative Minds",
-      companyLogo: "/api/placeholder/48/48",
-      location: "Kandy",
-      salary: "$65,000 - $80,000",
-      type: "Part-time",
-      appliedDate: "2025-01-30",
-      status: "Rejected",
-      statusColor: "bg-red-100 text-red-800",
-      feedback: "Selected a candidate with more industry-specific experience",
-      viewCount: 1
-    }
-  ]);
-  
+  // const [appliedJobs, setAppliedJobs] = useState([
+  //   {
+  //     id: "j001",
+  //     title: "Senior Frontend Developer",
+  //     company: "TechCorp Solutions",
+  //     companyLogo: "/api/placeholder/48/48",
+  //     location: "Colombo",
+  //     salary: "$80,000 - $95,000",
+  //     type: "Full-time",
+  //     appliedDate: "2025-02-28",
+  //     status: "Interview Scheduled",
+  //     statusColor: "bg-green-100 text-green-800",
+  //     interviewDate: "2025-03-15",
+  //     description: "Leading frontend development for enterprise applications...",
+  //     nextSteps: "Prepare for technical interview scheduled on March 15th",
+  //     viewCount: 5
+  //   },
+  //   {
+  //     id: "j002",
+  //     title: "Full Stack Engineer",
+  //     company: "DataSys International",
+  //     companyLogo: "/api/placeholder/48/48",
+  //     location: "Remote",
+  //     salary: "$75,000 - $90,000",
+  //     type: "Contract",
+  //     appliedDate: "2025-02-15",
+  //     status: "Application Viewed",
+  //     statusColor: "bg-blue-100 text-blue-800",
+  //     viewCount: 3
+  //   },
+  //   {
+  //     id: "j003",
+  //     title: "UX/UI Designer",
+  //     company: "Creative Minds",
+  //     companyLogo: "/api/placeholder/48/48",
+  //     location: "Kandy",
+  //     salary: "$65,000 - $80,000",
+  //     type: "Part-time",
+  //     appliedDate: "2025-01-30",
+  //     status: "Rejected",
+  //     statusColor: "bg-red-100 text-red-800",
+  //     feedback: "Selected a candidate with more industry-specific experience",
+  //     viewCount: 1
+  //   }
+  // ]);
+  const [appliedJobs, setAppliedJobs] = useState([]);
+
   // Job recommendations
-  const [jobRecommendations, setJobRecommendations] = useState([
-    {
-      id: "rec001",
-      title: "React Developer",
-      company: "InnoTech Solutions",
-      matchPercentage: 92
-    },
-    {
-      id: "rec002",
-      title: "Frontend Team Lead",
-      company: "Global Systems Inc.",
-      matchPercentage: 87
+  // Job recommendations
+  const [jobRecommendations, setJobRecommendations] = useState([]);
+  const [jobRecPage, setJobRecPage] = useState(1);
+  const JOBS_PER_PAGE = 2;
+
+  const fetchJobRecommendations = useCallback(async (page = 1) => {
+    try {
+      const response = await axios.get(`${baseURL}/api/jobs`, { withCredentials: true });
+      if (response.status === 200 && Array.isArray(response.data.jobs)) {
+        // Paginate jobs
+        const start = 0;
+        const end = page * JOBS_PER_PAGE;
+        setJobRecommendations(response.data.jobs.slice(start, end));
+      } else {
+        setJobRecommendations([]);
+      }
+    } catch (error) {
+      setJobRecommendations([]);
     }
-  ]);
+  }, []);
+
+  useEffect(() => {
+    fetchJobRecommendations(jobRecPage);
+  }, [jobRecPage, fetchJobRecommendations]);
   
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -218,45 +229,190 @@ export default function Dashboard() {
   const [cvLink, setCVLink] = useState('');
   const [imageLink, setImageLink] = useState('');
 
+  //fetch 1
+  const fetchLoggedUserData = useCallback(async () => {
+    try {
+      // First get the user ID from the JWT token
+      const authCheckResponse = await axios.get(`${baseURL}/auth/check`, {
+        withCredentials: true // This sends the token cookie
+    });
+
+    if (authCheckResponse.status === 200) {
+      // Get the user ID from the decoded token
+      const userId = authCheckResponse.data.data.id;
+      setLoggedUserId(userId);
+      
+      // Now fetch the complete user profile using the ID
+      const userResponse = await axios.get(`${baseURL}/user/${userId}`, {
+        withCredentials: true
+      });
+      
+      if (userResponse.status === 200) {
+
+        // Handle multiple possible response formats
+        const userData = userResponse.data.user || 
+                         (userResponse.data.users) || 
+                         (userResponse.data.data && userResponse.data.data[0]) ||
+                         {};
+
+        // console.log("User data being set:", userData);
+        setUser(userData);
+        setProfileCompletionPercentage(useSetUserProfileCompletion(userData));
+      } else {
+        console.log("Failed to load user data");
+        navigate("/login");
+      }
+    } else {
+      console.log("Invalid or expired token");
+      navigate("/login");
+    } 
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    navigate("/login");
+  }
+}, [navigate]);
+
+//fetch 2
+  const fetchAppliedJobCount = useCallback(async (id) => {
+  try {
+    const countResponse = await axios.get(`${baseURL}/api/jobs/applied/count/${id}`, {
+      withCredentials: true // This sends the JWT cookie
+    });
+
+    if (countResponse.status === 200) {
+      setNotifications(countResponse.data.data[0]["COUNT(applicationId)"]);
+    } else {
+      console.log("API error: Failed to load job count");
+      toast.error("API error: Failed to load job count");
+    }
+  } catch (error) {
+    console.error("Error fetching job count:", error);
+    navigate("/login"); // Redirect on error
+  }
+}, [notifications, navigate]);
+
+ 
+//fetch 3
+
+  const fetchLastActiveStatusForUser = useCallback(async (id) => {
+    try {
+      const lastActiveStatusResponse = await axios.get(`${baseURL}/user/last-active-status/${id}`, {
+        withCredentials: true
+      });
+
+      if (lastActiveStatusResponse.status === 200) {
+        // Update to use the correct property from response
+        setLastActive(lastActiveStatusResponse.data.lastActive || 'Never');
+      } else {
+        console.log("API error: Failed to load last active status");
+        toast.error("API error: Failed to load last active status");
+      }
+    } catch (error) {
+      console.error("Error fetching last active status:", error);
+      setLastActive('Never'); // Set a default value on error
+    }
+  }, []);
+
+//fetch 4
+  const fetchLastProfileActivity = useCallback(async (id) => {
+  try {
+    const recentActivityResponse = await axios.get(`${baseURL}/user/recent-activity/${id}`, {
+      withCredentials: true
+    });
+
+    // Will always get a 200 response now
+    setLastProfileActivity(recentActivityResponse.data.recentActivity || "");
+    setLastProfileActivityTime(recentActivityResponse.data.timeStatus || "");
+    
+  } catch (error) {
+    console.error("Error fetching recent profile activity:", error);
+    // Only navigate away on serious errors, not just missing data
+    if (!error.response || error.response.status !== 404) {
+      navigate("/login");
+    }
+  }
+}, [navigate]);
+  //fetch 5
+  const checkIfFirstVisit = useCallback(() => {
+    const hasVisitedBefore = localStorage.getItem('hasVisitedDashboard');
+    if (!hasVisitedBefore) {
+      setIsFirstVisit(true);
+      localStorage.setItem('hasVisitedDashboard', 'true');
+    } else {
+      setIsFirstVisit(false);
+    }
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await axios.get(`${baseURL}/auth/logout`, {
+        withCredentials: true
+      });
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      navigate("/login");
+    }
+  }, [navigate]);
+
   // Simulate first visit welcome
   useEffect(() => {
-    fetchLoggedUserData();
-
+    async function loadUserData() { 
+      await fetchLoggedUserData();
+      checkIfFirstVisit(); // Use our new function
+    }
+    loadUserData();
+  }, [fetchLoggedUserData, checkIfFirstVisit]);
+    
+  useEffect(() => { 
     if(loggedUserId) {
-      console.log(loggedUserId);
       fetchAppliedJobCount(loggedUserId);
-      fetchAppliedJobCount(loggedUserId);
-      fetchJobApplicationStatusForUser(loggedUserId);
+      // fetchJobApplicationStatusForUser(loggedUserId);
       fetchLastActiveStatusForUser(loggedUserId);
       fetchLastProfileActivity(loggedUserId);
-      // fetchUserLoginAttempts(loggedUserId);
-    } else {
+    } 
+    else {
       console.log('UserId Error');
       return;
     }
 
-    if(user.cv) {
-      const cvURL = `${baseURL}/uploads/cvs/${user.cv}`;
-      console.log('cv-url', cvURL);
-      setCVLink(cvURL);
+    if(user && user.cv) {
+      try {
+        const cvURL = `${baseURL}/uploads/cvs/${user.cv}`;
+        setCVLink(cvURL);
+      } catch (error) {
+        setCVLink('');
+      }
     } else {
       setCVLink('');
     }
-
-    if(user.photo) {
-      const photoURL = `${baseURL}/uploads/images/${user.photo}`;
-      console.log('image-url', photoURL);
-      setImageLink(photoURL);
-    } else {
-      setImageLink('');
-    }
+     if(user && user.photo) {
+      try {
+        // Check if it's a Google image URL or local file
+        if(user.photo.startsWith('http')) {
+          setImageLink(user.photo); // Use the URL directly
+          console.log('Setting Google image URL in Dashboard:', user.photo);
+        } else {
+          // Local uploaded image
+          const photoURL = `${baseURL}/uploads/users/images/${user.photo}`;
+          setImageLink(photoURL);
+          console.log('Setting local image URL in Dashboard:', photoURL);
+        }
+      } catch (error) {
+        console.error('Error setting image link:', error);
+        setImageLink('');
+      }
+      } else {
+        console.log('No user photo available');
+        setImageLink('');
+      }
     
-    if (isFirstVisit) {
-      setTimeout(() => {
-        setIsFirstVisit(false);
-      }, 3000);
-    }
-  }, [isFirstVisit]);
+      if (isFirstVisit) {
+        setTimeout(() => {
+          setIsFirstVisit(false);
+        }, 3000);
+      }
+  }, [loggedUserId, user]);
   
   // Handlers
   const handleFormChange = (e) => {
@@ -387,176 +543,12 @@ export default function Dashboard() {
     );
   }; 
 
-  const fetchLoggedUserData = async () => {
-      try {
-        // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
-        const loggedUserResponse = await axios.get(`${baseURL}/session/profile-data`);
-        console.log(loggedUserResponse.data);
-        // console.log(loggedUserResponse.data.data[0]);
-        if(loggedUserResponse.status === 200) {
-          setUser(loggedUserResponse.data.data.user[0]);
-          setLoggedUserId(loggedUserResponse.data.data.user[0].userId);
-          console.log(loggedUserResponse.data.data.token);
-          setAccessToken(loggedUserResponse.data.data.token);
-          const percentage = useSetUserProfileCompletion(loggedUserResponse.data.data.user[0]);
-          setProfileCompletionPercentage(percentage);
-          const response = await verifyToken(loggedUserResponse.data.data.token);
-          if(response === 'Token is Valid') {
-            console.log('Token Authentication Successfull');
-            return;
-          } else if(response === 'Token is Expired') {
-            console.log('Token Expired');
-            const generateNewTokenResponse = handleToken(loggedUserResponse.data.data.token);
-            console.log(generateNewTokenResponse);
-            if(generateNewTokenResponse === 'Token Authentication Successfull') {
-              console.log('Token Authentication Successfull');
-              const newToken = localStorage.getItem('AccessToken');
-              setAccessToken(newToken);
-            } else {
-              console.log('Failed to generate new token');
-              return;
-            }
-          } else if(response === 'Token is Invalid') {
-            console.log('Token Invalid');
-            localStorage.clear();
-            navigate('/login');
-            return;
-          } else if(response === 'Token is not provided') {
-            console.log('Token Not Provided');
-            return;
-          } else {
-            console.log('Error Occurred While checking Token Validity');
-            return;
-          }
-          // if (!handleToken(loggedUserResponse.data.data.token)) {
-          //   console.log('Token is not valid');
-          //   return;
-          // } else {
-          //   console.log('Token Authentication Successfull');
-          //   localStorage.setItem('AccessToken', loggedUserResponse.data.data.token);
-          //   return;
-          // }
-        } else {
-          console.log('Failed To Load User Data');
-          return;
-        }
-      } catch (error) {
-        console.log(error);
-        return;
-      }
-  }
 
-  const fetchAppliedJobCount = async (id) => {
-    try {
-      const countResponse = await axios.get(`${baseURL}/api/jobs/applied/count/${id}`);
-      // console.log(countResponse.data);
-      if(countResponse.status == 200) {
-        // console.log(countResponse.data.data[0]["COUNT(applicationId)"]);
-        setNotifications(countResponse.data.data[0]["COUNT(applicationId)"]);
-      } else {
-        toast.error('Failed to load count');
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  } 
 
-  const fetchJobApplicationStatusForUser = async (id) => {
-    try {
-      const jobApplicationStatusResponse = await axios.get(`${baseURL}/user/application-status/${id}`);
-      // console.log(jobApplicationStatusResponse.data);
-      if(jobApplicationStatusResponse.status == 200) {
-        // console.log(jobApplicationStatusResponse.data.jobStatus);
-        // console.log(jobApplicationStatusResponse.data.data);
-        setJobStatus(jobApplicationStatusResponse.data.jobStatus);
-        setJobData(jobApplicationStatusResponse.data.data[0]);
-      } else if (jobApplicationStatusResponse.status == 404) {
-        // console.log('Job application not found');
-        setJobStatus('');
-        setJobData('');
-        return;
-      } else {
-        console.log('Failed to load job application status');
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }
-
-  const fetchLastActiveStatusForUser = async (id) => {
-    try {
-      const lastActiveStatusResponse = await axios.get(`${baseURL}/user/last-active-status/${id}`);
-      // console.log(lastActiveStatusResponse.data);
-      if(lastActiveStatusResponse.status == 200) {
-        // console.log(lastActiveStatusResponse.data.jobStatus);
-        // console.log(lastActiveStatusResponse.data.data);
-        setLastActive(lastActiveStatusResponse.data.jobStatus);
-      } else {
-        console.log('Failed to load last active status');
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }
-
-  const fetchLastProfileActivity = async (id) => {
-    try {
-      const recentActivityResponse = await axios.get(`${baseURL}/user/recent-activity/${id}`);
-      // console.log(recentActivityResponse.data);
-      if(recentActivityResponse.status == 200) {
-        // console.log(recentActivityResponse.data.recentActivity);
-        
-        if(recentActivityResponse.data.recentActivity != null) {
-          setLastProfileActivity(recentActivityResponse.data.recentActivity);
-        } else {
-          setLastProfileActivity('');
-        } 
-
-        if(recentActivityResponse.data.timeStatus != null) {
-          setLastProfileActivityTime(recentActivityResponse.data.timeStatus);
-        } else {
-          setLastProfileActivityTime('');
-        }
-        
-      } else {
-        console.log('Failed to load recent activity');
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }
-
-  const fetchUserLoginAttempts = async (id) => {
-    try {
-      const userLoginAttemptsResponse = await axios.get(`${baseURL}/session/login-attempts/${id}`);
-      // console.log(userLoginAttemptsResponse.data);
-      if(userLoginAttemptsResponse.status == 200) {
-        // console.log(userLoginAttemptsResponse.data.data);
-        if(userLoginAttemptsResponse.data.data > 1) {
-          setIsFirstVisit(false);
-        } else {
-          setIsFirstVisit(true);
-        }
-      } else {
-        console.log('Error Fetching user login attempts');
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }
-  
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-indigo-50 min-h-screen p-4 md:p-6 transition-all duration-300">
+    <>
+    <Navbar fixedColor />
+    <div className="bg-gradient-to-br from-gray-50 mt-12 to-indigo-50 min-h-screen p-4 md:p-6 transition-all duration-300">
      <ToastContainer/>
      {/* Session timeout logic will run in background */}
      <SessionTimeout />
@@ -604,19 +596,24 @@ export default function Dashboard() {
                 <div className="mt-2 flex items-center">
                   <StatusIndicator status={userStatus} />
                   <span className="mx-2">•</span>
-                  <span className="text-sm">Last active: {lastActive}</span>
+                  <span className="text-sm">Last active: {lastActive || 'Never'}</span>
                 </div>
               </div>
               <div className="relative">
-                <img 
-                  src={imageLink || null} 
-                  alt={useConCatName(user.firstName, user.lastName)} 
-                  className="w-16 h-16 rounded-full border-4 border-white border-opacity-20"
-                />
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-4 border-white border-opacity-20">
+                  <img 
+                    src={imageLink || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E"} 
+                    alt={useConCatName(user.firstName, user.lastName)} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E";
+                    }}
+                  />
+                </div>
                 <div className="absolute bottom-0 right-0 bg-green-500 rounded-full w-4 h-4 border-2 border-white"></div>
               </div>
             </div>
-            
             <div className="relative z-10">
               <div className="flex flex-wrap items-center text-sm opacity-90 gap-4">
                 <div className="flex items-center">
@@ -665,7 +662,6 @@ export default function Dashboard() {
                         >
                           <Briefcase size={18} />
                           <span>Applied Jobs</span>
-                          <ActivityBadge count={3} />
                           {activeTab === "jobs" && (
                             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"></div>
                           )}
@@ -732,37 +728,34 @@ export default function Dashboard() {
                       <span className="text-sm text-gray-600">Applications</span>
                       <span className="text-sm font-medium">{ notifications ? notifications : 0 }</span>
                     </div>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Eye size={14} className="mr-1" /> 
-                      <span>{appliedJobs.reduce((total, job) => total + (job.viewCount || 0), 0)} profile views</span>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-green-50 rounded-lg p-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Interview Rate</span>
-                      <span className="text-sm font-medium">33%</span>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">1 of 3 applications</div>
                   </div>
                   
                   <div className="pt-4">
                     <h4 className="text-sm font-medium text-gray-800 mb-3">Job Matches</h4>
                     {jobRecommendations.map(job => (
                       <div 
-                        key={job.id}
+                        key={job.jobId} // was job.id
                         className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer mb-2 border border-gray-100"
+                        onClick={() => navigate(`/jobs/${job.jobId}`)} // was job.id
                       >
-                        <div className="min-w-8 w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
-                          {job.matchPercentage}%
+                        <div className="min-w-8 w-9 h-9 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 p-1">
+                          <div className="font-medium text-xs text-center leading-tight">
+                            {job.jobType || "Job"}
+                          </div>
                         </div>
                         <div className="overflow-hidden">
-                          <div className="font-medium text-sm truncate">{job.title}</div>
+                          <div className="font-medium text-sm truncate">{job.jobName}</div>
                           <div className="text-xs text-gray-500 truncate">{job.company}</div>
                         </div>
                         <ChevronRight size={16} className="ml-auto text-gray-400" />
                       </div>
                     ))}
+                    <button
+                      className="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-1 rounded transition"
+                      onClick={() => navigate('/jobs')}
+                    >
+                      More
+                    </button>
                   </div>
                 </div>
               </div>
@@ -800,7 +793,7 @@ export default function Dashboard() {
                 )}
               </div>
               
-              <div className="flex">
+              {/* <div className="flex">
                 <div className="mr-4 flex flex-col items-center">
                   <div className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
                     <Eye size={18} />
@@ -814,7 +807,7 @@ export default function Dashboard() {
                   </div>
                   <p className="text-sm text-gray-600 mt-1">Your profile was viewed by a recruiter from DataSys International.</p>
                 </div>
-              </div>
+              </div> */}
               
               <div className="flex">
                 <div className="mr-4 flex flex-col items-center">
@@ -845,14 +838,16 @@ export default function Dashboard() {
       
       
       <div className="fixed bottom-6 right-6">
-      <button className="w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200">
-        <LogOut size={20} />
-      </button>
-    </div>
+        <button 
+        onClick={handleLogout}
+        className="w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200">
+          <LogOut size={20} />
+        </button>
+      </div>
 
 
       {/* Add CSS animations */}
-      <style jsx>{`
+      <style>{`
         .fade-in {
           animation: fadeIn 0.5s ease-out;
         }
@@ -872,5 +867,7 @@ export default function Dashboard() {
         }
       `}</style>
     </div>
+    </>
   );
 }
+export default memo(Dashboard)

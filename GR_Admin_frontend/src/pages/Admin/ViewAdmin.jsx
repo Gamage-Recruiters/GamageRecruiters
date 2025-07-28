@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import baseURL from '../../config/baseUrlConfig';
 
 function ViewAdmin() {
   const { adminId } = useParams();
@@ -9,10 +10,11 @@ function ViewAdmin() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/admin/${adminId}`)
+    axios.get(`${baseURL}/admin/${adminId}`, { 
+      withCredentials: true  
+    })
       .then((res) => {
         setAdmin(res.data.data[0]);
-        console.log(res.data.data[0])
         setLoading(false);
       })
       .catch((err) => {
@@ -35,13 +37,13 @@ function ViewAdmin() {
         <Detail label="Role" value={admin.role} />
         <Detail label="Status" value={admin.status} />
         <Detail label="Primary Phone" value={admin.primaryPhoneNumber} />
-        <Detail label="Secondary Phone" value={admin.secondaryPhoneNumber} />
+        <Detail label="Secondary Phone" value={admin?.secondaryPhoneNumber} />
 
         {admin.image && (
           <div>
             <label className="font-semibold block mb-1">Profile Image</label>
             <img
-              src={`http://localhost:8000/uploads/${admin.image}`}
+              src={`${baseURL}/uploads/admin/images/${admin.image}`}
               alt="Admin"
               className="w-32 h-32 object-cover rounded-md border"
             />

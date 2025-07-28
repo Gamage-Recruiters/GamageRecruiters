@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from "axios";
@@ -6,84 +6,14 @@ import { toast, ToastContainer } from "react-toastify";
 import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon, ChevronRightIcon, BuildingOfficeIcon, MapPinIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import JobCard from '../components/JobCard';
 import baseURL from '../config/axiosPortConfig';
+import { useLocation } from 'react-router-dom';
 
-// Mock data - will be replaced with actual API calls
-// const jobs = [
-//   {
-//     id: 1,
-//     title: "Senior Software Engineer",
-//     company: "Tech Solutions Ltd",
-//     location: "Colombo",
-//     jobType: "Full-time",
-//     salaryRange: "$3000-$5000",
-//     description: "Looking for an experienced software engineer to lead our development team.",
-//     qualifications: ["5+ years experience", "Bachelor's degree", "Strong leadership skills"],
-//     postedDate: "2023-09-15",
-//     featured: true,
-//     logo: "https://placehold.co/400"
-//   },
-//   {
-//     id: 2,
-//     title: "HR Manager",
-//     company: "Global Enterprises",
-//     location: "Kandy",
-//     jobType: "Full-time",
-//     salaryRange: "$2500-$3500",
-//     description: "Seeking an experienced HR professional to manage our growing team.",
-//     qualifications: ["4+ years HR experience", "Master's degree preferred"],
-//     postedDate: "2023-09-14",
-//     featured: false,
-//     logo: "https://placehold.co/400"
-//   },
-//   {
-//     id: 3,
-//     title: "Marketing Specialist",
-//     company: "Digital Marketing Pro",
-//     location: "Galle",
-//     jobType: "Remote",
-//     salaryRange: "$2000-$3000",
-//     description: "Join our dynamic marketing team and help grow our digital presence.",
-//     qualifications: ["3+ years marketing experience", "Digital marketing certification"],
-//     postedDate: "2023-09-13",
-//     featured: false,
-//     logo: "https://placehold.co/400"
-//   },
-//   {
-//     id: 4,
-//     title: "Frontend Developer",
-//     company: "WebTech Solutions",
-//     location: "Colombo",
-//     jobType: "Contract",
-//     salaryRange: "$2500-$4000",
-//     description: "Frontend developer needed for exciting web projects.",
-//     qualifications: ["React expertise", "3+ years experience"],
-//     postedDate: "2023-09-12",
-//     featured: true,
-//     logo: "https://placehold.co/400"
-//   },
-//   {
-//     id: 5,
-//     title: "Business Analyst",
-//     company: "Finance Corp",
-//     location: "Colombo",
-//     jobType: "Full-time",
-//     salaryRange: "$2800-$3800",
-//     description: "Business analyst needed for our expanding finance team.",
-//     qualifications: ["Finance background", "Strong analytical skills"],
-//     postedDate: "2023-09-11",
-//     featured: false,
-//     logo: "https://placehold.co/400"
-//   }
-// ];
-
-const locations = ["All Locations", "Colombo", "Kandy", "Galle", "Remote"];
-const jobTypes = ["All Types", "Full-time", "Part-time", "Contract", "Remote"];
 const salaryRanges = [
   "All Ranges",
-  "Below $2000",
-  "$2000-$3000",
-  "$3000-$4000",
-  "$4000+"
+  "Below LKR 20,000",
+  "LKR 20,000 - LKR 50,000",
+  "LKR 50,000 - LKR100,000",
+  "LKR 100,000+"
 ];
 
 // Helper function to format date
@@ -101,8 +31,8 @@ const daysAgo = (dateString) => {
   return diffDays;
 };
 
-export default function JobListings() {
-  const [searchTerm, setSearchTerm] = useState('');
+function JobListings() {
+ 
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [selectedJobType, setSelectedJobType] = useState('All Types');
   const [selectedSalaryRange, setSelectedSalaryRange] = useState('All Ranges');
@@ -111,7 +41,24 @@ export default function JobListings() {
   const [displayMode, setDisplayMode] = useState('grid');
   const [isLoading, setIsLoading] = useState(true);
   const [jobs, setJobs] = useState([]);
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const initialSearch = params.get('search') || '';
+  const [searchTerm, setSearchTerm] = useState('initialSearch');
+  const [sortOption, setSortOption] = useState('newest');
+
+
+  const [newsletterEmail, setNewsletterEmail] = useState('');
   
+  const locations = ["All Locations", ...new Set(jobs.map(job => job.jobLocation).filter(location => location && location.trim() !== ''))];
+
+  const jobTypes = ["All Types", ...new Set(jobs.map(job => job.jobType).filter(type => type && type.trim() !== ''))];
+  
+  useEffect(() => {
+    setSearchTerm(initialSearch);
+  }, [initialSearch]);
+
   useEffect(() => {
     loadJobs();
     // Simulate API loading
@@ -123,13 +70,11 @@ export default function JobListings() {
     return () => clearTimeout(timer);
   }, []);
 
-  const loadJobs = async () => {
+  const loadJobs =  useCallback(async () => {
       try {
         const loadJobsResponse = await axios.get(`${baseURL}/api/jobs`);
-        console.log(loadJobsResponse.data);
         if(loadJobsResponse.status == 200) {
-          console.log('Jobs loaded successfully');
-          console.log(loadJobsResponse.data.jobs);
+          // console.log(loadJobsResponse.data.jobs);
           setJobs(loadJobsResponse.data.jobs);
         } else {
           toast.error('Error Loading Jobs');
@@ -140,39 +85,75 @@ export default function JobListings() {
         console.log(error);
         return;
       }
-    }
+    }, [jobs]);
   
   // Filter jobs based on search and filter criteria
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = 
       job.jobName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase());
+      job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase())||
+       (Array.isArray(job.qualifications) && job.qualifications.some(q => q.toLowerCase().includes(searchTerm.toLowerCase())))
     
-    const matchesLocation = selectedLocation === 'All Locations' || job.location === selectedLocation;
+    const matchesLocation = selectedLocation === 'All Locations' || job.location === selectedLocation || job.jobLocation === selectedLocation;
     const matchesJobType = selectedJobType === 'All Types' || job.jobType === selectedJobType;
     
     // Implement proper salary range filtering
     let matchesSalary = selectedSalaryRange === 'All Ranges';
     if (!matchesSalary) {
-      const salary = {
-        min: parseInt(job.salaryRange.split('-')[0].replace('$', '').replace('+', '')),
-        max: job.salaryRange.includes('+') ? 100000 : parseInt(job.salaryRange.split('-')[1]?.replace('$', '') || 0)
-      };
+      const salaryValue = parseFloat(job.salaryRange.toString().replace(/[^\d.]/g, ''));
       
-      if (selectedSalaryRange === 'Below $2000') {
-        matchesSalary = salary.min < 2000;
-      } else if (selectedSalaryRange === '$2000-$3000') {
-        matchesSalary = (salary.min >= 2000 && salary.min <= 3000) || (salary.max >= 2000 && salary.max <= 3000);
-      } else if (selectedSalaryRange === '$3000-$4000') {
-        matchesSalary = (salary.min >= 3000 && salary.min <= 4000) || (salary.max >= 3000 && salary.max <= 4000);
-      } else if (selectedSalaryRange === '$4000+') {
-        matchesSalary = salary.min >= 4000 || salary.max >= 4000;
+      if (!isNaN(salaryValue)) {
+        if (selectedSalaryRange === 'Below LKR 20,000') {
+          matchesSalary = salaryValue < 20000;
+        } else if (selectedSalaryRange === 'LKR 20,000 - LKR 50,000') {
+          matchesSalary = salaryValue >= 20000 && salaryValue <= 50000;
+        } else if (selectedSalaryRange === 'LKR 50,000 - LKR100,000') {
+          matchesSalary = salaryValue >= 50000 && salaryValue <= 100000;
+        } else if (selectedSalaryRange === 'LKR 100,000+') {
+          matchesSalary = salaryValue >= 100000;
+        }
       }
     }
 
     return matchesSearch && matchesLocation && matchesJobType && matchesSalary;
   });
+
+
+  // Helper to parse salary range for sorting
+const parseSalary = (salaryRange) => {
+  if (!salaryRange) return { min: 0, max: 0 };
+  // Remove LKR, $, commas, and spaces
+  const clean = salaryRange.replace(/LKR|USD|\$|,|\s/gi, '');
+  if (clean.includes('-')) {
+    const [min, max] = clean.split('-').map(Number);
+    return { min, max };
+  } else if (clean.endsWith('+')) {
+    const min = Number(clean.replace('+', ''));
+    return { min, max: min };
+  } else {
+    const num = Number(clean);
+    return { min: num, max: num };
+  }
+};
+
+  // Sort jobs before rendering
+const sortedJobs = [...filteredJobs].sort((a, b) => {
+  const aSalary = parseSalary(a.salaryRange);
+  const bSalary = parseSalary(b.salaryRange);
+
+  if (sortOption === 'newest') {
+    return new Date(b.postedDate) - new Date(a.postedDate);
+  } else if (sortOption === 'oldest') {
+    return new Date(a.postedDate) - new Date(b.postedDate);
+  } else if (sortOption === 'salary-high') {
+    return bSalary.max - aSalary.max;
+  } else if (sortOption === 'salary-low') {
+    return aSalary.min - bSalary.min;
+  }
+  return 0;
+});
+
 
   // Clear all filters
   const clearFilters = () => {
@@ -203,13 +184,12 @@ export default function JobListings() {
 
     const navigate = useNavigate();
 
-    const viewJob = (id) => {
-      console.log(id);
+    const viewJob = useCallback((id) => {
 
       if(id) {
         navigate(`/jobs/${id}`, { replace: true });
       }
-    }
+    }, [navigate]);
 
     return (
       <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 border border-gray-100 relative group">
@@ -233,7 +213,7 @@ export default function JobListings() {
             <div className="mt-2 flex flex-wrap gap-2">
               <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
                 <MapPinIcon className="w-3 h-3 mr-1" />
-                {job.location}
+                {job.jobLocation}
               </span>
               <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
                 {job.jobType}
@@ -310,6 +290,18 @@ export default function JobListings() {
 
       {/* Main content */}
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-8">
+
+       {jobs.length === 0 && !isLoading ? (
+    <div className="text-center py-20 bg-white rounded-lg shadow-sm border border-gray-100">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3 className="text-lg font-medium text-gray-900 mb-1">No jobs available</h3>
+      <p className="text-gray-500 mb-4">There are currently no job listings. Please check back later.</p>
+    </div>
+  ) : (
+    <>
+
         {/* Filters section */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
@@ -389,12 +381,12 @@ export default function JobListings() {
         {/* Results count and sorting */}
         <div className="flex justify-between items-center mb-6">
           <p className="text-sm text-gray-600">
-            {isLoading ? 'Loading jobs...' : `Showing ${filteredJobs.length} jobs`}
+            {isLoading ? 'Loading jobs...' : `Showing ${sortedJobs.length} jobs`}
           </p>
-          
           <select
             className="text-sm border-0 py-1 pl-2 pr-8 text-gray-900 focus:ring-0 cursor-pointer"
-            defaultValue="newest"
+            value={sortOption}
+            onChange={e => setSortOption(e.target.value)}
           >
             <option value="newest" className='cursor-pointer'>Newest First</option>
             <option value="oldest" className='cursor-pointer'>Oldest First</option>
@@ -402,6 +394,7 @@ export default function JobListings() {
             <option value="salary-low" className='cursor-pointer'>Lowest Salary</option>
           </select>
         </div>
+
 
         {/* Job listings */}
         {isLoading ? (
@@ -411,7 +404,7 @@ export default function JobListings() {
         ) : (
           <>
             <div className={`grid ${displayMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
-              {filteredJobs.map((job) => (
+              {sortedJobs.map((job) => (
                 <EnhancedJobCard job={job} key={job.jobId}/>
                 // <Link key={job.jobId} to={`/jobs/:${job.jobId}`} className="block">
                 //   <EnhancedJobCard job={job} />
@@ -419,7 +412,7 @@ export default function JobListings() {
               ))}
             </div>
 
-            {filteredJobs.length === 0 && (
+            {sortedJobs.length === 0 && (
               <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -459,6 +452,8 @@ export default function JobListings() {
             </nav>
           </div>
         )}
+        </>
+     )}
       </div>
 
       {/* Newsletter subscription */}
@@ -472,10 +467,24 @@ export default function JobListings() {
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="email"
+                value={newsletterEmail}
+                onChange={e => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="flex-grow rounded-lg border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600"
+                
               />
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300">
+              <button 
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300"
+              onClick={() => {
+            if (!newsletterEmail) {
+              toast.error('Please enter your email');
+            } else {
+              toast.success('SuccessFully Subscribed!');
+              setNewsletterEmail('');
+            }
+          }}
+          >
+          
                 Subscribe
               </button>
             </div>
@@ -485,3 +494,5 @@ export default function JobListings() {
     </div>
   );
 }
+
+export default memo(JobListings);

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from 'axios';
 import baseURL from '../config/axiosPortConfig';
 import { verifyEmail } from '../scripts/verifyData';
 
@@ -20,7 +22,7 @@ const navigation = {
     { name: 'Login', href: '/login' },
     { name: 'Sign Up', href: '/signup' },
     { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Application', href: '/application' },
+    //{ name: 'Application', href: '/application' },
   ],
   social: [
     {
@@ -82,7 +84,8 @@ l5.58978,7.82155l0.867949,1.218704l7.26506,10.166271h-2.981339L11.436522,13.3384
 export default function Footer() {
   const [email, setEmail] = useState('');
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
     if (!email) {
       toast.error('Please enter your email');
       return;
@@ -94,19 +97,31 @@ export default function Footer() {
     }
 
     try {
-      const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email });
-      console.log(subscribeToNewsLetterResponse.data);
-      if (subscribeToNewsLetterResponse.status == 200) {
-        toast.success('Subscribed to NewsLetter Successfully');
-        setEmail('');
+      const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email }, {withCredentials: true});
+      // console.log(subscribeToNewsLetterResponse.data);
+      if (subscribeToNewsLetterResponse.data && 
+        typeof subscribeToNewsLetterResponse.data === 'string' && 
+        subscribeToNewsLetterResponse.data.includes('already')) {
+        toast.info('You are already subscribed to our newsletter');
       } else {
-        toast.error('An error occured. Please try again');
-        return;
+        toast.success('Subscribed to Newsletter Successfully');
       }
-    } catch (error) {
-      console.log(error);
-      return;
-    }
+      setEmail('');
+      } catch (error) {
+        console.log(error);
+        // Handle specific error cases
+        if (error.response) {
+          if (error.response.status === 404) {
+            toast.error('Email not registered. Please sign up first.');
+          } else if (error.response.data) {
+            toast.error(error.response.data);
+          } else {
+            toast.error('Subscription failed. Please try again.');
+          }
+        } else {
+          toast.error('Connection error. Please try again later.');
+        }
+      }
   }
 
   return (
@@ -124,14 +139,17 @@ export default function Footer() {
                 <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <span>077 479 5371</span>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span>077 479 5371</span>
+                  <span>077 789 7901</span>
+                </div>
               </div>
               <div className="flex items-center">
                 <svg className="h-5 w-5 text-blue-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <div className="flex flex-col">
-                  <span>hrgamagecareer@gmail.com</span>
+                  <span>hr.gamagecareer@gmail.com</span>
                   <span>gamagerecruiters@gmail.com</span>
                 </div>
               </div>

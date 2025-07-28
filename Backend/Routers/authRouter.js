@@ -1,7 +1,7 @@
 const express = require('express');
 const upload = require('../middlewares/fileUploading');
 const authController = require('../Controllers/authController');
-
+const {verifyToken} = require('../auth/token/jwtToken')
 const router = express.Router();
 
 // Route for user registration ...
@@ -23,7 +23,20 @@ router.route('/email-check').post(authController.emailCheck);
 // Route for Resetting Password ...
 router.route('/reset-password').post(authController.resetPassword); 
 
+// Route for verifying password reset OTP ...
+router.route('/verifyResetOTP').post(authController.verifyPasswordResetOTP);
+
 // Route for logout ...
 router.route('/logout').get(authController.logout);
+
+
+// for verifying
+router.route('/check').get(verifyToken, (req, res) => {
+    res.json({
+        success: true,
+        message: "Token is valid",
+        data: req.user
+    });
+});
 
 module.exports = router;

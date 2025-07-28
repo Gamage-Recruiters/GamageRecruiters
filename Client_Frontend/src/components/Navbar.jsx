@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
+import baseURL from '../config/axiosPortConfig';
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -13,18 +15,41 @@ const navigation = [
   { name: 'Contact', href: '/contact' },
 ];
 
-// Secondary navigation for user-specific actions
-const userNavigation = [
-  { name: 'Login', href: '/login', icon: '→' },
-  { name: 'Sign Up', href: '/signup', icon: '✦' },
-  { name: 'Feedback', href: '/addfeedback', icon: '★' },
-];
-
-export default function Navbar() {
+export default function Navbar({ fixedColor }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState('/');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/auth/check`, {
+          withCredentials: true
+        });
+
+        if (response.status === 200) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, [location.pathname]);
+
+  // Secondary navigation for user-specific actions
+  const userNavigation = [
+    isAuthenticated ? { name: 'Dashboard', href: '/dashboard', icon: '☰' } : { name: 'Login', href: '/login', icon: '→' },
+    { name: 'Sign Up', href: '/signup', icon: '✦' },
+    ,
+  ];
 
   // Detect scroll position for navbar background change
   useEffect(() => {
@@ -39,16 +64,54 @@ export default function Navbar() {
 
   useEffect(() => {
     // Set active link based on current path
-    setActiveLink(window.location.pathname);
-  }, []);
+    setActiveLink(location.pathname);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    let scrollY = 0;
+    const isDashboardPage = location.pathname === '/dashboard';
+
+    if (mobileMenuOpen) {
+      if (isDashboardPage) { // <--- Start of new conditional logic
+        document.body.style.overflow = 'hidden';
+      } else {
+        scrollY = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.overflow = 'hidden';
+        document.body.style.width = '100%';
+      } // <--- End of new conditional logic
+    } else {
+      // Only restore scroll if we are on the same page AND NOT on the dashboard
+      if (!isDashboardPage) { // <--- Add this condition
+        const scrollYValue = document.body.style.top;
+        if (scrollYValue) {
+          const restoreScrollY = parseInt(scrollYValue || '0') * -1;
+          window.scrollTo(0, restoreScrollY);
+        }
+      }
+
+      // Clear lock styles
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+    }
+  }, [mobileMenuOpen, location.pathname]);
 
   return (
     <motion.header 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-black/50 backdrop-blur-lg shadow-lg' : 'bg-transparent'
+      className={`fixed w-full z-40 transition-all duration-300 ${
+        fixedColor
+          ? 'bg-black/50 backdrop-blur-lg shadow-lg'
+          : (scrolled ? 'bg-black/50 backdrop-blur-lg shadow-lg' : 'bg-transparent')
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-2 lg:px-8" aria-label="Global">
@@ -176,7 +239,7 @@ export default function Navbar() {
                       >
                         <Link
                           to={item.href}
-                          className="block px-4 py-2 text-sm text-white hover:bg-purple-800/30 transition-colors duration-300 flex items-center justify-between"
+                          className="px-4 py-2 text-sm text-white hover:bg-purple-800/30 transition-colors duration-300 flex items-center justify-between"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           {item.name}
@@ -194,99 +257,105 @@ export default function Navbar() {
 
       {/* Mobile menu - enhanced design */}
       <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            className="fixed inset-0 z-50 lg:hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+  {mobileMenuOpen && (
+    <motion.div
+      className="fixed top-0 left-0 right-0 bottom-0 z-[100] h-screen w-screen overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Background overlay */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+
+      {/* Sliding panel */}
+      <motion.div
+        className="absolute right-0 top-0 h-full w-full sm:max-w-sm bg-black/80 backdrop-blur-xl overflow-y-auto z-[110] px-6 py-6"
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+      >
+        <div className="flex items-center justify-between">
+          <Link to="/" className="-m-1.5 p-1.5 flex items-center">
+            <img src="https://i.ibb.co/twq26b0M/W-logo-Untitled-1.png" alt="Gamage Recruiters Logo" className="h-8 w-auto mr-2" />
+            <span className="text-2xl font-bold text-white">
+              <span className="text-purple-500">G</span><span className="text-purple-400">R</span>
+            </span>
+          </Link>
+          <motion.button
+            type="button"
+            className="-m-2.5 rounded-full p-2.5 text-white hover:bg-purple-900/50 transition-colors duration-300"
+            onClick={() => setMobileMenuOpen(false)}
+            whileTap={{ scale: 0.9 }}
           >
-            <motion.div
-              className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-black/60 backdrop-blur-xl px-6 py-6 sm:max-w-sm"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            >
-              <div className="flex items-center justify-between">
-                <Link to="/" className="-m-1.5 p-1.5 flex items-center">
-                  <img src="https://i.ibb.co/twq26b0M/W-logo-Untitled-1.png" alt="Gamage Recruiters Logo" className="h-8 w-auto mr-2" />
-                  <span className="text-2xl font-bold text-white">
-                    <span className="text-purple-500">G</span><span className="text-purple-400">R</span>
-                  </span>
-                </Link>
-                <motion.button
-                  type="button"
-                  className="-m-2.5 rounded-full p-2.5 text-white hover:bg-purple-900/50 transition-colors duration-300"
-                  onClick={() => setMobileMenuOpen(false)}
-                  whileTap={{ scale: 0.9 }}
+            <span className="sr-only">Close menu</span>
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </motion.button>
+        </div>
+
+        <div className="mt-10 flow-root">
+          <div className="-my-6 divide-y divide-gray-700/30">
+            <div className="space-y-1 py-6">
+              {navigation.map((item, index) => (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05, duration: 0.3 }}
                 >
-                  <span className="sr-only">Close menu</span>
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </motion.button>
-              </div>
-              <div className="mt-10 flow-root">
-                <div className="-my-6 divide-y divide-gray-700/30">
-                  <div className="space-y-1 py-6">
-                    {navigation.map((item, index) => (
-                      <motion.div
-                        key={item.name}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05, duration: 0.3 }}
+                  <Link
+                    to={item.href}
+                    className={`-mx-3 block rounded-lg px-4 py-3 text-base font-semibold leading-7 ${
+                      activeLink === item.href ? 'text-purple-400 bg-purple-900/30' : 'text-white'
+                    } hover:bg-purple-900/20 transition-all duration-300`}
+                    onClick={() => {
+                      setActiveLink(item.href);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    {item.name}
+                    {activeLink === item.href && (
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="ml-2 text-purple-400"
                       >
-                        <Link
-                          to={item.href}
-                          className={`-mx-3 block rounded-lg px-4 py-3 text-base font-semibold leading-7 ${
-                            activeLink === item.href ? 'text-purple-400 bg-purple-900/30' : 'text-white'
-                          } hover:bg-purple-900/20 transition-all duration-300`}
-                          onClick={() => {
-                            setActiveLink(item.href);
-                            setMobileMenuOpen(false);
-                          }}
-                        >
-                          {item.name}
-                          {activeLink === item.href && (
-                            <motion.span
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              className="ml-2 text-purple-400"
-                            >
-                              •
-                            </motion.span>
-                          )}
-                        </Link>
-                      </motion.div>
-                    ))}
-                  </div>
-                  <div className="py-6 space-y-3">
-                    {userNavigation.map((item, index) => (
-                      <motion.div
-                        key={item.name}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 + index * 0.1, duration: 0.3 }}
-                      >
-                        <Link
-                          to={item.href}
-                          className="flex items-center justify-between w-full px-4 py-3 rounded-lg bg-purple-900/20 text-base font-semibold text-white hover:bg-purple-900/30 transition-all duration-300"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {item.name}
-                          <span className="ml-2 text-purple-400">{item.icon}</span>
-                        </Link>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                        •
+                      </motion.span>
+                    )}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="py-6 space-y-3">
+              {userNavigation.map((item, index) => (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + index * 0.1, duration: 0.3 }}
+                >
+                  <Link
+                    to={item.href}
+                    className="flex items-center justify-between w-full px-4 py-3 rounded-lg bg-purple-900/20 text-base font-semibold text-white hover:bg-purple-900/30 transition-all duration-300"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                    <span className="ml-2 text-purple-400">{item.icon}</span>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
     </motion.header>
   );
 }

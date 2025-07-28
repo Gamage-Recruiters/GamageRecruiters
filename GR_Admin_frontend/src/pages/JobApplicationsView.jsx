@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaDownload, FaTrash, FaEye, FaFileDownload } from 'react-icons/fa';
+import baseURL from '../config/baseUrlConfig';
 
 const JobApplicationsView = () => {
   const [jobs, setJobs] = useState([]);
@@ -22,8 +23,8 @@ const JobApplicationsView = () => {
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:8000/api/jobs');
-      setJobs(response.data.data);
+      const response = await axios.get(`${baseURL}/api/jobs`);
+      setJobs(response.data?.data);
       setError(null);
     } catch (err) {
       setError('Failed to fetch jobs. Please try again later.');
@@ -36,8 +37,10 @@ const JobApplicationsView = () => {
   const fetchApplicationsForJob = async (jobId) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8000/api/jobs/${jobId}/applications`);
-      setApplications(response.data.data);
+      const response = await axios.get(`${baseURL}/api/jobs/${jobId}/applications`, {
+        withCredentials: true
+      });
+      setApplications(response.data?.data);
       setError(null);
     } catch (err) {
       setApplications([]);
@@ -55,8 +58,9 @@ const JobApplicationsView = () => {
 
   const downloadCV = async (applicationId, fileName) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/applications/download/${applicationId}`, {
-        responseType: 'blob'
+      const response = await axios.get(`${baseURL}/api/applications/download/${applicationId}`, {
+        responseType: 'blob',
+        withCredentials: true
       });
       
       // Create a download link and trigger it
@@ -77,8 +81,9 @@ const JobApplicationsView = () => {
     if (!selectedJob) return;
     
     try {
-      const response = await axios.get(`http://localhost:8000/api/jobs/${selectedJob.jobId}/applications/download-all`, {
-        responseType: 'blob'
+      const response = await axios.get(`${baseURL}/api/jobs/${selectedJob.jobId}/applications/download-all`, {
+        responseType: 'blob',
+        withCredentials: true
       });
       
       // Create a download link and trigger it
@@ -103,7 +108,9 @@ const JobApplicationsView = () => {
 
   const deleteApplication = async (applicationId) => {
     try {
-      await axios.delete(`http://localhost:8000/api/applications/delete/${applicationId}`);
+      await axios.delete(`${baseURL}/api/applications/delete/${applicationId}`, {
+        withCredentials: true
+      });
       // Refresh applications list
       fetchApplicationsForJob(selectedJob.jobId);
       setError(null);
@@ -119,7 +126,9 @@ const JobApplicationsView = () => {
     if (!selectedJob) return;
     
     try {
-      await axios.delete(`http://localhost:8000/api/jobs/${selectedJob.jobId}/applications/delete-all`);
+      await axios.delete(`${baseURL}/api/jobs/${selectedJob.jobId}/applications/delete-all`, {
+        withCredentials: true
+      });
       // Clear applications list
       setApplications([]);
       setError(null);
@@ -141,7 +150,7 @@ const JobApplicationsView = () => {
 
   const viewApplication = (applicationId) => {
     // Navigate to application detail view
-    window.location.href = `http://localhost:8000/api/applications/${applicationId}`;
+    window.location.href = `${baseURL}/api/applications/${applicationId}`;
   };
 
   // Confirmation Modal

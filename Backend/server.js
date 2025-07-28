@@ -4,7 +4,6 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const session = require('express-session');
 
 const { dbconnect } = require('./config/dbConnection');
 const { pool } = require("./config/dbConnection");
@@ -12,7 +11,6 @@ const { pool } = require("./config/dbConnection");
 const userRouter = require('./Routers/userRouter');
 const authRouter = require('./Routers/authRouter');
 const adminRouter = require('./Routers/adminRouter');
-const sessionRouter = require('./Routers/sessionRouter');
 const googleAuthRouter = require('./Routers/googleAuthRouter');
 const facebookAuthRouter = require('./Routers/facebookAuthRouter');
 const linkedInAuthRouter = require('./Routers/linkedInAuthRouter');
@@ -22,11 +20,15 @@ const blogRoutes = require('./Routers/blogRouter');
 const testimonialsRouter = require('./Routers/testimonialsRouter');
 const workshopRouter = require('./Routers/workshopsRouter');
 const contactRouter = require('./Routers/contactRouter');
-
+const urlCaptureRouter = require('./Routers/urlCaptureRouter');
+// for testing
+const { verifyToken } = require('./auth/token/jwtToken.js');
 
 require('dotenv').config();
-require('./auth/passportAuthGoogle');
-require('./auth/passportAuthFacebook');
+
+require('./auth/googleAuth');
+require('./auth/facebookAuth');
+
 require('./auth/passportAuthLinkedIn');
 
 const app = express();
@@ -58,23 +60,12 @@ app.use(cors({
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/users/images', express.static(path.join(__dirname, '/uploads/users/images')));
 app.use('/uploads/admin/images', express.static(path.join(__dirname, '/uploads/admin/images')));
-// app.use('/uploads/cv', express.static(path.join(__dirname, '/uploads/cvs')));
-app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/uploads/appliedJonobs/resumes')));
+app.use('/uploads/cv', express.static(path.join(__dirname, '/uploads/cvs')));
+app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/uploads/appliedJobs/resumes')));
 app.use('/uploads/blogs/images', express.static(path.join(__dirname, '/uploads/blogs/images')));
 app.use('/uploads/blogs/covers', express.static(path.join(__dirname, '/uploads/blogs/covers')));
 app.use('/uploads/appliedJobs/resumes', express.static(path.join(__dirname, '/uploads/appliedJobs/resumes')));
 app.use('/uploads/workshops/images', express.static(path.join(__dirname, '/uploads/workshops/images')));
-
-app.use(session({ 
-    key: process.env.SESSION_KEY,
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24, // 1 day ...
-    }
-}));
-
 
 // Add this near your other routes in server.js
 app.get("/api/check-db", async (req, res) => {
@@ -97,18 +88,18 @@ app.get("/api/check-db", async (req, res) => {
 });
 
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.use("/api/contact",contactRouter);
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
 app.use('/auth', authRouter);
 
-app.use('/session', sessionRouter);
 
 app.use('/', googleAuthRouter);
 app.use('/', facebookAuthRouter);
 app.use('/', linkedInAuthRouter);
+
+app.use('/', urlCaptureRouter);
 
 app.use('/api/jobapplications', jobapplicationRouter);
 app.use('/api/jobs', JobsManagementRouter);
@@ -119,7 +110,16 @@ app.use("/api/testimonials",testimonialsRouter);
 
 app.use('/api/blogs', blogRoutes);
 
-
+// for testing
+app.get('/auth/test-token', verifyToken, (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Token is valid', 
+    user: req.user,
+    cookies: req.cookies,
+    hasToken: !!req.cookies.token 
+  });
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

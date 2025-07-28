@@ -7,7 +7,7 @@ import {
 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import baseURL from '../config/baseUrlConfig';
 
 function ClientUsers() {
   const navigate = useNavigate();
@@ -19,18 +19,21 @@ function ClientUsers() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  useEffect(() => {
+  
     const fetchClients = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get('http://localhost:8000/user/all');
-        const allUsers = response.data.data;
-
-        // Optionally add a fake status to each user
+        const response = await axios.get(`${baseURL}/user/all`, {
+          withCredentials: true
+        });
+        const allUsers = response.data?.data;
+        const currentDate = new Date();
+        const threeWeeksAgo = new Date(currentDate);
+        threeWeeksAgo.setDate(currentDate.getDate() - 21)
         const enhancedUsers = allUsers.map(user => ({
           ...user,
-          status: Math.random() > 0.5 ? 'active' : 'inactive', // Mock status
+          status: new Date(user.lastActive) > threeWeeksAgo ? 'active' : 'inactive',
         }));
-
         setClients(enhancedUsers);
       } catch (err) {
         console.error('Error fetching clients:', err);
@@ -40,20 +43,25 @@ function ClientUsers() {
       }
     };
 
-    fetchClients();
-  }, []);
+    useEffect(() => {
+      fetchClients();
+    }, []);
 
   const handleDelete = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this client?')) return;
   
     try {
-      await axios.delete(`http://localhost:8000/user/delete-profile/${userId}`);
+      await axios.delete(`${baseURL}/user/delete-profile/${userId}`, {
+        withCredentials: true
+      });
       setClients(prev => prev.filter(client => client.userId !== userId));
     } catch (err) {
       console.error('Failed to delete user:', err);
       alert('Something went wrong while deleting the user.');
     }
   };
+
+
 
   const filteredClients = clients.filter(client => {
     const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
@@ -71,6 +79,44 @@ function ClientUsers() {
     return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
   });
 
+
+  // Handle client export
+
+  const handleExportClients = () => {
+  // Choose the clients you want to export (filtered, sorted, or all)
+  const exportData = sortedClients.length ? sortedClients : clients;
+
+  // Prepare CSV header
+  const headers = ['First Name', 'Last Name', 'Email', 'Status', 'Joined'];
+  const rows = exportData.map(client => [
+    client.firstName,
+    client.lastName,
+    client.email,
+    client.status,
+    client.createdAt,
+  ]);
+
+  // Convert to CSV string
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.map(field => `"${(field ?? '').toString().replace(/"/g, '""')}"`).join(',')),
+  ].join('\r\n');
+
+  // Create a blob and trigger download
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'clients.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  };
+
+  
+
+  
   const toggleSortDirection = () => {
     setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
   };
@@ -86,6 +132,7 @@ function ClientUsers() {
     if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
     return `${Math.floor(diffInDays / 365)} years ago`;
   };
+  
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -94,14 +141,20 @@ function ClientUsers() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Client Management</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage and view all client accounts</p>
         </div>
+
         <div className="flex flex-wrap gap-3">
-          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          onClick={handleExportClients}
+          >
             <Download className="h-4 w-4 mr-2" /> Export
           </button>
-          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+          <button className="flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          onClick={fetchClients}>
             <RefreshCw className="h-4 w-4 mr-2" /> Refresh
           </button>
         </div>
+
+
       </div>
 
       {/* Stats */}
@@ -236,7 +289,7 @@ function ClientUsers() {
                       <div className="text-sm text-gray-500">{client.email}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap capitalize text-sm text-gray-700 dark:text-gray-300">
-                      {client.status}
+                      {client?.status}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                       {getRelativeTime(client.createdAt)}
@@ -255,6 +308,7 @@ function ClientUsers() {
       </div>
     </motion.div>
   );
+
 }
 
 export default ClientUsers;

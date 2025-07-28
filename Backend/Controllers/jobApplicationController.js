@@ -1,5 +1,6 @@
 const { pool } = require('../config/dbConnection');
 const path = require('path');
+const deleteUploadedFile = require('../utils/deleteUplodedFile');
 
 // Apply for a job (with resume file upload)
 async function applyJob(req, res) {
@@ -48,11 +49,11 @@ async function applyJob(req, res) {
                 }
 
                 if(result.length === 0) {
-                    return res.status(401).send('User Not Found. You must login first.');
+                    return res.status(401).send('Email is not found.');
                 } 
 
-                if(result[0].firstName !== firstName && result[0].lastName !== lastName) {
-                    return res.status(400).send('Names are not matching. Cannot proceed');
+                if(result[0].firstName !== firstName || result[0].lastName !== lastName) {
+                    return res.status(400).send('Please use the same name as in your profile');
                 }
 
                 // User exists, proceed to insert the application ...
@@ -294,19 +295,42 @@ async function deleteApplication(req, res) {
     }
 
     try {
-        const deleteApplicationQuery = 'DELETE FROM jobapplications WHERE applicationId = ?';
-        pool.query(deleteApplicationQuery, applicationId, (error, result) => {
-            if(error) {
-                console.log(error);
-                return res.status(400).send(error);
+        const getApplicationQuery = 'SELECT resume FROM jobapplications WHERE applicationId = ?';
+
+        pool.query(getApplicationQuery, [applicationId], async (fetchError, fetchResult) => {
+            if (fetchError){
+                console.error('Error fetching resume for deletion:', fetchError);
+                return res.status(500).send('Database error when retrieving resume');
             }
 
-            if(result.affectedRows === 0) {
-                return res.status(404).send('Job Application Not Found');
+            if (fetchResult.length === 0) {
+                return res.status(404).send('Resume not found');
             }
 
-            return res.status(200).json({ message: 'Job Application Deleted Successfully', data: result });
-        });
+            const jobApplication = fetchResult[0];
+
+            try{
+                if(jobApplication.resume) {
+                    await deleteUploadedFile('resume', jobApplication.resume);
+                    console.log(`Deleted resume: ${jobApplication.resume}`);
+                }
+            } catch (deleteError) {
+                console.error('Error deleting resume:', deleteError);
+            }
+            const deleteApplicationQuery = 'DELETE FROM jobapplications WHERE applicationId = ?';
+            pool.query(deleteApplicationQuery, applicationId, (error, result) => {
+                if(error) {
+                    console.log(error);
+                    return res.status(400).send(error);
+                }
+
+                if(result.affectedRows === 0) {
+                    return res.status(404).send('Job Application Not Found');
+                }
+
+                return res.status(200).json({ message: 'Job Application Deleted Successfully', data: result });
+            });
+        })
     } catch (error) {
         console.log(error);
         return res.status(500).send(error);

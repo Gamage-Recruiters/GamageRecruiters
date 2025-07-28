@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { MapPin, Mail, Phone, ArrowRight, GraduationCap, Briefcase, Award, Calendar, Clock, Users, Wine, Ship, BookOpen, Globe, Star, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -567,7 +567,12 @@ function Subsidiaries() {
               </span>
             </button>
             
-            <button className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-base font-medium rounded-full text-white bg-transparent hover:bg-white/10 transition-all duration-300">
+            <button 
+             onClick={() => {
+    const el = document.getElementById('campus-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }}
+             className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-base font-medium rounded-full text-white bg-transparent hover:bg-white/10 transition-all duration-300">
               Learn More
               <ArrowRight className="ml-2 h-5 w-5" />
             </button>
@@ -618,4 +623,4 @@ function Subsidiaries() {
   );
 }
 
-export default Subsidiaries;
+export default memo(Subsidiaries);

@@ -6,16 +6,24 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import baseURL from '../../config/baseUrlConfig';
+function getTodayDateString() {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${today.getFullYear()}-${month}-${day}`;
+}
 function AddWorkshop() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(""); 
   
   const [formData, setFormData] = useState({
     title: '',
     category: '',
-    date: '',
+    date: getTodayDateString(),
     time: '',
     location: '',
     image: '',
@@ -56,14 +64,12 @@ function AddWorkshop() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result);
-        setFormData({
-          ...formData,
-          image: reader.result
-        });
       };
+        
       reader.readAsDataURL(file);
     }
   };
@@ -71,14 +77,37 @@ function AddWorkshop() {
   const handleSubmit = async (e, status) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage(""); // Reset error message
     
-    const workshopData = {
-      ...formData,
-      event_type: status === 'publish' ? formData.event_type : 'Upcoming Event'
-    };
+    if (!formData.title || !formData.category || !formData.date || !formData.time || !formData.location || !imageFile || !formData.speaker || !formData.description) {
+    alert('Please fill in all required fields including image.');
+    setLoading(false);
+    return;
+  }
+
+  const workshopData = new FormData();
+  workshopData.append('title', formData.title);
+  workshopData.append('category', formData.category);
+  workshopData.append('date', formData.date);
+  workshopData.append('time', formData.time);
+  workshopData.append('location', formData.location);
+  workshopData.append('color', formData.color);
+  workshopData.append('speaker', formData.speaker);
+  workshopData.append('price', formData.price);
+  workshopData.append('spots', formData.spots);
+  workshopData.append('rating', formData.rating);
+  workshopData.append('description', formData.description);
+  workshopData.append('event_type', status === 'publish' ? formData.event_type : 'Upcoming Event');
+  workshopData.append('link', formData.link);
+  workshopData.append('workshopImage', imageFile);
     
     try {
-      await axios.post('http://localhost:8000/api/workshops/add', workshopData);
+      await axios.post(`${baseURL}/api/workshops/add`, workshopData,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true
+      });
       
       // Show success message
       alert(`Workshop ${status === 'publish' ? 'published' : 'saved as draft'} successfully!`);
@@ -86,12 +115,17 @@ function AddWorkshop() {
       // Redirect to workshops list
       navigate('/workshops');
     } catch (error) {
-      console.error('Error adding workshop:', error);
-      alert('Failed to create workshop. Please try again.');
-    } finally {
       setLoading(false);
+      console.error('Error adding workshop:', error);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        alert(`Failed to create workshop: ${error.response.data}`);
+      } else {
+        alert(`Failed to create workshop: ${error.message}`);
+      }
     }
-  };
+  }
 
   const getGradientPreview = (color) => {
     return `bg-gradient-to-r ${color}`;
@@ -115,14 +149,19 @@ function AddWorkshop() {
           </div>
         </div>
         <div className="flex space-x-3">
-          <button 
+          {errorMessage && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+              {errorMessage}
+            </div>
+          )}
+          {/* <button 
             onClick={(e) => handleSubmit(e, 'draft')} 
-            disabled={loading}
+            disabled={loading}        
             className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
             <Save className="h-4 w-4 mr-2" />
             Save Draft
-          </button>
+          </button> */}
           <button 
             onClick={(e) => handleSubmit(e, 'publish')} 
             disabled={loading}
@@ -168,10 +207,9 @@ function AddWorkshop() {
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <input
-                      type="text"
+                      type="date"
                       id="date"
                       name="date"
-                      placeholder="e.g. June 15, 2025"
                       value={formData.date}
                       onChange={handleInputChange}
                       className="pl-10 pr-4 py-2 w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
@@ -275,7 +313,7 @@ function AddWorkshop() {
                       type="text"
                       id="price"
                       name="price"
-                      placeholder="e.g. $199"
+                      placeholder="e.g. 199"
                       value={formData.price}
                       onChange={handleInputChange}
                       className="pl-10 pr-4 py-2 w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
@@ -295,7 +333,7 @@ function AddWorkshop() {
                       type="text"
                       id="spots"
                       name="spots"
-                      placeholder="e.g. 20 spots remaining"
+                      placeholder="e.g. 20"
                       value={formData.spots}
                       onChange={handleInputChange}
                       className="pl-10 pr-4 py-2 w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
@@ -426,6 +464,7 @@ function AddWorkshop() {
                           browse
                           <input 
                             type="file" 
+                            name="workshopImage"
                             className="hidden" 
                             accept="image/*" 
                             onChange={handleImageChange}

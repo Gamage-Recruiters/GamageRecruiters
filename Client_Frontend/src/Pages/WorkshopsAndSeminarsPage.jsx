@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, MapPin, ArrowRight, Search, Filter, Users, Star, ChevronDown, X, Bookmark, Share2 } from 'lucide-react';
 import baseURL from '../config/axiosPortConfig';
+import { toast, ToastContainer } from "react-toastify";
 
 // Categories for filtering
 const categories = [
@@ -21,6 +22,21 @@ const WorkshopsAndSeminarsPage = () => {
   const [pastEvents, setPastEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sharePopupId, setSharePopupId] = useState(null);
+  const [savedEvents, setSavedEvents] = useState([]);
+
+  // Helper function to format image URLs correctly
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;// No placeholder
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${baseURL}/uploads/workshops/images/${imagePath}`;
+  };
+
+  //share link
+  const handleCopyLink = (link) => {
+    navigator.clipboard.writeText(link);
+    toast.success('Link copied to clipboard!');
+  };
 
   useEffect(() => {
     // Fetch workshops data from the backend API
@@ -38,9 +54,6 @@ const WorkshopsAndSeminarsPage = () => {
                              (result.data && Array.isArray(result.data) ? result.data : []);
         
         setWorkshops(workshopsData);
-        
-        // Log the data to help diagnose structure issues
-        console.log("Workshops data:", workshopsData);
         
         // Separate upcoming and past events
         const upcoming = workshopsData.filter(event => event.event_type === 'Upcoming Event');
@@ -67,12 +80,21 @@ const WorkshopsAndSeminarsPage = () => {
 
   // Filter events based on search and category
   const filteredUpcomingEvents = upcomingEvents.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         event.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (event.speaker && event.speaker.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = activeFilter === "All" || event.category === activeFilter;
-    return matchesSearch && matchesCategory;
-  });
+  const title = (event.title || "").toLowerCase();
+  const category = (event.category || "").toLowerCase();
+  const speaker = (event.speaker || "").toLowerCase();
+  const search = searchTerm.toLowerCase();
+
+  const matchesSearch =
+   !search || // If search is empty, match all
+    title.includes(search) ||
+    category.includes(search) ||
+    speaker.includes(search);
+
+  const matchesCategory = activeFilter.toLowerCase()  === "all" || category === activeFilter.toLowerCase();
+
+  return matchesSearch && matchesCategory;
+});
 
   const loadMore = () => {
     setVisibleCount(prev => Math.min(prev + 3, filteredUpcomingEvents.length));
@@ -115,6 +137,7 @@ const WorkshopsAndSeminarsPage = () => {
 
   return (
     <div className="bg-white min-h-screen">
+      <ToastContainer />
       {/* Hero Section with Video Background */}
       <div className="relative h-96 overflow-hidden">
         {showVideo ? (
@@ -150,11 +173,6 @@ const WorkshopsAndSeminarsPage = () => {
               className="px-6 py-3 bg-white text-purple-700 font-medium rounded-full hover:bg-opacity-90 transform transition duration-300 hover:scale-105 shadow-lg"
             >
               Explore Events
-            </button>
-            <button 
-              className="px-6 py-3 bg-transparent border-2 border-white text-white font-medium rounded-full hover:bg-white hover:bg-opacity-10 transform transition duration-300 hover:scale-105"
-            >
-              About
             </button>
           </div>
         </div>
@@ -194,12 +212,14 @@ const WorkshopsAndSeminarsPage = () => {
                 style={{ transitionDelay: `${index * 150}ms` }}
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${event.color || 'from-purple-600 to-indigo-600'} opacity-80 z-10`}></div>
+                {getImageUrl(event.image) && (
                 <img 
-                  src={event.image || '/api/placeholder/400/300'} 
+                  src={getImageUrl(event.image)} 
                   alt={event.title} 
                   className="h-96 w-full object-cover transform transition duration-700 group-hover:scale-110"
-                  onError={(e) => {e.target.src = '/api/placeholder/400/300'}}
+                  
                 />
+                )}
                 <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 text-white">
                   <div className="bg-white bg-opacity-20 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-semibold inline-block w-fit mb-3">
                     {event.category || 'Workshop'}
@@ -231,11 +251,9 @@ const WorkshopsAndSeminarsPage = () => {
                       </div>
                       <span className="text-sm">{event.speaker || 'Expert Speaker'}</span>
                     </div>
-                    <span className="font-bold">${parseFloat(event.price || 0).toFixed(2)}</span>
+                    
                   </div>
-                  <a href={event.link || "#"} target="_blank" rel="noopener noreferrer" className="mt-4 w-full py-2.5 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-lg font-medium transition-all duration-300 transform group-hover:scale-105 text-center">
-                    View Details
-                  </a>
+                  
                 </div>
               </div>
             ))}
@@ -248,14 +266,15 @@ const WorkshopsAndSeminarsPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative max-w-3xl mx-auto">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+              <Search className="h-5 w-5 text-gray-400 cursor-pointer"/>
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              placeholder="Search by title, category, or speaker..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              placeholder="Search by title, category, or speaker..."
+              
             />
           </div>
 
@@ -298,23 +317,39 @@ const WorkshopsAndSeminarsPage = () => {
             {filteredUpcomingEvents.slice(0, visibleCount).map((event) => (
               <div 
                 key={event.id}
-                className={`bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl ${
-                  expandedEvent === event.id ? 'md:col-span-2 md:row-span-2' : ''
-                }`}
+                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl "
+                  
               >
                 <div className="relative">
                   <div className={`absolute inset-0 bg-gradient-to-b ${event.color || 'from-purple-600 to-indigo-600'} opacity-30`}></div>
+                  {getImageUrl(event.image) && (
                   <img
-                    src={event.image || '/api/placeholder/400/200'}
+                    src={getImageUrl(event.image)}
                     alt={event.title}
                     className="h-48 w-full object-cover"
-                    onError={(e) => {e.target.src = '/api/placeholder/400/200'}}
+                    
                   />
+                  )}
                   <div className="absolute top-4 right-4 flex space-x-2">
-                    <button className="p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all">
-                      <Bookmark size={16} />
-                    </button>
-                    <button className="p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all">
+                    <button
+                      className={`p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all ${
+                         savedEvents.includes(event.id) ? 'text-purple-600' : ''
+                    }`}
+                    onClick={() => {
+                     setSavedEvents(prev =>
+                       prev.includes(event.id)
+                          ? prev.filter(id => id !== event.id)
+                          : [...prev, event.id]
+           );
+              }}
+             title={savedEvents.includes(event.id) ? "Unsave" : "Save"}
+              >
+               <Bookmark size={16} className={savedEvents.includes(event.id) ? "text-yellow-400" : ""}/>
+             </button>
+                    <button
+                      className="p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all relative"
+                      onClick={() => setSharePopupId(sharePopupId === event.id ? null : event.id)}
+                    >
                       <Share2 size={16} />
                     </button>
                   </div>
@@ -363,20 +398,6 @@ const WorkshopsAndSeminarsPage = () => {
                   )}
 
                   <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center">
-                      <div className="flex -space-x-2 mr-2">
-                        {[...Array(3)].map((_, i) => (
-                          <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-                            <img
-                              src={`/api/placeholder/24/24`}
-                              alt="Attendee"
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <span className="text-xs text-gray-500">{Math.floor(event.spots * 0.7) || '15'} attending</span>
-                    </div>
                     
                     <button 
                       onClick={() => toggleEventDetails(event.id)}
@@ -388,7 +409,7 @@ const WorkshopsAndSeminarsPage = () => {
 
                   <div className="mt-5 pt-5 border-t border-gray-100 flex justify-between items-center">
                     <div className="text-gray-700">
-                      <span className="font-bold text-gray-900">${parseFloat(event.price || 0).toFixed(2)}</span>
+                      <span className="font-bold text-gray-900">Rs {parseFloat(event.price || 0).toFixed(2)}</span>
                     </div>
                     <a 
                       href={event.link || "#"}
@@ -417,8 +438,86 @@ const WorkshopsAndSeminarsPage = () => {
           </div>
         )}
       </div>
+      
+      {sharePopupId && (() => {
+        const event = filteredUpcomingEvents.find(e => e.id === sharePopupId);
+        if (!event) return null;
+        const shareUrl = event.link || window.location.origin + '/workshops/' + event.id;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="relative bg-white border border-gray-200 rounded shadow-lg p-12 w-full max-w-lg mx-2">
+              <button
+                onClick={() => setSharePopupId(null)}
+                className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl"
+                aria-label="Close"
+              >×</button>
+              <div className="mb-4 text-xl font-bold text-gray-700 text-center">Share this event</div>
+              <div className="flex gap-6 mb-6 justify-center">
+                {/* WhatsApp */}
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(event.title + ' - ' + shareUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Share on WhatsApp"
+                  className="text-green-500 hover:text-green-700 text-4xl"
+                >
+                  <svg width="32" height="32" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.031-.967-.273-.099-.472-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.298-.018-.458.13-.606.134-.133.298-.347.447-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.007-.372-.009-.571-.009-.198 0-.52.074-.792.372-.272.298-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.363.71.306 1.263.489 1.694.626.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.288.173-1.413-.074-.124-.272-.198-.57-.347zm-5.421 7.617h-.001a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374A9.86 9.86 0 012.13 12.04C2.13 6.495 6.626 2 12.175 2c2.652 0 5.144 1.037 7.019 2.921A9.823 9.823 0 0122.35 12.04c0 5.549-4.496 10.044-10.044 10.044zm8.413-18.457A11.815 11.815 0 0012.175 0C5.453 0 0 5.453 0 12.04c0 2.124.557 4.199 1.613 6.032L.057 24l6.09-1.6a11.89 11.89 0 005.998 1.561h.001c6.722 0 12.175-5.453 12.175-12.04 0-3.241-1.262-6.287-3.557-8.678z"/></svg>
+                </a>
+                {/* Email */}
+                <a
+                  href={`mailto:?subject=${encodeURIComponent(event.title)}&body=${encodeURIComponent(shareUrl)}`}
+                  title="Share via Email"
+                  className="text-blue-500 hover:text-blue-700 text-4xl"
+                >
+                  <svg width="32" height="32" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 2v.01L12 13 4 6.01V6h16zm0 12H4V8.99l8 6.99 8-6.99V18z"/></svg>
+                </a>
+                {/* LinkedIn */}
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Share on LinkedIn"
+                  className="text-blue-700 hover:text-blue-900 text-4xl"
+                >
+                  <svg width="32" height="32" fill="currentColor"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm13.5 10.28h-3v-4.5c0-1.08-.02-2.47-1.5-2.47-1.5 0-1.73 1.17-1.73 2.39v4.58h-3v-9h2.89v1.23h.04c.4-.75 1.38-1.54 2.84-1.54 3.04 0 3.6 2 3.6 4.59v4.72z"/></svg>
+                </a>
+                {/* X (Twitter) */}
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(event.title + ' - ' + shareUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Share on X"
+                  className="text-black hover:text-gray-700 text-4xl"
+                >
+                  <svg width="32" height="32" fill="currentColor"><path d="M22.162 5.656c.015.211.015.423.015.634 0 6.451-4.91 13.888-13.888 13.888-2.762 0-5.332-.809-7.496-2.211.383.045.766.06 1.164.06 2.293 0 4.402-.766 6.087-2.064-2.146-.045-3.953-1.457-4.58-3.404.3.045.6.075.915.075.436 0 .872-.06 1.278-.166-2.236-.451-3.92-2.422-3.92-4.797v-.06c.646.36 1.387.583 2.174.614-1.293-.872-2.146-2.35-2.146-4.027 0-.892.241-1.726.646-2.445 2.36 2.893 5.89 4.797 9.87 4.997-.075-.36-.12-.736-.12-1.112 0-2.7 2.192-4.892 4.892-4.892 1.406 0 2.678.6 3.57 1.564 1.112-.211 2.146-.614 3.08-1.164-.364 1.136-1.136 2.088-2.146 2.678 1-.12 1.96-.383 2.85-.766-.646.982-1.462 1.842-2.406 2.53z"/></svg>
+                </a>
+                {/* Copy Link */}
+                <button
+                  onClick={() => handleCopyLink(shareUrl)}
+                  title="Copy link"
+                  className="text-purple-600 hover:text-purple-800 text-4xl"
+                >
+                  <svg width="32" height="32" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                </button>
+              </div>
+              <input
+                type="text"
+                value={shareUrl}
+                readOnly
+                className="w-full px-4 py-2 border rounded text-base mb-4"
+              />
+              <button
+                onClick={() => handleCopyLink(shareUrl)}
+                className="w-full bg-purple-600 text-white text-base py-2 rounded hover:bg-purple-700 font-semibold"
+              >
+                Copy Link
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
 
-export default WorkshopsAndSeminarsPage;
+export default memo(WorkshopsAndSeminarsPage);

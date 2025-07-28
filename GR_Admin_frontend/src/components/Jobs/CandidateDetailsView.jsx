@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
   FiDownload, FiTrash2, FiSearch, FiFilter, FiUser, FiMail, 
   FiPhone, FiCalendar, FiFile, FiArchive, FiCheckCircle, 
   FiAlertCircle, FiChevronDown, FiBriefcase, FiClock, FiEye
 } from 'react-icons/fi';
+import { createPortal } from 'react-dom';
+import baseURL from '../../config/baseUrlConfig';
 
 const CandidateDetailsView = () => {
   // State management
@@ -20,11 +22,23 @@ const CandidateDetailsView = () => {
   const [confirmAction, setConfirmAction] = useState({ type: null, id: null });
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const dropdownTriggerRef = useRef(null);
 
-  const baseUrl = 'http://localhost:8000';
+  // to calculate dropdown position
+  useEffect(() => {
+    if (isFilterDropdownOpen && dropdownTriggerRef.current) {
+      const rect = dropdownTriggerRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 5, // 5px below the button
+        left: rect.left + window.scrollX
+      });
+    }
+  }, [isFilterDropdownOpen]);
 
   // Fetch data on component mount
   useEffect(() => {
+    axios.defaults.withCredentials = true;
     fetchJobs();
     fetchAllApplications();
     fetchStatistics();
@@ -32,20 +46,21 @@ const CandidateDetailsView = () => {
 
   // Fetch all jobs
   const fetchJobs = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/api/jobs`);
-      setJobs(response.data.data || []);
-    } catch (err) {
-      console.error('Error fetching jobs:', err);
-      setError('Failed to load jobs data.');
-    }
-  };
+  try {
+    const response = await axios.get(`${baseURL}/api/jobs`);
+    setJobs(response.data.jobs || []); // Changed from data.data to data.jobs
+    console.log("Jobs response:", response.data); // Add this for debugging
+  } catch (err) {
+    console.error('Error fetching jobs:', err);
+    setError('Failed to load jobs data.');
+  }
+};
 
   // Fetch all applications
   const fetchAllApplications = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${baseUrl}/api/jobapplications/applications`);
+      const response = await axios.get(`${baseURL}/api/jobapplications/applications`);
       setApplications(response.data.data || []);
       setLoading(false);
     } catch (err) {
@@ -63,7 +78,7 @@ const CandidateDetailsView = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get(`${baseUrl}/api/jobapplications/jobs/${jobId}/applications`);
+      const response = await axios.get(`${baseURL}/api/jobapplications/jobs/${jobId}/applications`);
       setApplications(response.data.data || []);
       setLoading(false);
     } catch (err) {
@@ -76,7 +91,7 @@ const CandidateDetailsView = () => {
   // Fetch job statistics
   const fetchStatistics = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/api/jobs/statistics`);
+      const response = await axios.get(`${baseURL}/api/jobs/statistics`);
       setStatistics(response.data.data || []);
     } catch (err) {
       console.error('Error fetching job statistics:', err);
@@ -118,7 +133,7 @@ const CandidateDetailsView = () => {
   // Download individual resume
   const downloadResume = async (applicationId) => {
     try {
-      window.open(`${baseUrl}/api/jobapplications/applications/download/${applicationId}`, '_blank');
+      window.open(`${baseURL}/api/jobapplications/applications/download/${applicationId}`, '_blank');
       showToastMessage('Resume download started', 'success');
     } catch (err) {
       console.error('Error downloading resume:', err);
@@ -129,7 +144,7 @@ const CandidateDetailsView = () => {
   // Download all resumes for a job
   const downloadAllResumes = async (jobId) => {
     try {
-      window.open(`${baseUrl}/api/jobapplications/jobs/${jobId}/applications/download-all`, '_blank');
+      window.open(`${baseURL}/api/jobapplications/jobs/${jobId}/applications/download-all`, '_blank');
       showToastMessage('Bulk download started', 'success');
     } catch (err) {
       console.error('Error downloading all resumes:', err);
@@ -140,7 +155,7 @@ const CandidateDetailsView = () => {
   // Delete individual application
   const deleteApplication = async (applicationId) => {
     try {
-      await axios.delete(`${baseUrl}/api/jobapplications/delete/${applicationId}`);
+      await axios.delete(`${baseURL}/api/jobapplications/delete/${applicationId}`);
       setApplications(applications.filter(app => app.applicationId !== applicationId));
       showToastMessage('Application deleted successfully', 'success');
       fetchStatistics(); // Refresh statistics after deletion
@@ -153,7 +168,7 @@ const CandidateDetailsView = () => {
   // Delete all applications for a job
   const deleteAllApplications = async (jobId) => {
     try {
-      await axios.delete(`${baseUrl}/api/jobapplications/jobs/${jobId}/applications/delete-all`);
+      await axios.delete(`${baseURL}/api/jobapplications/jobs/${jobId}/applications/delete-all`);
       if (filterJobId === jobId || filterJobId === 'all') {
         // If we're viewing the job that was deleted or all jobs, refresh the view
         fetchApplicationsByJob(filterJobId);
@@ -170,7 +185,7 @@ const CandidateDetailsView = () => {
   const deleteSelectedApplications = async () => {
     try {
       for (const applicationId of selectedApplications) {
-        await axios.delete(`${baseUrl}/api/jobapplications/delete/${applicationId}`);
+        await axios.delete(`${baseURL}/api/jobapplications/delete/${applicationId}`);
       }
       setApplications(applications.filter(app => !selectedApplications.includes(app.applicationId)));
       setSelectedApplications([]);
@@ -283,6 +298,29 @@ const CandidateDetailsView = () => {
     return formatDate(sortedApps[0].appliedDate);
   };
 
+  // View application
+  const viewResume = async (application) => {
+    console.log('Resume file:', application.resume);
+  
+    if (!application.resume) {
+      showToastMessage('No resume found for this application', 'error');
+      return;
+    }
+
+    let cvLink;
+    const patternRelatedToPath = 'uploads/resumes/';
+
+    // Check if the resume path already includes the uploads path
+    if (application.resume.includes(patternRelatedToPath)) {
+      cvLink = `${baseURL}/${application.resume}`;
+    } else {
+      cvLink = `${baseURL}/uploads/resumes/${application.resume}`;
+    }
+
+    console.log('CV Link:', cvLink);
+    window.open(cvLink, '_blank');
+    showToastMessage('Opening CV in new tab', 'success');
+  }
   return (
     <div className="bg-gray-900 min-h-screen p-6 text-gray-100">
       {/* Header */}
@@ -375,6 +413,7 @@ const CandidateDetailsView = () => {
             {/* Job Filter - Custom dropdown */}
             <div className="relative w-full md:w-64">
               <div 
+                ref={dropdownTriggerRef}
                 className="flex items-center justify-between pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg w-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-200"
                 onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
               >
@@ -387,24 +426,38 @@ const CandidateDetailsView = () => {
                 <FiChevronDown className={`transition-transform duration-200 ${isFilterDropdownOpen ? 'rotate-180' : ''}`} />
               </div>
               
-              {isFilterDropdownOpen && (
-                <div className="absolute left-0 right-0 mt-2 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+              {isFilterDropdownOpen && createPortal(
+                <>
                   <div 
-                    className="px-4 py-2 hover:bg-gray-600 cursor-pointer text-gray-200"
-                    onClick={() => handleFilterChange('all')}
+                    className="fixed inset-0 bg-transparent z-40" 
+                    onClick={() => setIsFilterDropdownOpen(false)}
+                  ></div>
+                  <div 
+                    className="fixed z-50 bg-gray-700 border border-gray-600 rounded-lg shadow-xl py-2 max-h-72 overflow-y-auto"
+                    style={{
+                      width: "250px",
+                      top: `${dropdownPosition.top}px`,
+                      left: `${dropdownPosition.left}px`
+                    }}
                   >
-                    All Jobs
-                  </div>
-                  {jobs.map(job => (
                     <div 
-                      key={job.jobId} 
                       className="px-4 py-2 hover:bg-gray-600 cursor-pointer text-gray-200"
-                      onClick={() => handleFilterChange(job.jobId)}
+                      onClick={() => handleFilterChange('all')}
                     >
-                      {job.jobName} - {job.company}
+                      All Jobs
                     </div>
-                  ))}
-                </div>
+                    {jobs.map(job => (
+                      <div 
+                        key={job.jobId} 
+                        className="px-4 py-2 hover:bg-gray-600 cursor-pointer text-gray-200"
+                        onClick={() => handleFilterChange(job.jobId)}
+                      >
+                        {job.jobName} - {job.company}
+                      </div>
+                    ))}
+                  </div>
+                </>,
+                document.body
               )}
             </div>
 
@@ -530,7 +583,7 @@ const CandidateDetailsView = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-200">
-                        {application.jobName || getJobName(application.jobType)}
+                        {application.jobName || getJobName(application.jobId)}
                       </div>
                       <div className="text-sm text-gray-400">
                         {application.company}
@@ -551,6 +604,7 @@ const CandidateDetailsView = () => {
                           <FiDownload />
                         </button>
                         <button
+                          onClick={() => viewResume(application)}
                           className="text-cyan-400 hover:text-cyan-300 transition-colors"
                           title="View Application"
                         >

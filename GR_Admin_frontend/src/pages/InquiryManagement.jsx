@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Download, Trash2, Eye, X, ChevronLeft, ChevronRight, Calendar, Phone, Mail, MessageSquare, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import baseURL from '../config/baseUrlConfig';
 // Mock data for testing purposes - remove in production
 
 function InquiryManagement() {
@@ -25,15 +26,12 @@ function InquiryManagement() {
   async function getContactData() {
     try {
 
-      await axios.get(`${import.meta.env.VITE_API_BASE_URL}contact/getinquiry`).then((results) => {
+      await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/contact/getinquiry`).then((results) => {
 
 
         setLoading(false);
 
         setContactData(results.data.results);
-
-        console.log(results.data.results);
-
 
       }).catch((e) => console.log(e));
 
@@ -58,15 +56,13 @@ function InquiryManagement() {
     
     try {
 
-      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}contact/deleteinquiry/${contactID}`).then((results) => {
+      await axios.delete(`${baseURL}/api/contact/deleteinquiry/${contactID}`).then((results) => {
 
 
 
         if (selectedInquiry && selectedInquiry.id === contactID) {
           setIsModalOpen(false);
         }
-
-        console.log(results.data);
 
         getContactData();
 
@@ -147,7 +143,7 @@ function InquiryManagement() {
                   <User className="h-6 w-6 text-indigo-400" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-medium text-white">{inquiry.name}</h4>
+                  <h4 className="text-lg font-medium text-white">{inquiry?.name}</h4>
                   <p className="text-gray-400 flex items-center">
                     <Mail className="h-4 w-4 mr-1" />
                     {inquiry.email}
@@ -157,28 +153,28 @@ function InquiryManagement() {
               </div>
               <div className="flex items-center text-gray-400">
                 <Calendar className="h-4 w-4 mr-1" />
-                <span> 5/2/2025</span>
+                <span> {formatDate(inquiry.date)}</span>
               </div>
             </div>
 
             <div className="space-y-4">
               <div>
                 <h5 className="text-sm uppercase text-gray-500 mb-1">Subject</h5>
-                <p className="text-white font-medium"> {inquiry.subject}</p>
+                <p className="text-white font-medium"> {inquiry?.subject}</p>
               </div>
 
               <div>
                 <h5 className="text-sm uppercase text-gray-500 mb-1">Phone Number</h5>
                 <p className="text-white flex items-center">
                   <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                  {inquiry.phoneNumber}
+                  {inquiry?.phoneNumber}
                 </p>
               </div>
 
               <div>
                 <h5 className="text-sm uppercase text-gray-500 mb-1">Message</h5>
                 <div className="bg-gray-800 rounded-lg p-4 text-gray-300">
-                  <p>{inquiry.message}</p>
+                  <p>{inquiry?.message}</p>
                 </div>
               </div>
             </div>
@@ -266,12 +262,12 @@ function InquiryManagement() {
                         <h3 className="text-lg font-semibold text-white truncate">{inquiry.name}</h3>
                         <div className="flex items-center text-xs text-gray-400">
                           <Calendar className="h-3 w-3 mr-1" />
-                          <span> Apr 29, 2025, 09:15 AM</span>
+                          <span>{formatDate(inquiry.date)}</span>
                         </div>
                       </div>
 
                       <div className="space-y-3 mb-4">
-                        <p className="text-sm text-gray-300 font-medium truncate">{inquiry.subject}</p>
+                        <p className="text-sm text-gray-300 font-medium truncate">{inquiry?.subject}</p>
                         <p className="text-xs text-gray-400 flex items-center">
                           <Mail className="h-3 w-3 mr-1" />
 
@@ -279,7 +275,7 @@ function InquiryManagement() {
                         </p>
                         <p className="text-xs text-gray-400 flex items-center">
                           <Phone className="h-3 w-3 mr-1" />
-                          {inquiry.phoneNumber}
+                          {inquiry?.phoneNumber}
 
 
                         </p>
@@ -288,7 +284,7 @@ function InquiryManagement() {
                       <div className="bg-gray-800 rounded-lg p-3 mb-4 h-16 overflow-hidden">
                         <p className="text-xs text-gray-400 line-clamp-3">
 
-                          {inquiry.message}
+                          {inquiry?.message}
 
                         </p>
                       </div>

@@ -10,7 +10,6 @@ import Jobs from './pages/Jobs';
 import Applications from './pages/Applications';
 import Workshops from './pages/Workshops';
 import Blog from './pages/BlogManagement';
-import Partners from './pages/Partners';
 import ClientDetailsPage from './pages/Client/ClientView';
 import ViewAllJobs from './components/Jobs/ViewAllJobs';
 import AddJob from './components/Jobs/AddJob';
@@ -25,14 +24,15 @@ import UpdateWorkshop from './pages/Workshop/UpdateWorkshop';
 import InquiryManagement from './pages/InquiryManagement';
 import ApplicationDetailView from './pages/ApplicationDetailView';
 import JobApplicationsView from './pages/JobApplicationsView';
-import JobDashboard from './components/JobDashboard';
 import ViewClient from './components/ViewClient';
 
 import EditAdmin from './components/EditAdmin';
 import ViewAdmin from './pages/Admin/ViewAdmin';
 import AdminProfile from './pages/Admin/AdminProfile';
 
-
+// global axios configuration
+import axios from 'axios';
+axios.defaults.withCredentials = true;
 
 function App() {
   // TODO: Implement actual auth logic
@@ -56,7 +56,6 @@ function App() {
               <Route path="/applications" element={<Applications />} />
               <Route path="/workshops" element={<Workshops />} />
               <Route path="/blog" element={<Blog />} />
-              <Route path="/partners" element={<Partners />} />
               <Route path="/candidate" element={<CandidateDetailsView />} />
               <Route path="/clients/:clientId" element={<ClientDetailsPage />} />
               <Route path="/blog/add" element={<AddNewBlog />} />
@@ -68,16 +67,13 @@ function App() {
               <Route path="/applications/:applicationId" element={<ApplicationDetailView />} />
               <Route path="/jobs/:jobId/applications" element={<JobApplicationsView />} />
               <Route path="/applications" element={<JobApplicationsView />} />
-              <Route path="/job-dashboard" element={<JobDashboard />} />
               <Route path="/admins/edit/:adminId" element={<EditAdmin />} />
+              <Route path="/admins/profile" element={<AdminProfile />} />
               <Route path="/admins/view/:adminId" element={<ViewAdmin />} />
-              <Route path="/admin/profile" element={<AdminProfile />} />
-
-
-
+        
             </Route>
           ) : (
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<Navigate to="/Login" replace />} />
           )}
         </Routes>
       </AnimatePresence>

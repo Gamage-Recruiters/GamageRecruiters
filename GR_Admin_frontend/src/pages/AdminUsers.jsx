@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Plus, Search, Edit2, Trash2, User } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import baseURL from '../config/baseUrlConfig';
 
 function AdminUsers() {
   const [admins, setAdmins] = useState([]);
@@ -10,7 +11,9 @@ function AdminUsers() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:8000/admin/all')
+    axios.get(`${baseURL}/admin/all`, { 
+      withCredentials: true  
+    })
       .then((response) => {
         if (Array.isArray(response.data?.data)) {
           setAdmins(response.data.data);
@@ -27,7 +30,9 @@ function AdminUsers() {
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this admin?')) {
-      axios.delete(`http://localhost:8000/admin/delete/${id}`)
+      axios.delete(`${baseURL}/admin/delete/${id}`, {
+        withCredentials: true
+      })
         .then(() => {
           setAdmins(prev => prev.filter(admin => admin.adminId !== id));
         })

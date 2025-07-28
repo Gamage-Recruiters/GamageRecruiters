@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { useChangeDateFormat } from "../../hooks/customHooks";
 import baseURL from "../../config/axiosPortConfig";
+import { useNavigate } from "react-router-dom";
 
 const EditProfileForm = ({ user, setUser }) => {
   const [formData, setFormData] = useState({ ...user });
+  const navigate = useNavigate();
 
   useEffect(() => {
     setFormData({ ...user });
@@ -20,13 +22,12 @@ const EditProfileForm = ({ user, setUser }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
-    console.log(formData);
     Swal.fire({
-          title: 'Confirmation About Changing User Password',
-          text: 'Are you sure you want to change the password ?',
-          icon: 'warning',
+          title: 'Update Profile Information',
+          text: 'Are you sure you want to update your profile details?',
+          icon: 'question',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
@@ -49,27 +50,31 @@ const EditProfileForm = ({ user, setUser }) => {
                 facebookLink: formData.facebookLink, 
                 portfolioLink: formData.portfolioLink, 
                 profileDescription: formData.profileDescription
+              },{
+                withCredentials: true,
               });
-              console.log(updateResponse);
+
               if(updateResponse.status == 200) {
                 Swal.fire({
                   icon: 'success',
-                  title: 'User Data Updated!',
-                  text: 'User Password Updated Successfully!',
+                  title: 'Profile Updated!',
+                  text: 'Your profile information has been updated successfully!',
                   confirmButtonColor: '#3085d6',
                 });
+                setUser(formData);
               } else {
                 toast.error('Update Failed');
                 return;
               }
             } catch (error) {
+              toast.error('Update Failed');
               console.log(error);
               return;
             }
           }
         });
     // alert("Profile updated successfully!");
-  };
+  }, [formData, setUser]);
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
@@ -162,6 +167,7 @@ const EditProfileForm = ({ user, setUser }) => {
               value={useChangeDateFormat(formData.birthDate)}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
             />
           </div>
 
@@ -175,6 +181,7 @@ const EditProfileForm = ({ user, setUser }) => {
               placeholder="Enter Your Gender"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
             >
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -194,6 +201,7 @@ const EditProfileForm = ({ user, setUser }) => {
               placeholder="Enter Your Address"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
             />
           </div>
 
@@ -223,6 +231,7 @@ const EditProfileForm = ({ user, setUser }) => {
             onChange={handleChange}
             rows="3"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            required
           />
         </div>
 
@@ -248,12 +257,12 @@ const EditProfileForm = ({ user, setUser }) => {
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
-          <button
+          {/* <button
             type="button"
             className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
           >
             Cancel
-          </button>
+          </button> */}
           <button
             type="submit"
             className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
@@ -266,4 +275,4 @@ const EditProfileForm = ({ user, setUser }) => {
   );
 };
 
-export default EditProfileForm;
+export default  memo(EditProfileForm);

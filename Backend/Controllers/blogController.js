@@ -1,9 +1,17 @@
 const {pool} = require('../config/dbConnection');
+const deleteUploadedFile = require('../utils/deleteUplodedFile');
 
 // Get all Blog Posts ...
 async function getAllBlogs(req, res) {
   try {
-    const blogsQuery = 'SELECT * FROM blogs';
+    // Modified query to include counts of likes and comments
+    const blogsQuery = `
+      SELECT b.*, 
+        (SELECT COUNT(*) FROM bloglikes WHERE blogId = b.blogId AND liked = 1) AS likes,
+        (SELECT COUNT(*) FROM blogcomments WHERE blogId = b.blogId) AS comment
+      FROM blogs b
+    `;
+    
     pool.query(blogsQuery, (error, result) => {
       if (error) {
         console.error(error);
@@ -15,12 +23,12 @@ async function getAllBlogs(req, res) {
       }
 
       return res.status(200).json({ message: 'Blogs Found', data: result });
-    })
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).send(error);
   }
-} 
+}
 
 // Get a specific blog ...
 async function getSpecificBlogPost (req, res) {
@@ -55,80 +63,230 @@ async function createNewBlog (req, res) {
   const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, category } = req.body;
 
   if(!title || !introduction || !author || !authorPosition || !authorCompany) {
-    return res.status(400).send('Some fields are required. Fill Those');
+    return res.status(400).json({ error: 'Some fields are required. Please fill those.' });
   }
 
   try {
     // If existing, access the file names of the cv and image ...
     const blogImageName = req.files?.blog?.[0]?.filename || null;
     const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
-    console.log(blogImageName);
-    console.log(blogCoverName);
+    const authorImageName = req.files?.authorImage?.[0]?.filename || null;
+    console.log({ blogImageName, blogCoverName, authorImageName });
 
-    const addBlogQuery = 'INSERT INTO blogs (title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImage, addedAt, category, coverImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName];
+    const addBlogQuery = 'INSERT INTO blogs (title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImage, addedAt, category, coverImage, authorImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName, authorImageName];
     pool.query(addBlogQuery, values, (error, result) => {
       if(error) {
         console.error(error);
-        return res.status(400).send(error);
+        return res.status(400).json({ error: error.message || error });
       }
 
       if(result.affectedRows === 0) {
-        return res.status(400).send('Failed to add Blog');
+        return res.status(400).json({ error: 'Failed to update Blog' });
       }
 
       return res.status(200).json({ message: 'Blog Added Successfully', data: result });
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).send(error);
+    return res.status(500).json({ error: error.message || error });
   }
 }
 
 // Update a specific blog post ...
-async function updateBlog (req, res) {
+async function updateBlog(req, res) {
   const { blogId } = req.params;
-  const { title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, category } = req.body;
-  console.log(req.body);
-  if(!title || !introduction || !author || !authorPosition || !authorCompany || !blogId) {
-    return res.status(400).send('Some fields are required. Fill Those');
+  const {
+    title, introduction,
+    subTitle1, subContent1,
+    subTitle2, subContent2,
+    subTitle3, subContent3,
+    subTitle4, subContent4,
+    subTitle5, subContent5,
+    subTitle6, subContent6,
+    subTitle7, subContent7,
+    subTitle8, subContent8,
+    subTitle9, subContent9,
+    subTitle10, subContent10,
+    tags, author, authorPosition, authorCompany,
+    Quote1, Quote2, Quote3,
+    category
+  } = req.body;
+
+  // Helper to ensure value is a string, not an array
+  function normalizeInput(field) {
+    if (Array.isArray(field)) return field[0] || '';
+    return field || '';
+  }
+
+  // Normalize all inputs
+  const normalized = {
+    title: normalizeInput(title),
+    introduction: normalizeInput(introduction),
+    subTitle1: normalizeInput(subTitle1),
+    subContent1: normalizeInput(subContent1),
+    subTitle2: normalizeInput(subTitle2),
+    subContent2: normalizeInput(subContent2),
+    subTitle3: normalizeInput(subTitle3),
+    subContent3: normalizeInput(subContent3),
+    subTitle4: normalizeInput(subTitle4),
+    subContent4: normalizeInput(subContent4),
+    subTitle5: normalizeInput(subTitle5),
+    subContent5: normalizeInput(subContent5),
+    subTitle6: normalizeInput(subTitle6),
+    subContent6: normalizeInput(subContent6),
+    subTitle7: normalizeInput(subTitle7),
+    subContent7: normalizeInput(subContent7),
+    subTitle8: normalizeInput(subTitle8),
+    subContent8: normalizeInput(subContent8),
+    subTitle9: normalizeInput(subTitle9),
+    subContent9: normalizeInput(subContent9),
+    subTitle10: normalizeInput(subTitle10),
+    subContent10: normalizeInput(subContent10),
+    tags: normalizeInput(tags),
+    author: normalizeInput(author),
+    authorPosition: normalizeInput(authorPosition),
+    authorCompany: normalizeInput(authorCompany),
+    Quote1: normalizeInput(Quote1),
+    Quote2: normalizeInput(Quote2),
+    Quote3: normalizeInput(Quote3),
+    category: normalizeInput(category),
+  };
+
+  if (
+    !normalized.title ||
+    !normalized.introduction ||
+    !normalized.author ||
+    !normalized.authorPosition ||
+    !normalized.authorCompany ||
+    !blogId
+  ) {
+    return res.status(400).send('Some fields are required. Please fill those.');
   }
 
   try {
-    // If existing, access the file names of the cv and image ...
-    const blogImageName = req.files?.blog?.[0]?.filename || null;
-    const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
-    console.log(blogImageName);
-    console.log(blogCoverName);
+    const getBlogQuery = 'SELECT blogImage, coverImage, authorImage FROM blogs WHERE blogId = ?';
 
-    let updateBlogQuery;
-    let values
+    pool.query(getBlogQuery, [blogId], async (fetchError, fetchResult) => {
+      if (fetchError) {
+        console.error('Error fetching existing blog:', fetchError);
+        return res.status(500).send('Database error when retrieving blog');
+      }
 
-    if (blogImageName && blogCoverName) {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, blogImage = ?, addedAt = ?, category = ?, coverImage = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogCoverName, blogId];
-    } else if (!blogImageName && blogCoverName) {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, addedAt = ?, category = ? coverImage = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, new Date(), category, blogCoverName, blogId];
-    } else if (blogImageName && !blogCoverName) {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, blogImage = ?, addedAt = ?, category = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, blogImageName, new Date(), category, blogId];
-    } else {
-      updateBlogQuery = 'UPDATE blogs SET title = ?, introduction = ?, subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?, subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?, subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?, subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?, subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?, tags = ?, author = ?, authorPosition = ?, authorCompany = ?, Quote1 = ?, Quote2 = ?, Quote3 = ?, addedAt = ?, category = ? WHERE blogId = ?';
-      values = [title, introduction, subTitle1, subContent1, subTitle2, subContent2, subTitle3, subContent3, subTitle4, subContent4, subTitle5, subContent5, subTitle6, subContent6, subTitle7, subContent7, subTitle8, subContent8, subTitle9, subContent9, subTitle10, subContent10, tags, author, authorPosition, authorCompany, Quote1, Quote2, Quote3, new Date(), category, blogId];
-    }
+      if (fetchResult.length === 0) {
+        return res.status(404).send('Blog not found');
+      }
+
+      const existingBlog = fetchResult[0];
+      const oldBlogImage = existingBlog.blogImage;
+      const oldCoverImage = existingBlog.coverImage;
+      const oldAuthorImage = existingBlog.authorImage;
+
+      // File names for uploaded images (if any)
+      const blogImageName = req.files?.blog?.[0]?.filename || null;
+      const blogCoverName = req.files?.blogCover?.[0]?.filename || null;
+      const authorImageName = req.files?.authorImage?.[0]?.filename || null;
     
-    pool.query(updateBlogQuery, values, (error, result) => {
+      // Use existing images if no new ones are uploaded
+      const finalBlogImage = blogImageName || oldBlogImage;
+      const finalCoverImage = blogCoverName || oldCoverImage;
+      const finalAuthorImage = authorImageName || oldAuthorImage;
+      
+      // Delete old images if new ones are uploaded
+      try{
+        if (blogImageName && oldBlogImage && blogImageName !== oldBlogImage) {
+          await deleteUploadedFile('blog', oldBlogImage);
+          console.log(`Deleted old blog image: ${oldBlogImage}`);
+        }
+
+        if (blogCoverName && oldCoverImage && blogCoverName !== oldCoverImage) {
+          await deleteUploadedFile('blogCover', oldCoverImage);
+          console.log(`Deleted old cover image: ${oldCoverImage}`);
+        }
+        
+        if (authorImageName && oldAuthorImage && authorImageName !== oldAuthorImage) {
+          await deleteUploadedFile('authorImage', oldAuthorImage);
+          console.log(`Deleted old author image: ${oldAuthorImage}`);
+        }
+      } catch (deleteError) {
+        console.error('Error deleting old images:', deleteError);
+        // Continue with update even if deletion fails
+      }
+
+      const updateBlogQuery = `
+        UPDATE blogs SET
+          title = ?, introduction = ?, 
+          subTitle1 = ?, subContent1 = ?, subTitle2 = ?, subContent2 = ?,
+          subTitle3 = ?, subContent3 = ?, subTitle4 = ?, subContent4 = ?,
+          subTitle5 = ?, subContent5 = ?, subTitle6 = ?, subContent6 = ?,
+          subTitle7 = ?, subContent7 = ?, subTitle8 = ?, subContent8 = ?,
+          subTitle9 = ?, subContent9 = ?, subTitle10 = ?, subContent10 = ?,
+          tags = ?, author = ?, authorPosition = ?, authorCompany = ?,
+          Quote1 = ?, Quote2 = ?, Quote3 = ?,
+          blogImage = ?, addedAt = ?, category = ?, coverImage = ?, authorImage = ?
+        WHERE blogId = ?
+      `;
+
+      const values = [
+        normalized.title, normalized.introduction,
+        normalized.subTitle1, normalized.subContent1,
+        normalized.subTitle2, normalized.subContent2,
+        normalized.subTitle3, normalized.subContent3,
+        normalized.subTitle4, normalized.subContent4,
+        normalized.subTitle5, normalized.subContent5,
+        normalized.subTitle6, normalized.subContent6,
+        normalized.subTitle7, normalized.subContent7,
+        normalized.subTitle8, normalized.subContent8,
+        normalized.subTitle9, normalized.subContent9,
+        normalized.subTitle10, normalized.subContent10,
+        normalized.tags, normalized.author, normalized.authorPosition, normalized.authorCompany,
+        normalized.Quote1, normalized.Quote2, normalized.Quote3,
+        finalBlogImage, new Date(), normalized.category, finalCoverImage, finalAuthorImage,
+        blogId
+      ];
+
+      console.log('Update query values:', values);
+
+      pool.query(updateBlogQuery, values, (error, result) => {
+        if (error) {
+          console.error('Database error:', error);
+          return res.status(400).send(error);
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(400).send('Failed to update Blog');
+        }
+
+        return res.status(200).json({ message: "Blog updated successfully!" });
+      });
+    })
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return res.status(500).send(error);
+  }
+}
+
+// Increment blog view count
+async function incrementBlogView(req, res) {
+  const { blogId } = req.params;
+
+  if(!blogId) {
+    return res.status(400).send('Blog ID is required');
+  }
+
+  try {
+    const incrementViewQuery = 'UPDATE blogs SET views = views + 1 WHERE blogId = ?';
+    pool.query(incrementViewQuery, [blogId], (error, result) => {
       if(error) {
         console.error(error);
         return res.status(400).send(error);
       }
 
       if(result.affectedRows === 0) {
-        return res.status(400).send('Failed to update Blog');
+        return res.status(404).send('Blog not found');
       }
 
-      return res.status(200).send('Blog updated Successfully');
+      return res.status(200).json({ message: 'View count incremented' });
     });
   } catch (error) {
     console.error(error);
@@ -137,7 +295,7 @@ async function updateBlog (req, res) {
 }
 
 // Delete a specific blog post ...
-async function deleteBlog (req, res) {
+async function deleteBlog(req, res) {
   const { blogId } = req.params;
 
   if(!blogId) {
@@ -145,18 +303,103 @@ async function deleteBlog (req, res) {
   }
 
   try {
-    const deleteBlogQuery = 'DELETE FROM blogs WHERE blogId = ?';
-    pool.query(deleteBlogQuery, blogId, (error, result) => {
-      if(error) {
-        console.error(error);
-        return res.status(400).send(error);
+    // First, get the blog to check if it exists and get image paths
+    const getBlogQuery = 'SELECT blogImage, coverImage, authorImage FROM blogs WHERE blogId = ?';
+    
+    pool.query(getBlogQuery, [blogId], async (fetchError, fetchResult) => {
+      if (fetchError) {
+        console.error('Error fetching blog for deletion:', fetchError);
+        return res.status(500).send('Database error when retrieving blog');
       }
 
-      if(result.affectedRows === 0) {
-        return res.status(400).send('Failed to update Blog');
+      if (fetchResult.length === 0) {
+        return res.status(404).send('Blog not found');
       }
 
-      return res.status(200).send('Blog Deleted Successfully');
+      const blog = fetchResult[0];
+
+      // Start a transaction
+      pool.getConnection((err, connection) => {
+        if (err) {
+          console.error('Error getting connection for transaction:', err);
+          return res.status(500).send('Database connection error');
+        }
+        
+        connection.beginTransaction(async (err) => {
+          if (err) {
+            connection.release();
+            return res.status(500).send('Transaction error');
+          }
+          
+          try {
+            // 1. Delete all comments for this blog
+            connection.query('DELETE FROM blogcomments WHERE blogId = ?', [blogId], (err) => {
+              if (err) {
+                return connection.rollback(() => {
+                  connection.release();
+                  res.status(400).send('Error deleting blog comments');
+                });
+              }
+              
+              // 2. Delete all likes for this blog
+              connection.query('DELETE FROM bloglikes WHERE blogId = ?', [blogId], (err) => {
+                if (err) {
+                  return connection.rollback(() => {
+                    connection.release();
+                    res.status(400).send('Error deleting blog likes');
+                  });
+                }
+                
+                // 3. Finally delete the blog
+                connection.query('DELETE FROM blogs WHERE blogId = ?', [blogId], async (err) => {
+                  if (err) {
+                    return connection.rollback(() => {
+                      connection.release();
+                      res.status(400).send('Error deleting blog');
+                    });
+                  }
+                  
+                  // If successful, commit the transaction
+                  connection.commit(async (err) => {
+                    if (err) {
+                      return connection.rollback(() => {
+                        connection.release();
+                        res.status(500).send('Error committing transaction');
+                      });
+                    }
+                    
+                    connection.release();
+                    
+                    // Delete image files after DB deletion succeeds
+                    try {
+                      if (blog.blogImage) {
+                        await deleteUploadedFile('blog', blog.blogImage);
+                      }
+                      if (blog.coverImage) {
+                        await deleteUploadedFile('blogCover', blog.coverImage);
+                      }
+                      if (blog.authorImage) {
+                        await deleteUploadedFile('authorImage', blog.authorImage);
+                      }
+                    } catch (deleteErr) {
+                      console.error('Error deleting files:', deleteErr);
+                      // Continue since DB deletion was successful
+                    }
+                    
+                    return res.status(200).send('Blog and all associated data deleted successfully');
+                  });
+                });
+              });
+            });
+          } catch (error) {
+            connection.rollback(() => {
+              connection.release();
+              console.error('Transaction error:', error);
+              res.status(500).send('Error in deletion process');
+            });
+          }
+        });
+      });
     });
   } catch (error) {
     console.error(error);
@@ -201,7 +444,7 @@ async function fetchBlogComments (req, res) {
   }
 
   try {
-    const fetchBlogCommentsQuery = 'SELECT b.Id, b.userId, b.comment, b.commentedDate, u.firstName, u.lastName, u.email FROM blogcomments b INNER JOIN users u ON b.userId = u.userId WHERE b.blogId = ?';
+    const fetchBlogCommentsQuery = 'SELECT b.Id, b.userId, b.comment, b.commentedDate, u.firstName, u.lastName, u.email, u.photo FROM blogcomments b INNER JOIN users u ON b.userId = u.userId WHERE b.blogId = ?';
     pool.query(fetchBlogCommentsQuery, blogId, (error, result) => {
       if(error) {
         console.error(error);
@@ -332,12 +575,11 @@ async function fetchUserLikeStateForBlog (req, res) {
   }
 }
 
-module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, deleteBlog, fetchBlogLikeCount, fetchBlogComments, LikeToBlog, addCommentToBlog, DislikeToBlog, fetchUserLikeStateForBlog };
-
+module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, deleteBlog, fetchBlogLikeCount, fetchBlogComments, LikeToBlog, addCommentToBlog, DislikeToBlog, fetchUserLikeStateForBlog, incrementBlogView };
 // // create blog
 // exports.createBlog = async (req, res) => {
 //   const { title, content, category, author } = req.body;
-//   const imagePath = req.file ? `/uploads/blogs/${req.file.filename}` : null;
+//   const imagePath = req.file ? /uploads/blogs/${req.file.filename} : null;
 
 //   if (!title || !content || !category || !author) {
 //     return res.status(400).json({ message: 'All fields are required' });
@@ -379,7 +621,7 @@ module.exports = { getAllBlogs, getSpecificBlogPost, createNewBlog, updateBlog, 
 //   try {
 //     const { id } = req.params;
 //     const { title, content, category, author } = req.body;
-//     const newImage = req.file ? `/uploads/blogs/${req.file.filename}` : null;
+//     const newImage = req.file ? /uploads/blogs/${req.file.filename} : null;
 
 //     const promisePool = pool.promise();
 

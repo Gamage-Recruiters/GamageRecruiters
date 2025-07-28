@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import baseURL from '../../config/baseUrlConfig';
 
 function UpdateWorkshop() {
   const { id } = useParams();
@@ -51,19 +52,36 @@ function UpdateWorkshop() {
     { name: 'Pink', value: 'from-red-500 to-pink-600' }
   ];
 
+  // gives the full image url with the support of a fallback placholder
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "https://via.placeholder.com/400x200?text=Workshop";
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${baseURL}/uploads/workshops/images/${imagePath}`;
+  };
+  function formatDateForInput(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date)) return '';
+    // Pad month and day with leading zeros
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
+  }
   // Fetch workshop data
   useEffect(() => {
     const fetchWorkshopData = async () => {
       setFetchLoading(true);
       try {
-        const response = await axios.get(`http://localhost:8000/api/workshops/${id}`);
+        const response = await axios.get(`${baseURL}/api/workshops/${id}`, {
+          withCredentials: true
+        });
         console.log('Workshop data:', response.data);
         const workshopData = response.data.data[0];
   
         setFormData({
           title: workshopData.title || '',
           category: workshopData.category || '',
-          date: workshopData.date || '',
+          date: formatDateForInput(workshopData.date) || '',
           time: workshopData.time || '',
           location: workshopData.location || '',
           image: workshopData.image || '',
@@ -78,7 +96,7 @@ function UpdateWorkshop() {
         });
   
         if (workshopData.image) {
-          setPreviewImage(workshopData.image);
+          setPreviewImage(getImageUrl(workshopData.image));
         }
   
         setFetchError(null);
@@ -103,33 +121,53 @@ function UpdateWorkshop() {
   };
   
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-        setFormData({
-          ...formData,
-          image: reader.result
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const file = e.target.files[0];
+  if (file) {
+    // Just store the file object directly for upload
+    setFormData({
+      ...formData,
+      image: file
+    });
+    
+    // Still create preview for UI
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewImage(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+};
   
-  const handleUpdate = async (e, status) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
     setUpdateSuccess(false);
     
-    const workshopData = {
-      ...formData,
-      event_type: status === 'publish' ? formData.event_type : 'Upcoming Event'
-    };
-    
     try {
-        await axios.put(`http://localhost:8000/api/workshops/update/${id}`, workshopData);
-
+      const formDataObj = new FormData();
+      
+      // Add all text fields
+      Object.keys(formData).forEach(key => {
+        if (key === 'image') {
+          // Handle image differently based on type
+          if (formData.image instanceof File) {
+            formDataObj.append('workshopImage', formData.image);
+          } else if (typeof formData.image === 'string' && formData.image.startsWith('http')) {
+            formDataObj.append('image', formData.image);
+          }
+        } else {
+          formDataObj.append(key, formData[key]);
+        }
+      });
+      
+      await axios.put(
+        `${baseURL}/api/workshops/update/${id}`, 
+        formDataObj,
+        { 
+          headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true
+        }
+      );
       
       // Show success message
       setUpdateSuccess(true);
@@ -140,7 +178,7 @@ function UpdateWorkshop() {
       }, 1500);
     } catch (error) {
       console.error('Error updating workshop:', error);
-      alert('Failed to update workshop. Please try again.');
+      alert(`Failed to update workshop: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -260,10 +298,9 @@ function UpdateWorkshop() {
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <input
-                      type="text"
+                      type="date"
                       id="date"
                       name="date"
-                      placeholder="e.g. June 15, 2025"
                       value={formData.date}
                       onChange={handleInputChange}
                       className="pl-10 pr-4 py-2 w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all"
@@ -627,7 +664,9 @@ function UpdateWorkshop() {
             onClick={() => {
               if (window.confirm('Are you sure you want to delete this workshop? This action cannot be undone.')) {
                 // Add your delete logic here
-                axios.delete(`http://localhost:8000/api/workshops/${id}`)
+                axios.delete(`${baseURL}/api/workshops/delete/${id}`, {
+                  withCredentials: true
+                })
                   .then(() => {
                     alert('Workshop deleted successfully');
                     navigate('/workshops');

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useChangeDateFormat } from '../hooks/customHooks';
@@ -38,7 +38,7 @@ import baseURL from '../config/axiosPortConfig';
 
 const categories = ['All', 'Industry Trends', 'Career Advice', 'HR Insights', 'Market News'];
 
-export default function BlogPage() {
+function BlogPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [blogPosts, setBlogPosts] = useState([]);
   const [email, setEmail] = useState('');
@@ -47,10 +47,10 @@ export default function BlogPage() {
     fetchBlogPages();
   }, [])
 
-  const fetchBlogPages = async () => {
+  const fetchBlogPages = useCallback(async () => {
     try {
       const fetchBlogsResponse = await axios.get(`${baseURL}/api/blogs`);
-      console.log(fetchBlogsResponse.data);
+      // console.log(fetchBlogsResponse.data);
       if(fetchBlogsResponse.status == 200) {
         setBlogPosts(fetchBlogsResponse.data.data);
       } else if (fetchBlogsResponse.status == 404) {
@@ -65,7 +65,7 @@ export default function BlogPage() {
       console.log(error);
       return;
     }
-  } 
+  }, [blogPosts]); 
 
   const handleSubscribe = async () => {
     if(!email) {
@@ -80,10 +80,11 @@ export default function BlogPage() {
 
     try {
       const subscribeToNewsLetterResponse = await axios.post(`${baseURL}/user/subscribe-newsletter`, { email: email });
-      console.log(subscribeToNewsLetterResponse.data);
+      // console.log(subscribeToNewsLetterResponse.data);
       if(subscribeToNewsLetterResponse.status == 200) {
         toast.success('Subscribed to NewsLetter Successfully');
         setEmail('');
+        return;
       } else {
         toast.error('An error occured. Please try again');
         return;
@@ -93,6 +94,11 @@ export default function BlogPage() {
       return;
     }
   }
+
+  // Filter blog posts based on selected category
+  const filteredBlogPosts = selectedCategory === 'All' 
+    ? blogPosts 
+    : blogPosts.filter(blog => blog.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-white">
@@ -140,14 +146,14 @@ export default function BlogPage() {
 
         {/* Blog Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        { blogPosts.length !== 0 ? blogPosts.map(blog => (
+        { filteredBlogPosts.length !== 0 ? filteredBlogPosts.map(blog => (
             <article 
               key={blog.blogId}
               className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300"
             >
               <div className="aspect-[4/3] overflow-hidden rounded-t-xl">
                 <img 
-                  src={blog.blogImage ? `http://localhost:8000/uploads/blogs/images/${blog.blogImage}` : 'https://via.placeholder.com/400'} 
+                  src={blog.blogImage ? `${baseURL}/uploads/blogs/images/${blog.blogImage}` : 'https://via.placeholder.com/400'} 
                   alt={blog.title}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
@@ -175,7 +181,7 @@ export default function BlogPage() {
               </div>
             </article>
           )) : (
-            <p className='text-center'>No Blogs Found!</p>
+            <p className='text-center'>No Blogs Found for this Category!</p>
           )}
         </div>
 
@@ -205,3 +211,5 @@ export default function BlogPage() {
     </div>
   );
 }
+
+export default memo(BlogPage);

@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify';
@@ -10,48 +10,14 @@ import { useChangeDateFormat } from "../hooks/customHooks";
 import baseURL from "../config/axiosPortConfig";
 import SessionTimeout from "../protected/SessionTimeout";
 
-// const jobData = [
-//   {
-//     id: 1,
-//     title: "Senior Software Engineer",
-//     company: "Tech Solutions Ltd",
-//     location: "Colombo",
-//     jobType: "Full-time",
-//     salaryRange: "$3000-$5000",
-//     postedDate: "March 5, 2025",
-//     description:
-//       "Looking for an experienced software engineer to lead our development team. Join our innovative company to create cutting-edge solutions that transform the way businesses operate in the digital space.",
-//     responsibilities: [
-//       "Develop and maintain software applications",
-//       "Lead a team of junior developers",
-//       "Ensure best coding practices are followed",
-//       "Collaborate with product managers to define feature requirements",
-//       "Participate in code reviews and architectural decisions"
-//     ],
-//     requirements: [
-//       "5+ years of experience in software development",
-//       "Proficiency in React, Node.js, and TypeScript",
-//       "Strong problem-solving skills",
-//       "Experience with cloud platforms (AWS/Azure/GCP)",
-//       "Bachelor's degree in Computer Science or related field"
-//     ],
-//     benefits: [
-//       "Competitive salary and performance bonuses",
-//       "Flexible work arrangements",
-//       "Health insurance and wellness programs",
-//       "Professional development opportunities",
-//       "Modern office with great facilities"
-//     ],
-//     companyDescription: "Tech Solutions Ltd is a leading software development company specializing in enterprise solutions. With over 10 years in the industry, we've helped hundreds of businesses transform their digital presence."
-//   },
-//   // Add more job listings as needed
-// ];
-
-export default function JobDetails() {
+function JobDetails() {
   const { jobId } = useParams();
+  const location = useLocation();
   const [job, setJob] = useState(null);
-  // const job = jobs.find((job) => job.id === parseInt(jobId));
+  const [loading, setLoading] = useState(true);
   const [isApplying, setIsApplying] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecking, setAuthChecking] = useState(false);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -63,43 +29,100 @@ export default function JobDetails() {
   useEffect (() => {
     if(!jobId) {
       toast.error('Error Loading Job .. Id is missing.');
+      setLoading(false);
+      return;
     } 
 
     fetchJobData(jobId);
   }, [jobId])
 
-  const fetchJobData = async (id) => {
-
+  const fetchJobData = useCallback(async (id) => {
+    setLoading(true);
     if(!id) {
       toast.error('Error Occured');
+      setLoading(false);
+      return;
     }
 
     try {
-      const fetchDataByIdResponse = await axios.get(`${baseURL}/api/jobs/${jobId}`);
+      const fetchDataByIdResponse = await axios.get(`${baseURL}/api/jobs/${id}`);
       // console.log(fetchDataByIdResponse.data);
       if(fetchDataByIdResponse.status == 200) {
         setJob(fetchDataByIdResponse.data.data);
       } else {
         toast.error('Error Loading Job');
         console.log(fetchDataByIdResponse.statusText);
+        setJob(null);
         return;
       }
     } catch (error) {
-      console.log(error.message);
+      setJob(null);
       return;
     }
-  }
+    setLoading(false);
+  }, []);
 
-  const handleCVChange = (e) => {
+  // to check the authentication status
+  const checkAuthentication = useCallback(async () => {
+    try {
+      const response = await axios.get(`${baseURL}/auth/check`, {
+        withCredentials: true
+      })
+
+      if (response.status === 200 && response.data.success) {
+        setIsAuthenticated(true);
+        return true;
+      } else {
+        setIsAuthenticated(false);
+        return false;
+      }
+    } catch(err) {
+      console.log("Auth check failed:", err);
+      setIsAuthenticated(false);
+      return false;
+    }
+  }, []);
+
+  // Handle the 'apply for the postion' button click
+  const handleApplyClick = useCallback(async () => {
+    setAuthChecking(true);
+    const isLoggedIn = await checkAuthentication();
+    setAuthChecking(false);
+
+    if (!isLoggedIn) {
+      // store the lcoation for later redirection from login
+      const currentPath = location.pathname + location.search;
+      localStorage.setItem('redirectAfterLogin', currentPath);
+      navigate('/login');
+      return;
+    }
+
+    // User is authenticated, showing application form
+    setIsApplying(true);
+  }, [checkAuthentication, location, navigate])
+
+
+  const handleCVChange = useCallback((e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      console.log("Selected CV:", selectedFile);
       setCV(selectedFile);
     }
-  } 
+  }, []); 
   
-  const handleApplyJob = async (e) => {
+  const handleApplyJob = useCallback(async (e) => {
     e.preventDefault();
+
+    // Double-check authentication before submission
+    const isLoggedIn = await checkAuthentication();
+    if (!isLoggedIn) {
+      toast.error('Session expired. Please log in again.');
+      setTimeout(() => {
+        const currentPath = location.pathname + location.search;
+        localStorage.setItem('redirectAfterLogin', currentPath);
+        navigate('/login');
+      }, 2000);
+      return;
+    }
 
     if(!firstName || !lastName || !email || !phoneNumber) {
       toast.error('Please All the required fields');
@@ -130,11 +153,11 @@ export default function JobDetails() {
     formData.append("company", job.company);
     formData.append("resume", cv);
 
-    console.log(formData);
-
     try {
-      const submitApplicationResponse = await axios.post(`${baseURL}/api/jobapplications/apply`, formData);
-      console.log(submitApplicationResponse);
+      const submitApplicationResponse = await axios.post(`${baseURL}/api/jobapplications/apply`, formData,
+        {withCredentials: true}
+      );
+
       if(submitApplicationResponse.status == 200) {
         toast.success('Job Application Submitted Successfully');
         setIsApplying(false);
@@ -161,13 +184,36 @@ export default function JobDetails() {
         return;
       }
     } catch (error) {
+      if (error.response && error.response.data) {
+        if ((typeof error.response.data === 'object' && error.response.data.code === 'ER_DUP_ENTRY') ||
+          // if error is an string
+          (typeof error.response.data === 'string' && error.response.data.includes('Duplicate entry'))) {
+          toast.error('You have already applied for this job');
+        } else {
+          toast.error(error.response.data);
+        }
+      } else {
+        toast.error('An error occurred while submitting your application');
+      }
       console.log(error);
       return;
     }
-  }
+  }, [checkAuthentication, navigate, firstName, lastName, email, phoneNumber, cv, job]);
 
-  const moveBack = () => {
+  const moveBack = useCallback(() => {
     navigate('/jobs');
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+        <SessionTimeout />
+        <div className="text-center p-8 bg-white rounded-lg shadow-md">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-bold text-gray-700">Loading job details...</h2>
+        </div>
+      </div>
+    );
   }
 
   if (!job) {
@@ -228,24 +274,36 @@ export default function JobDetails() {
       <div className="mx-auto max-w-4xl px-6 py-8">
         <div className="bg-white rounded-lg shadow-md p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">About The Role</h2>
-          <p className="text-gray-700 leading-relaxed">{job.description}</p>
+          <p className="text-gray-700 leading-relaxed">{job.jobDescription}</p>
 
           <div className="mt-8">
             <h3 className="text-xl font-semibold text-gray-900 flex items-center">
               <span className="bg-blue-600 h-6 w-1 rounded-full mr-3"></span>
               Key Responsibilities
             </h3>
-            <p>{job.responsibilities}</p>
-            {/* <ul className="mt-4 space-y-2">
-              {job.responsibilities.map((resp, index) => (
-                <li key={index} className="flex">
-                  <span className="bg-blue-100 text-blue-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
-                    {index + 1}
-                  </span>
-                  <span className="text-gray-700">{resp}</span>
-                </li>
-              ))}
-            </ul> */}
+            
+            {(() => {
+              try {
+                const arr = JSON.parse(job?.responsibilities);
+                if (Array.isArray(arr)) {
+                  return (
+                    <ul className="mt-4 space-y-2">
+                      {arr.map((resp, index) => (
+                        <li key={index} className="flex">
+                          <span className="bg-blue-100 text-blue-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
+                            {index + 1}
+                          </span>
+                          <span className="text-gray-700">{resp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  );
+                }
+              } catch {
+                return job?.responsibilities;
+              }
+              return job?.responsibilities;
+            })()}
           </div>
 
           <div className="mt-8">
@@ -253,17 +311,28 @@ export default function JobDetails() {
               <span className="bg-green-600 h-6 w-1 rounded-full mr-3"></span>
               Requirements
             </h3>
-            <p>{job.requirements}</p>
-            {/* <ul className="mt-4 space-y-2">
-              {job.requirements.map((req, index) => (
-                <li key={index} className="flex">
-                  <span className="bg-green-100 text-green-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
-                    {index + 1}
-                  </span>
-                  <span className="text-gray-700">{req}</span>
-                </li>
-              ))}
-            </ul> */}
+            {(() => {
+              try {
+                const arr = JSON.parse(job?.requirements);
+                if (Array.isArray(arr)) {
+                  return (
+                    <ul className="mt-4 space-y-2">
+                      {arr.map((resp, index) => (
+                        <li key={index} className="flex">
+                          <span className="bg-blue-100 text-blue-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
+                            {index + 1}
+                          </span>
+                          <span className="text-gray-700">{resp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  );
+                }
+              } catch {
+                return job?.requirements;
+              }
+              return job?.requirements;
+            })()}
           </div>
 
           <div className="mt-8">
@@ -271,20 +340,36 @@ export default function JobDetails() {
               <span className="bg-purple-600 h-6 w-1 rounded-full mr-3"></span>
               Benefits & Perks
             </h3>
-            <p>{job.benefits}</p>
-            {/* <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-              {job.benefits.map((benefit, index) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                  <div className="text-gray-700">{benefit}</div>
-                </div>
-              ))}
-            </div> */}
+            <p>
+              {(() => {
+                try {
+                  const arr = JSON.parse(job?.benefits);
+                  if (Array.isArray(arr)) {
+                    return (
+                      <ul className="mt-4 space-y-2">
+                        {arr.map((resp, index) => (
+                          <li key={index} className="flex">
+                            <span className="bg-blue-100 text-blue-800 rounded-full flex items-center justify-center h-6 w-6 mr-3 flex-shrink-0 mt-0.5">
+                              {index + 1}
+                            </span>
+                            <span className="text-gray-700">{resp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    );
+                  }
+                } catch {
+                  return job?.benefits;
+                }
+                return job?.benefits;
+              })()}
+            </p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">About The Company</h2>
-          <p className="text-gray-700 leading-relaxed">{job.companyDescription}</p>
+          <p className="text-gray-700 leading-relaxed">{job?.companyDescription}</p>
         </div>
 
         {isApplying ? (
@@ -361,10 +446,11 @@ export default function JobDetails() {
         ) : (
           <div className="flex justify-center">
             <button
-              onClick={() => setIsApplying(true)}
+              onClick={handleApplyClick}
+              disabled={authChecking}
               className="px-8 py-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 text-lg font-semibold shadow-lg flex items-center justify-center gap-2"
             >
-              Apply for this Position
+              {authChecking ? 'Checking...' : 'Apply for this Position'}
             </button>
           </div>
         )}
@@ -372,3 +458,5 @@ export default function JobDetails() {
     </div>
   );
 }
+
+export default memo(JobDetails);

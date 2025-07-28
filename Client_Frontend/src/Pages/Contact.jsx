@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { af } from "date-fns/locale";
-
-export default function Contact() {
+import { Link } from "react-router-dom";
+function Contact() {
   const [formData, setFormData] = useState({
 
     name: "",
@@ -24,24 +24,15 @@ export default function Contact() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setFormStatus({ ...formStatus, loading: true });
 
-
-
-
-
     try {
-
-
     await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/contact/addinquiry`, formData).then((results) => {
-
-        console.log(results);
 
         if (results.status === 201) {
           setFormStatus({ submitted: true, loading: false, error: null });
-
 
           // Reset form after successful submission
           setTimeout(() => {
@@ -77,7 +68,7 @@ export default function Contact() {
       setFormStatus({ submitted: false, loading: false, error: "Failed to submit form. Please try again." });
       console.log("error from try catch ", error);
     }
-  };
+  }, [formStatus, formData]);
 
   return (
 
@@ -404,15 +395,20 @@ export default function Contact() {
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">FAQs</h3>
             <p className="text-gray-600 mb-4">Find answers to commonly asked questions in our knowledge base.</p>
-            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <Link to="/services#faq"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
               View FAQs
               <svg className="ml-2 -mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
-            </button>
+            </Link>
+
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default memo(Contact);

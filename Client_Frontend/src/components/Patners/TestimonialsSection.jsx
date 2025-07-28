@@ -33,14 +33,14 @@ const testimonials = [
   {
     id: 4,
     company: "MeedRO",
-    logo: "",
+    logo: "https://upload.wikimedia.org/wikipedia/en/0/0a/Union_Assurance_logo.png",
     quote: "Gamage Recruiters exceeded our expectations in every way. Their deep understanding of the maritime industry and commitment to finding the right talent made our hiring process smooth and efficient. They provided us with highly qualified professionals who perfectly matched our requirements. Their proactive approach, attention to detail, and excellent communication made the entire process effortless. We truly appreciate their support and look forward to working with them again in the future.",
     author: "P. Senanayaka",
     position: "Chairman & Director - MeedRo",
     rating: 5
   },
   {
-    id: 4,
+    id: 5,
     company: "Gnanam Food (PVT)Ltd",
     logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCgHY4mRTDRj0DEKOsx98NfZdLfhD_knYSyw&s",
     quote: "Working with Gamage Recruiters was a game-changer! They didn’t just send resumes — they delivered top-tier talent with precision and speed. Sharp, professional, and truly in sync with our hiring goals. Highly recommended!",
@@ -138,14 +138,14 @@ export default function TestimonialsSection() {
               <div
                 key={testimonial.id}
                 className={`absolute w-full transition-all duration-500 ease-in-out ${index === activeTestimonial
-                    ? 'opacity-100 translate-x-0 z-20'
-                    : direction === 'next'
-                      ? index === (activeTestimonial + 1) % testimonials.length
-                        ? 'opacity-0 translate-x-full z-10'
-                        : 'opacity-0 -translate-x-full z-0'
-                      : index === (activeTestimonial - 1 + testimonials.length) % testimonials.length
-                        ? 'opacity-0 -translate-x-full z-10'
-                        : 'opacity-0 translate-x-full z-0'
+                  ? 'opacity-100 translate-x-0 z-20'
+                  : direction === 'next'
+                    ? index === (activeTestimonial + 1) % testimonials.length
+                      ? 'opacity-0 translate-x-full z-10'
+                      : 'opacity-0 -translate-x-full z-0'
+                    : index === (activeTestimonial - 1 + testimonials.length) % testimonials.length
+                      ? 'opacity-0 -translate-x-full z-10'
+                      : 'opacity-0 translate-x-full z-0'
                   }`}
               >
                 <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 relative overflow-hidden">
@@ -241,8 +241,8 @@ export default function TestimonialsSection() {
                   setActiveTestimonial(index);
                 }}
                 className={`w-3 h-3 mx-1 rounded-full transition-colors ${index === activeTestimonial
-                    ? 'bg-white'
-                    : 'bg-blue-200 bg-opacity-50 hover:bg-blue-100'
+                  ? 'bg-white'
+                  : 'bg-blue-200 bg-opacity-50 hover:bg-blue-100'
                   }`}
                 aria-label={`Go to testimonial ${index + 1}`}
               />

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { 
@@ -19,11 +19,11 @@ import {
 } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyEmail from "./VerifyEmail";
-import { verifyEmail, verifyFacebookURL, verifyLinkedInURL, verifyPassword, verifyPhoneNumber } from "../scripts/verifyData";
+import { verifyEmail, verifyFacebookURL, verifyLinkedInURL, verifyPassword, verifyPhoneNumber, verifyURL } from "../scripts/verifyData";
 import baseURL from "../config/axiosPortConfig";
 
 
-export default function SignupPage() {
+function SignupPage() {
 
   const [loadUI, setLoadUI] = useState(true);
   const [firstName, setFirstName] = useState('');
@@ -53,7 +53,7 @@ export default function SignupPage() {
   const totalSteps = 5;
   const [passwordError, setPasswordError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     
     if(!firstName || !lastName || !email || !password || !confirmPassword || !birthDate || !gender || !profileDescription) {
@@ -79,19 +79,30 @@ export default function SignupPage() {
       toast.error('Invalid Phone Number');
     } 
 
-    if(linkedInLink || facebookLink || phoneNumber2) {
-      if(!verifyFacebookURL(facebookLink)) {
-        toast.error('Invalid Facebook URL');
-        return;
-      }
-  
+    if(linkedInLink) {
       if(!verifyLinkedInURL(linkedInLink)) {
         toast.error('Invalid LinkedIn URL');
         return;
       } 
-      
+    }
+
+    if(facebookLink) {
+      if(!verifyFacebookURL(facebookLink)) {
+        toast.error('Invalid Facebook URL');
+        return;
+      }
+    }
+
+    if(phoneNumber2) {  
       if(!verifyPhoneNumber(phoneNumber2)) {
         toast.error('Invalid Phone Number');
+      }
+    }
+
+    if(portfolioLink) {
+      if(!verifyURL(portfolioLink)) {
+        toast.error('Invalid Portfolio URL');
+        return;
       }
     }
 
@@ -101,46 +112,74 @@ export default function SignupPage() {
     } 
 
     const formData = new FormData();
-
+    
+    // Add all required fields
     formData.append('firstName', firstName);
     formData.append('lastName', lastName);
-    formData.append('email', emailValue);
+    formData.append('email', email); // Use actual email instead of emailValue
     formData.append('gender', gender);
     formData.append('birthDate', birthDate);
     formData.append('password', password);
-    formData.append('address', address);
-    formData.append('address2', address2);
-    formData.append('phoneNumber1', phoneNumber1);
-    formData.append('phoneNumber2', phoneNumber2);
-    formData.append('portfolioLink', portfolioLink);
-    formData.append('linkedInLink', linkedInLink);
-    formData.append('facebookLink', facebookLink);
+    formData.append('address', address || '');
+    formData.append('address2', address2 || '');
+    formData.append('phoneNumber1', phoneNumber1 || '');
+    formData.append('phoneNumber2', phoneNumber2 || '');
+    formData.append('portfolioLink', portfolioLink || '');
+    formData.append('linkedInLink', linkedInLink || '');
+    formData.append('facebookLink', facebookLink || '');
     formData.append('profileDescription', profileDescription);
-    formData.append('cv', cv);
-    formData.append('photo', photo);
+    //formData.append('cv', cv);
+    //formData.append('photo', photo);
+
+    if (photo) {
+      formData.append('photo', photo);
+    }
 
     try {
-      const signupResponse = await axios.post(`${baseURL}/auth/register`, formData);
-      if(signupResponse.status == 201) {
-        const sendOTPResponse = await axios.post(`${baseURL}/auth/sendOTP`, { email: email });
-        if(sendOTPResponse.status == 200) {
-          toast.success('An OTP has been sent to your email');
-          localStorage.setItem('IsSignupAuthenticated', true);
-          setLoadUI(false);
-          setLoadVerifyOTP(true);
-        } else {
-          toast.error('Error Sending OTP');
-          return;
+      const signupResponse = await axios.post(`${baseURL}/auth/register`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         }
-      } else {
-        toast.error('User Registration Failed');
-        return;
+      });
+
+      if(signupResponse.status === 200 || signupResponse.status === 201) {
+        try {
+          // Send OTP after successful registration
+          const sendOTPResponse = await axios.post(`${baseURL}/auth/sendOTP`, {
+            email: email
+          });
+
+          if(sendOTPResponse.status === 200) {
+            setLoadUI(false);
+            setLoadVerifyOTP(true);
+            localStorage.setItem('IsSignupAuthenticated', true);
+            toast.success('Registration successful! Please verify your email');
+          } else {
+            toast.error('Failed to send verification email');
+          }
+        } catch (otpError) {
+          console.error('OTP sending error:', otpError);
+          toast.error('Failed to send verification email. Please try again.');
+        }
       }
     } catch (error) {
-      console.log(error);
-      return;
+       console.error('Registration error:', error.response?.data || error.message);
+  
+      // Better error message handling
+      if (error.response?.data?.message) {
+        // If there's a message property in the response data
+        toast.error(error.response.data.message);
+      } else if (typeof error.response?.data === 'string') {
+        // If response data is directly a string
+        toast.error(error.response.data);
+      } else {
+        // Fallback to a generic error message
+        toast.error('Registration failed. Please try again.');
+      }
     }
-  };
+  }, [firstName, lastName, gender, email, password, birthDate, address, address2, 
+      phoneNumber1, phoneNumber2, portfolioLink, linkedInLink, facebookLink, 
+      profileDescription, photo]);
 
   // const handleFileChange = (e) => {
   //   console.log(e.target.files);
@@ -150,17 +189,17 @@ export default function SignupPage() {
   //   });
   // };
 
-  const handleCVChange = (e) => {
-    console.log(e.target.files[0]);
-    setCV(e.target.files[0]);
-    setCVName(e.target.files[0].name);
-  };
+  // const handleCVChange = useCallback((e) => {
+  //   console.log(e.target.files[0]);
+  //   setCV(e.target.files[0]);
+  //   setCVName(e.target.files[0].name);
+  // }, [cv, cvName]);
 
-  const handlePhotoChange = (e) => {
-    console.log(e.target.files[0]);
+  const handlePhotoChange = useCallback((e) => {
+    // console.log(e.target.files[0]);
     setPhoto(e.target.files[0]);
     setPhotoName(e.target.files[0].name);
-  };
+  }, [photo, photoName]);
 
   const handleInputChange = (e) => {
     if (e.target.name === 'confirmPassword' || e.target.name === 'password') {
@@ -173,15 +212,32 @@ export default function SignupPage() {
     //   ...formData,
     //   [e.target.name]: e.target.value
     // });
-  };
+  }
 
   const nextStep = () => {
-    if (currentStep === 4 && password !== confirmPassword) {
-      setPasswordError('Passwords do not match');
-      return;
+    if (currentStep === 4) {
+      if (password !== confirmPassword) {
+        setPasswordError('Passwords do not match');
+        return;
+      }
+
+      if (password.length <= 5 || password.length >= 10) {
+        toast.error('Password length must be between 6 and 9 characters');
+        return;
+      }
+
+      if (!verifyPassword(password)) {
+        toast.error('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+        return;
+      }
+
+      if (!verifyEmail(email)) {
+        toast.error('Please enter a valid email address');
+        return;
+      }
     }
     setCurrentStep(Math.min(currentStep + 1, totalSteps));
-  };
+  }
 
   const prevStep = () => {
     setCurrentStep(Math.max(currentStep - 1, 1));
@@ -674,7 +730,9 @@ export default function SignupPage() {
       </div>
       ) }
 
-      { !loadUI && loadVerifyOTP && (<VerifyEmail email={email} dummyEmail={emailValue}/>) }
+      { !loadUI && loadVerifyOTP && (<VerifyEmail email={email} dummyEmail={email}/>) }
     </div>
   );
 }
+
+export default memo(SignupPage);

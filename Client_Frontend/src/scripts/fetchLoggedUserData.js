@@ -1,24 +1,29 @@
 import axios from 'axios';
+import baseURL from '../config/axiosPortConfig';
 
 const fetchLoggedUserData = async () => {
     try {
-      // const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data', { headers: { 'authorization': `Bearer ${accessToken}` }});
-      const loggedUserResponse = await axios.get('http://localhost:8000/session/profile-data');
-      // console.log(loggedUserResponse.data);
-      // console.log(loggedUserResponse.data.data[0]);
-      if(loggedUserResponse.status === 200) {
-        const userData = loggedUserResponse.data.data[0];
-        console.log(userData);
-        return userData;
-      } else {
-        // console.log('Error fetching user data');
-        console.log('Failed To Load User Data');
-        return null;
-      }
+        // Get user data from the auth check endpoint
+        const response = await axios.get(`${baseURL}/auth/check`, {
+            withCredentials: true // This is needed for cookies
+        });
+
+        if (response.status === 200 && response.data.success) {
+            return {
+                user: [{
+                    userId: response.data.data.id,
+                    firstName: response.data.data.firstName,
+                    lastName: response.data.data.lastName,
+                    email: response.data.data.email,
+                    // ... any other user data you need
+                }]
+            };
+        }
+        return null; // Return null if the user is not logged in or data is not available
     } catch (error) {
-      console.log(error);
-      return null;
+        console.error('Error fetching user data:', error);
+        return null;
     }
-}
+};
 
 export default fetchLoggedUserData;
