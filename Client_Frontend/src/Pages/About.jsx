@@ -170,6 +170,42 @@ function About() {
   </div>
 </div>
 
+{/* Our Values Section */}
+<div className="bg-gray-50 py-24">
+  <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl text-center mb-16">
+      <h2 className="text-3xl font-bold tracking-tight text-indigo-700 sm:text-4xl mb-6">
+        Our Values
+      </h2>
+      <p className="text-lg text-gray-600">
+        At Gamage Recruiters, our core values guide every decision we make and every relationship we build.
+      </p>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+        <span className="text-4xl mb-4 block">🤝</span>
+        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Integrity</h3>
+        <p className="text-gray-600">We uphold the highest standards of honesty and accountability in all our actions.</p>
+      </div>
+      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+        <span className="text-4xl mb-4 block">🤝</span>
+        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Collaboration</h3>
+        <p className="text-gray-600">We believe in teamwork and strong partnerships to achieve shared success.</p>
+      </div>
+      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+        <span className="text-4xl mb-4 block">💡</span>
+        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Innovation</h3>
+        <p className="text-gray-600">We embrace change and continuously seek creative solutions to challenges.</p>
+      </div>
+      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+        <span className="text-4xl mb-4 block">🎯</span>
+        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Client-Centric</h3>
+        <p className="text-gray-600">We prioritize our clients' needs and deliver tailored solutions that exceed expectations.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
       {/* Stats Section with Animation */}
       <div className="bg-indigo-900 py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
