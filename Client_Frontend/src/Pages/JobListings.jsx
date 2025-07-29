@@ -8,84 +8,12 @@ import JobCard from '../components/JobCard';
 import baseURL from '../config/axiosPortConfig';
 import { useLocation } from 'react-router-dom';
 
-
-// Mock data - will be replaced with actual API calls
-// const jobs = [
-//   {
-//     id: 1,
-//     title: "Senior Software Engineer",
-//     company: "Tech Solutions Ltd",
-//     location: "Colombo",
-//     jobType: "Full-time",
-//     salaryRange: "$3000-$5000",
-//     description: "Looking for an experienced software engineer to lead our development team.",
-//     qualifications: ["5+ years experience", "Bachelor's degree", "Strong leadership skills"],
-//     postedDate: "2023-09-15",
-//     featured: true,
-//     logo: "https://placehold.co/400"
-//   },
-//   {
-//     id: 2,
-//     title: "HR Manager",
-//     company: "Global Enterprises",
-//     location: "Kandy",
-//     jobType: "Full-time",
-//     salaryRange: "$2500-$3500",
-//     description: "Seeking an experienced HR professional to manage our growing team.",
-//     qualifications: ["4+ years HR experience", "Master's degree preferred"],
-//     postedDate: "2023-09-14",
-//     featured: false,
-//     logo: "https://placehold.co/400"
-//   },
-//   {
-//     id: 3,
-//     title: "Marketing Specialist",
-//     company: "Digital Marketing Pro",
-//     location: "Galle",
-//     jobType: "Remote",
-//     salaryRange: "$2000-$3000",
-//     description: "Join our dynamic marketing team and help grow our digital presence.",
-//     qualifications: ["3+ years marketing experience", "Digital marketing certification"],
-//     postedDate: "2023-09-13",
-//     featured: false,
-//     logo: "https://placehold.co/400"
-//   },
-//   {
-//     id: 4,
-//     title: "Frontend Developer",
-//     company: "WebTech Solutions",
-//     location: "Colombo",
-//     jobType: "Contract",
-//     salaryRange: "$2500-$4000",
-//     description: "Frontend developer needed for exciting web projects.",
-//     qualifications: ["React expertise", "3+ years experience"],
-//     postedDate: "2023-09-12",
-//     featured: true,
-//     logo: "https://placehold.co/400"
-//   },
-//   {
-//     id: 5,
-//     title: "Business Analyst",
-//     company: "Finance Corp",
-//     location: "Colombo",
-//     jobType: "Full-time",
-//     salaryRange: "$2800-$3800",
-//     description: "Business analyst needed for our expanding finance team.",
-//     qualifications: ["Finance background", "Strong analytical skills"],
-//     postedDate: "2023-09-11",
-//     featured: false,
-//     logo: "https://placehold.co/400"
-//   }
-// ];
-
-const locations = ["All Locations", "Colombo", "Kandy", "Galle", "Remote"];
-const jobTypes = ["All Types", "Full-time", "Part-time", "Contract", "Remote"];
 const salaryRanges = [
   "All Ranges",
-  "Below $2000",
-  "$2000-$3000",
-  "$3000-$4000",
-  "$4000+"
+  "Below LKR 20,000",
+  "LKR 20,000 - LKR 50,000",
+  "LKR 50,000 - LKR100,000",
+  "LKR 100,000+"
 ];
 
 // Helper function to format date
@@ -123,9 +51,13 @@ function JobListings() {
 
   const [newsletterEmail, setNewsletterEmail] = useState('');
   
+  const locations = ["All Locations", ...new Set(jobs.map(job => job.jobLocation).filter(location => location && location.trim() !== ''))];
+
+  const jobTypes = ["All Types", ...new Set(jobs.map(job => job.jobType).filter(type => type && type.trim() !== ''))];
+  
   useEffect(() => {
-  setSearchTerm(initialSearch);
-}, [initialSearch]);
+    setSearchTerm(initialSearch);
+  }, [initialSearch]);
 
   useEffect(() => {
     loadJobs();
@@ -169,19 +101,18 @@ function JobListings() {
     // Implement proper salary range filtering
     let matchesSalary = selectedSalaryRange === 'All Ranges';
     if (!matchesSalary) {
-      const salary = {
-        min: parseInt(job.salaryRange.split('-')[0].replace('$', '').replace('+', '')),
-        max: job.salaryRange.includes('+') ? 100000 : parseInt(job.salaryRange.split('-')[1]?.replace('$', '') || 0)
-      };
+      const salaryValue = parseFloat(job.salaryRange.toString().replace(/[^\d.]/g, ''));
       
-      if (selectedSalaryRange === 'Below $2000') {
-        matchesSalary = salary.min < 2000;
-      } else if (selectedSalaryRange === '$2000-$3000') {
-        matchesSalary = (salary.min >= 2000 && salary.min <= 3000) || (salary.max >= 2000 && salary.max <= 3000);
-      } else if (selectedSalaryRange === '$3000-$4000') {
-        matchesSalary = (salary.min >= 3000 && salary.min <= 4000) || (salary.max >= 3000 && salary.max <= 4000);
-      } else if (selectedSalaryRange === '$4000+') {
-        matchesSalary = salary.min >= 4000 || salary.max >= 4000;
+      if (!isNaN(salaryValue)) {
+        if (selectedSalaryRange === 'Below LKR 20,000') {
+          matchesSalary = salaryValue < 20000;
+        } else if (selectedSalaryRange === 'LKR 20,000 - LKR 50,000') {
+          matchesSalary = salaryValue >= 20000 && salaryValue <= 50000;
+        } else if (selectedSalaryRange === 'LKR 50,000 - LKR100,000') {
+          matchesSalary = salaryValue >= 50000 && salaryValue <= 100000;
+        } else if (selectedSalaryRange === 'LKR 100,000+') {
+          matchesSalary = salaryValue >= 100000;
+        }
       }
     }
 
@@ -282,7 +213,7 @@ const sortedJobs = [...filteredJobs].sort((a, b) => {
             <div className="mt-2 flex flex-wrap gap-2">
               <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
                 <MapPinIcon className="w-3 h-3 mr-1" />
-                {job.location}
+                {job.jobLocation}
               </span>
               <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
                 {job.jobType}

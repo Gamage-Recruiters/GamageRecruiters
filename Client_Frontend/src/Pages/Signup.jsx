@@ -163,8 +163,19 @@ function SignupPage() {
         }
       }
     } catch (error) {
-      console.error('Registration error:', error.response?.data || error.message);
-      toast.error(error.response?.data || 'Registration failed');
+       console.error('Registration error:', error.response?.data || error.message);
+  
+      // Better error message handling
+      if (error.response?.data?.message) {
+        // If there's a message property in the response data
+        toast.error(error.response.data.message);
+      } else if (typeof error.response?.data === 'string') {
+        // If response data is directly a string
+        toast.error(error.response.data);
+      } else {
+        // Fallback to a generic error message
+        toast.error('Registration failed. Please try again.');
+      }
     }
   }, [firstName, lastName, gender, email, password, birthDate, address, address2, 
       phoneNumber1, phoneNumber2, portfolioLink, linkedInLink, facebookLink, 

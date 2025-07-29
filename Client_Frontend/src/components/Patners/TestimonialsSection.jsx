@@ -3,52 +3,52 @@ import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 // Sample testimonial data
 const testimonials = [
-    {
-      id: 1,
-      company: "CBL Group",
-      logo: "https://d1l8km4g5s76x5.cloudfront.net/Production/exb_doc/2015/16038/thumb_2015_16038_15864_4687.png",
-      quote: "I've had the privilege of working with Gamage Recruiters, and I must commend their exceptional professionalism and collaborative work partnership throughout the talent acquisition process. Their unique and disciplined approach ensures they find the best fit for the role. Having worked with them for a considerable time, I wholeheartedly recommend Gamage Recruiters for executive hires without hesitation.",
-      author: "Chamila Senarathne",
-      position: "General Manager HR - CBL Food Cluster",
-      rating: 5
-    },
-    {
-      id: 2,
-      company: "GENXT",
-      logo: "https://i.ibb.co/pvn864CX/image.png",
-      quote: "Your recruitment service was instrumental in fulfilling our urgent and critical hiring needs. It allowed us to discreetly recruit for senior positions without alerting the market, ensuring confidentiality throughout the process. Additionally, your ability to source qualified candidates with specialized expertise in our specific industry was invaluable. This tailored approach not only saved us time but also ensured that we secured the right talent for key roles.",
-      author: "Amali Rathnapala",
-      position: "Manager HR-Gnext",
-      rating: 5
-    },
-    {
-      id: 3,
-      company: "Transocean DUTY FREE (PVT) LTD",
-      logo: "https://i.ibb.co/mFHfsjFg/Trans-Ocean.png",
-      quote: "Working with Gamage Recruiters has been an outstanding experience. Their team demonstrated exceptional professionalism, efficiency, and dedication in understanding our recruitment needs and delivering top-tier candidates. Their seamless process and industry expertise ensured that we onboarded highly skilled professionals who have contributed significantly to our company’s success. I highly recommend Gamage Recruiters to any organization seeking a reliable and results-driven recruitment partner.",
-      author: "R.Jayasinghe",
-      position: "Director - Transocean DUTY FREE (PVT) LTD",
-      rating: 5
-    },
-    {
-      id: 4,
-      company: "MeedRO",
-      logo: "https://upload.wikimedia.org/wikipedia/en/0/0a/Union_Assurance_logo.png",
-      quote: "Gamage Recruiters exceeded our expectations in every way. Their deep understanding of the maritime industry and commitment to finding the right talent made our hiring process smooth and efficient. They provided us with highly qualified professionals who perfectly matched our requirements. Their proactive approach, attention to detail, and excellent communication made the entire process effortless. We truly appreciate their support and look forward to working with them again in the future.",
-      author: "P. Senanayaka",
-      position: "Chairman & Director - MeedRo",
-      rating: 5
-    },
-    {
-      id: 5,
-      company: "Gnanam Food (PVT)Ltd",
-      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCgHY4mRTDRj0DEKOsx98NfZdLfhD_knYSyw&s",
-      quote: "Working with Gamage Recruiters was a game-changer! They didn’t just send resumes — they delivered top-tier talent with precision and speed. Sharp, professional, and truly in sync with our hiring goals. Highly recommended!",
-      author: "Patchamuthu Satheesan",
-      position: "Manager Operations-Gnanam Food ",
-      rating: 5
-    }
-  ];
+  {
+    id: 1,
+    company: "CBL Group",
+    logo: "https://d1l8km4g5s76x5.cloudfront.net/Production/exb_doc/2015/16038/thumb_2015_16038_15864_4687.png",
+    quote: "I've had the privilege of working with Gamage Recruiters, and I must commend their exceptional professionalism and collaborative work partnership throughout the talent acquisition process. Their unique and disciplined approach ensures they find the best fit for the role. Having worked with them for a considerable time, I wholeheartedly recommend Gamage Recruiters for executive hires without hesitation.",
+    author: "Chamila Senarathne",
+    position: "General Manager HR - CBL Food Cluster",
+    rating: 5
+  },
+  {
+    id: 2,
+    company: "GENXT",
+    logo: "https://i.ibb.co/pvn864CX/image.png",
+    quote: "Your recruitment service was instrumental in fulfilling our urgent and critical hiring needs. It allowed us to discreetly recruit for senior positions without alerting the market, ensuring confidentiality throughout the process. Additionally, your ability to source qualified candidates with specialized expertise in our specific industry was invaluable. This tailored approach not only saved us time but also ensured that we secured the right talent for key roles.",
+    author: "Amali Rathnapala",
+    position: "Manager HR-Gnext",
+    rating: 5
+  },
+  {
+    id: 3,
+    company: "Transocean DUTY FREE (PVT) LTD",
+    logo: "https://i.ibb.co/mFHfsjFg/Trans-Ocean.png",
+    quote: "Working with Gamage Recruiters has been an outstanding experience. Their team demonstrated exceptional professionalism, efficiency, and dedication in understanding our recruitment needs and delivering top-tier candidates. Their seamless process and industry expertise ensured that we onboarded highly skilled professionals who have contributed significantly to our company’s success. I highly recommend Gamage Recruiters to any organization seeking a reliable and results-driven recruitment partner.",
+    author: "R.Jayasinghe",
+    position: "Director - Transocean DUTY FREE (PVT) LTD",
+    rating: 5
+  },
+  {
+    id: 4,
+    company: "MeedRO",
+    logo: "https://upload.wikimedia.org/wikipedia/en/0/0a/Union_Assurance_logo.png",
+    quote: "Gamage Recruiters exceeded our expectations in every way. Their deep understanding of the maritime industry and commitment to finding the right talent made our hiring process smooth and efficient. They provided us with highly qualified professionals who perfectly matched our requirements. Their proactive approach, attention to detail, and excellent communication made the entire process effortless. We truly appreciate their support and look forward to working with them again in the future.",
+    author: "P. Senanayaka",
+    position: "Chairman & Director - MeedRo",
+    rating: 5
+  },
+  {
+    id: 5,
+    company: "Gnanam Food (PVT)Ltd",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCgHY4mRTDRj0DEKOsx98NfZdLfhD_knYSyw&s",
+    quote: "Working with Gamage Recruiters was a game-changer! They didn’t just send resumes — they delivered top-tier talent with precision and speed. Sharp, professional, and truly in sync with our hiring goals. Highly recommended!",
+    author: "Patchamuthu Satheesan",
+    position: "Manager Operations-Gnanam Food ",
+    rating: 5
+  }
+];
 
 export default function TestimonialsSection() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -56,13 +56,13 @@ export default function TestimonialsSection() {
   const [direction, setDirection] = useState('next');
   const autoplayRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
-  
+
   const navigateTestimonial = (dir) => {
     if (isAnimating) return;
-    
+
     setIsAnimating(true);
     setDirection(dir);
-    
+
     setTimeout(() => {
       if (dir === 'next') {
         setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
@@ -80,7 +80,7 @@ export default function TestimonialsSection() {
         navigateTestimonial('next');
       }, 6000);
     }
-    
+
     return () => {
       if (autoplayRef.current) {
         clearInterval(autoplayRef.current);
@@ -99,11 +99,11 @@ export default function TestimonialsSection() {
       <div className="absolute -top-12 right-12 w-64 h-64 rounded-full bg-indigo-600 opacity-10"></div>
       <div className="absolute top-1/4 -left-12 w-48 h-48 rounded-full bg-blue-600 opacity-10"></div>
       <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-indigo-800 opacity-10"></div>
-      
+
       {/* Animated particles */}
       <div className="absolute inset-0 z-0">
         {[...Array(12)].map((_, i) => (
-          <div 
+          <div
             key={i}
             className="absolute w-3 h-3 bg-white rounded-full opacity-20"
             style={{
@@ -135,19 +135,18 @@ export default function TestimonialsSection() {
           {/* Testimonial cards container */}
           <div className="relative h-96 max-w-4xl mx-auto">
             {testimonials.map((testimonial, index) => (
-              <div 
+              <div
                 key={testimonial.id}
-                className={`absolute w-full transition-all duration-500 ease-in-out ${
-                  index === activeTestimonial 
-                    ? 'opacity-100 translate-x-0 z-20' 
-                    : direction === 'next'
-                      ? index === (activeTestimonial + 1) % testimonials.length
-                        ? 'opacity-0 translate-x-full z-10'
-                        : 'opacity-0 -translate-x-full z-0'
-                      : index === (activeTestimonial - 1 + testimonials.length) % testimonials.length
-                        ? 'opacity-0 -translate-x-full z-10'
-                        : 'opacity-0 translate-x-full z-0'
-                }`}
+                className={`absolute w-full transition-all duration-500 ease-in-out ${index === activeTestimonial
+                  ? 'opacity-100 translate-x-0 z-20'
+                  : direction === 'next'
+                    ? index === (activeTestimonial + 1) % testimonials.length
+                      ? 'opacity-0 translate-x-full z-10'
+                      : 'opacity-0 -translate-x-full z-0'
+                    : index === (activeTestimonial - 1 + testimonials.length) % testimonials.length
+                      ? 'opacity-0 -translate-x-full z-10'
+                      : 'opacity-0 translate-x-full z-0'
+                  }`}
               >
                 <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-bl-full opacity-50"></div>
@@ -220,14 +219,13 @@ export default function TestimonialsSection() {
           {/* Progress bar */}
           <div className="mt-8 w-full max-w-md mx-auto bg-blue-800 bg-opacity-50 h-1 rounded-full overflow-hidden">
             {testimonials.map((_, index) => (
-              <div 
+              <div
                 key={index}
-                className={`h-full bg-white transition-all duration-300 ${
-                  index === activeTestimonial ? 'opacity-100' : 'opacity-0'
-                }`}
+                className={`h-full bg-white transition-all duration-300 ${index === activeTestimonial ? 'opacity-100' : 'opacity-0'
+                  }`}
                 style={{
-                  width: `${(1/testimonials.length) * 100}%`,
-                  marginLeft: `${(index/testimonials.length) * 100}%`,
+                  width: `${(1 / testimonials.length) * 100}%`,
+                  marginLeft: `${(index / testimonials.length) * 100}%`,
                 }}
               />
             ))}
@@ -242,11 +240,10 @@ export default function TestimonialsSection() {
                   setDirection(index > activeTestimonial ? 'next' : 'prev');
                   setActiveTestimonial(index);
                 }}
-                className={`w-3 h-3 mx-1 rounded-full transition-colors ${
-                  index === activeTestimonial 
-                    ? 'bg-white' 
-                    : 'bg-blue-200 bg-opacity-50 hover:bg-blue-100'
-                }`}
+                className={`w-3 h-3 mx-1 rounded-full transition-colors ${index === activeTestimonial
+                  ? 'bg-white'
+                  : 'bg-blue-200 bg-opacity-50 hover:bg-blue-100'
+                  }`}
                 aria-label={`Go to testimonial ${index + 1}`}
               />
             ))}

@@ -23,6 +23,9 @@ router.route('/email-check').post(authController.emailCheck);
 // Route for Resetting Password ...
 router.route('/reset-password').post(authController.resetPassword); 
 
+// Route for verifying password reset OTP ...
+router.route('/verifyResetOTP').post(authController.verifyPasswordResetOTP);
+
 // Route for logout ...
 router.route('/logout').get(authController.logout);
 

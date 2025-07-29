@@ -57,7 +57,7 @@ function Sidebar({ isOpen, setIsOpen }) {
         setAdminData({
           name: adminObject?.name || 'Admin User',
           role: adminObject?.role || 'Administrator',
-          image: adminObject?.image ? `/uploads/admin/${adminObject.image}` : null
+          image: adminObject?.image ? `${baseURL}/uploads/admin/images/${adminObject.image}` : null
         });
       } catch (error) {
         console.error('Error fetching admin data:', error);

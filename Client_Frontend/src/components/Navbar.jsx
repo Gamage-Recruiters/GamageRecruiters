@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
+import baseURL from '../config/axiosPortConfig';
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -13,20 +15,42 @@ const navigation = [
   { name: 'Contact', href: '/contact' },
 ];
 
-// Secondary navigation for user-specific actions
-const userNavigation = [
-  { name: 'Login', href: '/login', icon: '→' },
-  { name: 'Sign Up', href: '/signup', icon: '✦' },
-  { name: 'Dashboard', href: '/dashboard', icon: '☰' },
-];
-
 export default function Navbar({ fixedColor }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState('/');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const location = useLocation();
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/auth/check`, {
+          withCredentials: true
+        });
+
+        if (response.status === 200) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, [location.pathname]);
+
+  // Secondary navigation for user-specific actions
+  const userNavigation = [
+    isAuthenticated ? { name: 'Dashboard', href: '/dashboard', icon: '☰' } : { name: 'Login', href: '/login', icon: '→' },
+    { name: 'Sign Up', href: '/signup', icon: '✦' },
+    ,
+  ];
+
   // Detect scroll position for navbar background change
   useEffect(() => {
     const handleScroll = () => {

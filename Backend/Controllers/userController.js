@@ -454,7 +454,12 @@ async function getRecentProfileActivity(req, res) {
             }
 
             if (result.length === 0) {
-                return res.status(404).send('No recent activity found for this user');
+                 // Return 200 with empty data instead of 404
+                return res.status(200).json({ 
+                    message: 'No recent activity found',
+                    recentActivity: '',
+                    timeStatus: '' 
+                });
             } 
 
             const recentActivity = result[0].activity;
@@ -484,24 +489,31 @@ async function subscribeToNewsletter(req, res) {
                 return res.status(400).send(error);
             }
 
-            if(result.affectedRows === 0) {
-                return res.status(400).send('Subscription Failed');
+             // If no user found with this email
+            if(result.length === 0) {
+                return res.status(404).send('Email not registered. Please sign up first.');
             }
 
+            // Check if user is already subscribed
+            if(result[0].subscribedToNewsLetter === 1) {
+                return res.status(200).send('You are already subscribed to our newsletter');
+            }
+
+            // Update subscription status
             const updateSubscriptionStatusQuery = 'UPDATE users SET subscribedToNewsLetter = ? WHERE email = ?';
             pool.query(updateSubscriptionStatusQuery, [1, email], (error, state) => {
                 if(error) {
                     console.log(error);
-                    return res.status(400).send(error);
+                    return res.status(400).send('Failed to update subscription status');
                 }
     
                 if(state.affectedRows === 0) {
-                    return res.status(400).send('Subscription Failed');
+                    return res.status(400).send('Subscription failed');
                 }
 
                 subscriptionNotifyEmailSending(email);
-                return res.status(200).send('Subscription Successfull');
-            })
+                return res.status(200).send('Subscription Successful');
+            });
         });
     } catch (error) {
         console.log(error);

@@ -24,6 +24,7 @@ import TestimonialsSection from './Pages/TestimonialsSection';
 import WindowOnClose from './protected/WindowOnClose';
 import ProtectedRoute from './protected/ProtectedRoute';
 import ScrollToTop from "./components/ScrollToTop";
+import VerifyResetPassword from './Pages/VerifyResetPassword';  
 
 
 
@@ -42,12 +43,13 @@ function App() {
             <Route path="/services" element={<Services />} />
             <Route path="/jobs" element={<JobListings />} />
             <Route path="/subsidiaries" element={<Subsidiaries />} />
-            <Route path="/jobs/:jobId" element={<ProtectedRoute><JobDetails /></ProtectedRoute>} />
+            <Route path="/jobs/:jobId" element={<JobDetails />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path='/verifyEmail' element={<ProtectedRoute><VerifyEmail/></ProtectedRoute>} />
-            <Route path='/emailCheck' element={<ProtectedRoute><EmailCheck/></ProtectedRoute>} />
-            <Route path='/resetPassword' element={<ProtectedRoute><ResetPassword/></ProtectedRoute>} />
+            <Route path='/emailCheck' element={<EmailCheck/>} />
+            <Route path='/resetPassword' element={<ResetPassword/>} />
+            <Route path='/verifyResetPassword' element={<VerifyResetPassword/>} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/application/:jobApplicationId" element={<ProtectedRoute><Application /></ProtectedRoute>} />        

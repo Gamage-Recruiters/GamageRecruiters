@@ -23,10 +23,11 @@ const WorkshopsAndSeminarsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sharePopupId, setSharePopupId] = useState(null);
+  const [savedEvents, setSavedEvents] = useState([]);
 
   // Helper function to format image URLs correctly
   const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/api/placeholder/400/300';
+    if (!imagePath) return null;// No placeholder
     if (imagePath.startsWith('http')) return imagePath;
     return `${baseURL}/uploads/workshops/images/${imagePath}`;
   };
@@ -211,12 +212,14 @@ const WorkshopsAndSeminarsPage = () => {
                 style={{ transitionDelay: `${index * 150}ms` }}
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${event.color || 'from-purple-600 to-indigo-600'} opacity-80 z-10`}></div>
+                {getImageUrl(event.image) && (
                 <img 
                   src={getImageUrl(event.image)} 
                   alt={event.title} 
                   className="h-96 w-full object-cover transform transition duration-700 group-hover:scale-110"
-                  onError={(e) => {e.target.src = '/api/placeholder/400/300'}}
+                  
                 />
+                )}
                 <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 text-white">
                   <div className="bg-white bg-opacity-20 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-semibold inline-block w-fit mb-3">
                     {event.category || 'Workshop'}
@@ -314,22 +317,35 @@ const WorkshopsAndSeminarsPage = () => {
             {filteredUpcomingEvents.slice(0, visibleCount).map((event) => (
               <div 
                 key={event.id}
-                className={`bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl ${
-                  expandedEvent === event.id ? 'md:col-span-2 md:row-span-2' : ''
-                }`}
+                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl "
+                  
               >
                 <div className="relative">
                   <div className={`absolute inset-0 bg-gradient-to-b ${event.color || 'from-purple-600 to-indigo-600'} opacity-30`}></div>
+                  {getImageUrl(event.image) && (
                   <img
                     src={getImageUrl(event.image)}
                     alt={event.title}
                     className="h-48 w-full object-cover"
-                    onError={(e) => {e.target.src = '/api/placeholder/400/200'}}
+                    
                   />
+                  )}
                   <div className="absolute top-4 right-4 flex space-x-2">
-                    <button className="p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all">
-                      <Bookmark size={16} />
-                    </button>
+                    <button
+                      className={`p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all ${
+                         savedEvents.includes(event.id) ? 'text-purple-600' : ''
+                    }`}
+                    onClick={() => {
+                     setSavedEvents(prev =>
+                       prev.includes(event.id)
+                          ? prev.filter(id => id !== event.id)
+                          : [...prev, event.id]
+           );
+              }}
+             title={savedEvents.includes(event.id) ? "Unsave" : "Save"}
+              >
+               <Bookmark size={16} className={savedEvents.includes(event.id) ? "text-yellow-400" : ""}/>
+             </button>
                     <button
                       className="p-1.5 bg-white bg-opacity-80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-opacity-100 transition-all relative"
                       onClick={() => setSharePopupId(sharePopupId === event.id ? null : event.id)}

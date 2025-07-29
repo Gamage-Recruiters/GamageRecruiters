@@ -4,36 +4,46 @@ import axios from "axios";
 import { AtSign, ArrowRight } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 import ResetPassword from './ResetPassword';
+import { useNavigate } from 'react-router-dom';
 import baseURL from '../config/axiosPortConfig';
 
 const EmailCheck = () => {
     const [loadEmailCheck, setLoadEmailCheck] = useState(true);
     const [loadResetPassword, setLoadResetPassword] = useState(false);
     const [email, setEmail] = useState('');
+    const navigate = useNavigate();
 
     const handleEmailCheck =  useCallback(async (e) => {
         e.preventDefault();
 
         if(!email) {
             toast.error('Please Enter User Email');
+            return;
         }
 
         try {
             const emailCheckResponse = await axios.post(`${baseURL}/auth/email-check`, { email: email });
-            // console.log(emailCheckResponse);
             if(emailCheckResponse.status == 200) {
-                toast.success('Email Noted');
-                setLoadEmailCheck(false);
-                setLoadResetPassword(true);
+                // Send OTP to user's email
+                const sendOTPResponse = await axios.post(`${baseURL}/auth/sendOTP`, { email: email });
+                
+                if(sendOTPResponse.status === 200) {
+                    toast.success('Verification code sent to your email');
+                    // Store email for later use
+                    localStorage.setItem('resetEmail', email);
+                    // Navigate to verification page instead
+                    navigate('/verifyResetPassword');
+                } else {
+                    toast.error('Failed to send verification code');
+                }
             } else {
                 toast.error('Email Not Found or Invalid');
-                return;
             }
         } catch (error) {
             console.log(error);
-            return;
+            toast.error('Email verification failed');
         }
-    }, [email]);
+    }, [email, navigate]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 via-indigo-800 to-purple-200">
