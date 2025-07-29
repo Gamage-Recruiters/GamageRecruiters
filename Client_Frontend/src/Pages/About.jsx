@@ -141,6 +141,35 @@ function About() {
         </div>
       </div>
 
+
+      {/* Why Choose GAMAGE RECRUITERS Section */}
+<div className="bg-white py-24">
+  <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl text-center mb-16">
+      <h2 className="text-3xl font-bold tracking-tight text-indigo-700 sm:text-4xl mb-6">
+        WHY CHOOSE GAMAGE RECRUITERS?
+      </h2>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="bg-indigo-50 rounded-xl p-8 shadow text-center flex flex-col items-center">
+        <span className="text-4xl mb-4">🏅</span>
+        <h3 className="font-semibold text-indigo-600 mb-2 text-xl">Industry Experts</h3>
+        <p className="text-gray-600">Deep understanding of the recruitment landscape.</p>
+      </div>
+      <div className="bg-indigo-50 rounded-xl p-8 shadow text-center flex flex-col items-center">
+        <span className="text-4xl mb-4">🌐</span>
+        <h3 className="font-semibold text-indigo-600 mb-2 text-xl">Extensive Network</h3>
+        <p className="text-gray-600">Access to a wide pool of qualified candidates.</p>
+      </div>
+      <div className="bg-indigo-50 rounded-xl p-8 shadow text-center flex flex-col items-center">
+        <span className="text-4xl mb-4">🤝</span>
+        <h3 className="font-semibold text-indigo-600 mb-2 text-xl">Diversity & Inclusion</h3>
+        <p className="text-gray-600">Commitment to equal opportunities for all.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
       {/* Stats Section with Animation */}
       <div className="bg-indigo-900 py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
