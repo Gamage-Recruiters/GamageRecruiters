@@ -89,11 +89,11 @@ function About() {
               <img
                 src="https://i.ibb.co/PvCfxjd9/gamage.png"
                 alt="Gamage Recruiters Office"
-                className="rounded-xl shadow-2xl object-cover"
+                className="rounded-full shadow-2xl object-cover w-4/5 ml-auto"
               />
-              <div className="absolute -bottom-8 -left-8 bg-indigo-600 rounded-xl p-6 shadow-xl">
+              <div className="absolute -bottom-8 left-8 bg-indigo-600 rounded-xl p-6 shadow-xl">
                 <p className="text-xl font-bold text-white">Established 2019</p>
-                <p className="text-white/80 mt-1">Colombo, Sri Lanka</p>
+                <p className="text-white/80 mt-1">Galle road, Panadura</p>
               </div>
             </div>
           </div>
