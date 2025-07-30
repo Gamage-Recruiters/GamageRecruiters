@@ -47,7 +47,25 @@ const testimonials = [
     author: "Patchamuthu Satheesan",
     position: "Manager Operations-Gnanam Food ",
     rating: 5
-  }
+  },
+  {
+      id: 5,
+      company: "David Pieris Group of Companies",
+      logo: "https://i.ibb.co/v4s4h15c/images.png",
+      quote: "As an HR Manager, I am pleased to recommend Gamage Recruiters for their exceptional services. My experience with their team has been outstanding, marked by professionalism, efficiency, and a deep understanding of recruitment needs. They consistently provided highly qualified candidates, tailored to our requirements, while maintaining clear and timely communication throughout the process. Their commitment to excellence and attention to detail ensured a seamless hiring experience. I am fully satisfied with their services and confidently recommend them to any organization seeking a reliable, results-driven recruitment partner.",
+      author: "Manager",
+      position: "Human Resources DP Logistics Pvt Ltd",
+      rating: 5
+    },
+    {
+      id: 6,
+      company: "Aminovit Private Ltd",
+      logo: "https://i.ibb.co/C31tytQk/images.jpg",
+      quote: "We've had a smooth and professional experience working with Gamage Recruiters. Their responsiveness, understanding of our requirements, and quality of shortlisted candidates have been commendable. We appreciate their support in helping us find the right talent efficiently.",
+      author: "Hasini Dayananda",
+      position: "Executive - HR & Administration Aminovit Pvt Ltd",
+      rating: 5
+    }
 ];
 
 export default function TestimonialsSection() {

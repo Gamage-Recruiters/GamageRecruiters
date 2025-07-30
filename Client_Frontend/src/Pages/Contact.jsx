@@ -150,6 +150,38 @@ function Contact() {
                         <p className="mt-1 text-sm text-blue-100">hr.gamagecareer@gmail.com</p>
                       </div>
                     </div>
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <svg
+                          className="h-6 w-6 text-blue-200"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 3C7.031 3 3 7.031 3 12s4.031 9 9 9 9-4.031 9-9-4.031-9-9-9zm0 0c2.485 0 4.5 4.03 4.5 9s-2.015 9-4.5 9-4.5-4.03-4.5-9 2.015-9 4.5-9zM3 12h18"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-base font-medium text-white">
+                          Website
+                        </p>
+                        <p className="mt-1 text-sm text-blue-100">
+                          <a
+                            href="https://www.gamagerecruiters.lk/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline"
+                          >
+                            www.gamagerecruiters.lk
+                          </a>
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

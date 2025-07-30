@@ -129,19 +129,46 @@ function About() {
               </p>
               <p className="text-lg text-gray-600">
                 Beyond recruitment, we've expanded our portfolio to include
+               
                 educational services and retail ventures, unified under our
+               
                 sister company VERITAS INTERNATIONAL (PVT) LTD.
               </p>
+              {/* New content: Focus, Team, Headquarters */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="bg-indigo-50 rounded-lg p-4 shadow flex flex-col items-center">
+                  <span className="text-indigo-600 font-bold text-xl mb-2">
+                    Focus
+                  </span>
+                  <p className="text-gray-700 text-center">
+                    Emerging markets, primarily Sri Lanka
+                  </p>
+                </div>
+                <div className="bg-indigo-50 rounded-lg p-4 shadow flex flex-col items-center">
+                  <span className="text-indigo-600 font-bold text-xl mb-2">
+                    Team
+                  </span>
+                  <p className="text-gray-700 text-center">
+                    Grew to 11-50 employees
+                  </p>
+                </div>
+                <div className="bg-indigo-50 rounded-lg p-4 shadow flex flex-col items-center">
+                  <span className="text-indigo-600 font-bold text-xl mb-2">
+                    Headquarters
+                  </span>
+                  <p className="text-gray-700 text-center">Panadura</p>
+                </div>
+              </div>
             </div>
             <div className="relative">
               <img
                 src="https://i.ibb.co/PvCfxjd9/gamage.png"
                 alt="Gamage Recruiters Office"
-                className="rounded-xl shadow-2xl object-cover"
+                className="rounded-full shadow-2xl object-cover w-4/5 ml-auto"
               />
-              <div className="absolute -bottom-8 -left-8 bg-indigo-600 rounded-xl p-6 shadow-xl">
+              <div className="absolute -bottom-8 left-8 bg-indigo-600 rounded-xl p-6 shadow-xl">
                 <p className="text-xl font-bold text-white">Established 2019</p>
-                <p className="text-white/80 mt-1">Colombo, Sri Lanka</p>
+                <p className="text-white/80 mt-1">Galle road, Panadura</p>
               </div>
             </div>
           </div>
@@ -152,6 +179,9 @@ function About() {
       <div className="bg-gray-50 py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center mb-16">
+            <h2 className="text-base font-semibold leading-7 text-indigo-600">
+              OUR PURPOSE
+            </h2>
             <h2 className="text-base font-semibold leading-7 text-indigo-600">
               OUR PURPOSE
             </h2>
@@ -176,12 +206,32 @@ function About() {
                     strokeLinejoin="round"
                     d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
                   />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 text-indigo-600"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
+                  />
                 </svg>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 Our Mission
               </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Our Mission
+              </h3>
               <p className="text-lg text-gray-600">
+                To revolutionize the recruitment industry in Sri Lanka by
+                providing innovative solutions that connect the right talent
+                with the right opportunities, while fostering growth and success
+                for both candidates and employers.
                 Our aim is to become the go-to organization for all human
                 resource and business needs. We are committed to providing
                 exceptional service, expertise, professionalism, honesty, and
@@ -209,12 +259,37 @@ function About() {
                     strokeLinejoin="round"
                     d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                   />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 text-indigo-600"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
                 </svg>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 Our Vision
               </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Our Vision
+              </h3>
               <p className="text-lg text-gray-600">
+                To be recognized as the premier recruitment partner in Sri
+                Lanka, known for our integrity, expertise, and commitment to
+                excellence, while expanding our impact through diversified
+                business ventures.
                 To showcase emerging market talent globally to provide a
                 genuinely local solution to organizational needs.
               </p>
@@ -262,6 +337,80 @@ function About() {
           </div>
         </div>
       </div>
+      <div className="bg-white py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-indigo-700 sm:text-4xl mb-6">
+              WHY CHOOSE GAMAGE RECRUITERS?
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-indigo-50 rounded-xl p-8 shadow text-center flex flex-col items-center">
+              <span className="text-4xl mb-4">🏅</span>
+              <h3 className="font-semibold text-indigo-600 mb-2 text-xl">
+                Industry Experts
+              </h3>
+              <p className="text-gray-600">
+                Deep understanding of the recruitment landscape.
+              </p>
+            </div>
+            <div className="bg-indigo-50 rounded-xl p-8 shadow text-center flex flex-col items-center">
+              <span className="text-4xl mb-4">🌐</span>
+              <h3 className="font-semibold text-indigo-600 mb-2 text-xl">
+                Extensive Network
+              </h3>
+              <p className="text-gray-600">
+                Access to a wide pool of qualified candidates.
+              </p>
+            </div>
+            <div className="bg-indigo-50 rounded-xl p-8 shadow text-center flex flex-col items-center">
+              <span className="text-4xl mb-4">🤝</span>
+              <h3 className="font-semibold text-indigo-600 mb-2 text-xl">
+                Diversity & Inclusion
+              </h3>
+              <p className="text-gray-600">
+                Commitment to equal opportunities for all.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+{/* Our Values Section */}
+<div className="bg-gray-50 py-24">
+  <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl text-center mb-16">
+      <h2 className="text-3xl font-bold tracking-tight text-indigo-700 sm:text-4xl mb-6">
+        Our Values
+      </h2>
+      <p className="text-lg text-gray-600">
+        At Gamage Recruiters, our core values guide every decision we make and every relationship we build.
+      </p>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+        <span className="text-4xl mb-4 block">🤝</span>
+        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Integrity</h3>
+        <p className="text-gray-600">We uphold the highest standards of honesty and accountability in all our actions.</p>
+      </div>
+      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+        <span className="text-4xl mb-4 block">🤝</span>
+        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Collaboration</h3>
+        <p className="text-gray-600">We believe in teamwork and strong partnerships to achieve shared success.</p>
+      </div>
+      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+        <span className="text-4xl mb-4 block">💡</span>
+        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Innovation</h3>
+        <p className="text-gray-600">We embrace change and continuously seek creative solutions to challenges.</p>
+      </div>
+      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+        <span className="text-4xl mb-4 block">🎯</span>
+        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Client-Centric</h3>
+        <p className="text-gray-600">We prioritize our clients' needs and deliver tailored solutions that exceed expectations.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
       {/* Stats Section with Animation */}
       <div className="bg-indigo-900 py-24">
@@ -287,6 +436,16 @@ function About() {
                   <dd className="mt-4 text-5xl font-extrabold tracking-tight text-white">
                     {stat.value}
                   </dd>
+                <div
+                  key={stat.label}
+                  className="bg-indigo-800/50 backdrop-blur-sm rounded-xl p-8 text-center shadow-lg transition-all duration-300 hover:bg-indigo-800"
+                >
+                  <dt className="text-lg font-medium text-indigo-200">
+                    {stat.label}
+                  </dt>
+                  <dd className="mt-4 text-5xl font-extrabold tracking-tight text-white">
+                    {stat.value}
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -301,10 +460,15 @@ function About() {
             <h2 className="text-base font-semibold leading-7 text-indigo-600">
               OUR VENTURES
             </h2>
+            <h2 className="text-base font-semibold leading-7 text-indigo-600">
+              OUR VENTURES
+            </h2>
             <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Our Subsidiaries
             </p>
             <p className="mt-6 text-lg leading-8 text-gray-600">
+              Under VERITAS INTERNATIONAL (PVT) LTD, we've expanded our
+              portfolio to offer diverse services and products.
               Under VERITAS INTERNATIONAL (PVT) LTD, we've expanded our
               portfolio to offer diverse services and products.
             </p>
@@ -312,6 +476,10 @@ function About() {
 
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
             {subsidiaries.map((subsidiary, index) => (
+              <div
+                key={index}
+                className="flex flex-col bg-white p-8 rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl"
+              >
               <div
                 key={index}
                 className="flex flex-col bg-white p-8 rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl"
@@ -325,12 +493,31 @@ function About() {
                 <p className="text-lg text-gray-600 mb-8 flex-grow">
                   {subsidiary.description}
                 </p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  {subsidiary.name}
+                </h3>
+                <p className="text-lg text-gray-600 mb-8 flex-grow">
+                  {subsidiary.description}
+                </p>
                 <div className="mt-auto">
                   <Link
                     to="/subsidiaries"
                     className="text-indigo-600 font-medium flex items-center hover:text-indigo-800 transition-colors"
                   >
                     Learn more
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5 ml-1"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                      />
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -370,6 +557,19 @@ function About() {
                   strokeLinejoin="round"
                   d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
                 />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                />
               </svg>
             </Link>
           </div>
@@ -392,6 +592,8 @@ function About() {
             <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
               Join thousands of professionals who've found their perfect career
               match through Gamage Recruiters.
+              Join thousands of professionals who've found their perfect career
+              match through Gamage Recruiters.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
@@ -405,6 +607,19 @@ function About() {
                 className="text-lg font-semibold leading-6 text-white flex items-center group"
               >
                 Contact Us
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                  />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -435,6 +650,13 @@ function About() {
             fill="url(#gradient)"
             fillOpacity="0.7"
           />
+          <circle
+            cx={512}
+            cy={512}
+            r={512}
+            fill="url(#gradient)"
+            fillOpacity="0.7"
+          />
           <defs>
             <radialGradient id="gradient">
               <stop stopColor="#4f46e5" />
@@ -446,5 +668,7 @@ function About() {
     </div>
   );
 }
+
+export default memo(About);
 
 export default memo(About);
