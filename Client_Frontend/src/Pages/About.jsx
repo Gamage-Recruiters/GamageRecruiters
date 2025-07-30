@@ -38,7 +38,7 @@ const subsidiaries = [
       "A leading educational institution offering international qualifications and professional development programs.",
     icon: (
       <svg
-        xmlns="https://blog.unemployedprofessors.com/wp-content/uploads/2025/03/DALL%C2%B7E-2025-03-12-20.28.34-A-prestigious-university-library-setting-with-two-contrasting-study-areas.-One-side-shows-students-passively-using-AI-generated-text-on-their-laptops.webp"
+        xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
@@ -56,10 +56,10 @@ const subsidiaries = [
   {
     name: "Veritas International Ship Chandling",
     description:
-      "A premier ship chandling company dedicated to providing exceptional services to the marinetime industry. With its headquarters strategically located in Sri Lanka Veritas International has grown to become a trusted partner for ship owners, operators, and managers across the globe.",
+      "A premier ship chandling company dedicated to providing exceptional services to the maritime industry. With its headquarters strategically located in Sri Lanka, Veritas International has grown to become a trusted partner for ship owners, operators, and managers across the globe.",
     icon: (
       <svg
-        xmlns="https://blog.unemployedprofessors.com/wp-content/uploads/2025/03/DALL%C2%B7E-2025-03-12-20.28.34-A-prestigious-university-library-setting-with-two-contrasting-study-areas.-One-side-shows-students-passively-using-AI-generated-text-on-their-laptops.webp"
+        xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
@@ -132,7 +132,6 @@ function About() {
                 educational services and retail ventures, unified under our
                 sister company VERITAS INTERNATIONAL (PVT) LTD.
               </p>
-              {/* New content: Focus, Team, Headquarters */}
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="bg-indigo-50 rounded-lg p-4 shadow flex flex-col items-center">
                   <span className="text-indigo-600 font-bold text-xl mb-2">
@@ -184,7 +183,6 @@ function About() {
               Mission & Vision
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="bg-white p-10 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl">
               <div className="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-6">
@@ -207,13 +205,12 @@ function About() {
                 Our Mission
               </h3>
               <p className="text-lg text-gray-600">
-                To revolutionize the recruitment industry in Sri Lanka by
-                providing innovative solutions that connect the right talent
-                with the right opportunities, while fostering growth and success
-                for both candidates and employers.
+                Our aim is to become the go-to organization for all human
+                resource and business needs. We are committed to providing
+                exceptional service, expertise, professionalism, honesty, and
+                integrity to all our clients and community members.
               </p>
             </div>
-
             <div className="bg-white p-10 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl">
               <div className="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-6">
                 <svg
@@ -240,10 +237,8 @@ function About() {
                 Our Vision
               </h3>
               <p className="text-lg text-gray-600">
-                To be recognized as the premier recruitment partner in Sri
-                Lanka, known for our integrity, expertise, and commitment to
-                excellence, while expanding our impact through diversified
-                business ventures.
+                To showcase emerging market talent globally to provide a
+                genuinely local solution to organizational needs.
               </p>
             </div>
           </div>
@@ -290,41 +285,62 @@ function About() {
         </div>
       </div>
 
-{/* Our Values Section */}
-<div className="bg-gray-50 py-24">
-  <div className="mx-auto max-w-7xl px-6 lg:px-8">
-    <div className="mx-auto max-w-4xl text-center mb-16">
-      <h2 className="text-3xl font-bold tracking-tight text-indigo-700 sm:text-4xl mb-6">
-        Our Values
-      </h2>
-      <p className="text-lg text-gray-600">
-        At Gamage Recruiters, our core values guide every decision we make and every relationship we build.
-      </p>
-    </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
-        <span className="text-4xl mb-4 block">🤝</span>
-        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Integrity</h3>
-        <p className="text-gray-600">We uphold the highest standards of honesty and accountability in all our actions.</p>
+      {/* Our Values Section */}
+      <div className="bg-gray-50 py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-indigo-700 sm:text-4xl mb-6">
+              Our Values
+            </h2>
+            <p className="text-lg text-gray-600">
+              At Gamage Recruiters, our core values guide every decision we make
+              and every relationship we build.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+              <span className="text-4xl mb-4 block">🤝</span>
+              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
+                Integrity
+              </h3>
+              <p className="text-gray-600">
+                We uphold the highest standards of honesty and accountability in
+                all our actions.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+              <span className="text-4xl mb-4 block">🤝</span>
+              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
+                Collaboration
+              </h3>
+              <p className="text-gray-600">
+                We believe in teamwork and strong partnerships to achieve shared
+                success.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+              <span className="text-4xl mb-4 block">💡</span>
+              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
+                Innovation
+              </h3>
+              <p className="text-gray-600">
+                We embrace change and continuously seek creative solutions to
+                challenges.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
+              <span className="text-4xl mb-4 block">🎯</span>
+              <h3 className="text-xl font-semibold text-indigo-700 mb-2">
+                Client-Centric
+              </h3>
+              <p className="text-gray-600">
+                We prioritize our clients' needs and deliver tailored solutions
+                that exceed expectations.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
-        <span className="text-4xl mb-4 block">🤝</span>
-        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Collaboration</h3>
-        <p className="text-gray-600">We believe in teamwork and strong partnerships to achieve shared success.</p>
-      </div>
-      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
-        <span className="text-4xl mb-4 block">💡</span>
-        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Innovation</h3>
-        <p className="text-gray-600">We embrace change and continuously seek creative solutions to challenges.</p>
-      </div>
-      <div className="bg-white p-8 rounded-xl shadow text-center hover:shadow-lg transition">
-        <span className="text-4xl mb-4 block">🎯</span>
-        <h3 className="text-xl font-semibold text-indigo-700 mb-2">Client-Centric</h3>
-        <p className="text-gray-600">We prioritize our clients' needs and deliver tailored solutions that exceed expectations.</p>
-      </div>
-    </div>
-  </div>
-</div>
 
       {/* Stats Section with Animation */}
       <div className="bg-indigo-900 py-24">
@@ -372,7 +388,6 @@ function About() {
               portfolio to offer diverse services and products.
             </p>
           </div>
-
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
             {subsidiaries.map((subsidiary, index) => (
               <div
@@ -413,7 +428,6 @@ function About() {
               </div>
             ))}
           </div>
-
           <div className="mt-16 text-center">
             <Link
               to="/subsidiaries"
