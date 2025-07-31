@@ -87,7 +87,13 @@ const TrustedPartnersSection = () => {
     { id: 48, name: "Travelco Holidays", logo: "https://i.ibb.co/Z18MVsnQ/travalco.webp", category: "Travel" },
     { id: 49, name: "Fairway Holdings", logo: "https://i.ibb.co/HpqxwxtJ/fairway.png", category: "Retail/Hospitality" },
     { id: 50, name: "Evolution Auto", logo: "https://i.ibb.co/G311wVfs/evauto.jpg", category: "Retail" },
-    { id: 51, name: "Global Med", logo: "https://i.ibb.co/pvq5dNWh/glbmed.png", category: "Medical & Pharmaceutial" }
+    { id: 51, name: "Global Med", logo: "https://i.ibb.co/pvq5dNWh/glbmed.png", category: "Medical & Pharmaceutial" },
+    { id: 52, name: "Aminovit Private Ltd", logo: "https://shalanka.lk/public/uploads/all/vaeokyaCyMaOtIXcaJjQxHxRhXam9puBwzw2fIvO.jpg", category: "Business" },
+    { id: 53, name: "AGROMAX", logo: "https://www.htgsupply.com/wp-content/uploads/2022/08/AgroMax-2022-Category-Image.jpg", category: "Retail" },
+    { id: 54, name: "United Freight Solutions (Pvt) Ltd", logo: "https://media.licdn.com/dms/image/v2/D4E0BAQGI-wt8gT2pLw/company-logo_200_200/company-logo_200_200/0/1694615375853/united_freight_solutions_pvt_ltd_logo?e=2147483647&v=beta&t=Tw1hQVOMCiCnAVXURnoeeSFAF3jpQPJwBTx3-CQUW10", category: "Logistic Service Provider" },
+    { id: 55, name: "Gnanam Foods (Pvt) Ltd.", logo: "https://media.licdn.com/dms/image/v2/D560BAQEIt-G3r34p_w/company-logo_200_200/company-logo_200_200/0/1721045642219?e=2147483647&v=beta&t=4jCCpfNkvh2oRjKkeTNlrmQfJnEtyQYAMv_Tyo4BxKU", category: "Manufacturing" },
+    { id: 56, name: "MeedRo", logo: "https://i.ibb.co/rG3Q2PPw/Screenshot-2025-07-30-113339.png", category: "Business" },
+    { id: 57, name: "Radisson Hotel", logo: "https://tse2.mm.bing.net/th/id/OIP.kANB9rSqEFJjooL4zx0IfQHaFP?rs=1&pid=ImgDetMain&o=7&rm=3", category: "Hospitality" }
 
 
   ];
