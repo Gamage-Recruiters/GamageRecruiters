@@ -1,13 +1,14 @@
-import { useState, useEffect, useCallback, memo, useRef } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon, ChevronRightIcon, BuildingOfficeIcon, MapPinIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon, ChevronRightIcon, BuildingOfficeIcon, MapPinIcon, CurrencyDollarIcon, CalendarIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import JobCard from '../components/JobCard';
 import baseURL from '../config/axiosPortConfig';
 import { useLocation } from 'react-router-dom';
 import AlertCard from '../components/AlertCard';
+import { motion } from 'framer-motion';
 
 const salaryRanges = [
   "All Ranges",
@@ -45,9 +46,21 @@ function JobListings() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const initialSearch = params.get('search') || '';
-  const [searchTerm, setSearchTerm] = useState('initialSearch');
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [sortOption, setSortOption] = useState('newest');
   const [newsletterEmail, setNewsletterEmail] = useState('');
+  
+  // For rotating text animation
+  const phrases = ["Opportunities", "Careers", "Growth", "Success", "Dreams"];
+  const [currentPhrase, setCurrentPhrase] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPhrase(prev => (prev + 1) % phrases.length);
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, []);
   
   const locations = ["All Locations", ...new Set(jobs.map(job => job.jobLocation).filter(location => location && location.trim() !== ''))];
   const jobTypes = ["All Types", ...new Set(jobs.map(job => job.jobType).filter(type => type && type.trim() !== ''))];
@@ -154,7 +167,7 @@ function JobListings() {
   // Function to render skeleton loaders
   const renderSkeletons = (count) => {
     return Array(count).fill().map((_, index) => (
-      <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 animate-pulse">
+      <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200 animate-pulse">
         <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
         <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
         <div className="flex gap-2 mb-4">
@@ -170,6 +183,7 @@ function JobListings() {
   // Enhanced JobCard component with animation
   const EnhancedJobCard = ({ job }) => {
     const navigate = useNavigate();
+    const isNonPaid = job.salaryRange?.toLowerCase() === 'non paid';
 
     const viewJob = useCallback((id) => {
       if(id) {
@@ -178,50 +192,66 @@ function JobListings() {
     }, [navigate]);
 
     return (
-      <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 border border-gray-100 relative group">
-        {job.featured && (
-          <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
-            Featured
-          </div>
-        )}
-        
-        <div className="flex flex-col sm:flex-row gap-4 cursor-pointer" onClick={() => viewJob(job.jobId)}>
-          <div className="flex-shrink-0">
-            <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center">
-              <BuildingOfficeIcon className="w-6 h-6 text-gray-400" />
+      <div className="group bg-white shadow-lg rounded-xl p-6 hover:shadow-xl hover:shadow-blue-100/50 hover:scale-[1.02] transition-all duration-300 border border-gray-100 hover:border-blue-200 cursor-pointer">
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-blue-50 group-hover:scale-110 transition-all duration-300">
+              <svg className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-900 transition-colors duration-300">{job.jobName || job.title}</h3>
+              <p className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">{job.company}</p>
             </div>
           </div>
           
-          <div className="flex-grow">
-            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-black transition-colors duration-300">{job.jobName}</h3>
-            <p className="text-sm font-medium text-gray-600">{job.company}</p>
-            
-            <div className="mt-2 flex flex-wrap gap-2">
-              <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
-                <MapPinIcon className="w-3 h-3 mr-1" />
-                {job.jobLocation}
-              </span>
-              <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
-                {job.jobType}
-              </span>
-              <span className="inline-flex items-center text-xs font-medium text-green-700 bg-green-50 px-2.5 py-0.5 rounded-full">
-                <CurrencyDollarIcon className="w-3 h-3 mr-1" />
-                {job.salaryRange}
-              </span>
-            </div>
-            
-            <p className="mt-3 text-sm text-gray-500 line-clamp-2">{job.description}</p>
-            
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-xs text-gray-500 flex items-center">
-                <CalendarIcon className="w-3 h-3 mr-1" />
-                Posted {daysAgo(job.postedDate)} days ago
-              </span>
-              <span className="text-sm font-medium text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center">
-                View Details <ChevronRightIcon className="w-4 h-4 ml-1" />
-              </span>
-            </div>
+          <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium group-hover:scale-105 transition-all duration-300 ${
+            job.jobType === 'Full-time' 
+              ? 'bg-green-100 text-green-800 group-hover:bg-green-200' 
+              : job.jobType === 'Part-time' 
+                ? 'bg-purple-100 text-purple-800 group-hover:bg-purple-200'
+                : job.jobType === 'Internship'
+                  ? 'bg-blue-100 text-blue-800 group-hover:bg-blue-200'
+                  : 'bg-gray-100 text-gray-800 group-hover:bg-gray-200'
+          }`}>
+            {job.jobType}
+          </span>
+        </div>
+        
+        <div className="mb-6">
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">{job.description || job.jobDescription}</p>
+        </div>
+        
+        <div className="space-y-3 mb-6">
+          <div className="flex items-center text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 group-hover:bg-blue-50 group-hover:shadow-sm transition-all duration-300">
+            <svg className="w-4 h-4 mr-2 text-gray-500 group-hover:text-blue-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span className="font-medium group-hover:text-blue-700 transition-colors duration-300">{job.jobLocation || job.location}</span>
           </div>
+          
+          <div className="flex items-center text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 group-hover:bg-green-50 group-hover:shadow-sm transition-all duration-300">
+            <svg className={`w-4 h-4 mr-2 ${isNonPaid ? 'text-gray-400' : 'text-gray-600'} group-hover:${isNonPaid ? 'text-gray-500' : 'text-green-600'} transition-colors duration-300`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+            <span className={`${isNonPaid ? 'text-gray-500' : 'text-gray-700 font-medium'} group-hover:${isNonPaid ? 'text-gray-600' : 'text-green-700'} transition-colors duration-300`}>
+              {job.salaryRange}
+            </span>
+          </div>
+        </div>
+        
+        <div className="flex justify-end">
+          <button 
+            onClick={() => viewJob(job.jobId || job.id)}
+            className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-md hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-200"
+          >
+            View Details
+            <svg className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
       </div>
     );
@@ -234,17 +264,59 @@ function JobListings() {
       {/* Hero section */}
       <div className="bg-gradient-to-r from-blue-900 to-black py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Find Your Dream Career
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center"
+          >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.4, type: "spring" }}
+              className="inline-block mb-6"
+            >
+              <span className="inline-flex items-center px-4 py-1 rounded-full bg-blue-600 bg-opacity-20 text-blue-300 text-sm font-medium">
+                Job Opportunities
+              </span>
+            </motion.div>
+            
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl mb-2">
+              Find Your Dream <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Career</span>
             </h1>
-            <p className="mt-4 text-xl text-gray-300 max-w-3xl mx-auto">
+            
+            <div className="h-16 overflow-hidden relative mb-8">
+              <motion.div
+                initial={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, y: currentPhrase * -64 }}
+                transition={{ duration: 0.5 }}
+                className="absolute w-full"
+              >
+                {phrases.map((phrase, index) => (
+                  <h2 key={phrase} className="text-2xl md:text-3xl font-bold h-16 flex items-center justify-center text-blue-300">
+                    Discover {phrase}
+                  </h2>
+                ))}
+              </motion.div>
+            </div>
+            
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="mt-6 text-xl text-gray-300 max-w-3xl mx-auto"
+            >
               Discover exceptional opportunities with leading companies in Sri Lanka. Your next career move is just a click away.
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
           
           {/* Search box */}
-          <div className="mt-8 max-w-2xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+            className="mt-8 max-w-2xl mx-auto"
+          >
             <div className="relative rounded-lg shadow-lg">
               <input
                 type="text"
@@ -257,12 +329,12 @@ function JobListings() {
                 <MagnifyingGlassIcon className="h-6 w-6 text-gray-400" />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       {/* Main content container */}
-      <main className="space-y-16 py-12">
+      <main className="space-y-16 py-12 pb-0">
         {/* Alert Card Section */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <AlertCard />
@@ -270,7 +342,7 @@ function JobListings() {
 
         {/* About Section */}
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-xl shadow-sm p-10 text-center">
+          <div className="bg-white rounded-xl shadow-md p-10 text-center border border-gray-200">
             <h2 className="text-3xl font-extrabold text-blue-900 mb-8">Empowering Careers, Connecting Talent</h2>
             <div className="prose prose-lg text-gray-700 mx-auto space-y-4">
               <p>
@@ -289,7 +361,7 @@ function JobListings() {
         {/* Featured jobs section */}
         {featuredJobs.length > 0 && !isLoading && (
           <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="bg-white py-8 px-6 rounded-xl shadow-sm">
+            <div className="bg-white py-8 px-6 rounded-xl shadow-md border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-8">Featured Opportunities</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {featuredJobs.map(job => (
@@ -306,7 +378,7 @@ function JobListings() {
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="space-y-8">
             {jobs.length === 0 && !isLoading ? (
-              <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
+              <div className="text-center py-20 bg-white rounded-xl shadow-md border border-gray-200">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -316,22 +388,22 @@ function JobListings() {
             ) : (
               <>
                 {/* Filters section */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+                <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
                     <h2 className="text-xl font-semibold text-gray-900">Filter Results</h2>
                     
                     <div className="flex items-center gap-4">
                       <button
-                        className="flex items-center gap-2 text-sm font-medium text-gray-700 md:hidden"
+                        className="flex items-center gap-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors md:hidden"
                         onClick={() => setShowFilters(!showFilters)}
                       >
                         <FunnelIcon className="h-5 w-5" />
                         {showFilters ? 'Hide Filters' : 'Show Filters'}
                       </button>
                       
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
                         <button
-                          className={`p-2 rounded-lg ${displayMode === 'grid' ? 'bg-gray-100 text-blue-600' : 'bg-white text-gray-600'}`}
+                          className={`p-2 rounded-lg ${displayMode === 'grid' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
                           onClick={() => setDisplayMode('grid')}
                           title="Grid View"
                         >
@@ -340,7 +412,7 @@ function JobListings() {
                           </svg>
                         </button>
                         <button
-                          className={`p-2 rounded-lg ${displayMode === 'list' ? 'bg-gray-100 text-blue-600' : 'bg-white text-gray-600'}`}
+                          className={`p-2 rounded-lg ${displayMode === 'list' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
                           onClick={() => setDisplayMode('list')}
                           title="List View"
                         >
@@ -353,39 +425,54 @@ function JobListings() {
                   </div>
 
                   <div className={`grid grid-cols-1 md:grid-cols-4 gap-4 ${showFilters ? 'block' : 'hidden md:grid'}`}>
-                    <select
-                      value={selectedLocation}
-                      onChange={(e) => setSelectedLocation(e.target.value)}
-                      className="rounded-lg border-0 py-2.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 text-sm"
-                    >
-                      {locations.map(location => (
-                        <option key={location} value={location}>{location}</option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={selectedLocation}
+                        onChange={(e) => setSelectedLocation(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 text-sm bg-white appearance-none cursor-pointer"
+                      >
+                        {locations.map(location => (
+                          <option key={location} value={location}>{location}</option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+                      </div>
+                    </div>
 
-                    <select
-                      value={selectedJobType}
-                      onChange={(e) => setSelectedJobType(e.target.value)}
-                      className="rounded-lg border-0 py-2.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 text-sm"
-                    >
-                      {jobTypes.map(type => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={selectedJobType}
+                        onChange={(e) => setSelectedJobType(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 text-sm bg-white appearance-none cursor-pointer"
+                      >
+                        {jobTypes.map(type => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+                      </div>
+                    </div>
 
-                    <select
-                      value={selectedSalaryRange}
-                      onChange={(e) => setSelectedSalaryRange(e.target.value)}
-                      className="rounded-lg border-0 py-2.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 text-sm"
-                    >
-                      {salaryRanges.map(range => (
-                        <option key={range} value={range}>{range}</option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={selectedSalaryRange}
+                        onChange={(e) => setSelectedSalaryRange(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 py-2.5 pl-3 pr-10 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 text-sm bg-white appearance-none cursor-pointer"
+                      >
+                        {salaryRanges.map(range => (
+                          <option key={range} value={range}>{range}</option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+                      </div>
+                    </div>
                     
                     <button
                       onClick={clearFilters}
-                      className="flex items-center justify-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg px-4 py-2.5 transition-colors"
+                      className="flex items-center justify-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg px-4 py-2.5 transition-colors shadow-sm"
                     >
                       <XMarkIcon className="h-4 w-4" />
                       Clear Filters
@@ -394,14 +481,14 @@ function JobListings() {
                 </div>
 
                 {/* Results count and sorting */}
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                   <p className="text-sm text-gray-600">
                     {isLoading ? 'Loading jobs...' : `Showing ${sortedJobs.length} ${sortedJobs.length === 1 ? 'job' : 'jobs'}`}
                   </p>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">Sort by:</span>
                     <select
-                      className="text-sm border-0 py-2 pl-3 pr-8 text-gray-900 focus:ring-2 focus:ring-blue-600 rounded-lg bg-gray-100 cursor-pointer"
+                      className="text-sm border-0 py-2 pl-3 pr-8 text-gray-900 focus:ring-2 focus:ring-blue-600 rounded-lg bg-gray-100 cursor-pointer shadow-sm"
                       value={sortOption}
                       onChange={e => setSortOption(e.target.value)}
                     >
@@ -427,7 +514,7 @@ function JobListings() {
                     </div>
 
                     {sortedJobs.length === 0 && (
-                      <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
+                      <div className="text-center py-16 bg-white rounded-xl shadow-md border border-gray-200">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
