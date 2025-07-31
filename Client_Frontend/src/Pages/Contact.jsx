@@ -144,10 +144,14 @@ function Contact() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                       </div>
-                      <div className="ml-3">
+                      <div className="ml-4 w-full">
                         <p className="text-base font-medium text-white">Email</p>
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-blue-100">
                         <p className="mt-1 text-sm text-blue-100">gamagerecruiters@gmail.com</p>
-                        <p className="mt-1 text-sm text-blue-100">hr.gamagecareer@gmail.com</p>
+                      <p className="mt-1 text-sm text-blue-100">info@gamagerecruiters.lk</p>
+                      <p className="mt-1 text-sm text-blue-100">hr.gamagecareer@gmail.com</p>
+                      <p className="mt-1 text-sm text-blue-100">hr@gamagerecruiters.lk</p>
+                      </div>
                       </div>
                     </div>
                     <div className="flex items-start">
