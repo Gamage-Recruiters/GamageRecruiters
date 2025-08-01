@@ -81,16 +81,19 @@ function JobListings() {
   const loadJobs = useCallback(async () => {
     try {
       const loadJobsResponse = await axios.get(`${baseURL}/api/jobs`);
-      if(loadJobsResponse.status == 200) {
+      if (loadJobsResponse.status == 200) {
+        // console.log(loadJobsResponse.data.jobs);
         setJobs(loadJobsResponse.data.jobs);
       } else {
         toast.error('Error Loading Jobs');
         console.log(loadJobsResponse.statusText);
+        return;
       }
     } catch (error) {
       console.log(error);
+      return;
     }
-  }, [jobs]);
+  }, []);
   
   // Filter jobs based on search and filter criteria
   const filteredJobs = jobs.filter(job => {
@@ -389,6 +392,58 @@ function JobListings() {
         </div>
       </div>
 
+      {/* Job Carousel Section */}
+      {latestJobs.length > 0 && (
+        <div className="w-full mt-8 relative flex items-center justify-center">
+          {/* Left Arrow */}
+          <button
+            onClick={handlePrev}
+            className="absolute left-0 z-10 -translate-x-1/2 top-1/2 -translate-y-1/2 p-3 bg-white border border-gray-200 shadow-md rounded-full hover:bg-gray-100 transition"
+            aria-label="Previous"
+            style={{ boxShadow: '0 2px 8px 0 rgba(0,0,0,0.06)' }}
+          >
+            <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          {/* Carousel Content */}
+          <div className="bg-white py-8 mb-8 rounded-lg shadow-sm border border-gray-100 max-w-7xl w-full mx-auto px-6 lg:px-8 overflow-hidden">
+            <div
+              className="flex transition-transform duration-500"
+              style={{
+                width: '100%',
+                transform: `translateX(-${carouselIndex * (100 / 3)}%)`
+              }}
+              onMouseEnter={pauseAutoScroll}
+              onMouseLeave={resumeAutoScroll}
+            >
+              {latestJobs.map((job, idx) => (
+                <div
+                  key={job.jobId || idx}
+                  className="px-3"
+                  style={{ minWidth: '33.3333%', maxWidth: '33.3333%', flex: '0 0 33.3333%' }}
+                >
+                  <div className="bg-gradient-to-tr from-blue-100 to-white rounded-2xl h-full p-0.5">
+                    <EnhancedJobCard job={job} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Right Arrow */}
+          <button
+            onClick={handleNext}
+            className="absolute right-0 z-10 translate-x-1/2 top-1/2 -translate-y-1/2 p-3 bg-white border border-gray-200 shadow-md rounded-full hover:bg-gray-100 transition"
+            aria-label="Next"
+            style={{ boxShadow: '0 2px 8px 0 rgba(0,0,0,0.06)' }}
+          >
+            <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       {/* Main content container */}
       <main className="space-y-16 py-12 pb-0">
         {/* Alert Card Section */}
@@ -414,57 +469,7 @@ function JobListings() {
           </div>
         </section>
 
-        {/* Job Carousel Section */}
-        {latestJobs.length > 0 && (
-          <div className="w-full mt-8 relative flex items-center justify-center">
-            {/* Left Arrow */}
-            <button
-              onClick={handlePrev}
-              className="absolute left-0 z-10 -translate-x-1/2 top-1/2 -translate-y-1/2 p-3 bg-white border border-gray-200 shadow-md rounded-full hover:bg-gray-100 transition"
-              aria-label="Previous"
-              style={{ boxShadow: '0 2px 8px 0 rgba(0,0,0,0.06)' }}
-            >
-              <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            {/* Carousel Content */}
-            <div className="bg-white py-8 mb-8 rounded-lg shadow-sm border border-gray-100 max-w-7xl w-full mx-auto px-6 lg:px-8 overflow-hidden">
-              <div
-                className="flex transition-transform duration-500"
-                style={{
-                  width: '100%',
-                  transform: `translateX(-${carouselIndex * (100 / 3)}%)`
-                }}
-                onMouseEnter={pauseAutoScroll}
-                onMouseLeave={resumeAutoScroll}
-              >
-                {latestJobs.map((job, idx) => (
-                  <div
-                    key={job.jobId || idx}
-                    className="px-3"
-                    style={{ minWidth: '33.3333%', maxWidth: '33.3333%', flex: '0 0 33.3333%' }}
-                  >
-                    <div className="bg-gradient-to-tr from-blue-100 to-white rounded-2xl h-full p-0.5">
-                      <EnhancedJobCard job={job} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            {/* Right Arrow */}
-            <button
-              onClick={handleNext}
-              className="absolute right-0 z-10 translate-x-1/2 top-1/2 -translate-y-1/2 p-3 bg-white border border-gray-200 shadow-md rounded-full hover:bg-gray-100 transition"
-              aria-label="Next"
-              style={{ boxShadow: '0 2px 8px 0 rgba(0,0,0,0.06)' }}
-            >
-              <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        )}
+
 
         {/* Featured jobs section */}
         {featuredJobs.length > 0 && !isLoading && (
