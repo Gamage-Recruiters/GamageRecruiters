@@ -365,9 +365,11 @@ function JobListings() {
               <p>
                 We don't just help you find a job — we help you shape your career. Whether you're a fresh graduate looking for your first step, a professional seeking career advancement, or someone transitioning into a new field, our experienced recruitment team is here to guide you every step of the way. From resume building and interview preparation to onboarding and post-placement support, we provide comprehensive services designed to ensure your long-term success.
               </p>
+
               <p>
                 With a strong presence in emerging markets and an extensive network of employers, we are proud to support equal opportunity, diversity, and inclusive hiring practices. Our proven track record, rapid placement process, and tailored solutions make us the go-to recruitment partner for thousands of job seekers and hundreds of companies. Join the Gamage Recruiters community today and discover opportunities that align with your goals, passions, and potential. Let us help you take the next step in your professional journey — with confidence and purpose.
-              </p>  
+              </p>
+              
             </div>
           </div>
         </section>
