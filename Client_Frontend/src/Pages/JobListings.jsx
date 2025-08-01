@@ -32,7 +32,7 @@ const daysAgo = (dateString) => {
 };
 
 function JobListings() {
- 
+
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [selectedJobType, setSelectedJobType] = useState('All Types');
   const [selectedSalaryRange, setSelectedSalaryRange] = useState('All Ranges');
@@ -50,11 +50,11 @@ function JobListings() {
 
 
   const [newsletterEmail, setNewsletterEmail] = useState('');
-  
+
   const locations = ["All Locations", ...new Set(jobs.map(job => job.jobLocation).filter(location => location && location.trim() !== ''))];
 
   const jobTypes = ["All Types", ...new Set(jobs.map(job => job.jobType).filter(type => type && type.trim() !== ''))];
-  
+
   useEffect(() => {
     setSearchTerm(initialSearch);
   }, [initialSearch]);
@@ -70,39 +70,39 @@ function JobListings() {
     return () => clearTimeout(timer);
   }, []);
 
-  const loadJobs =  useCallback(async () => {
-      try {
-        const loadJobsResponse = await axios.get(`${baseURL}/api/jobs`);
-        if(loadJobsResponse.status == 200) {
-          // console.log(loadJobsResponse.data.jobs);
-          setJobs(loadJobsResponse.data.jobs);
-        } else {
-          toast.error('Error Loading Jobs');
-          console.log(loadJobsResponse.statusText);
-          return;
-        }
-      } catch (error) {
-        console.log(error);
+  const loadJobs = useCallback(async () => {
+    try {
+      const loadJobsResponse = await axios.get(`${baseURL}/api/jobs`);
+      if (loadJobsResponse.status == 200) {
+        // console.log(loadJobsResponse.data.jobs);
+        setJobs(loadJobsResponse.data.jobs);
+      } else {
+        toast.error('Error Loading Jobs');
+        console.log(loadJobsResponse.statusText);
         return;
       }
-    }, [jobs]);
-  
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }, [jobs]);
+
   // Filter jobs based on search and filter criteria
   const filteredJobs = jobs.filter(job => {
-    const matchesSearch = 
+    const matchesSearch =
       job.jobName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase())||
-       (Array.isArray(job.qualifications) && job.qualifications.some(q => q.toLowerCase().includes(searchTerm.toLowerCase())))
-    
+      job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (Array.isArray(job.qualifications) && job.qualifications.some(q => q.toLowerCase().includes(searchTerm.toLowerCase())))
+
     const matchesLocation = selectedLocation === 'All Locations' || job.location === selectedLocation || job.jobLocation === selectedLocation;
     const matchesJobType = selectedJobType === 'All Types' || job.jobType === selectedJobType;
-    
+
     // Implement proper salary range filtering
     let matchesSalary = selectedSalaryRange === 'All Ranges';
     if (!matchesSalary) {
       const salaryValue = parseFloat(job.salaryRange.toString().replace(/[^\d.]/g, ''));
-      
+
       if (!isNaN(salaryValue)) {
         if (selectedSalaryRange === 'Below LKR 20,000') {
           matchesSalary = salaryValue < 20000;
@@ -121,43 +121,43 @@ function JobListings() {
 
 
   // Helper to parse salary range for sorting
-const parseSalary = (salaryRange) => {
-  if (!salaryRange) return { min: 0, max: 0 };
-  // Remove LKR, $, commas, and spaces
-  const clean = salaryRange.replace(/LKR|USD|\$|,|\s/gi, '');
-  if (clean.includes('-')) {
-    const [min, max] = clean.split('-').map(Number);
-    return { min, max };
-  } else if (clean.endsWith('+')) {
-    const min = Number(clean.replace('+', ''));
-    return { min, max: min };
-  } else {
-    const num = Number(clean);
-    return { min: num, max: num };
-  }
-};
+  const parseSalary = (salaryRange) => {
+    if (!salaryRange) return { min: 0, max: 0 };
+    // Remove LKR, $, commas, and spaces
+    const clean = salaryRange.replace(/LKR|USD|\$|,|\s/gi, '');
+    if (clean.includes('-')) {
+      const [min, max] = clean.split('-').map(Number);
+      return { min, max };
+    } else if (clean.endsWith('+')) {
+      const min = Number(clean.replace('+', ''));
+      return { min, max: min };
+    } else {
+      const num = Number(clean);
+      return { min: num, max: num };
+    }
+  };
 
   // Sort jobs before rendering
-const sortedJobs = [...filteredJobs].sort((a, b) => {
-  const aSalary = parseSalary(a.salaryRange);
-  const bSalary = parseSalary(b.salaryRange);
+  const sortedJobs = [...filteredJobs].sort((a, b) => {
+    const aSalary = parseSalary(a.salaryRange);
+    const bSalary = parseSalary(b.salaryRange);
 
-  if (sortOption === 'newest') {
-    return new Date(b.postedDate) - new Date(a.postedDate);
-  } else if (sortOption === 'oldest') {
-    return new Date(a.postedDate) - new Date(b.postedDate);
-  } else if (sortOption === 'salary-high') {
-    return bSalary.max - aSalary.max;
-  } else if (sortOption === 'salary-low') {
-    return aSalary.min - bSalary.min;
-  }
-  return 0;
-});
+    if (sortOption === 'newest') {
+      return new Date(b.postedDate) - new Date(a.postedDate);
+    } else if (sortOption === 'oldest') {
+      return new Date(a.postedDate) - new Date(b.postedDate);
+    } else if (sortOption === 'salary-high') {
+      return bSalary.max - aSalary.max;
+    } else if (sortOption === 'salary-low') {
+      return aSalary.min - bSalary.min;
+    }
+    return 0;
+  });
 
-// Always show the latest 10 jobs in the carousel, regardless of filters
-const latestJobs = [...jobs]
-  .sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate))
-  .slice(0, 10);
+  // Always show the latest 10 jobs in the carousel, regardless of filters
+  const latestJobs = [...jobs]
+    .sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate))
+    .slice(0, 10);
 
   // Clear all filters
   const clearFilters = () => {
@@ -190,7 +190,7 @@ const latestJobs = [...jobs]
 
     const viewJob = useCallback((id) => {
 
-      if(id) {
+      if (id) {
         navigate(`/jobs/${id}`, { replace: true });
       }
     }, [navigate]);
@@ -202,18 +202,18 @@ const latestJobs = [...jobs]
             Featured
           </div>
         )}
-        
+
         <div className="flex flex-col sm:flex-row gap-4 cursor-pointer" onClick={() => viewJob(job.jobId)}>
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center">
               <BuildingOfficeIcon className="w-6 h-6 text-gray-400" />
             </div>
           </div>
-          
+
           <div className="flex-grow">
             <h3 className="text-lg font-semibold text-gray-900 group-hover:text-black transition-colors duration-300">{job.jobName}</h3>
             <p className="text-sm font-medium text-gray-600">{job.company}</p>
-            
+
             <div className="mt-2 flex flex-wrap gap-2">
               <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
                 <MapPinIcon className="w-3 h-3 mr-1" />
@@ -227,9 +227,9 @@ const latestJobs = [...jobs]
                 {job.salaryRange}
               </span>
             </div>
-            
+
             <p className="mt-3 text-sm text-gray-500 line-clamp-2">{job.description}</p>
-            
+
             <div className="mt-4 flex items-center justify-between">
               <span className="text-xs text-gray-500 flex items-center">
                 <CalendarIcon className="w-3 h-3 mr-1" />
@@ -284,7 +284,7 @@ const latestJobs = [...jobs]
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ToastContainer/>
+      <ToastContainer />
       {/* Hero section with gradient background */}
       <div className="bg-gradient-to-r from-blue-900 to-black py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -294,7 +294,7 @@ const latestJobs = [...jobs]
           <p className="mt-3 text-lg text-gray-300 max-w-xl">
             Discover exceptional opportunities with leading companies in Sri Lanka. Your next career move is just a click away.
           </p>
-          
+
           {/* Main search box */}
           <div className="mt-8 max-w-2xl">
             <div className="relative rounded-lg shadow-lg">
@@ -365,22 +365,6 @@ const latestJobs = [...jobs]
         </div>
       )}
 
-      {/* Browse by Industry Section */}
-      <div className="w-full">
-      <div className="bg-white rounded-lg shadow-sm p-8 max-w-7xl w-full mx-auto px-6 lg:px-8 text-center">
-            <h2 className="text-4xl font-extrabold text-blue-900 mb-6">Empowering Careers, Connecting Talent</h2>
-        <p className="text-gray-700 text-lg mb-2 text-center">
-    Since 2019, Gamage Recruiters has been a driving force in Sri Lanka’s recruitment industry, bridging the gap between skilled professionals and leading organizations across diverse sectors. With a deep understanding of the evolving job market and a commitment to excellence, we have earned a trusted reputation for matching the right talent with the right opportunities.</p>
-        <p className="text-gray-700 text-lg mb-2 text-center">
-    We don’t just help you find a job — we help you shape your career. Whether you're a fresh graduate looking for your first step, a professional seeking career advancement, or someone transitioning into a new field, our experienced recruitment team is here to guide you every step of the way. From resume building and interview preparation to onboarding and post-placement support, we provide comprehensive services designed to ensure your long-term success.
-    </p>
-        <p className="text-gray-700 text-lg text-center">
-    With a strong presence in emerging markets and an extensive network of employers, we are proud to support equal opportunity, diversity, and inclusive hiring practices. Our proven track record, rapid placement process, and tailored solutions make us the go-to recruitment partner for thousands of job seekers and hundreds of companies. Join the Gamage Recruiters community today and discover opportunities that align with your goals, passions, and potential. Let us help you take the next step in your professional journey — with confidence and purpose.
-    </p>
-</div>
-
-      </div>
-
       {/* Featured jobs section */}
       {featuredJobs.length > 0 && !isLoading && (
         <div className="bg-white py-8 border-b border-gray-200">
@@ -400,169 +384,169 @@ const latestJobs = [...jobs]
       {/* Main content */}
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-8">
 
-       {jobs.length === 0 && !isLoading ? (
-    <div className="text-center py-20 bg-white rounded-lg shadow-sm border border-gray-100">
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <h3 className="text-lg font-medium text-gray-900 mb-1">No jobs available</h3>
-      <p className="text-gray-500 mb-4">There are currently no job listings. Please check back later.</p>
-    </div>
-  ) : (
-    <>
-
-        {/* Filters section */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Filter Results</h2>
-            
-            <button
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 md:hidden"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <FunnelIcon className="h-5 w-5" />
-              {showFilters ? 'Hide Filters' : 'Show Filters'}
-            </button>
-            
-            <div className="flex gap-2">
-              <button
-                className={`p-2 rounded ${displayMode === 'grid' ? 'bg-gray-200' : 'bg-white'}`}
-                onClick={() => setDisplayMode('grid')}
-                title="Grid View"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-              </button>
-              <button
-                className={`p-2 rounded ${displayMode === 'list' ? 'bg-gray-200' : 'bg-white'}`}
-                onClick={() => setDisplayMode('list')}
-                title="List View"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div className={`flex flex-col md:flex-row gap-4 ${showFilters ? 'block' : 'hidden md:flex'}`}>
-            <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              className="rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
-            >
-              {locations.map(location => (
-                <option key={location} value={location}>{location}</option>
-              ))}
-            </select>
-
-            <select
-              value={selectedJobType}
-              onChange={(e) => setSelectedJobType(e.target.value)}
-              className="rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
-            >
-              {jobTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-
-            <select
-              value={selectedSalaryRange}
-              onChange={(e) => setSelectedSalaryRange(e.target.value)}
-              className="rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
-            >
-              {salaryRanges.map(range => (
-                <option key={range} value={range}>{range}</option>
-              ))}
-            </select>
-            
-            <button
-              onClick={clearFilters}
-              className="flex items-center justify-center gap-1 text-sm text-gray-600 hover:text-gray-900"
-            >
-              <XMarkIcon className="h-4 w-4" />
-              Clear Filters
-            </button>
-          </div>
-        </div>
-
-        {/* Results count and sorting */}
-        <div className="flex justify-between items-center mb-6">
-          <p className="text-sm text-gray-600">
-            {isLoading ? 'Loading jobs...' : `Showing ${sortedJobs.length} jobs`}
-          </p>
-          <select
-            className="text-sm border-0 py-1 pl-2 pr-8 text-gray-900 focus:ring-0 cursor-pointer"
-            value={sortOption}
-            onChange={e => setSortOption(e.target.value)}
-          >
-            <option value="newest" className='cursor-pointer'>Newest First</option>
-            <option value="oldest" className='cursor-pointer'>Oldest First</option>
-            <option value="salary-high" className='cursor-pointer'>Highest Salary</option>
-            <option value="salary-low" className='cursor-pointer'>Lowest Salary</option>
-          </select>
-        </div>
-
-
-        {/* Job listings */}
-        {isLoading ? (
-          <div className={`grid ${displayMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
-            {renderSkeletons(6)}
+        {jobs.length === 0 && !isLoading ? (
+          <div className="text-center py-20 bg-white rounded-lg shadow-sm border border-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">No jobs available</h3>
+            <p className="text-gray-500 mb-4">There are currently no job listings. Please check back later.</p>
           </div>
         ) : (
           <>
-            <div className={`grid ${displayMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
-              {sortedJobs.map((job) => (
-                <EnhancedJobCard job={job} key={job.jobId}/>
-                // <Link key={job.jobId} to={`/jobs/:${job.jobId}`} className="block">
-                //   <EnhancedJobCard job={job} />
-                // </Link>
-              ))}
+
+            {/* Filters section */}
+            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Filter Results</h2>
+
+                <button
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 md:hidden"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <FunnelIcon className="h-5 w-5" />
+                  {showFilters ? 'Hide Filters' : 'Show Filters'}
+                </button>
+
+                <div className="flex gap-2">
+                  <button
+                    className={`p-2 rounded ${displayMode === 'grid' ? 'bg-gray-200' : 'bg-white'}`}
+                    onClick={() => setDisplayMode('grid')}
+                    title="Grid View"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                  </button>
+                  <button
+                    className={`p-2 rounded ${displayMode === 'list' ? 'bg-gray-200' : 'bg-white'}`}
+                    onClick={() => setDisplayMode('list')}
+                    title="List View"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className={`flex flex-col md:flex-row gap-4 ${showFilters ? 'block' : 'hidden md:flex'}`}>
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className="rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
+                >
+                  {locations.map(location => (
+                    <option key={location} value={location}>{location}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedJobType}
+                  onChange={(e) => setSelectedJobType(e.target.value)}
+                  className="rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
+                >
+                  {jobTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedSalaryRange}
+                  onChange={(e) => setSelectedSalaryRange(e.target.value)}
+                  className="rounded-md border-0 py-2 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
+                >
+                  {salaryRanges.map(range => (
+                    <option key={range} value={range}>{range}</option>
+                  ))}
+                </select>
+
+                <button
+                  onClick={clearFilters}
+                  className="flex items-center justify-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+                >
+                  <XMarkIcon className="h-4 w-4" />
+                  Clear Filters
+                </button>
+              </div>
             </div>
 
-            {sortedJobs.length === 0 && (
-              <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No matching jobs found</h3>
-                <p className="text-gray-500 mb-4">Try adjusting your search or filter criteria</p>
-                <button 
-                  onClick={clearFilters}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Clear All Filters
-                </button>
+            {/* Results count and sorting */}
+            <div className="flex justify-between items-center mb-6">
+              <p className="text-sm text-gray-600">
+                {isLoading ? 'Loading jobs...' : `Showing ${sortedJobs.length} jobs`}
+              </p>
+              <select
+                className="text-sm border-0 py-1 pl-2 pr-8 text-gray-900 focus:ring-0 cursor-pointer"
+                value={sortOption}
+                onChange={e => setSortOption(e.target.value)}
+              >
+                <option value="newest" className='cursor-pointer'>Newest First</option>
+                <option value="oldest" className='cursor-pointer'>Oldest First</option>
+                <option value="salary-high" className='cursor-pointer'>Highest Salary</option>
+                <option value="salary-low" className='cursor-pointer'>Lowest Salary</option>
+              </select>
+            </div>
+
+
+            {/* Job listings */}
+            {isLoading ? (
+              <div className={`grid ${displayMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
+                {renderSkeletons(6)}
+              </div>
+            ) : (
+              <>
+                <div className={`grid ${displayMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
+                  {sortedJobs.map((job) => (
+                    <EnhancedJobCard job={job} key={job.jobId} />
+                    // <Link key={job.jobId} to={`/jobs/:${job.jobId}`} className="block">
+                    //   <EnhancedJobCard job={job} />
+                    // </Link>
+                  ))}
+                </div>
+
+                {sortedJobs.length === 0 && (
+                  <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h3 className="text-lg font-medium text-gray-900 mb-1">No matching jobs found</h3>
+                    <p className="text-gray-500 mb-4">Try adjusting your search or filter criteria</p>
+                    <button
+                      onClick={clearFilters}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Clear All Filters
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Pagination */}
+            {filteredJobs.length > 0 && !isLoading && (
+              <div className="mt-8 flex items-center justify-center">
+                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                  <a href="#" className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                    <span className="sr-only">Previous</span>
+                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+                    </svg>
+                  </a>
+                  <a href="#" aria-current="page" className="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">1</a>
+                  <a href="#" className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">2</a>
+                  <a href="#" className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex">3</a>
+                  <a href="#" className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                    <span className="sr-only">Next</span>
+                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                    </svg>
+                  </a>
+                </nav>
               </div>
             )}
           </>
         )}
-
-        {/* Pagination */}
-        {filteredJobs.length > 0 && !isLoading && (
-          <div className="mt-8 flex items-center justify-center">
-            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-              <a href="#" className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                <span className="sr-only">Previous</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
-                </svg>
-              </a>
-              <a href="#" aria-current="page" className="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">1</a>
-              <a href="#" className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">2</a>
-              <a href="#" className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex">3</a>
-              <a href="#" className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                <span className="sr-only">Next</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                </svg>
-              </a>
-            </nav>
-          </div>
-        )}
-        </>
-     )}
       </div>
 
       {/* Newsletter subscription */}
@@ -580,20 +564,20 @@ const latestJobs = [...jobs]
                 onChange={e => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="flex-grow rounded-lg border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-600"
-                
+
               />
-              <button 
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300"
-              onClick={() => {
-            if (!newsletterEmail) {
-              toast.error('Please enter your email');
-            } else {
-              toast.success('SuccessFully Subscribed!');
-              setNewsletterEmail('');
-            }
-          }}
-          >
-          
+              <button
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-300"
+                onClick={() => {
+                  if (!newsletterEmail) {
+                    toast.error('Please enter your email');
+                  } else {
+                    toast.success('SuccessFully Subscribed!');
+                    setNewsletterEmail('');
+                  }
+                }}
+              >
+
                 Subscribe
               </button>
             </div>
