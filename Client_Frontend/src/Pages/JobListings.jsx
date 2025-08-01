@@ -185,6 +185,20 @@ function JobListings() {
     const navigate = useNavigate();
     const isNonPaid = job.salaryRange?.toLowerCase() === 'non paid';
 
+    // Generate a subtle background color based on job type
+    const getBackgroundColor = () => {
+      switch (job.jobType) {
+        case 'Full-time':
+          return 'bg-gradient-to-br from-white via-green-50 to-green-100/50';
+        case 'Part-time':
+          return 'bg-gradient-to-br from-white via-purple-50 to-purple-100/50';
+        case 'Internship':
+          return 'bg-gradient-to-br from-white via-blue-50 to-blue-100/50';
+        default:
+          return 'bg-gradient-to-br from-white via-gray-50 to-gray-100/50';
+      }
+    };
+
     const viewJob = useCallback((id) => {
       if(id) {
         navigate(`/jobs/${id}`, { replace: true });
@@ -192,7 +206,7 @@ function JobListings() {
     }, [navigate]);
 
     return (
-      <div className="group bg-white shadow-lg rounded-xl p-6 hover:shadow-xl hover:shadow-blue-100/50 hover:scale-[1.02] transition-all duration-300 border border-gray-100 hover:border-blue-200 cursor-pointer">
+      <div className={`group ${getBackgroundColor()} shadow-lg rounded-xl p-6 hover:shadow-xl hover:shadow-blue-100/50 hover:scale-[1.02] transition-all duration-300 border border-gray-100 hover:border-blue-200 cursor-pointer`}>
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3 flex-1">
             <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-blue-50 group-hover:scale-110 transition-all duration-300">
@@ -351,9 +365,11 @@ function JobListings() {
               <p>
                 We don't just help you find a job — we help you shape your career. Whether you're a fresh graduate looking for your first step, a professional seeking career advancement, or someone transitioning into a new field, our experienced recruitment team is here to guide you every step of the way. From resume building and interview preparation to onboarding and post-placement support, we provide comprehensive services designed to ensure your long-term success.
               </p>
+
               <p>
                 With a strong presence in emerging markets and an extensive network of employers, we are proud to support equal opportunity, diversity, and inclusive hiring practices. Our proven track record, rapid placement process, and tailored solutions make us the go-to recruitment partner for thousands of job seekers and hundreds of companies. Join the Gamage Recruiters community today and discover opportunities that align with your goals, passions, and potential. Let us help you take the next step in your professional journey — with confidence and purpose.
               </p>
+              
             </div>
           </div>
         </section>

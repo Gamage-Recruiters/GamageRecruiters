@@ -13,6 +13,8 @@ const alerts = [
     color: "bg-blue-50 border-l-4 border-blue-500",
     textColor: "text-blue-900"
   },
+
+
   {
     title: "Get Instant Healthcare Recruitment ",
     subtitle: "Customized Recruitment Solutions",
@@ -20,6 +22,9 @@ const alerts = [
     color: "bg-green-50 border-l-4 border-green-500",
     textColor: "text-green-900"
   },
+
+
+
   {
     title: "Get Instant Engineering Recruitment ",
     subtitle: "Speed and Efficiency",
@@ -27,6 +32,8 @@ const alerts = [
     color: "bg-amber-50 border-l-4 border-amber-500",
     textColor: "text-amber-900"
   },
+
+
   {
     title: "Get Instant Digital Marketing Recruitment ",
     subtitle: "Extensive Talent Pool",
@@ -34,6 +41,8 @@ const alerts = [
     color: "bg-purple-50 border-l-4 border-purple-500",
     textColor: "text-purple-900"
   },
+
+
   {
     title: "Get Instant Internship ",
     subtitle: "Proven Internship Programs",
@@ -87,6 +96,8 @@ export default function AlertCard() {
     setCurrentIndex(prev => (prev + 1) % alerts.length);
   };
 
+
+  
   return (
     <div 
       className="relative"
