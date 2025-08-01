@@ -14,7 +14,6 @@ export default function JobCard({ job }) {
         return 'bg-gradient-to-br from-white via-gray-50 to-gray-100/50';
     }
   };
-
   return (
     <div className={`group ${getBackgroundColor()} shadow-lg rounded-xl p-6 hover:shadow-xl hover:shadow-blue-100/50 hover:scale-[1.02] transition-all duration-300 border border-gray-100 hover:border-blue-200 cursor-pointer`}>
       <div className="flex justify-between items-start mb-4">

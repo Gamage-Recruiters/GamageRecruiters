@@ -96,8 +96,6 @@ export default function AlertCard() {
     setCurrentIndex(prev => (prev + 1) % alerts.length);
   };
 
-
-  
   return (
     <div 
       className="relative"
