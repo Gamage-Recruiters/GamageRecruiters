@@ -16,13 +16,13 @@ const salaryRanges = [
   "LKR 50,000 - LKR100,000",
   "LKR 100,000+"
 ];
-
+// Helper function to format date
 // Helper function to format date
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
   return new Date(dateString).toLocaleDateString('en-US', options);
 };
-
+// Helper function to format date
 function JobListings() {
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [selectedJobType, setSelectedJobType] = useState('All Types');
@@ -576,7 +576,7 @@ function JobListings() {
                     </button>
                   </div>
                 </div>
-
+                
                 {/* Job listings */}
                 {isLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
