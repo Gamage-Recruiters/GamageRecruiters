@@ -151,7 +151,7 @@ export default function TestimonialsSection() {
           </div>
 
           {/* Testimonial cards container */}
-          <div className="relative h-96 max-w-4xl mx-auto">
+          <div className="relative h-auto min-h-[24rem] md:h-96 max-w-4xl mx-auto">
             {testimonials.map((testimonial, index) => (
               <div
                 key={testimonial.id}
@@ -166,7 +166,7 @@ export default function TestimonialsSection() {
                       : 'opacity-0 translate-x-full z-0'
                   }`}
               >
-                <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 relative overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-12 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-bl-full opacity-50"></div>
 
                   <div className="mb-8 flex items-center justify-between">
@@ -187,26 +187,11 @@ export default function TestimonialsSection() {
                         </div>
                       </div>
                     </div>
-                    <div className="hidden md:block">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => navigateTestimonial('prev')}
-                          className="w-10 h-10 rounded-full bg-indigo-50 hover:bg-indigo-100 flex items-center justify-center transition-colors"
-                        >
-                          <ChevronLeft size={20} className="text-indigo-600" />
-                        </button>
-                        <button
-                          onClick={() => navigateTestimonial('next')}
-                          className="w-10 h-10 rounded-full bg-indigo-50 hover:bg-indigo-100 flex items-center justify-center transition-colors"
-                        >
-                          <ChevronRight size={20} className="text-indigo-600" />
-                        </button>
-                      </div>
-                    </div>
                   </div>
 
-                  <div className="mb-8">
-                    <p className="text-gray-700 text-lg leading-relaxed italic">"{testimonial.quote}"</p>
+                  {/* Testimonial text with responsive styling */}
+                  <div className="mb-8 max-h-[200px] md:max-h-none overflow-y-auto">
+                    <p className="text-gray-700 text-base md:text-lg leading-relaxed italic">"{testimonial.quote}"</p>
                   </div>
 
                   <div className="flex justify-between items-end">
@@ -214,7 +199,7 @@ export default function TestimonialsSection() {
                       <p className="font-semibold text-gray-900">{testimonial.author}</p>
                       <p className="text-indigo-600">{testimonial.position}</p>
                     </div>
-                    <div className="md:hidden flex gap-2">
+                    <div className="flex gap-2">
                       <button
                         onClick={() => navigateTestimonial('prev')}
                         className="w-10 h-10 rounded-full bg-indigo-50 hover:bg-indigo-100 flex items-center justify-center transition-colors"
