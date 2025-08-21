@@ -23,7 +23,7 @@ function setEmailBody(clientName, clientSubject, clientMassage, companyNumber, w
 
       <p style="text-align: center; margin-top: 20px;">
         <strong>Gamage Recruiters</strong><br>
-        <a href="${websiteLink}" style="color: #007bff; text-decoration: none;">www.GamageRecruiters.com</a>
+        <a href="${websiteLink}" style="color: #007bff; text-decoration: none;">gamagerecruiters.lk</a>
       </p>
     </div>
 
