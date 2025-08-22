@@ -33,7 +33,7 @@ const subsidiaries = [
     ),
   },
   {
-    name: "VERITAS Campus International",
+    name: "VERITAS International Campus",
     description:
       "A leading educational institution offering international qualifications and professional development programs.",
     icon: (

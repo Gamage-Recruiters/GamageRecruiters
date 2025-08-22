@@ -11,7 +11,7 @@ const PartnersGrid = () => {
     { id: 5, name: "Cambridege College", logo: "https://i.ibb.co/pvn864CX/image.png", category: "Education" },
     { id: 6, name: "Solex Group", logo: "https://i.ibb.co/cKLM6TLR/solex.jpg", category: "Enginnering" },
     { id: 7, name: "Fits Retail", logo: "https://i.ibb.co/RTNXvLjB/fits.png", category: "Retail" },
-    { id: 8, name: "GentXT", logo: "https://i.ibb.co/RmKtrf2/genxt.jpg", category: "Accessories" },
+    { id: 8, name: "GNEXT", logo: "https://i.ibb.co/RmKtrf2/genxt.jpg", category: "Accessories" },
     { id: 9, name: "Candy Factory", logo: "https://i.ibb.co/84GHSY1H/cfactory.png", category: "Advertising" },
     { id: 10, name: "Transnational Lanka", logo: "https://i.ibb.co/gZzKDChF/transn.jpg", category: "Retail" },
     { id: 11, name: "BCAS Campus", logo: "https://i.ibb.co/NqKnHMr/bcas.png", category: "Education" },

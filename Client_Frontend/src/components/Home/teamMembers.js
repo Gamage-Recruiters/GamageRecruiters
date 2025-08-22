@@ -18,7 +18,7 @@ const teamMembers = [
         image: 'https://example.com/jayani.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/jayanibandara',
-          email: 'gamagerecruiters@gmail.com'
+          email: 'jayani@gamagerecruiters.lk'
         }
       },
       {
@@ -38,7 +38,7 @@ const teamMembers = [
         image: 'https://example.com/theekshana.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/theekshanadeegayu',
-          email: 'gamagerecruiters@gmail.com'
+          email: 'hr.gamagecareer@gmail.com'
         }
       },
       {
@@ -48,7 +48,7 @@ const teamMembers = [
         image: 'https://example.com/nirmani.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/nirmanibhagya',
-          email: 'gamagerecruiters@gmail.com'
+          email: 'hr.gamagecareer@gmail.com'
         }
       },
       {

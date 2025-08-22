@@ -23,7 +23,7 @@ const TrustedPartnersPage = () => {
     },
     {
       id: 2,
-      company: "GENXT",
+      company: "GNEXT",
       logo: "https://i.ibb.co/pvn864CX/image.png",
       quote: "Your recruitment service was instrumental in fulfilling our urgent and critical hiring needs. It allowed us to discreetly recruit for senior positions without alerting the market, ensuring confidentiality throughout the process. Additionally, your ability to source qualified candidates with specialized expertise in our specific industry was invaluable. This tailored approach not only saved us time but also ensured that we secured the right talent for key roles.",
       author: "Amali Rathnapala",
