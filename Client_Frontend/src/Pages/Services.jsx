@@ -582,7 +582,7 @@ function Services() {
               >
                 <div className="flex items-center mb-6">
                   <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-lg mr-4">
-                    {["AB", "CD", "EF"][item - 1]}
+                    {["CS", "PS", "PS"][item - 1]}
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
