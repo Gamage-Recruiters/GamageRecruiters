@@ -7,7 +7,7 @@ const teamMembers = [
         bio: 'With a vision to empower businesses with the best talent, Mr. Harshana Gamage brings a wealth of industry expertise to Gamage Recruiters. As the Chairman and Director, he drives the strategic direction of the company, ensuring growth and innovation at every level.',
         image: 'https://example.com/harshana.jpg',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/harshanagamage',
+          linkedin: 'https://www.linkedin.com/in/harshana-gamage-790802217 ',
           email: 'gamagerecruiters@gmail.com'
         }
       },
@@ -17,7 +17,7 @@ const teamMembers = [
         bio: 'As CEO, Mrs. Jayani Bandara leads Gamage Recruiters with a focus on operational excellence and strategic partnerships. She is passionate about creating a high-performance culture and advancing recruitment solutions that support client success and long-term growth.',
         image: 'https://example.com/jayani.jpg',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/jayanibandara',
+          linkedin: 'https://www.linkedin.com/in/jayani-bandara-b93ba9244 ',
           email: 'jayani@gamagerecruiters.lk'
         }
       },
@@ -77,7 +77,7 @@ const teamMembers = [
         bio: 'Sasindu Diluranga, as Team Leader of the Developer Team and Software Engineer Intern, oversees the development process, ensuring efficient collaboration and innovative solutions. His expertise in software engineering and team leadership drives the success of projects, fostering a productive and forward-thinking development environment.',
         image: 'https://i.ibb.co/M7CTKHH/Whats-App-Image-2024-10-07-at-9-58-55-PM-removebg-preview.png',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/sasindudilurnga',
+          linkedin: 'https://www.linkedin.com/in/sasindu-diluranga-187532303',
           email: 'sasindu.diluranga@gmail.com'
         }
       },
