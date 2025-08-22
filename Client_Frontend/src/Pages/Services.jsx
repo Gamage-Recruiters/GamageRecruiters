@@ -596,8 +596,10 @@ function Services() {
                 <p className="text-gray-600 italic">
                   {[
                     "I've had the privilege of working with Gamage Recruiters, and I must commend their exceptional professionalism and collaborative work partnership throughout the talent acquisition process. Their unique and disciplined approach ensures they find the best fit for the role. Having worked with them for a considerable time, I wholeheartedly recommend Gamage Recruiters for executive hires without hesitation.",
-                    "Gamage Recruiters exceeded our expectations in every way. Their deep understanding of the maritime industry and commitment to finding the right talent made our hiring process smooth and efficient. They provided us with highly qualified professionals who perfectly matched our requirements. Their proactive approach, attention to detail, and excellent communication made the entire process effortless. We truly appreciate their support and look forward to working with them again in the future.",
-                    "Working with Gamage Recruiters was a game-changer! They didn’t just send resumes, they delivered top-tier talent with precision and speed. Sharp, professional, and truly in sync with our hiring goals. Highly recommended!"
+
+                    "Gamage Recruiters exceeded our expectations in every way. Their deep understanding of the maritime industry and commitment to finding the right talent made our hiring process smooth and efficient. They provided us with highly qualified professionals who perfectly matched our requirements. Their proactive approach, attention to detail, and excellent communication made the entire process effortless. We truly appreciate their support and look forward to working with them again in the future.",
+                    "Working with Gamage Recruiters was a game-changer! They didn’t just send resumes, they delivered top-tier talent with precision and speed. Sharp, professional, and truly in sync with our hiring goals. Highly recommended!"
+
                   ][item - 1]}
                 </p>
               </motion.div>
