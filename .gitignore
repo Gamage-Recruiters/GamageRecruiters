@@ -1,7 +1,29 @@
+# IDE / Editors
 .vscode
 .idea
+
+# Git itself
 .git
-Client_Frontend/src/.DS_Store
-Client_Frontend/.env
-Client_Frontend/src/Pages/.DS_Store
+
+# OS files
 .DS_Store
+Client_Frontend/src/.DS_Store
+Client_Frontend/src/Pages/.DS_Store
+
+# Environment files (keep secrets out of git)
+Backend/.env
+Client_Frontend/.env
+
+# Node.js dependencies
+node_modules/
+Backend/node_modules/
+Client_Frontend/node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
