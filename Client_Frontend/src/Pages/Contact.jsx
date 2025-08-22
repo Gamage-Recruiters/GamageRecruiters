@@ -147,11 +147,11 @@ function Contact() {
                       <div className="ml-4 w-full">
                         <p className="text-base font-medium text-white">Email</p>
                         <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-blue-100">
-                        <p className="mt-1 text-sm text-blue-100">gamagerecruiters@gmail.com</p>
-                      <p className="mt-1 text-sm text-blue-100">info@gamagerecruiters.lk</p>
-                      <p className="mt-1 text-sm text-blue-100">hr.gamagecareer@gmail.com</p>
-                      <p className="mt-1 text-sm text-blue-100">hr@gamagerecruiters.lk</p>
-                      </div>
+                          <p className="mt-1 text-sm text-blue-100">gamagerecruiters@gmail.com</p>
+                          <p className="mt-1 text-sm text-blue-100">info@gamagerecruiters.lk</p>
+                          <p className="mt-1 text-sm text-blue-100">hr.gamagecareer@gmail.com</p>
+                          <p className="mt-1 text-sm text-blue-100">hr@gamagerecruiters.lk</p>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-start">

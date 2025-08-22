@@ -586,18 +586,18 @@ function Services() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
-                      {["Anna Brown", "Chris Davidson", "Emma Fischer"][item - 1]}
+                      {["Chamila Senarathne", "P. Senanayaka", "Patchamuthu Satheesan"][item - 1]}
                     </h3>
                     <p className="text-gray-500">
-                      {["HR Director, Tech Co", "CEO, Finance Inc", "COO, Healthcare Group"][item - 1]}
+                      {["General Manager HR, CBL Food Cluster", "Chairman & Director, MeedRo", "Manager Operations, Gnanam Food"][item - 1]}
                     </p>
                   </div>
                 </div>
                 <p className="text-gray-600 italic">
                   {[
-                    "Their recruitment services completely transformed our hiring process. We've reduced time-to-hire by 40% while increasing the quality of candidates.",
-                    "The HR consultancy team provided invaluable guidance during our company restructuring. Their expertise was crucial to our success.",
-                    "We've been using their training programs for over a year now, and the improvement in our team's performance has been remarkable."
+                    "I've had the privilege of working with Gamage Recruiters, and I must commend their exceptional professionalism and collaborative work partnership throughout the talent acquisition process. Their unique and disciplined approach ensures they find the best fit for the role. Having worked with them for a considerable time, I wholeheartedly recommend Gamage Recruiters for executive hires without hesitation.",
+                    "Gamage Recruiters exceeded our expectations in every way. Their deep understanding of the maritime industry and commitment to finding the right talent made our hiring process smooth and efficient. They provided us with highly qualified professionals who perfectly matched our requirements. Their proactive approach, attention to detail, and excellent communication made the entire process effortless. We truly appreciate their support and look forward to working with them again in the future.",
+                    "Working with Gamage Recruiters was a game-changer! They didn’t just send resumes, they delivered top-tier talent with precision and speed. Sharp, professional, and truly in sync with our hiring goals. Highly recommended!"
                   ][item - 1]}
                 </p>
               </motion.div>
