@@ -33,7 +33,7 @@ const testimonials = [
   {
     id: 4,
     company: "MeedRO",
-    logo: "https://upload.wikimedia.org/wikipedia/en/0/0a/Union_Assurance_logo.png",
+    logo: "https://i.ibb.co/rG3Q2PPw/Screenshot-2025-07-30-113339.png",
     quote: "Gamage Recruiters exceeded our expectations in every way. Their deep understanding of the maritime industry and commitment to finding the right talent made our hiring process smooth and efficient. They provided us with highly qualified professionals who perfectly matched our requirements. Their proactive approach, attention to detail, and excellent communication made the entire process effortless. We truly appreciate their support and look forward to working with them again in the future.",
     author: "P. Senanayaka",
     position: "Chairman & Director - MeedRo",
