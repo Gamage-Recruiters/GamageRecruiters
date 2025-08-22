@@ -468,7 +468,7 @@ function Subsidiaries() {
                 <div className="relative h-72 overflow-hidden rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-900/60 to-indigo-900/60 mix-blend-multiply z-10"></div>
                   <img 
-                    src="https://blog.unemployedprofessors.com/wp-content/uploads/2025/03/DALL%C2%B7E-2025-03-12-20.28.34-A-prestigious-university-library-setting-with-two-contrasting-study-areas.-One-side-shows-students-passively-using-AI-generated-text-on-their-laptops.webp" 
+                    src="https://i.ibb.co/j9YrwDBs/Whats-App-Image-2025-08-22-at-15-07-06-c54bebfe.jpg" 
                     alt="Veritas Campus Library" 
                     className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                   />
@@ -487,7 +487,7 @@ function Subsidiaries() {
                 <div className="relative h-72 overflow-hidden rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/60 to-purple-900/60 mix-blend-multiply z-10"></div>
                   <img 
-                    src="https://iili.io/3gvFonn.png" 
+                    src="https://i.ibb.co/B5LxHfSG/Whats-App-Image-2025-08-22-at-15-07-05-e292b2a9.jpg" 
                     alt="Veritas Campus Students" 
                     className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                   />
