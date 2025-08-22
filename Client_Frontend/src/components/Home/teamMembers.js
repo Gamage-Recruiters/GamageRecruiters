@@ -18,7 +18,7 @@ const teamMembers = [
         image: 'https://example.com/jayani.jpg',
         socialLinks: {
           linkedin: 'https://linkedin.com/in/jayanibandara',
-          email: 'gamagerecruiters@gmail.com'
+          email: 'jayani@gamagerecruiters.lk'
         }
       },
       {
