@@ -7,7 +7,7 @@ const teamMembers = [
         bio: 'With a vision to empower businesses with the best talent, Mr. Harshana Gamage brings a wealth of industry expertise to Gamage Recruiters. As the Chairman and Director, he drives the strategic direction of the company, ensuring growth and innovation at every level.',
         image: 'https://example.com/harshana.jpg',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/harshanagamage',
+          linkedin: 'https://linkedin.com/in/harshana-gamage-790802217/',
           email: 'gamagerecruiters@gmail.com'
         }
       },
