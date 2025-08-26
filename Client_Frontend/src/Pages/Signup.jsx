@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import {
@@ -38,6 +38,7 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [birthDate, setBirthDate] = useState("");
+  const [birthDateError, setBirthDateError] = useState("");
   const [address, setAddress] = useState("");
   const [address2, setAddress2] = useState("");
   const [phoneNumber1, setPhoneNumber1] = useState("");
@@ -57,6 +58,52 @@ function SignupPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
   const [passwordError, setPasswordError] = useState("");
+
+  // Add birth date validation function
+  const validateBirthDate = useCallback((date) => {
+    const today = new Date();
+    const birthDate = new Date(date);
+
+    // Check if date is valid
+    if (isNaN(birthDate.getTime())) {
+      setBirthDateError("Please enter a valid date");
+      return false;
+    }
+
+    // Check if user is at least 13 years old
+    const minAgeDate = new Date();
+    minAgeDate.setFullYear(today.getFullYear() - 13);
+
+    if (birthDate > minAgeDate) {
+      setBirthDateError("You must be at least 13 years old to register");
+      return false;
+    }
+
+    // Check if birth date is not in the future
+    if (birthDate > today) {
+      setBirthDateError("Birth date cannot be in the future");
+      return false;
+    }
+
+    // Check if user is not too old (e.g., 150 years)
+    const maxAgeDate = new Date();
+    maxAgeDate.setFullYear(today.getFullYear() - 120);
+
+    if (birthDate < maxAgeDate) {
+      setBirthDateError("Please enter a valid birth date");
+      return false;
+    }
+
+    setBirthDateError("");
+    return true;
+  }, []);
+
+  // Add this useEffect to validate on birthDate change
+  useEffect(() => {
+    if (birthDate) {
+      validateBirthDate(birthDate);
+    }
+  }, [birthDate, validateBirthDate]);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -127,6 +174,12 @@ function SignupPage() {
 
       if (password !== confirmPassword) {
         setPasswordError("Passwords do not match");
+        return;
+      }
+
+      // Add birth date validation check
+      if (!validateBirthDate(birthDate)) {
+        toast.error("Please fix the birth date error");
         return;
       }
 
@@ -225,6 +278,7 @@ function SignupPage() {
       facebookLink,
       profileDescription,
       photo,
+      validateBirthDate,
     ]
   );
 
@@ -431,9 +485,15 @@ function SignupPage() {
                           name="birthDate"
                           className="w-full outline-none"
                           required
+                          max={new Date().toISOString().split("T")[0]} // Disables future dates in the date picker
                           onChange={(e) => setBirthDate(e.target.value)}
                         />
                       </div>
+                      {birthDateError && (
+                        <p className="text-red-500 text-sm mt-2">
+                          {birthDateError}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
