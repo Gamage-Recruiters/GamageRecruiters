@@ -63,6 +63,7 @@ function SignupPage() {
 
     if(!verifyEmail(email)) {
       toast.error('Invalid Email');
+      return;
     }
 
     if(password.length <= 5 || password.length >= 10) {
@@ -77,6 +78,7 @@ function SignupPage() {
 
     if(!verifyPhoneNumber(phoneNumber1)) {
       toast.error('Invalid Phone Number');
+      return;
     } 
 
     if(linkedInLink) {
@@ -208,6 +210,7 @@ function SignupPage() {
 
     setConfirmPassword(e.target.value);
     
+
     // setFormData({
     //   ...formData,
     //   [e.target.name]: e.target.value
@@ -222,7 +225,7 @@ function SignupPage() {
       }
 
       if (password.length <= 5 || password.length >= 10) {
-        toast.error('Password length must be between 6 and 9 characters');
+        toast.error('Password length must be between 5 and 10 characters');
         return;
       }
 
