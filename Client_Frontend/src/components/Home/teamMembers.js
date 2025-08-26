@@ -57,7 +57,7 @@ const teamMembers = [
         bio: 'Sayurie Nimesha plays a key role in sourcing, evaluating, and placing top talent with our clients. Her deep understanding of recruitment trends, paired with her commitment to delivering results, ensures that Gamage Recruiters consistently meets the evolving needs of the job market.',
         image: 'https://example.com/sayurie.jpg',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/sayurienimesha',
+          linkedin: 'https://linkedin.com/in/sayurie-nimasha-38b40230a',
           email: 'gamagerecruiters@gmail.com'
         }
       },
