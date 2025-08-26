@@ -37,7 +37,7 @@ const teamMembers = [
         bio: 'Theekshana Deegayu leads our Talent Acquisition team, developing strategies that attract top-tier talent to our clients. With a focus on aligning talent with business needs, he ensures our recruitment processes are efficient, effective, and driven by industry insights.',
         image: 'https://example.com/theekshana.jpg',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/theekshanadeegayu',
+          linkedin: 'https://linkedin.com/in/theekshana-digayu-439867349',
           email: 'hr.gamagecareer@gmail.com'
         }
       },
@@ -57,7 +57,7 @@ const teamMembers = [
         bio: 'Sayurie Nimesha plays a key role in sourcing, evaluating, and placing top talent with our clients. Her deep understanding of recruitment trends, paired with her commitment to delivering results, ensures that Gamage Recruiters consistently meets the evolving needs of the job market.',
         image: 'https://example.com/sayurie.jpg',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/sayurienimesha',
+          linkedin: 'https://linkedin.com/in/sayurie-nimasha-38b40230a',
           email: 'gamagerecruiters@gmail.com'
         }
       },
