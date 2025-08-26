@@ -37,7 +37,7 @@ const teamMembers = [
         bio: 'Theekshana Deegayu leads our Talent Acquisition team, developing strategies that attract top-tier talent to our clients. With a focus on aligning talent with business needs, he ensures our recruitment processes are efficient, effective, and driven by industry insights.',
         image: 'https://example.com/theekshana.jpg',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/theekshanadeegayu',
+          linkedin: 'https://linkedin.com/in/theekshana-digayu-439867349',
           email: 'hr.gamagecareer@gmail.com'
         }
       },
