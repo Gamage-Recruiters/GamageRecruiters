@@ -280,7 +280,6 @@ const ProfileOverview = ({ user }) => {
               </a>
             )}
           </div>
-          <button className="bg-red-500 text-white rounded-md pl-2 pr-2 pt-1 pb-1 mt-2" onClick={handleLogout}>Logout</button>
         </div>
 
         {/* User Meta Info */}
@@ -301,35 +300,58 @@ const ProfileOverview = ({ user }) => {
           )}
         </div>
       </div>
-      <div className="flex items-start gap-2 mt-4">
-        <div className="flex-1">
-          <input 
-            type="file" 
-            name="cv" 
-            accept=".pdf,.doc,.docx"
-            onChange={handleCVChange}
-            className="cursor-pointer w-full" 
-          />
-          {cvSelected && cv && (
-            <p className="text-sm text-green-600 mt-1">
-              Selected file: {cv.name}
-            </p>
-          )}
-        </div>
-        <button 
-          className={`
-            px-7 py-2 rounded-md text-sm transition-all duration-200
-            ${cvSelected 
-              ? 'bg-purple-500 hover:bg-purple-600 text-white cursor-pointer' 
-              : 'bg-purple-300 text-white cursor-not-allowed opacity-50'
-            }
-          `} 
-          disabled={!cvSelected || isUpdating}
-          onClick={handleCVUpdate}
-        >
-          {isUpdating ? 'Updating...' : 'Update CV'}
-        </button>
-      </div>
+      <div className="flex flex-wrap items-center gap-4 mt-4">
+  {/* Single CV button */}
+  <div className="flex items-center gap-3">
+    <input
+      type="file"
+      id="cvUpload"
+      name="cv"
+      accept=".pdf,.doc,.docx"
+      onChange={handleCVChange}
+      className="hidden"
+    />
+
+    <button
+      className={`
+        px-6 py-2 rounded-md text-sm transition
+        ${cvSelected 
+          ? "bg-purple-600 hover:bg-purple-700 text-white" 
+          : "bg-purple-500 hover:bg-purple-600 text-white"
+        }
+      `}
+      onClick={() => {
+        if (!cvSelected) {
+          document.getElementById("cvUpload").click();
+        } else {
+          handleCVUpdate();
+        }
+      }}
+      disabled={isUpdating}
+    >
+      {isUpdating 
+        ? "Updating..." 
+        : cvSelected 
+          ? "Upload CV" 
+          : "Choose CV"}
+    </button>
+
+    {cvSelected && cv && (
+      <span className="text-sm text-green-600 truncate max-w-xs">
+        {cv.name}
+      </span>
+    )}
+  </div>
+
+  {/* Logout button */}
+  <button
+    className="bg-red-500 text-white rounded-md px-4 py-2 text-sm hover:bg-red-600 transition"
+    onClick={handleLogout}
+  >
+    Logout
+  </button>
+</div>
+
 
       {/* Contact & Personal Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
