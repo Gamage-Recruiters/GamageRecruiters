@@ -835,10 +835,10 @@ function Dashboard() {
                         >
                           <div className="min-w-8 w-9 h-9 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 p-1">
                             <div className="font-medium text-xs text-center leading-tight">
-                              {job.jobType || "Job"}
+                              {(job.jobType || "Job").substring(0, 3).toUpperCase()}
                             </div>
                           </div>
-                          <div className="overflow-hidden">
+                          <div className="overflow-hidden flex-1">
                             <div className="font-medium text-sm truncate">
                               {job.jobName}
                             </div>
