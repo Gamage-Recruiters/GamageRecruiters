@@ -27,7 +27,6 @@ const teamMembers = [
         bio: 'Rasika Hemanthi oversees all financial operations at Gamage Recruiters, ensuring sound fiscal management and strategic budgeting. With a sharp eye for financial optimization, she plays a key role in maintaining the company’s financial health and supporting its growth initiatives.',
         image: 'https://example.com/rasika.jpg',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/rasikahemanthi',
           email: 'gamagerecruiters@gmail.com'
         }
       },
@@ -47,7 +46,6 @@ const teamMembers = [
         bio: 'Nirmani Bhagya, as Team Lead, manages a dynamic HR team, implementing processes that ensure smooth operations and continuous professional development. Her expertise in talent management and HR best practices helps Gamage Recruiters maintain a strong, engaged workforce.',
         image: 'https://example.com/nirmani.jpg',
         socialLinks: {
-          linkedin: 'https://linkedin.com/in/nirmanibhagya',
           email: 'hr.gamagecareer@gmail.com'
         }
       },
