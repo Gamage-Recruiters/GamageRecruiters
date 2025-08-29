@@ -53,6 +53,7 @@ function SignupPage() {
   const [cvName, setCVName] = useState("");
   const [photoName, setPhotoName] = useState("");
 
+
   const emailValue = "dummy@gmail.com";
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -128,8 +129,12 @@ function SignupPage() {
         return;
       }
 
-      if (password.length <= 5 || password.length >= 10) {
-        toast.error("Password Length must be in between 5 and 10");
+      // if (password.length <= 5 || password.length >= 10) {
+      //   toast.error("Password Length must be in between 5 and 10");
+      //   return;
+      // }
+      if (password.length < 5 || password.length > 10) {
+        toast.error("Password length must be between 5 and 10 characters");
         return;
       }
 
@@ -182,6 +187,7 @@ function SignupPage() {
         toast.error("Please fix the birth date error");
         return;
       }
+      
 
       const formData = new FormData();
 
@@ -325,8 +331,12 @@ function SignupPage() {
         return;
       }
 
-      if (password.length <= 5 || password.length >= 10) {
-        toast.error('Password length must be between 5 and 10 characters');
+      // if (password.length <= 5 || password.length >= 10) {
+      //   toast.error('Password length must be between 5 and 10 characters');
+      //   return;
+      // }
+      if (password.length < 5 || password.length > 10) {
+        toast.error("Password length must be between 5 and 10 characters");
         return;
       }
 
@@ -809,14 +819,20 @@ function SignupPage() {
                         Profile Photo
                       </label>
                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-all cursor-pointer">
-                        <input
+                        {/* <input
                           type="file"
                           name="photo"
                           accept="image/*"
                           className="hidden"
                           id="photo-upload"
                           onChange={handlePhotoChange}
+                        /> */}
+                        <input
+                          type="file"
+                          accept="image/*,application/pdf" // allows images and PDFs
+                          onChange={(e) => setSelectedFile(e.target.files[0])}
                         />
+
                         <label
                           htmlFor="photo-upload"
                           className="cursor-pointer"
