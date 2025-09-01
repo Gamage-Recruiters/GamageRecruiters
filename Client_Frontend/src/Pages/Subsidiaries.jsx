@@ -365,6 +365,23 @@ function Subsidiaries() {
                 </p>
                 
                 <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 space-y-4">
+                <div className="flex items-center space-x-4">
+                   <div className="bg-indigo-100 p-2 rounded-full">
+                    {/* You can use a Globe or Link icon */}
+                   <Globe className="h-5 w-5 text-indigo-600" />   
+                  </div>
+                 <div>
+                  <span className="text-gray-900 font-medium">Website</span>
+                  <p className="text-gray-600">
+                  <a href="https://www.veritasinternationalcampus.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-indigo-600 hover:underline">
+                 www.veritasinternationalcampus.com
+                 </a>
+               </p>
+              </div>
+            </div>
                   <div className="flex items-center space-x-4">
                     <div className="bg-indigo-100 p-2 rounded-full">
                       <Mail className="h-5 w-5 text-indigo-600" />
