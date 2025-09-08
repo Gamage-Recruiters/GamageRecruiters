@@ -125,7 +125,9 @@ function JobListings() {
     if (!matchesSalary && job.salaryRange) {
       try {
         const salaryValue = parseFloat(job.salaryRange.toString().replace(/[^\d.]/g, ''));
-        
+        if (selectedSalaryRange === 'Below LKR 20,000' && job.salaryRange && job.salaryRange.toLowerCase() === 'non paid') {
+          matchesSalary = true;
+        }
         if (!isNaN(salaryValue)) {
           if (selectedSalaryRange === 'Below LKR 20,000') {
             matchesSalary = salaryValue < 20000;
