@@ -122,27 +122,44 @@ function JobListings() {
     const matchesIndustry = selectedIndustry === 'All Industries' || jobIndustry === selectedIndustry;
     
     let matchesSalary = selectedSalaryRange === 'All Ranges';
-    if (!matchesSalary && job.salaryRange) {
-      try {
-        const salaryValue = parseFloat(job.salaryRange.toString().replace(/[^\d.]/g, ''));
-        if (selectedSalaryRange === 'Below LKR 20,000' && job.salaryRange && job.salaryRange.toLowerCase() === 'non paid') {
-          matchesSalary = true;
-        }
-        if (!isNaN(salaryValue)) {
-          if (selectedSalaryRange === 'Below LKR 20,000') {
-            matchesSalary = salaryValue < 20000;
-          } else if (selectedSalaryRange === 'LKR 20,000 - LKR 50,000') {
-            matchesSalary = salaryValue >= 20000 && salaryValue <= 50000;
-          } else if (selectedSalaryRange === 'LKR 50,000 - LKR100,000') {
-            matchesSalary = salaryValue >= 50000 && salaryValue <= 100000;
-          } else if (selectedSalaryRange === 'LKR 100,000+') {
-            matchesSalary = salaryValue >= 100000;
-          }
-        }
-      } catch (error) {
-        matchesSalary = true; // Skip salary filtering if there's an error
-      }
+if (!matchesSalary && job.salaryRange) {
+  try {
+    const sr = job.salaryRange.toString().toLowerCase().replace(/lkr|rs\.?|usd|\$|,|\s/gi, '');
+    
+    let min = 0, max = 0;
+
+    if (!sr || sr === 'nonpaid' || sr === 'non-paid' || sr === 'nonpaid') {
+      min = 0;
+      max = 0;
+    } else if (sr === 'negotiable') {
+      min = 0;
+      max = Infinity;
+    } else if (sr.includes('-')) {
+      const [minStr, maxStr] = sr.split('-');
+      min = parseFloat(minStr) || 0;
+      max = parseFloat(maxStr) || min;
+    } else if (sr.endsWith('+')) {
+      min = parseFloat(sr.replace('+', '')) || 0;
+      max = Infinity;
+    } else {
+      min = max = parseFloat(sr) || 0;
     }
+
+    if (selectedSalaryRange === 'Below LKR 20,000') {
+      matchesSalary = max < 20000 || sr.includes('nonpaid') || sr.includes('non-paid');
+    } else if (selectedSalaryRange === 'LKR 20,000 - LKR 50,000') {
+      matchesSalary = !(max < 20000 || min > 50000); // overlap check
+    } else if (selectedSalaryRange === 'LKR 50,000 - LKR100,000') {
+      matchesSalary = !(max < 50000 || min > 100000);
+    } else if (selectedSalaryRange === 'LKR 100,000+') {
+      matchesSalary = max >= 100000;
+    }
+
+  } catch (error) {
+    matchesSalary = true; // fallback: show job if parsing fails
+  }
+}
+
 
     return matchesSearch && matchesLocation && matchesJobType && matchesSalary && matchesIndustry;
   });
