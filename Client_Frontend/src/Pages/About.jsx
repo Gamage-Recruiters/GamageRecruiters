@@ -172,6 +172,44 @@ function About() {
         </div>
       </div>
 
+      {/* Company Video Section */}
+      <div className="bg-gray-50 py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center mb-12">
+            <h2 className="text-base font-semibold leading-7 text-indigo-600">
+              OUR STORY
+            </h2>
+            <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Meet Gamage Recruiters
+            </p>
+            <p className="mt-6 text-lg leading-8 text-gray-600">
+              Discover our journey, values, and the passionate team behind Sri Lanka's leading recruitment agency.
+            </p>
+          </div>
+          
+          {/* Video Container */}
+          <div className="relative mx-auto max-w-4xl">
+            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl bg-gray-900">
+              <video
+                className="w-full h-full object-cover"
+                controls
+                preload="metadata"
+                disablePictureInPicture
+                muted
+              >
+                <source src="/videos/company-intro.mp4" type="video/mp4" />
+                <source src="/videos/company-intro.webm" type="video/webm" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+
+            {/* Decorative elements for video */}
+            <div className="absolute -top-4 -left-4 w-72 h-72 bg-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+            <div className="absolute -bottom-4 -right-4 w-72 h-72 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+
       {/* Mission Vision Section */}
       <div className="bg-gray-50 py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
