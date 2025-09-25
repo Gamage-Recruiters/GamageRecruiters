@@ -134,7 +134,6 @@ function Contact() {
                       <div className="ml-3">
                         <p className="text-base font-medium text-white">Phone</p>
                         <p className="mt-1 text-sm text-blue-100">+94 77 479 5371</p>
-                        <p className="mt-1 text-sm text-blue-100">+94 76 201 4386</p>
                       </div>
                     </div>
 
