@@ -161,9 +161,14 @@ async function sendEmailVerificationOTP(req, res) {
         // Store OTP as string
         otpCache[email] = otp.toString();
 
-        // Send the email
-        await sendOTP(email, otp);
+        console.log(`Attempting to send OTP to: ${email}`);
+        console.log(`Generated OTP: ${otp}`);
+
+        // Send the email and wait for completion
+        const result = await sendOTP(email, otp);
+        
         console.log("OTP stored for", email, ":", otp);
+        console.log("Email send result:", result);
         
         res.status(200).json({ 
             success: true,
@@ -171,7 +176,15 @@ async function sendEmailVerificationOTP(req, res) {
         });
     } catch (error) {
         console.error('Error sending OTP:', error);
-        return res.status(500).json({ message: 'Failed to send OTP' });
+        
+        // Remove the OTP from cache if sending failed
+        delete otpCache[email];
+        
+        return res.status(500).json({ 
+            success: false,
+            message: 'Failed to send OTP',
+            error: error.message 
+        });
     }
 }
 

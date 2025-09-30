@@ -3,13 +3,12 @@ const setConfirmEmailBody = require('../utils/confirmEmailbody');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+    host: "mail.gamagerecruiters.lk",
+    port: 465,
+    secure: true,
     auth: {
-      
-        user: process.env.APP_EMAIL,
-        pass: process.env.APP_PASSWORD
+        user: process.env.APP_EMAIL, 
+        pass: process.env.APP_PASSWORD 
     },
 });
 
