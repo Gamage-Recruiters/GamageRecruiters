@@ -1,0 +1,61 @@
+@keyframes fall {
+    0% {
+        transform: translateY(-10vh) translateX(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    25% {
+        transform: translateY(25vh) translateX(20px) rotate(45deg);
+    }
+
+    50% {
+        transform: translateY(50vh) translateX(-20px) rotate(0deg);
+    }
+
+    75% {
+        transform: translateY(75vh) translateX(20px) rotate(45deg);
+    }
+
+    100% {
+        transform: translateY(110vh) translateX(0) rotate(90deg);
+        opacity: 0;
+    }
+}
+
+.christmas-sprinkles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.sprinkle {
+    position: absolute;
+    top: -30px;
+    user-select: none;
+    animation-name: fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* 
+   Since we are using characters for everything now,
+   we don't need background-color shapes.
+*/
+.type-snow {
+    color: #FFF;
+    /* Optional: soft shadow for visibility on white backgrounds */
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.type-gift {
+    /* Gifts are emojis, so they carry their own color */
+}
