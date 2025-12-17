@@ -33,9 +33,9 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <ChristmasSprinkles />
       {/* <WindowOnClose/> */}
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen relative">
+        <ChristmasSprinkles />
         <Toaster position="top-center" />
         <Navbar />
         <main className="flex-grow">

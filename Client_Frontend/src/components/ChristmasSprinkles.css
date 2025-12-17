@@ -1,6 +1,6 @@
 @keyframes fall {
     0% {
-        transform: translateY(-10vh) translateX(0) rotate(0deg);
+        transform: translateY(0) translateX(0) rotate(0deg);
         opacity: 1;
     }
 
@@ -23,7 +23,8 @@
 }
 
 .christmas-sprinkles-container {
-    position: fixed;
+    /* Changed from fixed to absolute so it scrolls with the page */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -35,7 +36,7 @@
 
 .sprinkle {
     position: absolute;
-    top: -30px;
+    /* Top is now dynamic in JS */
     user-select: none;
     animation-name: fall;
     animation-timing-function: linear;
@@ -46,16 +47,12 @@
     line-height: 1;
 }
 
-/* 
-   Since we are using characters for everything now,
-   we don't need background-color shapes.
-*/
 .type-snow {
     color: #FFF;
-    /* Optional: soft shadow for visibility on white backgrounds */
     text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
 .type-gift {
-    /* Gifts are emojis, so they carry their own color */
+    /* Gifts are emojis */
+    font-style: normal;
 }
