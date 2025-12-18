@@ -56,6 +56,7 @@ const navigation = {
           viewBox="0 0 24 24"
           fill="currentColor"
           xmlns="http://www.w3.org/2000/svg"
+          {...props}
         >
           <path
             d="M14.095479,10.316482L22.286354,1h-1.940718l-7.115352,8.087682L7.551414,1H1l8.589488,12.231093L1,23h1.940717
@@ -278,6 +279,10 @@ export default function Footer() {
           <p className="mt-8 text-center text-gray-300 text-sm">
             &copy; {new Date().getFullYear()} Gamage Recruiters. All rights
             reserved.
+          </p>
+          {/* Christmas Greeting */}
+          <p className="mt-2 text-center text-gray-100 text-sm font-medium">
+            Wishing you a Merry Christmas and a Prosperous New Year.
           </p>
         </div>
       </div>
