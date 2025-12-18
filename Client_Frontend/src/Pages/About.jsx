@@ -86,9 +86,12 @@ function About() {
         <div className="relative z-20 px-6 py-32 sm:py-40 lg:px-8 mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl">
             <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
-              Connecting <span className="text-indigo-400">Talent</span> with{" "}
-              <span className="text-indigo-400">Opportunity</span>
+              This Season, We Reflect on <span className="text-indigo-400">Trust</span>,{" "}
+              <span className="text-indigo-400">Growth</span> and
+              <br />
+              the Journeys We Build <span className="text-indigo-400">Together</span>.
             </h1>
+
             <p className="mt-6 text-lg leading-8 text-gray-300 max-w-2xl">
               Gamage Recruiters has been bridging the gap between talented
               professionals and leading companies since 2019. Our deep
