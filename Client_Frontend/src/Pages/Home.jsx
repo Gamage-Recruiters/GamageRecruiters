@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, MapPin, Briefcase, DollarSign, Calendar, Clock } from 'lucide-react';
+import { ArrowRight, MapPin, Briefcase, DollarSign, Calendar, Clock,Snowflake } from 'lucide-react';
 import axios from 'axios';
 import TrustedPartnersSection from '../components/Home/TrustedPartnersSection';
 import AutoScrollingTestimonials from '../components/Home/AutoScrollingTestimonials';
@@ -384,11 +384,12 @@ export default function Home() {
               <div className="flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full p-2 border border-white border-opacity-20 transition-all duration-500 hover:bg-opacity-20">
                 <input
                   type="text"
-                  placeholder="Search for jobs, skills, or companies..."
+                  placeholder="Find your perfect role this Christmas season...❄️"
                   className="flex-1 bg-transparent text-white border-none outline-none px-4 py-2"
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
                 />
+                  
                 <button type="submit" className="bg-white text-indigo-900 rounded-full px-6 py-2 font-semibold transform transition duration-300 hover:scale-105">
                   
                   Search
