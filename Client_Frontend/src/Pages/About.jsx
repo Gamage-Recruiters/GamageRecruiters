@@ -196,10 +196,9 @@ function About() {
                 autoPlay
                 preload="metadata"
                 disablePictureInPicture
-                muted
-              >
-                <source src="/videos/company-intro.mp4" type="video/mp4" />
-                <source src="/videos/company-intro.webm" type="video/webm" />
+                muted>
+                <source src="/videos/company-intro-christmas.mp4" type="video/mp4" />
+                {/* <source src="/videos/company-intro.webm" type="video/webm" /> */}
                 Your browser does not support the video tag.
               </video>
             </div>
@@ -210,6 +209,12 @@ function About() {
           </div>
         </div>
       </div>
+
+      {/*update christmas message */}
+      <p className="text-2xl leading-8 text-black-200 text-center">
+        A year of connecting talent and opportunity🎄
+      </p>
+
 
       {/* Mission Vision Section */}
       <div className="bg-gray-50 py-24">
