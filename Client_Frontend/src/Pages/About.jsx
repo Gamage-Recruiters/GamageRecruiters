@@ -159,7 +159,7 @@ function About() {
             </div>
             <div className="relative">
               <img
-                src="https://i.ibb.co/Q3vf45qc/gamage.png"
+                src="https://i.ibb.co/8nQWrQc0/Christmas-Gamage.png"
                 alt="Gamage Recruiters Office"
                 className="rounded-full shadow-2xl object-cover w-4/5 ml-auto"
               />
