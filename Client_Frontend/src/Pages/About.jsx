@@ -198,7 +198,7 @@ function About() {
                 disablePictureInPicture
                 muted
                 >
-                <source src="/videos/company-intro-christmas.mp4" type="video/mp4" />
+                <source src="/public/videos/company-intro-christmas.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
