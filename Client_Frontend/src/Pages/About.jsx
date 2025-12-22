@@ -199,13 +199,11 @@ function About() {
                 muted
                 >
                 <source src="/videos/company-intro-christmas.mp4" type="video/mp4" />
-                {/* <source src="/videos/company-intro.webm" type="video/webm" /> */}
                 Your browser does not support the video tag.
               </video>
             </div>
 
-            {/* Decorative elements for video 
-            <div className="absolute -bottom-4 -right-4 w-72 h-72 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div> */}
+            {/* Decorative elements for video */}
             <div className="absolute -top-4 -left-4 w-72 h-72 bg-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
           </div>
         </div>
