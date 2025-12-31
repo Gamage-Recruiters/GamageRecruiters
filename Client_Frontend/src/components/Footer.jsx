@@ -280,10 +280,6 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Gamage Recruiters. All rights
             reserved.
           </p>
-          {/* Christmas Greeting */}
-          <p className="mt-2 text-center text-gray-100 text-sm font-medium">
-            Wishing you a Merry Christmas and a Prosperous New Year.
-          </p>
         </div>
       </div>
     </footer>
