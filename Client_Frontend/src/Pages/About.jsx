@@ -198,22 +198,18 @@ function About() {
                 disablePictureInPicture
                 muted
                 >
-                <source src="/videos/company-intro-christmas.mp4" type="video/mp4" />
+                <source src="/videos/company-intro.mp4" type="video/mp4" />
+                <source src="/videos/company-intro.webm" type="video/webm" />
                 Your browser does not support the video tag.
               </video>
             </div>
 
             {/* Decorative elements for video */}
             <div className="absolute -top-4 -left-4 w-72 h-72 bg-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+            <div className="absolute -bottom-4 -right-4 w-72 h-72 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
           </div>
         </div>
       </div>
-
-      {/*update christmas message */}
-      <p className="text-2xl leading-8 text-black-200 text-center">
-        A year of connecting talent and opportunity🎄
-      </p>
-
 
       {/* Mission Vision Section */}
       <div className="bg-gray-50 py-24">
