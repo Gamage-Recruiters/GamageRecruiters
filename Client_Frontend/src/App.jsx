@@ -25,7 +25,6 @@ import WindowOnClose from './protected/WindowOnClose';
 import ProtectedRoute from './protected/ProtectedRoute';
 import ScrollToTop from "./components/ScrollToTop";
 import VerifyResetPassword from './Pages/VerifyResetPassword';
-import ChristmasSprinkles from './components/ChristmasSprinkles';
 
 
 
@@ -35,7 +34,7 @@ function App() {
       <ScrollToTop />
       {/* <WindowOnClose/> */}
       <div className="flex flex-col min-h-screen relative">
-        <ChristmasSprinkles />
+
         <Toaster position="top-center" />
         <Navbar />
         <main className="flex-grow">
