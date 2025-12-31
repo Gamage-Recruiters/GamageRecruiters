@@ -384,7 +384,7 @@ export default function Home() {
               <div className="flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full p-2 border border-white border-opacity-20 transition-all duration-500 hover:bg-opacity-20">
                 <input
                   type="text"
-                  placeholder="Find your perfect role this Christmas season...❄️"
+                  placeholder="Search for jobs, skills, or companies..."
                   className="flex-1 bg-transparent text-white border-none outline-none px-4 py-2"
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
