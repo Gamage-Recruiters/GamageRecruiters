@@ -31,11 +31,14 @@ export default function Navbar({ fixedColor }) {
           withCredentials: true
         });
 
-        if (response.status === 200) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
+        // if (response.status === 200) {
+        //   setIsAuthenticated(true);
+        // } else {
+        //   setIsAuthenticated(false);
+        // }
+
+         setIsAuthenticated(response.data.authenticated ?? false);
+         
       } catch (error) {
         setIsAuthenticated(false);
       }
