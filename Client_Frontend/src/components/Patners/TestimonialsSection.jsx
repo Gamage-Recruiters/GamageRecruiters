@@ -255,7 +255,7 @@ export default function TestimonialsSection() {
       </div>
 
       {/* CSS Animation for floating particles */}
-      <style jsx>{`
+      <style >{`
         @keyframes float {
           0%, 100% {
             transform: translateY(0) scale(1);
